@@ -1,5 +1,7 @@
 # Guía Heartopia
 
+Versión 0.3.0. El catálogo de peces, pájaros, insectos y fauna sale de las páginas índice de [heartodex](https://www.heartodex.com/), extracción 2026-11-06 (`python3 tools/import_heartodex.py`). No se copiaron imágenes. Los términos del sitio piden no hacer scraping masivo, así que no se recorrieron las fichas individuales: precio, sombra, cebo y nivel no venían en el índice.
+
 Versión 0.2.0. La interfaz usa Plus Jakarta Sans (OFL, latín extendido): es una sans redondeada y limpia, más legible que la pixelada, y se parece al aire de una companion de life-sim sin copiar esa otra app. El pixel art queda solo en la herramienta de cuadrícula.
 
 ## Datos contrastados en 0.2.0

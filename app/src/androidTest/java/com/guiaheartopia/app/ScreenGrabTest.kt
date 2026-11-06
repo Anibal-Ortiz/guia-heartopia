@@ -12,8 +12,18 @@ import com.guiaheartopia.app.domain.Hobby
 import com.guiaheartopia.app.domain.PlayerProfile
 import com.guiaheartopia.app.domain.RoutineState
 import com.guiaheartopia.app.domain.RoutineTask
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import com.guiaheartopia.app.ui.GuideUi
+import com.guiaheartopia.app.ui.components.NavIcon
+import com.guiaheartopia.app.ui.components.NavItem
+import com.guiaheartopia.app.ui.components.PixelNavBar
+import com.guiaheartopia.app.ui.guide.DexDetailScreen
 import com.guiaheartopia.app.ui.guide.GuideScreen
+import com.guiaheartopia.app.ui.theme.Cream
 import com.guiaheartopia.app.ui.hobbies.HobbiesScreen
 import com.guiaheartopia.app.ui.home.HomeScreen
 import com.guiaheartopia.app.ui.map.MapScreen
@@ -57,15 +67,37 @@ class ScreenGrabTest {
             "01-bienvenida",
             "02-inicio",
             "03-rutina",
-            "04-guia",
+            "04-guia-peces",
+            "04b-guia-pajaros",
+            "04c-guia-insectos",
             "05-calendario",
             "06-pixel",
             "07-hobbies",
             "08-mapa",
+            "09-detalle-pez",
         )
         rule.setContent {
             GuiaTheme {
-                ScreenAt(index.intValue, ui)
+                val current = when (index.intValue) {
+                    2 -> "routine"
+                    3, 4, 5, 10 -> "guide"
+                    7 -> "pixel"
+                    8 -> "hobbies"
+                    else -> "home"
+                }
+                Column(Modifier.fillMaxSize().background(Cream)) {
+                    Box(Modifier.weight(1f)) { ScreenAt(index.intValue, ui) }
+                    PixelNavBar(
+                        listOf(
+                            NavItem("home", "Inicio", NavIcon.HOME),
+                            NavItem("routine", "Rutina", NavIcon.ROUTINE),
+                            NavItem("guide", "Guía", NavIcon.GUIDE),
+                            NavItem("pixel", "Pixel", NavIcon.PIXEL),
+                            NavItem("hobbies", "Hobbies", NavIcon.HOBBIES),
+                        ),
+                        current,
+                    ) {}
+                }
             }
         }
         names.forEachIndexed { i, name ->
@@ -77,15 +109,25 @@ class ScreenGrabTest {
 
     @Composable
     private fun ScreenAt(index: Int, ui: GuideUi) {
+        androidx.compose.runtime.key(index) {
         when (index) {
             0 -> WelcomeScreen(PlayerProfile(countryId = "CL", zoneId = "America/Santiago"), {}, {}, {})
             1 -> HomeScreen(ui) {}
             2 -> RoutineScreen(ui, {}, {}, {}, {})
-            3 -> GuideScreen(ui, {}, {}, {}, {}, { _, _ -> }, { _, _, _, _ -> })
-            4 -> WeatherScreen("CL", "America/Santiago", "origen-ejemplo") { _, _, _ -> }
-            5 -> PixelArtScreen(32, 32)
-            6 -> HobbiesScreen(ui.hobbies, { _, _, _, _ -> }, {}, {})
-            else -> MapScreen("America/Santiago")
+            3 -> GuideScreen(ui, {}, {}, {}, {}, {}, { _, _, _, _ -> }, initialTab = 1)
+            4 -> GuideScreen(ui, {}, {}, {}, {}, {}, { _, _, _, _ -> }, initialTab = 2)
+            5 -> GuideScreen(ui, {}, {}, {}, {}, {}, { _, _, _, _ -> }, initialTab = 3)
+            6 -> WeatherScreen("CL", "America/Santiago", "origen-ejemplo") { _, _, _ -> }
+            7 -> PixelArtScreen(32, 32)
+            8 -> HobbiesScreen(ui.hobbies, { _, _, _, _ -> }, {}, {})
+            9 -> MapScreen("America/Santiago")
+            else -> {
+                val entry = com.guiaheartopia.app.data.HeartodexCatalog.load(
+                    androidx.compose.ui.platform.LocalContext.current,
+                ).first { it.category == "Peces" }
+                DexDetailScreen(entry, false, {}, {})
+            }
+        }
         }
     }
 

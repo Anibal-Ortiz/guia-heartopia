@@ -24,44 +24,31 @@ object SeedCatalog {
     private const val FOOD = "Glosa al español de las guías en inglés. No es el texto oficial del juego."
 
     val animals: List<AnimalRecord> = listOf(
-        animal("panda", "Panda", listOf("Bambú (Bamboo)", "Manzana (Apple)", "Maíz (Corn)")),
-        animal("capibara", "Capibara", listOf("Frambuesa (Raspberry)", "Tomate (Tomato)", "Uva (Grape)")),
-        animal("conejo", "Conejo", listOf("Hierba (Weed)", "Zanahoria (Carrot)", "Fresa (Strawberry)")),
-        animal("zorro", "Zorro", listOf("Carne (Meat)", "Perca americana (Largemouth bass)", "Perca europea (European perch)")),
-        animal("nutria", "Nutria marina", listOf("Camarón oriental (Oriental shrimp)", "Camarón común (Common shrimp / prawn)", "Mejillón (Mussel)")),
-        animal("huron", "Hurón", listOf("Huevo (Egg)", "Lubina (Sea bass)", "Gobio (Goby)")),
-        animal("ciervo", "Ciervo sika", listOf("Rama (Branch / twig)", "Lechuga (Lettuce)", "Ensalada de la casa (House salad)")),
-        animal("alpaca", "Alpaca", listOf("Trigo (Wheat)", "Piña (Pineapple)", "Arándano (Blueberry)")),
+        animal("panda", "Panda", listOf("Bambú (Bamboo)", "Manzana (Apple)", "Maíz (Corn)"), listOf("Forest Jump Puzzle"), "Rainy"),
+        animal("capibara", "Capibara", listOf("Frambuesa (Raspberry)", "Tomate (Tomato)", "Uva (Grape)"), listOf("Crater Lake", "Ruins"), "Rainbow, Rainy"),
+        animal("conejo", "Conejo", listOf("Hierba (Weed)", "Zanahoria (Carrot)", "Fresa (Strawberry)"), listOf("Suburbs"), "Sunny"),
+        animal("zorro", "Zorro", listOf("Carne (Meat)", "Perca americana (Largemouth bass)", "Perca europea (European perch)"), listOf("Windmill Flower Field", "Amethyst Beach", "Meadow Lake"), "Rainbow"),
+        animal("nutria", "Nutria marina", listOf("Camarón oriental (Oriental shrimp)", "Camarón común (Common shrimp / prawn)", "Mejillón (Mussel)"), listOf("Fishing Village Square"), "Rainy"),
+        animal("huron", "Hurón", listOf("Huevo (Egg)", "Lubina (Sea bass)", "Gobio (Goby)"), listOf("Rosy River"), "Rainbow"),
+        animal("ciervo", "Ciervo sika", listOf("Rama (Branch / twig)", "Lechuga (Lettuce)", "Ensalada de la casa (House salad)"), listOf("Forest Lake"), "Sunny"),
+        animal("alpaca", "Alpaca", listOf("Trigo (Wheat)", "Piña (Pineapple)", "Arándano (Blueberry)"), listOf("Amethyst Beach"), "Sunny"),
     )
 
-    private fun animal(id: String, name: String, foods: List<String>) = AnimalRecord(
+    private fun animal(id: String, name: String, foods: List<String>, places: List<String>, weather: String) = AnimalRecord(
         id = id,
         name = name,
-        group = "Animales silvestres",
-        summary = "Tres comidas en las que coinciden tres guías. El comedero no: Polygon, Dexerto y las wikis citan zonas distintas.",
+        group = "Fauna",
+        summary = "Comidas contrastadas en tres guías en inglés. El lugar y el clima preferido salen de heartodex, la fuente elegida para esta versión.",
         favoriteFoods = foods,
-        feederLocations = emptyList(),
+        feederLocations = places,
+        likedWeather = weather,
         verified = false,
         foodsVerified = true,
-        locationVerified = false,
-        sourceNote = VerifiedCatalog.FOOD_SOURCES + " " + FOOD,
+        locationVerified = true,
+        sourceNote = VerifiedCatalog.FOOD_SOURCES + " " + FOOD + " Lugar: https://www.heartodex.com/en/wild-animals/ (" + VerifiedCatalog.EXTRACTED + ").",
     )
 
-    val collectibles: List<Collectible> = listOf(
-        cited("pez-angel-azul", "Ángel de mar azul", "Peces", "Blue Sea Angel. Mar antiguo, todo el día, durante el evento. Una sola guía."),
-        cited("pez-sepia-dorada", "Sepia dorada", "Peces", "Golden Cuttlefish. Mar antiguo. Una sola guía."),
-        cited("ins-escarabajo", "Escarabajo pelotero mandarina", "Insectos", "Mandarin Dung Beetle. Bosque de robles. Una sola guía."),
-        cited("ave-cuervo", "Cuervo manzana", "Pájaros", "Apple Raven. Acantilado de piedra. Una sola guía."),
-    )
-
-    private fun cited(id: String, name: String, category: String, detail: String) = Collectible(
-        id = id,
-        name = name,
-        category = category,
-        detail = detail,
-        verified = false,
-        sourceNote = "heartopia.th.gl/guides/event-fish-bugs-and-birds (1 nov 2026). Sin segunda fuente. El cierre del evento tampoco coincide con build-heartopia.com.",
-    )
+    val collectibles: List<Collectible> = emptyList()
 
     val hobbies: List<Hobby> = listOf(
         Hobby("hob-cocina", "Cocina"),

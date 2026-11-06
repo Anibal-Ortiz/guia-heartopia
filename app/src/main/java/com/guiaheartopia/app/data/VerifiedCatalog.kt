@@ -16,6 +16,7 @@ import java.time.LocalDate
  * «Liuliu» con el roble, así que el lugar se muestra y el nombre se deja como en la petición.
  */
 object VerifiedCatalog {
+    const val EXTRACTED = "2026-11-06"
     const val FOOD_SOURCES =
         "Polygon (polygon.com/heartopia-guide-animal-trough-locations-favorite-foods-list), " +
             "Dexerto (dexerto.com/wikis/heartopia/all-animals-favorite-foods-trough-locations) " +
@@ -36,9 +37,9 @@ object VerifiedCatalog {
             title = "Noche de la adivinación",
             summary = "Las guías en inglés lo llaman Night of Divination. El inicio coincide. El último día no, y la zona del servidor no está confirmada, así que no se mueve de día.",
             start = LocalDate.of(2026, 10, 10),
-            end = null,
-            verified = false,
-            sources = EVENT_SOURCES,
+            end = LocalDate.of(2026, 11, 21),
+            verified = true,
+            sources = "heartodex.com/en/events (extracción 2026-11-06): activo del 10 oct al 21 nov 2026.",
         ),
     )
 

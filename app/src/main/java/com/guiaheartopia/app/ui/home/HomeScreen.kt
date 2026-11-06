@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.domain.Countries
 import com.guiaheartopia.app.domain.RoutineLogic
 import com.guiaheartopia.app.ui.GuideUi
+import com.guiaheartopia.app.ui.components.LineNavIcon
+import com.guiaheartopia.app.ui.components.NavIcon
 import com.guiaheartopia.app.ui.components.PixelButton
 import com.guiaheartopia.app.ui.components.PixelCard
 import com.guiaheartopia.app.ui.components.PixelProgress
@@ -29,6 +31,13 @@ import com.guiaheartopia.app.ui.theme.Yellow
 fun HomeScreen(ui: GuideUi, onOpen: (String) -> Unit) {
     val country = Countries.byId(ui.profile.countryId)
     val done = RoutineLogic.completedCount(ui.routine)
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val catalog = androidx.compose.runtime.remember { com.guiaheartopia.app.data.HeartodexCatalog.load(context) }
+    val available = catalog.count { com.guiaheartopia.app.domain.DexSchedule.availableAllDay(it.schedule) }
+    val byCategory = catalog.groupBy { it.category }
+    val today = java.time.LocalDate.now(runCatching { java.time.ZoneId.of(ui.profile.zoneId) }.getOrElse { java.time.ZoneId.systemDefault() })
+    val spot = com.guiaheartopia.app.data.VerifiedCatalog.novemberSpot(today)
+    val event = com.guiaheartopia.app.data.VerifiedCatalog.events.firstOrNull()
     Column(
         Modifier
             .fillMaxSize()
@@ -41,17 +50,41 @@ fun HomeScreen(ui: GuideUi, onOpen: (String) -> Unit) {
         Text("${country.name} · ${ui.profile.zoneId}", style = MaterialTheme.typography.bodySmall)
         Text("Guía independiente. No está afiliada a los creadores de Heartopia.", style = MaterialTheme.typography.bodySmall)
         PixelCard(container = Dark) {
-            Text("Tu colección", color = androidx.compose.ui.graphics.Color.White, style = MaterialTheme.typography.titleMedium)
-            Text(
-                "${(ui.collectionFraction * 100).toInt()} % registrado",
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                LineNavIcon(NavIcon.GUIDE, Yellow)
+                Text("Tu colección", color = androidx.compose.ui.graphics.Color.White, style = MaterialTheme.typography.titleMedium)
+            }
+            Text("$available de ${catalog.size} con horario de día completo", color = Yellow, style = MaterialTheme.typography.bodyMedium)
+            PixelProgress(
+                if (catalog.isEmpty()) 0f else available.toFloat() / catalog.size,
                 color = Yellow,
-                style = MaterialTheme.typography.bodyMedium,
+                track = androidx.compose.ui.graphics.Color(0xFF3A322C),
             )
-            PixelProgress(ui.collectionFraction, color = Yellow, track = androidx.compose.ui.graphics.Color(0xFF3A322C))
+            byCategory.forEach { (category, items) ->
+                val found = items.count { it.id in ui.found }
+                Text("$category  $found/${items.size}", color = androidx.compose.ui.graphics.Color(0xFFE7E0D6), style = MaterialTheme.typography.bodySmall)
+            }
             PixelButton("Abrir la guía →", onClick = { onOpen("guide") }, container = Yellow, contentColor = Dark)
         }
         PixelCard {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                LineNavIcon(NavIcon.HOME, Green)
+                Text("Hoy", style = MaterialTheme.typography.titleMedium)
+            }
+            if (spot == null) {
+                Text("Sin parcela contrastada de flurita o Liuliu para esta fecha.", style = MaterialTheme.typography.bodyMedium)
+            } else {
+                Text("Liuliu: ${com.guiaheartopia.app.data.VerifiedCatalog.spotLabel(spot.first)}")
+                Text("flurita: ${com.guiaheartopia.app.data.VerifiedCatalog.spotLabel(spot.second)}", color = Green)
+            }
+            if (event != null) {
+                Text("${event.title}: ${event.start} → ${event.end}", style = MaterialTheme.typography.bodyMedium)
+            }
+            Text("Datos de heartodex y, en noviembre, también Tidebell.", style = MaterialTheme.typography.bodySmall)
+        }
+        PixelCard {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                LineNavIcon(NavIcon.ROUTINE, Green)
                 Column(Modifier.weight(1f)) {
                     Text("Rutina de hoy", style = MaterialTheme.typography.titleMedium)
                     Text("Se reinicia cuando cambia la fecha local.", style = MaterialTheme.typography.bodySmall)
@@ -67,13 +100,16 @@ fun HomeScreen(ui: GuideUi, onOpen: (String) -> Unit) {
             PixelButton("Ver rutina", onClick = { onOpen("routine") }, outlined = true)
         }
         listOf(
-            "weather" to "Calendario",
-            "map" to "Mapa ilustrado",
-            "pixel" to "Pixel art",
-            "hobbies" to "Hobbies",
-        ).forEach { (route, label) ->
+            Triple("weather", "Calendario", NavIcon.GUIDE),
+            Triple("map", "Mapa ilustrado", NavIcon.HOME),
+            Triple("pixel", "Pixel art", NavIcon.PIXEL),
+            Triple("hobbies", "Hobbies", NavIcon.HOBBIES),
+        ).forEach { (route, label, icon) ->
             PixelCard(Modifier.clickable { onOpen(route) }) {
-                Text(label, style = MaterialTheme.typography.titleMedium)
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    LineNavIcon(icon, Green)
+                    Text(label, style = MaterialTheme.typography.titleMedium)
+                }
             }
         }
     }

@@ -50,6 +50,7 @@ data class AnimalRecord(
     val summary: String,
     val favoriteFoods: List<String> = emptyList(),
     val feederLocations: List<String> = emptyList(),
+    val likedWeather: String = "",
     val verified: Boolean = false,
     val foodsVerified: Boolean = false,
     val locationVerified: Boolean = false,

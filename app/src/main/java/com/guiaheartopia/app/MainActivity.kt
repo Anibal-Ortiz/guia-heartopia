@@ -187,8 +187,8 @@ private fun AppScaffold(
                     onOpenAnimal = { nav.navigate("animal/$it") },
                     onOpenWeather = { nav.navigate("weather") },
                     onOpenMap = { nav.navigate("map") },
+                    onOpenDex = { nav.navigate("dex/$it") },
                     onToggleFound = vm::toggleFound,
-                    onAddCollectible = vm::addCollectible,
                     onAddAnimal = vm::addAnimal,
                 )
             }
@@ -197,6 +197,26 @@ private fun AppScaffold(
                 HobbiesScreen(ui.hobbies, vm::setHobby, vm::addHobby, vm::removeHobby)
             }
             composable("map") { MapScreen(ui.profile.zoneId) }
+            composable(
+                "dex/{id}",
+                arguments = listOf(navArgument("id") { type = NavType.StringType }),
+            ) { entry ->
+                val id = entry.arguments?.getString("id")
+                val context = androidx.compose.ui.platform.LocalContext.current
+                val item = androidx.compose.runtime.remember(id) {
+                    com.guiaheartopia.app.data.HeartodexCatalog.load(context).firstOrNull { it.id == id }
+                }
+                if (item == null) {
+                    TextButton(onClick = { nav.popBackStack() }) { Text("Volver") }
+                } else {
+                    com.guiaheartopia.app.ui.guide.DexDetailScreen(
+                        entry = item,
+                        found = item.id in ui.found,
+                        onToggle = { vm.toggleFound(item.id) },
+                        onBack = { nav.popBackStack() },
+                    )
+                }
+            }
             composable("weather") {
                 WeatherScreen(ui.profile.countryId, ui.profile.zoneId, ui.profile.weatherOriginId, vm::updateRegion)
             }

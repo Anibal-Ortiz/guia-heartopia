@@ -118,6 +118,13 @@ fun SettingsScreen(
         BackupBlock(onExport, onImport)
         PixelButton("Política de privacidad", onClick = onPrivacy, outlined = true)
         PixelButton("Términos", onClick = onTerms, outlined = true)
+        PixelCard {
+            Text("Acerca de", style = MaterialTheme.typography.titleMedium)
+            Text(
+                "El catálogo de peces, pájaros, insectos y fauna sale de heartodex.com, extracción ${com.guiaheartopia.app.data.VerifiedCatalog.EXTRACTED}. Solo se leyeron las páginas índice. No se copiaron imágenes.",
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
         Text("Versión ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})", style = MaterialTheme.typography.bodySmall)
     }
 }

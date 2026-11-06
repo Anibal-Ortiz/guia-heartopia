@@ -38,7 +38,7 @@ import com.guiaheartopia.app.ui.components.VerifyBadge
 import com.guiaheartopia.app.ui.theme.Green
 import com.guiaheartopia.app.ui.theme.Muted
 
-private val Tabs = listOf("Animales", "Peces", "Insectos", "Pájaros")
+private val Tabs = listOf("Animales", "Peces", "Insectos", "Pájaros", "Fauna")
 
 @Composable
 fun GuideScreen(
@@ -46,11 +46,12 @@ fun GuideScreen(
     onOpenAnimal: (String) -> Unit,
     onOpenWeather: () -> Unit,
     onOpenMap: () -> Unit,
+    onOpenDex: (String) -> Unit,
     onToggleFound: (String) -> Unit,
-    onAddCollectible: (String, String) -> Unit,
     onAddAnimal: (String, String, String, String) -> Unit,
+    initialTab: Int = 0,
 ) {
-    var tab by rememberSaveable { mutableIntStateOf(0) }
+    var tab by rememberSaveable { mutableIntStateOf(initialTab) }
     Column(
         Modifier
             .fillMaxSize()
@@ -66,7 +67,7 @@ fun GuideScreen(
         }
         when (tab) {
             0 -> AnimalsTab(ui, onOpenAnimal, onAddAnimal)
-            else -> CollectibleTab(Tabs[tab], ui, onToggleFound, onAddCollectible)
+            else -> DexTab(Tabs[tab], ui, onOpenDex, onToggleFound)
         }
     }
 }
@@ -89,7 +90,7 @@ private fun AnimalsTab(
     FlowRow {
         FilterChip(selected = onlySighted, onClick = { onlySighted = !onlySighted }, label = { Text("Registrados") })
     }
-    Text("Las comidas coinciden en tres guías. Los comederos no, y siguen pendientes.", style = MaterialTheme.typography.bodySmall)
+    Text("Comidas de tres guías. Lugares de heartodex, en inglés.", style = MaterialTheme.typography.bodySmall)
     if (shown.isEmpty()) Text("Ninguna ficha coincide.", style = MaterialTheme.typography.bodyMedium)
     shown.forEach { animal ->
         PixelCard(Modifier.clickable { onOpenAnimal(animal.id) }) {
@@ -110,40 +111,99 @@ private fun AnimalsTab(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun CollectibleTab(
+private fun DexTab(
     category: String,
     ui: GuideUi,
+    onOpen: (String) -> Unit,
     onToggleFound: (String) -> Unit,
-    onAdd: (String, String) -> Unit,
 ) {
-    var name by rememberSaveable(category) { mutableStateOf("") }
-    val items = ui.collectibles.filter { it.category == category }
-    Text(
-        "Esta pestaña solo muestra entradas con una fuente citada. El catálogo completo sigue pendiente: las bases no coinciden en cuántas especies hay.",
-        style = MaterialTheme.typography.bodySmall,
-    )
-    if (items.isEmpty()) Text("Sin entradas citadas en $category.", style = MaterialTheme.typography.bodyMedium)
-    items.forEach { item -> CollectibleCard(item, item.id in ui.found, onToggleFound) }
-    OutlinedTextField(name, { name = it }, label = { Text("Añadir en $category") }, modifier = Modifier.fillMaxWidth())
-    PixelButton("Añadir nota tuya", onClick = {
-        onAdd(name, category)
-        name = ""
-    }, outlined = true)
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val all = remember { com.guiaheartopia.app.data.HeartodexCatalog.load(context) }
+    var query by rememberSaveable(category) { mutableStateOf("") }
+    var place by rememberSaveable(category) { mutableStateOf("") }
+    var onlyNow by rememberSaveable(category) { mutableStateOf(false) }
+    var registered by rememberSaveable(category) { mutableStateOf("todos") }
+    var weather by rememberSaveable(category) { mutableStateOf("Todos") }
+    val items = all.filter { entry ->
+        entry.category == category &&
+            (query.isBlank() || entry.name.contains(query.trim(), ignoreCase = true)) &&
+            (place.isBlank() || entry.location.any { it.contains(place.trim(), ignoreCase = true) }) &&
+            (weather == "Todos" || weather in entry.weather) &&
+            (!onlyNow || com.guiaheartopia.app.domain.DexSchedule.availableAllDay(entry.schedule)) &&
+            when (registered) {
+                "si" -> entry.id in ui.found
+                "no" -> entry.id !in ui.found
+                else -> true
+            }
+    }
+    OutlinedTextField(query, { query = it }, label = { Text("Buscar") }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp))
+    OutlinedTextField(place, { place = it }, label = { Text("Ubicación") }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp))
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        listOf("Todos", "Sunny", "Rainy", "Rainbow").forEach { item ->
+            FilterChip(selected = weather == item, onClick = { weather = item }, label = { Text(if (item == "Todos") item else com.guiaheartopia.app.domain.DexSchedule.weatherEs(item)) })
+        }
+        FilterChip(selected = onlyNow, onClick = { onlyNow = !onlyNow }, label = { Text("Disponible ahora") })
+        FilterChip(selected = registered == "si", onClick = { registered = if (registered == "si") "todos" else "si" }, label = { Text("Registrados") })
+        FilterChip(selected = registered == "no", onClick = { registered = if (registered == "no") "todos" else "no" }, label = { Text("Sin registrar") })
+    }
+    Text("${items.size} fichas · heartodex · ${com.guiaheartopia.app.data.VerifiedCatalog.EXTRACTED}", style = MaterialTheme.typography.bodySmall)
+    if (items.isEmpty()) Text("Nada coincide con el filtro.", style = MaterialTheme.typography.bodyMedium)
+    items.forEach { entry ->
+        val now = com.guiaheartopia.app.domain.DexSchedule.availableAllDay(entry.schedule)
+        PixelCard(Modifier.clickable { onOpen(entry.id) }) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text(entry.name, style = MaterialTheme.typography.titleMedium)
+                    Text(entry.event ?: entry.category, color = Muted, style = MaterialTheme.typography.bodySmall)
+                }
+                if (now) com.guiaheartopia.app.ui.components.NowBadge()
+            }
+            LabelValue("Ubicación", entry.location.joinToString().ifBlank { "—" })
+            LabelValue(
+                "Horario",
+                entry.schedule.joinToString { com.guiaheartopia.app.domain.DexSchedule.scheduleEs(it) }.ifBlank { "—" },
+                emphasize = false,
+            )
+            LabelValue(
+                "Clima",
+                entry.weather.joinToString { com.guiaheartopia.app.domain.DexSchedule.weatherEs(it) }.ifBlank { "—" },
+                emphasize = false,
+            )
+            PixelButton(
+                if (entry.id in ui.found) "✓ Registrado" else "Registrar",
+                onClick = { onToggleFound(entry.id) },
+                outlined = entry.id !in ui.found,
+            )
+        }
+    }
 }
 
 @Composable
-private fun CollectibleCard(item: Collectible, found: Boolean, onToggle: (String) -> Unit) {
-    PixelCard {
-        Text(item.name, style = MaterialTheme.typography.titleMedium)
-        Text(item.detail, color = Muted, style = MaterialTheme.typography.bodySmall)
-        if (!item.verified) VerifyBadge("Una fuente, pendiente de contrastar")
-        if (item.sourceNote.isNotBlank()) Text(item.sourceNote, style = MaterialTheme.typography.bodySmall)
-        PixelButton(
-            if (found) "✓ Registrado" else "Registrar",
-            onClick = { onToggle(item.id) },
-            outlined = !found,
-        )
+fun DexDetailScreen(entry: com.guiaheartopia.app.data.DexEntry, found: Boolean, onToggle: () -> Unit, onBack: () -> Unit) {
+    val now = com.guiaheartopia.app.domain.DexSchedule.availableAllDay(entry.schedule)
+    Column(
+        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                Text(entry.name, style = MaterialTheme.typography.headlineSmall)
+                Text(entry.nameEs ?: "Sin nombre en español en la fuente", color = Muted)
+            }
+            if (now) com.guiaheartopia.app.ui.components.NowBadge()
+        }
+        PixelCard {
+            LabelValue("Ubicación", entry.location.joinToString().ifBlank { "—" })
+            LabelValue("Horario", entry.schedule.joinToString { com.guiaheartopia.app.domain.DexSchedule.scheduleEs(it) }.ifBlank { "—" }, false)
+            LabelValue("Clima", entry.weather.joinToString { com.guiaheartopia.app.domain.DexSchedule.weatherEs(it) }.ifBlank { "—" }, false)
+            LabelValue("Evento", entry.event ?: "—", false)
+            LabelValue("Fuente", "heartodex · ${entry.extractedOn}", false)
+        }
+        Text("«Ahora» solo si heartodex lista el día completo. No traduce tramos sueltos a horas: la web no las define.", style = MaterialTheme.typography.bodySmall)
+        PixelButton(if (found) "✓ Registrado" else "Registrar", onClick = onToggle, outlined = !found)
+        PixelButton("Volver", onClick = onBack, outlined = true)
     }
 }
 

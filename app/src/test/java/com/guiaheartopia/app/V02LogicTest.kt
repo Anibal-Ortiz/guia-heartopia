@@ -1,12 +1,14 @@
 package com.guiaheartopia.app
 
 import com.guiaheartopia.app.data.VerifiedCatalog
+import com.guiaheartopia.app.domain.DexSchedule
 import com.guiaheartopia.app.domain.BackupCodec
 import com.guiaheartopia.app.domain.EventTime
 import com.guiaheartopia.app.domain.GuideSnapshot
 import com.guiaheartopia.app.domain.ImportResult
 import com.guiaheartopia.app.domain.PlayerProfile
 import com.guiaheartopia.app.domain.ReminderPlanner
+import java.io.File
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZoneOffset
@@ -20,14 +22,14 @@ class V02LogicTest {
     fun backupRoundTripKeepsProfileAndFoundItems() {
         val original = GuideSnapshot(
             profile = PlayerProfile(onboarded = true, name = "Nico", countryId = "CL", zoneId = "America/Santiago"),
-            foundIds = listOf("pez-angel-azul"),
+            foundIds = listOf("fish-blue-sea-angel"),
         )
         val raw = BackupCodec.export(original)
         val imported = BackupCodec.import(raw)
         assertTrue(imported is ImportResult.Ok)
         val snapshot = (imported as ImportResult.Ok).snapshot
         assertEquals("Nico", snapshot.profile.name)
-        assertEquals(listOf("pez-angel-azul"), snapshot.foundIds)
+        assertEquals(listOf("fish-blue-sea-angel"), snapshot.foundIds)
         assertEquals(original.profile.zoneId, snapshot.profile.zoneId)
     }
 
@@ -69,6 +71,26 @@ class V02LogicTest {
         assertEquals(LocalDate.of(2026, 11, 20), from)
         assertEquals(LocalDate.of(2026, 11, 21), to)
         assertTrue(EventTime.covers(start, end, ZoneOffset.UTC, ZoneId.of("Asia/Tokyo"), LocalDate.of(2026, 11, 21)))
+    }
+
+    @Test
+    fun allDayScheduleCanBeMarkedNow() {
+        assertTrue(DexSchedule.availableAllDay(listOf("Night", "Dawn", "Day", "Dusk")))
+        assertTrue(!DexSchedule.availableAllDay(listOf("Dusk", "Night")))
+    }
+
+    @Test
+    fun heartodexAssetHasTheFourCategories() {
+        val file = listOf(
+            File("src/main/assets/catalog/heartodex.json"),
+            File("app/src/main/assets/catalog/heartodex.json"),
+        ).first { it.exists() }
+        val text = file.readText()
+        assertTrue(text.contains("\"category\": \"Peces\""))
+        assertTrue(text.contains("\"category\": \"Pájaros\""))
+        assertTrue(text.contains("\"category\": \"Insectos\""))
+        assertTrue(text.contains("\"category\": \"Fauna\""))
+        assertTrue(text.contains("heartodex"))
     }
 
     @Test
