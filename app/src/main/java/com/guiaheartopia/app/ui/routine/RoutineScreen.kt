@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -25,6 +24,8 @@ import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.domain.RoutineLogic
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.ui.components.PixelButton
+import com.guiaheartopia.app.ui.components.SoftCheck
+import com.guiaheartopia.app.ui.theme.Green
 import com.guiaheartopia.app.ui.components.PixelCard
 import com.guiaheartopia.app.ui.components.PixelProgress
 
@@ -52,7 +53,9 @@ fun RoutineScreen(
             style = MaterialTheme.typography.bodyMedium,
         )
         PixelCard {
-            Text("$done de ${ui.routine.tasks.size}", style = MaterialTheme.typography.titleMedium)
+            Text("Rutina de hoy", style = MaterialTheme.typography.titleMedium)
+            Text("$done de ${ui.routine.tasks.size} completadas", color = Green, style = MaterialTheme.typography.titleSmall)
+            Text("Se reinicia cuando cambia la fecha local.", style = MaterialTheme.typography.bodySmall)
             PixelProgress(ui.routineFraction)
         }
         if (ui.routine.tasks.isEmpty()) {
@@ -63,10 +66,7 @@ fun RoutineScreen(
         ui.routine.tasks.forEach { task ->
             PixelCard {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(
-                        checked = task.id in ui.routine.completedIds,
-                        onCheckedChange = { onToggle(task.id) },
-                    )
+                    SoftCheck(task.id in ui.routine.completedIds) { onToggle(task.id) }
                     Text(task.title, modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
                     TextButton(onClick = { onRemove(task.id) }) { Text("Quitar") }
                 }

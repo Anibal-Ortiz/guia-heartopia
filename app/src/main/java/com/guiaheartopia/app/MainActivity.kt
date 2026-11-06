@@ -33,8 +33,12 @@ import com.guiaheartopia.app.ads.rememberAdsState
 import com.guiaheartopia.app.data.GuideRepository
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.ui.GuideViewModel
+import androidx.compose.runtime.LaunchedEffect
+import com.guiaheartopia.app.reminders.ReminderScheduler
+import com.guiaheartopia.app.ui.components.NavIcon
 import com.guiaheartopia.app.ui.components.NavItem
 import com.guiaheartopia.app.ui.components.PixelNavBar
+import com.guiaheartopia.app.ui.map.MapScreen
 import com.guiaheartopia.app.ui.guide.AnimalDetailScreen
 import com.guiaheartopia.app.ui.guide.GuideScreen
 import com.guiaheartopia.app.ui.hobbies.HobbiesScreen
@@ -76,6 +80,9 @@ class MainActivity : ComponentActivity() {
                 onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
             }
             val ads = rememberAdsState(this, ui.ready && ui.profile.onboarded)
+            LaunchedEffect(ui.profile) {
+                if (ui.ready && ui.profile.onboarded) ReminderScheduler.sync(this@MainActivity, ui.profile)
+            }
             GuiaTheme {
                 var legal by remember { mutableStateOf<String?>(null) }
                 when {
@@ -113,11 +120,11 @@ class MainActivity : ComponentActivity() {
 }
 
 private val Tabs = listOf(
-    NavItem("home", "Inicio", "⌂"),
-    NavItem("routine", "Rutina", "☑"),
-    NavItem("guide", "Guía", "▤"),
-    NavItem("pixel", "Pixel", "▦"),
-    NavItem("hobbies", "Hobbies", "✿"),
+    NavItem("home", "Inicio", NavIcon.HOME),
+    NavItem("routine", "Rutina", NavIcon.ROUTINE),
+    NavItem("guide", "Guía", NavIcon.GUIDE),
+    NavItem("pixel", "Pixel", NavIcon.PIXEL),
+    NavItem("hobbies", "Hobbies", NavIcon.HOBBIES),
 )
 
 @Composable
@@ -179,6 +186,7 @@ private fun AppScaffold(
                     ui = ui,
                     onOpenAnimal = { nav.navigate("animal/$it") },
                     onOpenWeather = { nav.navigate("weather") },
+                    onOpenMap = { nav.navigate("map") },
                     onToggleFound = vm::toggleFound,
                     onAddCollectible = vm::addCollectible,
                     onAddAnimal = vm::addAnimal,
@@ -188,6 +196,7 @@ private fun AppScaffold(
             composable("hobbies") {
                 HobbiesScreen(ui.hobbies, vm::setHobby, vm::addHobby, vm::removeHobby)
             }
+            composable("map") { MapScreen(ui.profile.zoneId) }
             composable("weather") {
                 WeatherScreen(ui.profile.countryId, ui.profile.zoneId, ui.profile.weatherOriginId, vm::updateRegion)
             }
@@ -202,6 +211,9 @@ private fun AppScaffold(
                     onPrivacy = onPrivacy,
                     onTerms = onTerms,
                     onAdPrivacy = onAdPrivacy,
+                    onReminders = vm::saveReminders,
+                    onExport = vm::exportBackup,
+                    onImport = vm::importBackup,
                 )
             }
             composable(

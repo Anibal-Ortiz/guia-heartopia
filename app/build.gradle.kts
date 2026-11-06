@@ -68,8 +68,8 @@ android {
         applicationId = "com.guiaheartopia.app"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.2.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -161,6 +161,7 @@ dependencies {
     implementation(libs.datastore.preferences)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.work.runtime)
     implementation(libs.play.services.ads)
     implementation(libs.user.messaging.platform)
 

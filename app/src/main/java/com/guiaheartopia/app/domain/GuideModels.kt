@@ -21,6 +21,7 @@ data class PlayerProfile(
     val weatherOriginId: String = SampleIds.WEATHER_ORIGIN,
     val pixelCols: Int = 32,
     val pixelRows: Int = 32,
+    val reminders: ReminderPrefs = ReminderPrefs(),
 )
 
 object SampleIds {
@@ -50,6 +51,9 @@ data class AnimalRecord(
     val favoriteFoods: List<String> = emptyList(),
     val feederLocations: List<String> = emptyList(),
     val verified: Boolean = false,
+    val foodsVerified: Boolean = false,
+    val locationVerified: Boolean = false,
+    val sourceNote: String = "",
     val playerOwned: Boolean = false,
 )
 
@@ -67,6 +71,7 @@ data class Collectible(
     val category: String,
     val detail: String,
     val verified: Boolean = false,
+    val sourceNote: String = "",
     val playerOwned: Boolean = false,
 )
 

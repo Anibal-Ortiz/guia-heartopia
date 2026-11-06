@@ -106,18 +106,25 @@ class WeatherTimeTest {
     @Test
     fun sampleSlotAt0230UtcLandsOnThePreviousChileanDate() {
         val placed = WeatherCalendar.place(
-            SampleWeather.slots,
-            SampleWeather.origins,
+            listOf(
+                com.guiaheartopia.app.domain.WeatherSlot(
+                    id = "s-cambio-dia",
+                    originId = "utc",
+                    originLocal = java.time.LocalDateTime.of(2026, 11, 6, 2, 30),
+                    kind = com.guiaheartopia.app.domain.WeatherKind.UNVERIFIED,
+                    summary = "prueba",
+                    verified = false,
+                    sightings = emptyList(),
+                ),
+            ),
+            listOf(com.guiaheartopia.app.domain.WeatherOrigin("utc", "UTC", "UTC", "")),
             santiago,
-            SampleWeather.origins.first().id,
+            "utc",
         )
         val shifted = placed.first { it.slot.id == "s-cambio-dia" }
         val expected = shifted.slot.originLocal.atZone(ZoneId.of("UTC")).withZoneSameInstant(santiago)
         assertEquals(expected.toLocalDate(), shifted.localDate)
         assertTrue(expected.toLocalDate().isBefore(shifted.slot.originLocal.toLocalDate()))
         assertTrue(shifted.dayShifted)
-        assertTrue(shifted.slot.sightings.any { it.key == ResourceKeys.FLURITA })
-        assertTrue(shifted.slot.sightings.any { it.key == ResourceKeys.LIULIU })
-        assertTrue(shifted.slot.sightings.all { it.location == null && !it.verified })
     }
 }

@@ -101,6 +101,24 @@ fun WeatherScreen(
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Text("Clima por país", style = MaterialTheme.typography.headlineSmall)
+        com.guiaheartopia.app.ui.components.PixelCard {
+            Text("Recursos de noviembre 2026", style = MaterialTheme.typography.titleSmall)
+            val spot = com.guiaheartopia.app.data.VerifiedCatalog.novemberSpot(java.time.LocalDate.now(zone))
+            if (spot == null) {
+                Text("Hoy no cae en el mes contrastado. El estado del clima por hora sigue pendiente.", style = MaterialTheme.typography.bodySmall)
+            } else {
+                Text("Liuliu: ${com.guiaheartopia.app.data.VerifiedCatalog.spotLabel(spot.first)}")
+                Text("flurita: ${com.guiaheartopia.app.data.VerifiedCatalog.spotLabel(spot.second)}")
+            }
+            Text(com.guiaheartopia.app.data.VerifiedCatalog.SPOT_SOURCES, style = MaterialTheme.typography.bodySmall)
+        }
+        com.guiaheartopia.app.data.VerifiedCatalog.events.forEach { event ->
+            com.guiaheartopia.app.ui.components.PixelCard {
+                Text(event.title, style = MaterialTheme.typography.titleSmall)
+                Text(event.summary, style = MaterialTheme.typography.bodyMedium)
+                Text(event.sources, style = MaterialTheme.typography.bodySmall)
+            }
+        }
         VerifyBadge("Pendiente de verificar")
         Text(
             "Las franjas son de ejemplo. La hora sí se convierte con la zona IANA del país, incluido el horario de verano. «flurita» y «Liuliu» se muestran con ese nombre: no hay fuente fiable aquí para corregirlos ni para decir dónde aparecen.",

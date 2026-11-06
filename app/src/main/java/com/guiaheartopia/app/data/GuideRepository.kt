@@ -38,6 +38,12 @@ class GuideRepository(
         runCatching { json.decodeFromString(GuideSnapshot.serializer(), raw) }.getOrElse { defaults }
     }
 
+    suspend fun replace(snapshot: GuideSnapshot) {
+        dataStore.edit { prefs ->
+            prefs[key] = json.encodeToString(GuideSnapshot.serializer(), snapshot)
+        }
+    }
+
     suspend fun update(block: (GuideSnapshot) -> GuideSnapshot) {
         dataStore.edit { prefs ->
             val current = prefs[key]?.let { raw ->

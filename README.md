@@ -1,5 +1,17 @@
 # Guía Heartopia
 
+Versión 0.2.0. La interfaz usa Plus Jakarta Sans (OFL, latín extendido): es una sans redondeada y limpia, más legible que la pixelada, y se parece al aire de una companion de life-sim sin copiar esa otra app. El pixel art queda solo en la herramienta de cuadrícula.
+
+## Datos contrastados en 0.2.0
+
+Comidas de ocho animales silvestres, citadas igual por Polygon, Dexerto y heartopia.noobgo.com. Los comederos no entran: esas guías no describen el mismo lugar.
+
+flurita y Liuliu del 1 al 30 de noviembre de 2026: Tidebell y heartodex coinciden. «flurita» se deja así; en inglés las guías dicen Flawless Fluorite. heartodex llama Liuliu Oak al recurso que Tidebell llama Roaming Oak. La hora 6:00 solo la da Tidebell y sin zona de servidor, así que no se convierte.
+
+Noche de la adivinación: el 10 de octubre de 2026 coincide en dos guías. El cierre no (20 o 21 de noviembre). El clima hora a hora y el catálogo completo de peces, insectos y pájaros siguen pendientes. Hay cuatro fichas de una sola guía, marcadas como tales.
+
+## Verificación de la 0.1.0 (histórico)
+
 Guía companion **no oficial** para Heartopia. Sirve para anotar la partida, llevar una rutina personal, consultar un calendario de climas y preparar una referencia de pixel art para pintar a mano.
 
 No está afiliada a los creadores ni a los editores de Heartopia. No controla el juego, no pulsa la pantalla y no promete que el lienzo real coincida con esta cuadrícula.

@@ -22,9 +22,13 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import java.util.UUID
+import com.guiaheartopia.app.domain.BackupCodec
+import com.guiaheartopia.app.domain.ImportResult
+import com.guiaheartopia.app.domain.ReminderPrefs
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -71,6 +75,26 @@ class GuideViewModel(
                 else snap.copy(routine = routine, hobbies = hobbies, hobbiesInitialized = true)
             }
         }
+    }
+
+    fun saveReminders(reminders: ReminderPrefs) {
+        viewModelScope.launch {
+            repository.update { snap -> snap.copy(profile = snap.profile.copy(reminders = reminders)) }
+        }
+    }
+
+    fun exportBackup(onReady: (String) -> Unit) {
+        viewModelScope.launch {
+            onReady(BackupCodec.export(repository.snapshots.first()))
+        }
+    }
+
+    fun importBackup(raw: String, onResult: (ImportResult) -> Unit) {
+        val parsed = BackupCodec.import(raw)
+        if (parsed is ImportResult.Ok) {
+            viewModelScope.launch { repository.replace(parsed.snapshot) }
+        }
+        onResult(parsed)
     }
 
     fun saveProfile(profile: PlayerProfile) {
