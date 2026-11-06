@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Guía Heartopia</string>
+    <string name="cd_ajustes">Ajustes</string>
+    <string name="cd_volver">Volver</string>
+</resources>

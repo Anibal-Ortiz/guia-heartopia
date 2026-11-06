@@ -1,0 +1,20 @@
+# Copia este archivo a local.properties. No versiones local.properties.
+# sdk.dir es la ruta de tu Android SDK.
+sdk.dir=/ruta/al/Android/Sdk
+
+# --- Solo release. Déjalos vacíos en el repositorio. ---
+# App ID y bloque de banner reales, cuando existan. No pongas IDs de prueba aquí
+# ni inventes un publisher ID. Si faltan, la variante release no solicita anuncios.
+# ADMOB_APP_ID=
+# ADMOB_BANNER_AD_UNIT_ID=
+
+# Opcional, solo depuración. Vacío = no se fuerza geografía UMP.
+# Valores: EEA, NOT_EEA, REGULATED_US_STATE, OTHER
+# UMP_DEBUG_GEOGRAPHY=
+# UMP_TEST_DEVICE_ID=
+
+# Firma de release, fuera del repositorio. Si faltan, no se firma el AAB/APK.
+# RELEASE_STORE_FILE=
+# RELEASE_STORE_PASSWORD=
+# RELEASE_KEY_ALIAS=
+# RELEASE_KEY_PASSWORD=
