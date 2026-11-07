@@ -1,5 +1,7 @@
 # Guía Heartopia
 
+Versión 0.5.0. El calendario de noviembre de 2026 junta heartodex y Tidebell. Diciembre se marca como estimado con el ciclo de 50 días. Los iconos de las criaturas son dibujos de la app.
+
 Versión 0.4.1. Los nombres, lugares, climas y horarios del catálogo salen de las páginas índice en español de heartodex. El nombre en inglés se guarda solo para buscar y no se muestra. Créditos y fuentes están en Ajustes.
 
 Versión 0.4.0. Los tramos del juego están en UTC fijo (Amanecer 05:00–11:00, Día 11:00–17:00, Tarde 17:00–23:00, Noche 23:00–05:00), tomados de la hora de Chile a UTC−3 el 2026-11-06. La app los muestra en la zona del país elegido, con horario de verano. «Ahora» usa el tramo de cada criatura; el clima se muestra y todavía no filtra.

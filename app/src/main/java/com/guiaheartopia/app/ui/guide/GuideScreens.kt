@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,6 +36,7 @@ import com.guiaheartopia.app.domain.TextMatch
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.ui.components.NowBadge
 import java.time.Instant
+import com.guiaheartopia.app.ui.components.CreatureGlyph
 import com.guiaheartopia.app.ui.components.LabelValue
 import com.guiaheartopia.app.ui.components.PillTabs
 import com.guiaheartopia.app.ui.components.PixelButton
@@ -97,7 +99,10 @@ private fun AnimalsTab(
     if (shown.isEmpty()) Text("Ninguna ficha coincide.", style = MaterialTheme.typography.bodyMedium)
     shown.forEach { animal ->
         PixelCard(Modifier.clickable { onOpenAnimal(animal.id) }) {
-            Text(animal.name, style = MaterialTheme.typography.titleMedium)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                CreatureGlyph("Fauna", animal.feederLocations, null, Modifier.size(48.dp))
+                Text(animal.name, style = MaterialTheme.typography.titleMedium)
+            }
             Text(animal.group, color = Muted, style = MaterialTheme.typography.bodySmall)
             LabelValue("Comidas", animal.favoriteFoods.joinToString(", ").ifBlank { "Pendiente" })
             LabelValue("Comedero", if (animal.locationVerified) animal.feederLocations.joinToString() else "Pendiente", emphasize = false)
@@ -163,7 +168,8 @@ private fun DexTab(
     items.forEach { entry ->
         val now = DexSchedule.availableNow(entry.schedule, instant)
         PixelCard(Modifier.clickable { onOpen(entry.id) }) {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                CreatureGlyph(entry.category, entry.location, entry.level, Modifier.size(52.dp))
                 Column(Modifier.weight(1f)) {
                     Text(entry.name, style = MaterialTheme.typography.titleMedium)
                     Text(entry.event ?: entry.category, color = Muted, style = MaterialTheme.typography.bodySmall)
@@ -202,7 +208,8 @@ fun DexDetailScreen(entry: DexEntry, zoneId: String, found: Boolean, onToggle: (
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            CreatureGlyph(entry.category, entry.location, entry.level, Modifier.size(84.dp))
             Column(Modifier.weight(1f)) {
                 Text(entry.name, style = MaterialTheme.typography.headlineSmall)
             }
@@ -245,8 +252,13 @@ fun AnimalDetailScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text(animal.name, style = MaterialTheme.typography.headlineSmall)
-        Text(animal.group, color = Muted)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            CreatureGlyph("Fauna", animal.feederLocations, null, Modifier.size(72.dp))
+            Column {
+                Text(animal.name, style = MaterialTheme.typography.headlineSmall)
+                Text(animal.group, color = Muted)
+            }
+        }
         if (animal.summary.isNotBlank()) Text(animal.summary, style = MaterialTheme.typography.bodyLarge)
         PixelCard {
             LabelValue("Comidas", animal.favoriteFoods.joinToString("\n").ifBlank { "—" })

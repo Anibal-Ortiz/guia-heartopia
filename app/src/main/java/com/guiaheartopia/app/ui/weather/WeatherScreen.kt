@@ -35,19 +35,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.data.SampleWeather
+import com.guiaheartopia.app.data.VerifiedCatalog
 import com.guiaheartopia.app.domain.Countries
-import com.guiaheartopia.app.domain.PlacedSlot
-import com.guiaheartopia.app.domain.ResourceKeys
-import com.guiaheartopia.app.domain.WeatherCalendar
+import com.guiaheartopia.app.domain.DayCertainty
+import com.guiaheartopia.app.domain.ResourceCalendar
 import com.guiaheartopia.app.domain.WeatherKind
 import com.guiaheartopia.app.ui.components.GameTimeCard
 import com.guiaheartopia.app.ui.components.PickerField
 import com.guiaheartopia.app.ui.components.PixelCard
+import com.guiaheartopia.app.ui.theme.Green
+import com.guiaheartopia.app.ui.theme.GreenSoft
 import com.guiaheartopia.app.ui.theme.Honey
 import com.guiaheartopia.app.ui.theme.Ink
-import com.guiaheartopia.app.ui.theme.Lilac
+import com.guiaheartopia.app.ui.theme.Orange
 import com.guiaheartopia.app.ui.theme.Paper
-import com.guiaheartopia.app.ui.theme.Peach
 import com.guiaheartopia.app.ui.theme.Sky
 import java.time.LocalDate
 import java.time.YearMonth
@@ -80,15 +81,6 @@ fun WeatherScreen(
     var filterName by rememberSaveable { mutableStateOf(WeatherFilter.ALL.name) }
     val month = YearMonth.parse(monthToken)
     val filter = WeatherFilter.valueOf(filterName)
-    val placed = WeatherCalendar.place(SampleWeather.slots, SampleWeather.origins, zone, origin.id)
-    val visible = placed.filter { slot ->
-        when (filter) {
-            WeatherFilter.ALL -> true
-            WeatherFilter.FLURITA -> slot.slot.sightings.any { it.key == ResourceKeys.FLURITA }
-            WeatherFilter.LIULIU -> slot.slot.sightings.any { it.key == ResourceKeys.LIULIU }
-            WeatherFilter.WEATHER -> true
-        }
-    }
     val now = ZonedDateTime.now(zone)
     val clock = DateTimeFormatter.ofPattern("d MMM yyyy HH:mm", Locale("es"))
     val selected = selectedToken?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
@@ -104,22 +96,8 @@ fun WeatherScreen(
         GameTimeCard(zone.id)
         val zoneLabel = Countries.zoneLabel(zone.id)
         Text("Reloj: ${now.format(clock)} · desfase ${now.offset.id}", style = MaterialTheme.typography.bodySmall)
-        com.guiaheartopia.app.ui.components.PixelCard {
-            Text("Recursos de noviembre 2026", style = MaterialTheme.typography.titleSmall)
-            val spot = com.guiaheartopia.app.data.VerifiedCatalog.novemberSpot(java.time.LocalDate.now(zone))
-            if (spot == null) {
-                Text("Hoy no cae en noviembre de 2026.", style = MaterialTheme.typography.bodySmall)
-            } else {
-                Text("Liuliu: ${com.guiaheartopia.app.data.VerifiedCatalog.spotLabel(spot.first)}")
-                Text("flurita: ${com.guiaheartopia.app.data.VerifiedCatalog.spotLabel(spot.second)}")
-            }
-        }
-        com.guiaheartopia.app.data.VerifiedCatalog.events.forEach { event ->
-            com.guiaheartopia.app.ui.components.PixelCard {
-                Text(event.title, style = MaterialTheme.typography.titleSmall)
-                Text(event.summary, style = MaterialTheme.typography.bodyMedium)
-            }
-        }
+        val today = LocalDate.now(zone)
+        TodayResources(today)
         PickerField(
             label = "País",
             value = country.name,
@@ -152,29 +130,40 @@ fun WeatherScreen(
             }
         }
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
-            TextButton(onClick = { monthToken = month.minusMonths(1).toString() }) { Text("Mes −") }
+            TextButton(onClick = { monthToken = month.minusMonths(1).toString() }) { Text("Mes anterior") }
             Text(
-                month.format(DateTimeFormatter.ofPattern("LLLL yyyy", Locale("es"))),
+                month.format(DateTimeFormatter.ofPattern("LLLL yyyy", Locale("es"))).replaceFirstChar { it.titlecase() },
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.titleMedium,
             )
-            TextButton(onClick = { monthToken = month.plusMonths(1).toString() }) { Text("Mes +") }
+            TextButton(onClick = { monthToken = month.plusMonths(1).toString() }) { Text("Mes siguiente") }
+        }
+        if (month != YearMonth.from(now)) {
+            TextButton(onClick = { monthToken = YearMonth.from(now).toString() }) { Text("Volver a este mes") }
         }
         Text("Zona de esta vista: $zoneLabel", style = MaterialTheme.typography.bodySmall)
         WeekHeader()
         MonthGrid(
             month = month,
-            placed = visible,
+            today = now.toLocalDate(),
             selected = selected,
+            filter = filter,
             onSelect = { selectedToken = it.toString() },
         )
         Legend()
-        val day = selected
-        if (day == null) {
-            Text("Toca un día para ver la hora local, el clima de ejemplo y si hay flurita o Liuliu.", style = MaterialTheme.typography.bodyMedium)
-        } else {
-            DayDetail(day, WeatherCalendar.onDate(visible, day), zone)
-        }
+        val day = selected ?: now.toLocalDate()
+        DayDetail(day, zone)
+    }
+}
+
+@Composable
+private fun TodayResources(today: LocalDate) {
+    val day = ResourceCalendar.on(today)
+    PixelCard {
+        Text("Hoy", style = MaterialTheme.typography.titleSmall)
+        Text("Liuliu: ${ResourceCalendar.label(day.liuliu)}", color = Green)
+        Text("flurita: ${ResourceCalendar.label(day.flurita)}", color = Orange)
+        Text(certaintyCopy(day.certainty), style = MaterialTheme.typography.bodySmall)
     }
 }
 
@@ -190,8 +179,9 @@ private fun WeekHeader() {
 @Composable
 private fun MonthGrid(
     month: YearMonth,
-    placed: List<PlacedSlot>,
+    today: LocalDate,
     selected: LocalDate?,
+    filter: WeatherFilter,
     onSelect: (LocalDate) -> Unit,
 ) {
     val first = month.atDay(1)
@@ -205,30 +195,32 @@ private fun MonthGrid(
                     val index = row * 7 + col
                     val dayNumber = index - lead + 1
                     if (dayNumber !in 1..month.lengthOfMonth()) {
-                        Box(Modifier.weight(1f).aspectRatio(0.72f))
+                        Box(Modifier.weight(1f).aspectRatio(0.78f))
                     } else {
                         val date = month.atDay(dayNumber)
-                        val slots = placed.filter { it.localDate == date }
-                        val kind = slots.firstOrNull()?.slot?.kind
+                        val data = ResourceCalendar.on(date)
+                        val bg = when {
+                            selected == date -> GreenSoft
+                            date == today -> Sky
+                            else -> Paper
+                        }
                         Box(
                             Modifier
                                 .weight(1f)
-                                .aspectRatio(0.72f)
-                                .border(2.dp, Ink)
-                                .background(if (selected == date) Peach else Paper)
+                                .aspectRatio(0.78f)
+                                .border(if (selected == date) 2.dp else 1.dp, if (selected == date) Green else Ink.copy(alpha = 0.35f), androidx.compose.foundation.shape.RoundedCornerShape(10.dp))
+                                .background(bg, androidx.compose.foundation.shape.RoundedCornerShape(10.dp))
                                 .clickable { onSelect(date) }
-                                .padding(2.dp),
+                                .padding(3.dp),
                         ) {
                             Text("$dayNumber", style = MaterialTheme.typography.labelMedium)
-                            if (kind != null) {
-                                WeatherGlyph(kind, Modifier.align(Alignment.Center).size(16.dp))
-                            }
-                            Row(Modifier.align(Alignment.BottomCenter), horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                                if (slots.any { s -> s.slot.sightings.any { it.key == ResourceKeys.FLURITA } }) {
-                                    Box(Modifier.size(6.dp).background(Honey))
+                            WeatherGlyph(WeatherKind.UNVERIFIED, Modifier.align(Alignment.Center).size(14.dp))
+                            Column(Modifier.align(Alignment.BottomCenter)) {
+                                if (filter != WeatherFilter.FLURITA && data.liuliu != null) {
+                                    Text(shortSpot(data.liuliu), color = Green, style = MaterialTheme.typography.labelMedium)
                                 }
-                                if (slots.any { s -> s.slot.sightings.any { it.key == ResourceKeys.LIULIU } }) {
-                                    Box(Modifier.size(6.dp).background(Lilac))
+                                if (filter != WeatherFilter.LIULIU && data.flurita != null) {
+                                    Text(shortSpot(data.flurita), color = Orange, style = MaterialTheme.typography.labelMedium)
                                 }
                             }
                         }
@@ -239,63 +231,64 @@ private fun MonthGrid(
     }
 }
 
+private fun shortSpot(raw: String): String = when (raw) {
+    "Bosque" -> "B"
+    "Ruinas" -> "R"
+    else -> raw
+}
+
+private fun certaintyCopy(certainty: DayCertainty): String = when (certainty) {
+    DayCertainty.CONSENSO -> "Dos listas coinciden en este día."
+    DayCertainty.ESTIMADO -> "Estimado con el ciclo de 50 días. La otra lista no publica este mes día a día."
+    DayCertainty.SIN_DATOS -> "Sin datos para este día. No hay una lista que lo confirme."
+}
+
 @Composable
-private fun DayDetail(date: LocalDate, slots: List<PlacedSlot>, zone: ZoneId) {
+private fun DayDetail(date: LocalDate, zone: ZoneId) {
     val title = date.format(DateTimeFormatter.ofPattern("EEEE d 'de' MMMM", Locale("es")))
+    val data = ResourceCalendar.on(date)
+    val event = VerifiedCatalog.events.firstOrNull { event ->
+        event.start != null && event.end != null && !date.isBefore(event.start) && !date.isAfter(event.end)
+    }
     Text(title.replaceFirstChar { it.titlecase() }, style = MaterialTheme.typography.titleMedium)
     Text("Hora local de ${Countries.zoneLabel(zone.id)}", style = MaterialTheme.typography.bodySmall)
-    if (slots.isEmpty()) {
-        PixelCard { Text("Este día no tiene franjas de ejemplo con el filtro actual.") }
-        return
-    }
-    slots.forEach { placed ->
-        val localClock = DateTimeFormatter.ofPattern("HH:mm")
-        PixelCard {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                WeatherGlyph(placed.slot.kind, Modifier.size(28.dp))
-                Column {
-                    Text(placed.slot.kind.label, style = MaterialTheme.typography.titleSmall)
-                    Text(
-                        "Hora ${placed.local.toLocalTime().format(localClock)}",
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
-                }
-            }
+    PixelCard {
+        Text("Liuliu: ${ResourceCalendar.label(data.liuliu)}", color = Green, style = MaterialTheme.typography.titleSmall)
+        Text("flurita: ${ResourceCalendar.label(data.flurita)}", color = Orange, style = MaterialTheme.typography.titleSmall)
+        Text(certaintyCopy(data.certainty), style = MaterialTheme.typography.bodyMedium)
+        if (data.sources > 0) {
             Text(
-                "Hora de origen ${placed.slot.originLocal.toLocalTime().format(localClock)} del ${placed.slot.originLocal.toLocalDate()}",
+                if (data.certainty == DayCertainty.CONSENSO) "Fuentes de acuerdo: ${data.sources}." else "Listas que publican el día: ${data.sources}.",
                 style = MaterialTheme.typography.bodySmall,
             )
-            if (placed.dayShifted) {
-                Text(
-                    "El cambio de zona mueve esta franja al día local ${placed.localDate}.",
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
-            Text(placed.slot.summary, style = MaterialTheme.typography.bodyMedium)
-            placed.slot.sightings.forEach { sight ->
-                Text(sight.displayName, style = MaterialTheme.typography.titleSmall)
-                if (!sight.location.isNullOrBlank()) {
-                    Text("Lugar: ${sight.location}", style = MaterialTheme.typography.bodyMedium)
-                }
-                if (!sight.appearance.isNullOrBlank()) {
-                    Text("Aparición: ${sight.appearance}", style = MaterialTheme.typography.bodyMedium)
-                }
-            }
+        }
+    }
+    PixelCard {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            WeatherGlyph(WeatherKind.UNVERIFIED, Modifier.size(28.dp))
+            Text("Clima por horas", style = MaterialTheme.typography.titleSmall)
+        }
+        Text(
+            "Pendiente de verificar. Hay calendarios públicos, pero no dos que detallen las mismas horas de este mes. No rellenamos el hueco.",
+            style = MaterialTheme.typography.bodyMedium,
+        )
+    }
+    if (event != null) {
+        PixelCard {
+            Text(event.title, style = MaterialTheme.typography.titleSmall)
+            Text(event.summary, style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
 
 @Composable
 private fun Legend() {
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        WeatherKind.entries.forEach { kind ->
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                WeatherGlyph(kind, Modifier.size(18.dp))
-                Text(kind.label, style = MaterialTheme.typography.bodySmall)
-            }
-        }
-        Text("■ miel = flurita", style = MaterialTheme.typography.bodySmall)
-        Text("■ lila = Liuliu", style = MaterialTheme.typography.bodySmall)
+    FlowRow(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text("Número verde: Liuliu", color = Green, style = MaterialTheme.typography.bodySmall)
+        Text("Número naranja: flurita", color = Orange, style = MaterialTheme.typography.bodySmall)
+        Text("B bosque · R ruinas", style = MaterialTheme.typography.bodySmall)
+        Text("Círculo: clima sin confirmar", style = MaterialTheme.typography.bodySmall)
+        Text("Fondo verde: día elegido", style = MaterialTheme.typography.bodySmall)
     }
 }
 

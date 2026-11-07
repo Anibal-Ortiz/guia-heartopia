@@ -122,7 +122,7 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(
-                "En noviembre de 2026, las parcelas de flurita y Liuliu coinciden en Tidebell y heartodex. La noche de la adivinación usa el cierre del 21 de noviembre cuando las listas no coinciden.",
+                "En noviembre de 2026, Liuliu y la flurita coinciden en Tidebell y heartodex. Diciembre sigue el ciclo de 50 días y se marca como estimado. El clima hora a hora sigue pendiente de verificar.",
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(

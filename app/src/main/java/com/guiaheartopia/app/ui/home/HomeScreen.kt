@@ -41,7 +41,7 @@ fun HomeScreen(ui: GuideUi, onOpen: (String) -> Unit) {
     val available = catalog.count { DexSchedule.availableNow(it.schedule, nowInstant) }
     val byCategory = catalog.groupBy { it.category }
     val today = java.time.LocalDate.now(zone)
-    val spot = com.guiaheartopia.app.data.VerifiedCatalog.novemberSpot(today)
+    val spot = com.guiaheartopia.app.domain.ResourceCalendar.on(today)
     val event = com.guiaheartopia.app.data.VerifiedCatalog.events.firstOrNull()
     Column(
         Modifier
@@ -76,12 +76,9 @@ fun HomeScreen(ui: GuideUi, onOpen: (String) -> Unit) {
                 LineNavIcon(NavIcon.HOME, Green)
                 Text("Hoy", style = MaterialTheme.typography.titleMedium)
             }
-            if (spot == null) {
-                Text("Sin parcela contrastada de flurita o Liuliu para esta fecha.", style = MaterialTheme.typography.bodyMedium)
-            } else {
-                Text("Liuliu: ${com.guiaheartopia.app.data.VerifiedCatalog.spotLabel(spot.first)}")
-                Text("flurita: ${com.guiaheartopia.app.data.VerifiedCatalog.spotLabel(spot.second)}", color = Green)
-            }
+            Text("Liuliu: ${com.guiaheartopia.app.domain.ResourceCalendar.label(spot.liuliu)}")
+            Text("flurita: ${com.guiaheartopia.app.domain.ResourceCalendar.label(spot.flurita)}", color = Green)
+            Text(spot.certainty.label, style = MaterialTheme.typography.bodySmall)
             if (event != null) {
                 Text("${event.title}: ${event.start} → ${event.end}", style = MaterialTheme.typography.bodyMedium)
             }

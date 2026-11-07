@@ -32,7 +32,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import com.guiaheartopia.app.data.VerifiedCatalog
 import com.guiaheartopia.app.ui.components.PixelCard
 import com.guiaheartopia.app.ui.theme.Beige
 import com.guiaheartopia.app.ui.theme.Green
@@ -51,7 +50,7 @@ fun MapScreen(zoneId: String) {
     var scale by remember { mutableFloatStateOf(1f) }
     var pan by remember { mutableStateOf(Offset.Zero) }
     val today = LocalDate.now(runCatching { java.time.ZoneId.of(zoneId) }.getOrElse { java.time.ZoneId.systemDefault() })
-    val spot = VerifiedCatalog.novemberSpot(today)
+    val spot = com.guiaheartopia.app.domain.ResourceCalendar.on(today)
     Column(
         Modifier
             .fillMaxSize()
@@ -97,8 +96,8 @@ fun MapScreen(zoneId: String) {
                         val left = w * (0.12f + col * 0.18f)
                         val top = h * (0.18f + row * 0.18f)
                         val label = (i + 1).toString()
-                        val hitLiuliu = spot?.first == label && (filter == MapFilter.ALL || filter == MapFilter.LIULIU)
-                        val hitFluorite = spot?.second == label && (filter == MapFilter.ALL || filter == MapFilter.FLURITA)
+                        val hitLiuliu = spot.liuliu == label && (filter == MapFilter.ALL || filter == MapFilter.LIULIU)
+                        val hitFluorite = spot.flurita == label && (filter == MapFilter.ALL || filter == MapFilter.FLURITA)
                         val fill = when {
                             hitLiuliu && hitFluorite -> Orange
                             hitLiuliu -> GreenSoft
@@ -117,13 +116,12 @@ fun MapScreen(zoneId: String) {
                 Text("Comederos", style = MaterialTheme.typography.titleMedium)
                 Text("Este dibujo no marca un punto fijo para los comederos.", style = MaterialTheme.typography.bodyMedium)
             }
-        } else if (spot == null) {
-            Text("Hoy no hay parcela de flurita o Liuliu.", style = MaterialTheme.typography.bodyMedium)
         } else {
             PixelCard {
                 Text("Hoy", style = MaterialTheme.typography.titleMedium)
-                if (filter != MapFilter.FLURITA) Text("Liuliu: ${VerifiedCatalog.spotLabel(spot.first)}", color = Green)
-                if (filter != MapFilter.LIULIU) Text("flurita: ${VerifiedCatalog.spotLabel(spot.second)}", color = Orange)
+                if (filter != MapFilter.FLURITA) Text("Liuliu: ${com.guiaheartopia.app.domain.ResourceCalendar.label(spot.liuliu)}", color = Green)
+                if (filter != MapFilter.LIULIU) Text("flurita: ${com.guiaheartopia.app.domain.ResourceCalendar.label(spot.flurita)}", color = Orange)
+                Text(spot.certainty.label, style = MaterialTheme.typography.bodySmall)
             }
         }
     }
