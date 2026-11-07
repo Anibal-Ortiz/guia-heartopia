@@ -52,8 +52,7 @@ fun HomeScreen(ui: GuideUi, onOpen: (String) -> Unit) {
     ) {
         Text(ui.greeting, style = MaterialTheme.typography.headlineSmall)
         Text(ui.todayLabel.replaceFirstChar { it.titlecase() }, style = MaterialTheme.typography.bodyMedium)
-        Text("${country.name} · ${ui.profile.zoneId}", style = MaterialTheme.typography.bodySmall)
-        Text("Guía independiente. No está afiliada a los creadores de Heartopia.", style = MaterialTheme.typography.bodySmall)
+        Text("${country.name} · ${Countries.zoneLabel(ui.profile.zoneId)}", style = MaterialTheme.typography.bodySmall)
         GameTimeCard(zone.id)
         PixelCard(container = Dark) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -86,7 +85,6 @@ fun HomeScreen(ui: GuideUi, onOpen: (String) -> Unit) {
             if (event != null) {
                 Text("${event.title}: ${event.start} → ${event.end}", style = MaterialTheme.typography.bodyMedium)
             }
-            Text("Datos de heartodex y, en noviembre, también Tidebell.", style = MaterialTheme.typography.bodySmall)
         }
         PixelCard {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -108,8 +106,8 @@ fun HomeScreen(ui: GuideUi, onOpen: (String) -> Unit) {
         listOf(
             Triple("weather", "Calendario", NavIcon.GUIDE),
             Triple("map", "Mapa ilustrado", NavIcon.HOME),
-            Triple("pixel", "Pixel art", NavIcon.PIXEL),
-            Triple("hobbies", "Hobbies", NavIcon.HOBBIES),
+            Triple("pixel", "Arte de píxel", NavIcon.PIXEL),
+            Triple("hobbies", "Aficiones", NavIcon.HOBBIES),
         ).forEach { (route, label, icon) ->
             PixelCard(Modifier.clickable { onOpen(route) }) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {

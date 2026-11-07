@@ -80,6 +80,9 @@ object Countries {
 
     fun byId(id: String): Country = all.firstOrNull { it.id == id } ?: chile
 
+    fun zoneLabel(zoneId: String): String =
+        all.asSequence().flatMap { it.zones.asSequence() }.firstOrNull { it.zoneId == zoneId }?.label.orEmpty()
+
     /**
      * País y zona iniciales. Usa el país del idioma o la zona del reloj del dispositivo
      * solo cuando coinciden con esta lista. No consulta ubicación.

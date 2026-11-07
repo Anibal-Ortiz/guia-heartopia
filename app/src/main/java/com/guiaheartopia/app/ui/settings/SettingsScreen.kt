@@ -39,8 +39,6 @@ import com.guiaheartopia.app.domain.ReminderPrefs
 import com.guiaheartopia.app.ui.components.PickerField
 import com.guiaheartopia.app.ui.components.PixelButton
 import com.guiaheartopia.app.ui.components.PixelCard
-import com.guiaheartopia.app.ui.components.VerifyBadge
-
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SettingsScreen(
@@ -69,11 +67,6 @@ fun SettingsScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text("Ajustes", style = MaterialTheme.typography.headlineSmall)
-        VerifyBadge("Guía independiente")
-        Text(
-            "No está afiliada a los creadores de Heartopia. Los datos de ejemplo siguen pendientes de verificar.",
-            style = MaterialTheme.typography.bodyMedium,
-        )
         OutlinedTextField(name, { name = it }, label = { Text("Nombre") }, modifier = Modifier.fillMaxWidth())
         OutlinedTextField(place, { place = it }, label = { Text("Tu lugar") }, modifier = Modifier.fillMaxWidth())
         Text("Cuándo sueles jugar", style = MaterialTheme.typography.bodyMedium)
@@ -98,8 +91,8 @@ fun SettingsScreen(
             )
             PickerField(
                 "Zona",
-                profile.zoneId,
-                country.zones.map { it.zoneId to "${it.label} · ${it.zoneId}" },
+                country.zones.firstOrNull { it.zoneId == profile.zoneId }?.label ?: country.zones.first().label,
+                country.zones.map { it.zoneId to it.label },
                 onPick = { onRegion(country.id, it, profile.weatherOriginId) },
             )
         }
@@ -107,7 +100,7 @@ fun SettingsScreen(
             Text("Anuncios y consentimiento", style = MaterialTheme.typography.titleMedium)
             Text(adsCopy(adsMode, adsStatus), style = MaterialTheme.typography.bodyMedium)
             Text(
-                "El mensaje GDPR/UMP tiene que publicarse en la consola de AdMob antes de llegar a usuarios del EEE. Esta app no simula que ya aceptaste.",
+                "El aviso de privacidad de los anuncios tiene que estar publicado antes de llegar a Europa. La app no da por aceptado el consentimiento.",
                 style = MaterialTheme.typography.bodySmall,
             )
             if (privacyOptions) {
@@ -119,9 +112,21 @@ fun SettingsScreen(
         PixelButton("Política de privacidad", onClick = onPrivacy, outlined = true)
         PixelButton("Términos", onClick = onTerms, outlined = true)
         PixelCard {
-            Text("Acerca de", style = MaterialTheme.typography.titleMedium)
+            Text("Créditos y fuentes", style = MaterialTheme.typography.titleMedium)
             Text(
-                "El catálogo de peces, pájaros, insectos y fauna sale de heartodex.com, extracción ${com.guiaheartopia.app.data.VerifiedCatalog.EXTRACTED}. Solo se leyeron las páginas índice. No se copiaron imágenes.",
+                "Guía Heartopia no está afiliada a quienes crean el juego. No lo controla ni pinta la pantalla por ti.",
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Text(
+                "Peces, aves, insectos y fauna salen de las páginas índice en español de heartodex, leídas el 7 de noviembre de 2026. No se abrió cada ficha ni se copiaron imágenes. El índice no trae precio ni cebo. Nivel y sombra se muestran solo cuando la tarjeta los incluye.",
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Text(
+                "En noviembre de 2026, las parcelas de flurita y Liuliu coinciden en Tidebell y heartodex. La noche de la adivinación usa el cierre del 21 de noviembre cuando las listas no coinciden.",
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Text(
+                "Las comidas de la fauna coinciden en tres guías y aquí están en español. La letra de la interfaz es Plus Jakarta Sans, licencia OFL. La paleta y los tamaños de la cuadrícula son una referencia aproximada, no el lienzo del juego.",
                 style = MaterialTheme.typography.bodyMedium,
             )
         }
@@ -151,7 +156,7 @@ private fun ReminderBlock(current: ReminderPrefs, onChange: (ReminderPrefs) -> U
     PixelCard {
         Text("Recordatorios", style = MaterialTheme.typography.titleMedium)
         Text(
-            "Avisos locales a la hora de tu zona. WorkManager puede retrasarlos unos minutos. No pedimos alarma exacta.",
+            "Avisos locales a la hora de tu zona. El sistema puede retrasarlos unos minutos. No pedimos una alarma exacta.",
             style = MaterialTheme.typography.bodySmall,
         )
         ToggleRow("Rutina", current.routineEnabled) { update(current.copy(routineEnabled = it)) }
@@ -201,9 +206,9 @@ private fun BackupBlock(
     }
     PixelCard {
         Text("Respaldo", style = MaterialTheme.typography.titleMedium)
-        Text("Exporta o recupera perfil, rutina, colección, hobbies y ajustes. El archivo es JSON versión 1.", style = MaterialTheme.typography.bodySmall)
-        PixelButton("Exportar JSON", onClick = { create.launch("guia-heartopia-respaldo.json") }, outlined = true)
-        PixelButton("Importar JSON", onClick = { open.launch(arrayOf("application/json", "text/*")) }, outlined = true)
+        Text("Exporta o recupera perfil, rutina, colección, aficiones y ajustes. El archivo es un respaldo de la versión 1.", style = MaterialTheme.typography.bodySmall)
+        PixelButton("Exportar respaldo", onClick = { create.launch("guia-heartopia-respaldo.json") }, outlined = true)
+        PixelButton("Importar respaldo", onClick = { open.launch(arrayOf("application/json", "text/*")) }, outlined = true)
         message?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
     }
     val raw = pendingImport
@@ -231,11 +236,11 @@ private fun BackupBlock(
 private fun adsCopy(mode: AdsMode, status: String): String {
     val base = when {
         BuildConfig.ADS_USE_GOOGLE_TEST_IDS ->
-            "Compilación de depuración con los ID oficiales de prueba de Google. No son anuncios de un editor real."
+            "Compilación de prueba: los anuncios usan identificadores de demostración. No son de un editor real."
         !BuildConfig.ADS_ENABLED ->
-            "Esta compilación no tiene IDs de AdMob. No se solicitan anuncios. Los reales se configuran fuera del repositorio."
+            "Esta compilación no pide anuncios."
         else ->
-            "Esta compilación tiene IDs configurados fuera del repositorio."
+            "Esta compilación tiene los anuncios configurados fuera del repositorio."
     }
     return listOf(base, status).filter { it.isNotBlank() }.joinToString(" ")
 }

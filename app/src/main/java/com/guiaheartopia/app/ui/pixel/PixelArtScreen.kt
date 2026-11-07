@@ -66,7 +66,6 @@ import com.guiaheartopia.app.pixel.PixelProject
 import com.guiaheartopia.app.ui.components.PixelButton
 import com.guiaheartopia.app.ui.components.PixelCard
 import com.guiaheartopia.app.ui.components.PixelSwatch
-import com.guiaheartopia.app.ui.components.VerifyBadge
 import com.guiaheartopia.app.ui.theme.Ink
 import com.guiaheartopia.app.ui.theme.Paper
 import java.io.File
@@ -142,7 +141,7 @@ class PixelArtViewModel(app: Application) : AndroidViewModel(app) {
                     ImageExporter.savePng(getApplication(), bitmap, if (guide) "guia_${current.cols}x${current.rows}" else "pixel_${current.cols}x${current.rows}")
                 }.getOrNull()
             }
-            message = if (where == null) "No se pudo guardar el PNG." else "PNG guardado en $where"
+            message = if (where == null) "No se pudo guardar la imagen." else "Imagen guardada en $where"
         }
     }
 
@@ -172,10 +171,9 @@ fun PixelArtScreen(initialCols: Int, initialRows: Int) {
     val context = LocalContext.current
 
     Column(Modifier.fillMaxSize().padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text("Pixel art", style = MaterialTheme.typography.headlineSmall)
-        VerifyBadge("Guía manual")
+        Text("Arte de píxel", style = MaterialTheme.typography.headlineSmall)
         Text(
-            "Convierte una foto en una cuadrícula y una paleta para copiarla a mano. No pinta el juego, no usa accesibilidad y no promete que el lienzo de Heartopia mida exactamente esto.",
+            "Convierte una foto en una cuadrícula para copiarla a mano. La app no pinta el juego.",
             style = MaterialTheme.typography.bodySmall,
         )
         vm.message?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
@@ -183,7 +181,7 @@ fun PixelArtScreen(initialCols: Int, initialRows: Int) {
         if (project != null) {
             PixelViewer(project, Modifier.weight(1f).fillMaxWidth())
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                PixelButton("Guardar PNG", onClick = { vm.export(false) })
+                PixelButton("Guardar imagen", onClick = { vm.export(false) })
                 PixelButton("Guardar guía", onClick = { vm.export(true) })
             }
             PixelButton("Compartir guía", onClick = { vm.share() }, container = com.guiaheartopia.app.ui.theme.Sky)
@@ -196,14 +194,7 @@ fun PixelArtScreen(initialCols: Int, initialRows: Int) {
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                PixelCard {
-                    Text("Paleta aproximada de referencia", style = MaterialTheme.typography.titleSmall)
-                    Text(
-                        "Colores comunitarios, no oficiales. Pueden no coincidir con el selector del juego.",
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
-                Text("Tamaño ${cols}×$rows. Los preajustes comunitarios están pendientes de verificar.", style = MaterialTheme.typography.bodySmall)
+                Text("Tamaño ${cols}×$rows", style = MaterialTheme.typography.bodySmall)
                 Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     GridSize.ALL.take(8).forEach { size ->
                         FilterChip(
@@ -229,7 +220,7 @@ fun PixelArtScreen(initialCols: Int, initialRows: Int) {
                     Switch(checked = crisp && !dither, onCheckedChange = { crisp = it }, enabled = !dither)
                 }
                 Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                    Text("Dithering", Modifier.weight(1f))
+                    Text("Tramado", Modifier.weight(1f))
                     Switch(checked = dither, onCheckedChange = { dither = it })
                 }
                 Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
@@ -259,7 +250,7 @@ fun PixelArtScreen(initialCols: Int, initialRows: Int) {
                     },
                 )
                 Text(
-                    "La imagen no sale del teléfono. En Android 10 o más nuevo el PNG va a Imágenes/GuiaHeartopia sin permiso amplio de almacenamiento.",
+                    "La imagen no sale del teléfono. En Android 10 o más nuevo se guarda en Imágenes/GuiaHeartopia.",
                     style = MaterialTheme.typography.bodySmall,
                 )
             }

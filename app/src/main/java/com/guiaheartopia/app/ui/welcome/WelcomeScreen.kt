@@ -73,7 +73,7 @@ fun WelcomeScreen(
             1 -> StepCountry(countryId) { countryId = it }
             2 -> StepZone(country, zoneId) { zoneId = it }
             3 -> StepPlay(session) { session = it }
-            else -> StepSummary(name, place, country.name, zoneId, session)
+            else -> StepSummary(name, place, country.name, country.zones.first { it.zoneId == zoneId }.label, session)
         }
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             if (step > 0) {
@@ -118,7 +118,7 @@ private fun StepName(
 ) {
     Text("¿Cómo te llamamos?", style = MaterialTheme.typography.headlineSmall)
     Text(
-        "Guía independiente. No está afiliada a los creadores de Heartopia. Lo que anotes se queda en el teléfono.",
+        "Lo que anotes se queda en el teléfono.",
         style = MaterialTheme.typography.bodyLarge,
     )
     OutlinedTextField(name, onName, label = { Text("Tu nombre") }, singleLine = true, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp))
@@ -141,12 +141,12 @@ private fun StepZone(country: com.guiaheartopia.app.domain.Country, zoneId: Stri
     Text("Zona horaria", style = MaterialTheme.typography.headlineSmall)
     PixelCard(container = Cream) {
         Text(
-            "Las guías describen un calendario fijo, no un hemisferio confirmado para Heartopia. La zona del servidor tampoco está verificada, así que las horas se convierten solo cuando la fuente trae una zona. Tu zona es la del teléfono o la que elijas aquí.",
+            "Las horas del juego se muestran en la zona que elijas.",
             style = MaterialTheme.typography.bodyMedium,
         )
     }
     country.zones.forEach { zone ->
-        OptionCard("${zone.label}\n${zone.zoneId}", selected = zone.zoneId == zoneId, onClick = { onPick(zone.zoneId) })
+        OptionCard(zone.label, selected = zone.zoneId == zoneId, onClick = { onPick(zone.zoneId) })
     }
 }
 

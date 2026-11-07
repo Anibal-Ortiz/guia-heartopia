@@ -123,8 +123,8 @@ private val Tabs = listOf(
     NavItem("home", "Inicio", NavIcon.HOME),
     NavItem("routine", "Rutina", NavIcon.ROUTINE),
     NavItem("guide", "Guía", NavIcon.GUIDE),
-    NavItem("pixel", "Pixel", NavIcon.PIXEL),
-    NavItem("hobbies", "Hobbies", NavIcon.HOBBIES),
+    NavItem("pixel", "Píxel", NavIcon.PIXEL),
+    NavItem("hobbies", "Aficiones", NavIcon.HOBBIES),
 )
 
 @Composable

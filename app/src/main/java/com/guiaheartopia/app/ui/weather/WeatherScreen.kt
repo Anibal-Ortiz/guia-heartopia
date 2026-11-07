@@ -43,7 +43,6 @@ import com.guiaheartopia.app.domain.WeatherKind
 import com.guiaheartopia.app.ui.components.GameTimeCard
 import com.guiaheartopia.app.ui.components.PickerField
 import com.guiaheartopia.app.ui.components.PixelCard
-import com.guiaheartopia.app.ui.components.VerifyBadge
 import com.guiaheartopia.app.ui.theme.Honey
 import com.guiaheartopia.app.ui.theme.Ink
 import com.guiaheartopia.app.ui.theme.Lilac
@@ -103,31 +102,24 @@ fun WeatherScreen(
     ) {
         Text("Clima por país", style = MaterialTheme.typography.headlineSmall)
         GameTimeCard(zone.id)
-        Text("Reloj: ${now.format(clock)} · UTC${now.offset.id}", style = MaterialTheme.typography.bodySmall)
+        val zoneLabel = Countries.zoneLabel(zone.id)
+        Text("Reloj: ${now.format(clock)} · desfase ${now.offset.id}", style = MaterialTheme.typography.bodySmall)
         com.guiaheartopia.app.ui.components.PixelCard {
             Text("Recursos de noviembre 2026", style = MaterialTheme.typography.titleSmall)
             val spot = com.guiaheartopia.app.data.VerifiedCatalog.novemberSpot(java.time.LocalDate.now(zone))
             if (spot == null) {
-                Text("Hoy no cae en el mes contrastado. El estado del clima por hora sigue pendiente.", style = MaterialTheme.typography.bodySmall)
+                Text("Hoy no cae en noviembre de 2026.", style = MaterialTheme.typography.bodySmall)
             } else {
                 Text("Liuliu: ${com.guiaheartopia.app.data.VerifiedCatalog.spotLabel(spot.first)}")
                 Text("flurita: ${com.guiaheartopia.app.data.VerifiedCatalog.spotLabel(spot.second)}")
             }
-            Text(com.guiaheartopia.app.data.VerifiedCatalog.SPOT_SOURCES, style = MaterialTheme.typography.bodySmall)
         }
         com.guiaheartopia.app.data.VerifiedCatalog.events.forEach { event ->
             com.guiaheartopia.app.ui.components.PixelCard {
                 Text(event.title, style = MaterialTheme.typography.titleSmall)
                 Text(event.summary, style = MaterialTheme.typography.bodyMedium)
-                Text(event.sources, style = MaterialTheme.typography.bodySmall)
             }
         }
-        VerifyBadge("Pendiente de verificar")
-        Text(
-            "Las franjas son de ejemplo. La hora sí se convierte con la zona IANA del país, incluido el horario de verano. «flurita» y «Liuliu» se muestran con ese nombre: no hay fuente fiable aquí para corregirlos ni para decir dónde aparecen.",
-            style = MaterialTheme.typography.bodyMedium,
-        )
-        Text(origin.note, style = MaterialTheme.typography.bodySmall)
         PickerField(
             label = "País",
             value = country.name,
@@ -140,14 +132,14 @@ fun WeatherScreen(
         )
         PickerField(
             label = "Zona horaria",
-            value = country.zones.first { it.zoneId == safeZone }.let { "${it.label} · ${it.zoneId}" },
-            options = country.zones.map { it.zoneId to "${it.label} · ${it.zoneId}" },
+            value = country.zones.first { it.zoneId == safeZone }.label,
+            options = country.zones.map { it.zoneId to it.label },
             onPick = { onRegion(country.id, it, origin.id) },
         )
         PickerField(
             label = "Origen horario",
-            value = "${origin.name} · ${origin.zoneId}",
-            options = SampleWeather.origins.map { it.id to "${it.name} · ${it.zoneId}" },
+            value = origin.name,
+            options = SampleWeather.origins.map { it.id to it.name },
             onPick = { onRegion(country.id, safeZone, it) },
         )
         FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -168,7 +160,7 @@ fun WeatherScreen(
             )
             TextButton(onClick = { monthToken = month.plusMonths(1).toString() }) { Text("Mes +") }
         }
-        Text("Zona de esta vista: ${zone.id}", style = MaterialTheme.typography.bodySmall)
+        Text("Zona de esta vista: $zoneLabel", style = MaterialTheme.typography.bodySmall)
         WeekHeader()
         MonthGrid(
             month = month,
@@ -251,7 +243,7 @@ private fun MonthGrid(
 private fun DayDetail(date: LocalDate, slots: List<PlacedSlot>, zone: ZoneId) {
     val title = date.format(DateTimeFormatter.ofPattern("EEEE d 'de' MMMM", Locale("es")))
     Text(title.replaceFirstChar { it.titlecase() }, style = MaterialTheme.typography.titleMedium)
-    Text("Hora local de ${zone.id}", style = MaterialTheme.typography.bodySmall)
+    Text("Hora local de ${Countries.zoneLabel(zone.id)}", style = MaterialTheme.typography.bodySmall)
     if (slots.isEmpty()) {
         PixelCard { Text("Este día no tiene franjas de ejemplo con el filtro actual.") }
         return
@@ -264,33 +256,30 @@ private fun DayDetail(date: LocalDate, slots: List<PlacedSlot>, zone: ZoneId) {
                 Column {
                     Text(placed.slot.kind.label, style = MaterialTheme.typography.titleSmall)
                     Text(
-                        "Local ${placed.local.toLocalTime().format(localClock)} · UTC${placed.local.offset.id}",
+                        "Hora ${placed.local.toLocalTime().format(localClock)}",
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
             }
             Text(
-                "Origen ${placed.slot.originLocal.toLocalTime().format(localClock)} del ${placed.slot.originLocal.toLocalDate()} · ${placed.originZone.id}",
+                "Hora de origen ${placed.slot.originLocal.toLocalTime().format(localClock)} del ${placed.slot.originLocal.toLocalDate()}",
                 style = MaterialTheme.typography.bodySmall,
             )
             if (placed.dayShifted) {
                 Text(
-                    "El cambio de zona mueve esta franja al día local ${placed.localDate}, distinto del día de origen.",
+                    "El cambio de zona mueve esta franja al día local ${placed.localDate}.",
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
             Text(placed.slot.summary, style = MaterialTheme.typography.bodyMedium)
-            if (!placed.slot.verified) VerifyBadge("Pendiente de verificar")
             placed.slot.sightings.forEach { sight ->
                 Text(sight.displayName, style = MaterialTheme.typography.titleSmall)
-                Text(
-                    "Lugar: ${sight.location ?: "pendiente de verificar"}",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-                Text(
-                    "Aparición: ${sight.appearance ?: "pendiente de verificar"}",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+                if (!sight.location.isNullOrBlank()) {
+                    Text("Lugar: ${sight.location}", style = MaterialTheme.typography.bodyMedium)
+                }
+                if (!sight.appearance.isNullOrBlank()) {
+                    Text("Aparición: ${sight.appearance}", style = MaterialTheme.typography.bodyMedium)
+                }
             }
         }
     }

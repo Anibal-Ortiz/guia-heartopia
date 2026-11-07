@@ -31,6 +31,7 @@ import com.guiaheartopia.app.domain.AnimalAnnotation
 import com.guiaheartopia.app.domain.AnimalRecord
 import com.guiaheartopia.app.domain.Collectible
 import com.guiaheartopia.app.domain.DexSchedule
+import com.guiaheartopia.app.domain.TextMatch
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.ui.components.NowBadge
 import java.time.Instant
@@ -38,7 +39,6 @@ import com.guiaheartopia.app.ui.components.LabelValue
 import com.guiaheartopia.app.ui.components.PillTabs
 import com.guiaheartopia.app.ui.components.PixelButton
 import com.guiaheartopia.app.ui.components.PixelCard
-import com.guiaheartopia.app.ui.components.VerifyBadge
 import com.guiaheartopia.app.ui.theme.Green
 import com.guiaheartopia.app.ui.theme.Muted
 
@@ -88,13 +88,12 @@ private fun AnimalsTab(
     var newName by rememberSaveable { mutableStateOf("") }
     val shown = ui.animals.filter { animal ->
         (!onlySighted || animal.id in ui.sighted) &&
-            animal.name.contains(query.trim(), ignoreCase = true)
+            TextMatch.contains(animal.name, query)
     }
     OutlinedTextField(query, { query = it }, label = { Text("Buscar") }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp))
     FlowRow {
         FilterChip(selected = onlySighted, onClick = { onlySighted = !onlySighted }, label = { Text("Registrados") })
     }
-    Text("Comidas de tres guías. Lugares de heartodex, en inglés.", style = MaterialTheme.typography.bodySmall)
     if (shown.isEmpty()) Text("Ninguna ficha coincide.", style = MaterialTheme.typography.bodyMedium)
     shown.forEach { animal ->
         PixelCard(Modifier.clickable { onOpenAnimal(animal.id) }) {
@@ -135,8 +134,8 @@ private fun DexTab(
     var weather by rememberSaveable(category) { mutableStateOf("Todos") }
     val items = all.filter { entry ->
         entry.category == category &&
-            (query.isBlank() || entry.name.contains(query.trim(), ignoreCase = true)) &&
-            (place.isBlank() || entry.location.any { it.contains(place.trim(), ignoreCase = true) }) &&
+            (query.isBlank() || TextMatch.contains(entry.name, query) || TextMatch.contains(entry.nameEn, query)) &&
+            (place.isBlank() || entry.location.any { TextMatch.contains(it, place) }) &&
             (weather == "Todos" || weather in entry.weather) &&
             (!onlyNow || DexSchedule.availableNow(entry.schedule, instant)) &&
             when (registered) {
@@ -159,7 +158,7 @@ private fun DexTab(
         "${DexSchedule.titled(current.slot)} · ${DexSchedule.untilLabel(current, instant.atZone(zone))}. El clima se muestra y no cuenta para «Ahora».",
         style = MaterialTheme.typography.bodySmall,
     )
-    Text("${items.size} fichas · heartodex · ${com.guiaheartopia.app.data.VerifiedCatalog.EXTRACTED}", style = MaterialTheme.typography.bodySmall)
+    Text("${items.size} fichas", style = MaterialTheme.typography.bodySmall)
     if (items.isEmpty()) Text("Nada coincide con el filtro.", style = MaterialTheme.typography.bodyMedium)
     items.forEach { entry ->
         val now = DexSchedule.availableNow(entry.schedule, instant)
@@ -206,7 +205,6 @@ fun DexDetailScreen(entry: DexEntry, zoneId: String, found: Boolean, onToggle: (
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text(entry.name, style = MaterialTheme.typography.headlineSmall)
-                Text(entry.nameEs ?: "Sin nombre en español en la fuente", color = Muted)
             }
             if (now) NowBadge()
         }
@@ -215,8 +213,9 @@ fun DexDetailScreen(entry: DexEntry, zoneId: String, found: Boolean, onToggle: (
             LabelValue("Horario", entry.schedule.joinToString { DexSchedule.scheduleLabel(it) }.ifBlank { "—" }, false)
             LabelValue("En tu zona", localHours.ifBlank { "—" }, false)
             LabelValue("Clima", entry.weather.joinToString { DexSchedule.weatherEs(it) }.ifBlank { "—" }, false)
-            LabelValue("Evento", entry.event ?: "—", false)
-            LabelValue("Fuente", "heartodex · ${entry.extractedOn}", false)
+            if (entry.level != null) LabelValue("Nivel", entry.level.toString(), false)
+            if (!entry.shadow.isNullOrBlank()) LabelValue("Sombra", entry.shadow, false)
+            if (!entry.event.isNullOrBlank()) LabelValue("Evento", entry.event, false)
         }
         Text(
             "«Ahora» sigue el tramo del juego en la zona de tu país. El clima que pide la ficha se muestra, pero todavía no cuenta.",
@@ -248,13 +247,11 @@ fun AnimalDetailScreen(
     ) {
         Text(animal.name, style = MaterialTheme.typography.headlineSmall)
         Text(animal.group, color = Muted)
-        if (animal.foodsVerified) VerifyBadge("Comidas contrastadas", tone = com.guiaheartopia.app.ui.theme.GreenSoft)
-        if (!animal.locationVerified) VerifyBadge("Comedero pendiente")
-        Text(animal.summary, style = MaterialTheme.typography.bodyLarge)
+        if (animal.summary.isNotBlank()) Text(animal.summary, style = MaterialTheme.typography.bodyLarge)
         PixelCard {
-            LabelValue("Comidas", animal.favoriteFoods.joinToString("\n").ifBlank { "Pendiente" })
-            LabelValue("Comedero", animal.feederLocations.joinToString().ifBlank { "Pendiente de verificar" }, emphasize = false)
-            if (animal.sourceNote.isNotBlank()) Text(animal.sourceNote, style = MaterialTheme.typography.bodySmall)
+            LabelValue("Comidas", animal.favoriteFoods.joinToString("\n").ifBlank { "—" })
+            LabelValue("Comedero", animal.feederLocations.joinToString().ifBlank { "—" }, emphasize = false)
+            if (animal.likedWeather.isNotBlank()) LabelValue("Clima", animal.likedWeather, emphasize = false)
         }
         PixelCard {
             Text("Tus notas", style = MaterialTheme.typography.titleMedium)

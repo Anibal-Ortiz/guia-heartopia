@@ -34,7 +34,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.data.VerifiedCatalog
 import com.guiaheartopia.app.ui.components.PixelCard
-import com.guiaheartopia.app.ui.components.VerifyBadge
 import com.guiaheartopia.app.ui.theme.Beige
 import com.guiaheartopia.app.ui.theme.Green
 import com.guiaheartopia.app.ui.theme.GreenSoft
@@ -116,17 +115,15 @@ fun MapScreen(zoneId: String) {
         if (filter == MapFilter.FEEDERS) {
             PixelCard {
                 Text("Comederos", style = MaterialTheme.typography.titleMedium)
-                Text("No hay coordenadas en las que coincidan las guías. Las fichas guardan la comida contrastada y dejan el lugar pendiente.", style = MaterialTheme.typography.bodyMedium)
+                Text("Este dibujo no marca un punto fijo para los comederos.", style = MaterialTheme.typography.bodyMedium)
             }
         } else if (spot == null) {
-            VerifyBadge("Pendiente de verificar")
-            Text("Para hoy no hay una ubicación de flurita o Liuliu contrastada en dos fuentes. Noviembre 2026 sí está cargado.", style = MaterialTheme.typography.bodyMedium)
+            Text("Hoy no hay parcela de flurita o Liuliu.", style = MaterialTheme.typography.bodyMedium)
         } else {
             PixelCard {
-                Text("Hoy en las guías", style = MaterialTheme.typography.titleMedium)
+                Text("Hoy", style = MaterialTheme.typography.titleMedium)
                 if (filter != MapFilter.FLURITA) Text("Liuliu: ${VerifiedCatalog.spotLabel(spot.first)}", color = Green)
                 if (filter != MapFilter.LIULIU) Text("flurita: ${VerifiedCatalog.spotLabel(spot.second)}", color = Orange)
-                Text(VerifiedCatalog.SPOT_SOURCES, style = MaterialTheme.typography.bodySmall)
             }
         }
     }

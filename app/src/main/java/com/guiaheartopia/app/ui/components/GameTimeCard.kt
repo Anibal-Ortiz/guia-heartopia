@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.guiaheartopia.app.domain.Countries
 import com.guiaheartopia.app.domain.DexSchedule
 import com.guiaheartopia.app.ui.theme.Green
 import com.guiaheartopia.app.ui.theme.Muted
@@ -25,7 +26,7 @@ fun GameTimeCard(zoneId: String) {
             bodyColor = Color.Unspecified,
             muted = Muted,
             headline = "${DexSchedule.titled(current.slot)} · ${DexSchedule.untilLabel(current, now)}",
-            clockLine = "Hora local ${now.format(clock)} · ${zone.id}",
+            clockLine = "Hora local ${now.format(clock)} · ${Countries.zoneLabel(zoneId)}",
             lines = windows.map { window ->
                 val mark = if (window.slot.key == current.slot.key) " · ahora" else ""
                 "${DexSchedule.titled(window.slot)}  ${DexSchedule.hoursLabel(window)}$mark"

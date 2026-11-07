@@ -25,7 +25,7 @@ class WelcomeScreenTest {
                 )
             }
         }
-        rule.onNodeWithText("Guía independiente", substring = true).assertIsDisplayed()
-        rule.onNodeWithText("no está afiliada", substring = true).assertIsDisplayed()
+        rule.onNodeWithText("¿Cómo te llamamos?").assertIsDisplayed()
+        rule.onNodeWithText("Lo que anotes se queda en el teléfono.", substring = true).assertIsDisplayed()
     }
 }

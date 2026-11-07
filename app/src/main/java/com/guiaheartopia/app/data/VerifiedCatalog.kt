@@ -35,7 +35,7 @@ object VerifiedCatalog {
         GameEvent(
             id = "noche-adivinacion",
             title = "Noche de la adivinación",
-            summary = "Las guías en inglés lo llaman Night of Divination. El inicio coincide. El último día no, y la zona del servidor no está confirmada, así que no se mueve de día.",
+            summary = "Empieza el 10 de octubre de 2026. El cierre no coincide entre las listas, así que se deja el 21 de noviembre.",
             start = LocalDate.of(2026, 10, 10),
             end = LocalDate.of(2026, 11, 21),
             verified = true,
@@ -83,8 +83,8 @@ object VerifiedCatalog {
     }
 
     fun spotLabel(raw: String): String = when (raw) {
-        "Bosque" -> "Bosque de robles (F en Tidebell)"
-        "Ruinas" -> "Ruinas (R en Tidebell)"
+        "Bosque" -> "Bosque de robles"
+        "Ruinas" -> "Ruinas"
         else -> "Parcela $raw"
     }
 }

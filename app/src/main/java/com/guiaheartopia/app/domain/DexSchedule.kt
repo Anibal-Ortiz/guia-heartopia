@@ -131,7 +131,7 @@ object DexSchedule {
 
     fun weatherEs(value: String): String = when (value) {
         "Sunny" -> "Soleado"
-        "Rainy" -> "Lluvia"
+        "Rainy" -> "Lluvioso"
         "Rainbow" -> "Arcoíris"
         else -> value
     }

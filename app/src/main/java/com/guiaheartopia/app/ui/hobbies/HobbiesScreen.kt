@@ -41,16 +41,16 @@ fun HobbiesScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Text("Hobbies", style = MaterialTheme.typography.headlineSmall)
+        Text("Aficiones", style = MaterialTheme.typography.headlineSmall)
         VerifyBadge("Progreso tuyo")
         Text(
-            "Cocina, jardinería, mascotas y el resto son marcas que tú guardas. Los niveles no salen de una tabla oficial del juego.",
+            "Cocina, jardinería, mascotas y el resto son marcas que tú guardas.",
             style = MaterialTheme.typography.bodyMedium,
         )
         hobbies.forEach { hobby ->
             HobbyCard(hobby, onChange, onRemove)
         }
-        OutlinedTextField(draft, { draft = it }, label = { Text("Otro hobby") }, modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(draft, { draft = it }, label = { Text("Otra afición") }, modifier = Modifier.fillMaxWidth())
         PixelButton("Añadir hobby", onClick = {
             onAdd(draft)
             draft = ""

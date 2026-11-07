@@ -1,0 +1,2529 @@
+[
+  {
+    "category": "Peces",
+    "id": "fish-blue-sea-angel",
+    "nameEn": "Blue Sea Angel",
+    "image": "/_astro/1791816147645-pez-captura_de_pantalla_2026-10-12_111117-photoroom_Z1ScBcW.webp",
+    "heartodexId": "212"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-green-sea-angel",
+    "nameEn": "Green Sea Angel",
+    "image": "/_astro/1791816489261-pez-green-sea-angel-photoroom_1JmbDc.webp",
+    "heartodexId": "213"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-golden-cuttlefish",
+    "nameEn": "Golden Cuttlefish",
+    "image": "/_astro/1791816550430-pez-captura_de_pantalla_2026-10-12_111055-photoroom_ZkPIWW.webp",
+    "heartodexId": "211"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-purple-sea-angel",
+    "nameEn": "Purple Sea Angel",
+    "image": "/_astro/1791816507870-pez-purple-sea-angel-photoroom_1kNxIv.webp",
+    "heartodexId": "214"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-pharaoh-cuttlefish",
+    "nameEn": "Pharaoh Cuttlefish",
+    "image": "/_astro/1791816546039-pez-captura_de_pantalla_2026-10-12_111046-photoroom_BQvaz.webp",
+    "heartodexId": "210"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-spineless-cuttlefish",
+    "nameEn": "Spineless Cuttlefish",
+    "image": "/_astro/1791816541175-pez-captura_de_pantalla_2026-10-12_111036-photoroom_Z1jVAih.webp",
+    "heartodexId": "209"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-schneider",
+    "nameEn": "Schneider",
+    "image": "/_astro/1783634171828-pez-albuerno_binoculado_Z2dCWu3.webp",
+    "heartodexId": "93"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-common-bleak",
+    "nameEn": "Common Bleak",
+    "image": "/_astro/1783634160714-pez-alburno_com%C3%A3%C2%BAn_ZqmMjG.webp",
+    "heartodexId": "92"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-barbel",
+    "nameEn": "Barbel",
+    "image": "/_astro/1783726955389-pez-barbel_Z13l0vn.webp",
+    "heartodexId": "160"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-common-chub",
+    "nameEn": "Common Chub",
+    "image": "/_astro/1783633690088-pez-cachoeuropeo_ZFKR6N.webp",
+    "heartodexId": "86"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-oriental-shrimp",
+    "nameEn": "Oriental Shrimp",
+    "image": "/_astro/1783633708023-pez-camaronazul_1n3xaa.webp",
+    "heartodexId": "88"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-common-prawn",
+    "nameEn": "Common Prawn",
+    "image": "/_astro/1783634238218-pez-camaronmarino_Z1jkAGx.webp",
+    "heartodexId": "98"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-crucian-carp",
+    "nameEn": "Crucian Carp",
+    "image": "/_astro/1783634117884-pez-carpa_cruciana_ZNNFwe.webp",
+    "heartodexId": "91"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-common-whitefish",
+    "nameEn": "Common Whitefish",
+    "image": "/_astro/1783634104996-pez-coregono_blanco_Z1ORayN.webp",
+    "heartodexId": "90"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-sea-stickleback",
+    "nameEn": "Sea Stickleback",
+    "image": "/_astro/1783634296080-pez-espinosodemar_2wKCX5.webp",
+    "heartodexId": "100"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-scad",
+    "nameEn": "Scad",
+    "image": "/_astro/1783634258987-pez-jureljapones_1Xw8Dg.webp",
+    "heartodexId": "99"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-skipjack-tuna",
+    "nameEn": "Skipjack Tuna",
+    "image": "/_astro/1783632293216-pez-listado_Z23RocD.webp",
+    "heartodexId": "96"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-spined-loach",
+    "nameEn": "Spined Loach",
+    "image": "/_astro/1783632543940-pez-locha_moteada_xDD7u.webp",
+    "heartodexId": "87"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-sea-bass",
+    "nameEn": "Sea Bass",
+    "image": "/_astro/1783634200292-pez-lubina_marina_Z1BBBVo.webp",
+    "heartodexId": "95"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-european-perch",
+    "nameEn": "European Perch",
+    "image": "/_astro/1783633666702-pez-percaderio_Z2i7bOA.webp",
+    "heartodexId": "84"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-streber",
+    "nameEn": "Streber",
+    "image": "/_astro/1783726924428-pez-percadoradamanchada_1eky0X.webp",
+    "heartodexId": "164"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-minnow",
+    "nameEn": "Minnow",
+    "image": "/_astro/1783726706957-pez-minnow_ZpY1Go.webp",
+    "heartodexId": "161"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-beltfish",
+    "nameEn": "Beltfish",
+    "image": "/_astro/1783634223831-pez-pezsable_1zqx5f.webp",
+    "heartodexId": "97"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-striped-red-mullet",
+    "nameEn": "Striped Red Mullet",
+    "image": "/_astro/1783634310308-pez-salmon_listado_Z2qF91n.webp",
+    "heartodexId": "101"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-sardine",
+    "nameEn": "Sardine",
+    "image": "/_astro/1783634185333-pez-sardina_Z18FchI.webp",
+    "heartodexId": "94"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-tench",
+    "nameEn": "Tench",
+    "image": "/_astro/1783634088717-pez-tenca_1Pf6FG.webp",
+    "heartodexId": "89"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-seahorse",
+    "nameEn": "Seahorse",
+    "image": "/_astro/1783634468425-pez-caballitodemar_2vEkvP.webp",
+    "heartodexId": "108"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-european-smelt",
+    "nameEn": "European Smelt",
+    "image": "/_astro/1783635029094-pez-eperlano_ZOgL0o.webp",
+    "heartodexId": "105"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-false-scad",
+    "nameEn": "False Scad",
+    "image": "/_astro/1783634393790-pez-jurel_real_ZK9LAS.webp",
+    "heartodexId": "107"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-largemouth-bass",
+    "nameEn": "Largemouth Bass",
+    "image": "/_astro/1783634730324-pez-lobina_de_florida_Z1SSVco.webp",
+    "heartodexId": "115"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-stone-loach",
+    "nameEn": "Stone Loach",
+    "image": "/_astro/1783634350391-pez-locha_china_NxO8S.webp",
+    "heartodexId": "103"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-anglerfish",
+    "nameEn": "Anglerfish",
+    "image": "/_astro/1783634651534-pez-pez_rape_Z2bqBfF.webp",
+    "heartodexId": "109"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-common-octopus",
+    "nameEn": "Common Octopus",
+    "image": "/_astro/1783634706841-pez-pulpocomun_Z1HHq5A.webp",
+    "heartodexId": "113"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-atlantic-pygmy-octopus",
+    "nameEn": "Atlantic Pygmy Octopus",
+    "image": "/_astro/1783634954485-pez-pulpopigmeodelatlantico_Z1H7uQD.webp",
+    "heartodexId": "114"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-turbot",
+    "nameEn": "Turbot",
+    "image": "/_astro/1783634973771-pez-rodaballo_ZTQUi9.webp",
+    "heartodexId": "116"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-hermit-crab",
+    "nameEn": "Hermit Crab",
+    "image": "/_astro/1783634790807-pez-cangrejoerminato_L4QB3.webp",
+    "heartodexId": "121"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-european-crayfish",
+    "nameEn": "European Crayfish",
+    "image": "/_astro/1783634695329-pez-cigala_noruega_Z2cPHTK.webp",
+    "heartodexId": "112"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-zander",
+    "nameEn": "Zander",
+    "image": "/_astro/1783726947168-pez-zander_Z2wKVzj.webp",
+    "heartodexId": "162"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-ruffe",
+    "nameEn": "Ruffe",
+    "image": "/_astro/1783634384785-pez-percaruffe_el4fq.webp",
+    "heartodexId": "106"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-mud-sunfish",
+    "nameEn": "Mud Sunfish",
+    "image": "/_astro/1783635019254-pez-pezlunadelodo_1LWYKy.webp",
+    "heartodexId": "104"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-clownfish",
+    "nameEn": "Clownfish",
+    "image": "/_astro/1783634808787-pez-pezpayaso_Z2qjETy.webp",
+    "heartodexId": "123"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-edible-frog",
+    "nameEn": "Edible Frog",
+    "image": "/_astro/1783633678615-pez-rana_europea_Z1qB9KP.webp",
+    "heartodexId": "85"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-atlantic-salmon",
+    "nameEn": "Atlantic Salmon",
+    "image": "/_astro/1783726830657-pez-atlanticsalmon_FLOQb.webp",
+    "heartodexId": "165"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-tilapia",
+    "nameEn": "Tilapia",
+    "image": "/_astro/1783726992219-pez-tilapia_Zmxsit.webp",
+    "heartodexId": "163"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-river-crab",
+    "nameEn": "River Crab",
+    "image": "/_astro/1783727215156-pez-cangrjeodearroyo_Znwsyw.webp",
+    "heartodexId": "169"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-common-carp",
+    "nameEn": "Common Carp",
+    "image": "/_astro/1783726868510-pez-common_carp_ZdLuxD.webp",
+    "heartodexId": "168"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-butterfly-koi",
+    "nameEn": "Butterfly Koi",
+    "image": "/_astro/1783634799952-pez-carpa_mariposa_Z25smnb.webp",
+    "heartodexId": "122"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-burbot",
+    "nameEn": "Burbot",
+    "image": "/_astro/1783727223567-pez-lota_j2rfX.webp",
+    "heartodexId": "170"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-mussel",
+    "nameEn": "Mussel",
+    "image": "/_astro/1783634666653-pez-mejillon_1zcQ4q.webp",
+    "heartodexId": "110"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-goby",
+    "nameEn": "Goby",
+    "image": "/_astro/1783726847255-pez-goby_ZUG1qh.webp",
+    "heartodexId": "166"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-red-bellied-piranha",
+    "nameEn": "Red-Bellied Piranha",
+    "image": "/_astro/1783726855783-pez-redbelliedpirana_ZjbRMy.webp",
+    "heartodexId": "167"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-european-plaice",
+    "nameEn": "European Plaice",
+    "image": "/_astro/1783634748402-pez-platijaeuropea_ZjSTMn.webp",
+    "heartodexId": "117"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-rabbit-fish",
+    "nameEn": "Rabbit Fish",
+    "image": "/_astro/1783634321868-pez-quimeradelatlantico_2tOjI0.webp",
+    "heartodexId": "102"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-tadpole",
+    "nameEn": "Tadpole",
+    "image": "/_astro/1783634673378-pez-renacuajo_ZQUOBV.webp",
+    "heartodexId": "111"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-freshwater-blenny",
+    "nameEn": "Freshwater Blenny",
+    "image": "/_astro/1783727232586-pez-blenidoderio_22L5NQ.webp",
+    "heartodexId": "171"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-atlantic-mackerel",
+    "nameEn": "Atlantic Mackerel",
+    "image": "/_astro/1783727251418-pez-atlanticmeckerel_Z1APmnv.webp",
+    "heartodexId": "173"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-european-flying-squid",
+    "nameEn": "European Flying Squid",
+    "image": "/_astro/1783634772678-pez-calamarvolador_Z1Kt1Ek.webp",
+    "heartodexId": "120"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-european-lobster",
+    "nameEn": "European Lobster",
+    "image": "/_astro/1783634763272-pez-langosta_europea_Z2dXf7A.webp",
+    "heartodexId": "119"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-common-rudd",
+    "nameEn": "Common Rudd",
+    "image": "/_astro/1783727242468-pez-rutilo_1S2A1E.webp",
+    "heartodexId": "172"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-trout",
+    "nameEn": "Trout",
+    "image": "/_astro/1783634755201-pez-trucha_1CKjSJ.webp",
+    "heartodexId": "118"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-large-pearl-mussel",
+    "nameEn": "Large Pearl Mussel",
+    "image": "/_astro/1783634874027-pez-large_pearl_mussel_1XrvSu.webp",
+    "heartodexId": "129"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-puffer-fish",
+    "nameEn": "Puffer Fish",
+    "image": "/_astro/1783634883778-pez-pufferfish_Z27ahe3.webp",
+    "heartodexId": "130"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-tub-gurnard",
+    "nameEn": "Tub Gurnard",
+    "image": "/_astro/1783634894433-pez-pezrubio_Z1S3klQ.webp",
+    "heartodexId": "131"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-chum-salmon",
+    "nameEn": "Chum Salmon",
+    "image": "/_astro/1783634851298-pez-chumsalmon_28UXit.webp",
+    "heartodexId": "127"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-nursehound",
+    "nameEn": "Nursehound",
+    "image": "/_astro/1783634815580-pez-tiburongato_1HPV6h.webp",
+    "heartodexId": "124"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-grayling",
+    "nameEn": "Grayling",
+    "image": "/_astro/1783634858873-pez-grayling_Z2fw88h.webp",
+    "heartodexId": "128"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-european-eel",
+    "nameEn": "European Eel",
+    "image": "/_astro/1783634911392-pez-europeaneel_22mOJz.webp",
+    "heartodexId": "133"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-blackspot-seabream",
+    "nameEn": "Blackspot Seabream",
+    "image": "/_astro/1783634903006-pez-blackspotseabream_21Ybbc.webp",
+    "heartodexId": "132"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-mediterranean-killifish",
+    "nameEn": "Mediterranean Killifish",
+    "image": "/_astro/1783688805128-pez-mediterranean_killifish_bvmP9.webp",
+    "heartodexId": "135"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-three-spined-stickleback",
+    "nameEn": "Three-Spined Stickleback",
+    "image": "/_astro/1783688855371-pez-threespinded_ZuMYzG.webp",
+    "heartodexId": "137"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-giant-oarfish",
+    "nameEn": "Giant Oarfish",
+    "image": "/_astro/1783688776947-pez-giant_oarfish_13brPG.webp",
+    "heartodexId": "134"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-mottled-sculpin",
+    "nameEn": "Mottled Sculpin",
+    "image": "/_astro/1783688832381-pez-mottled_sculpin_Z1H7tQ8.webp",
+    "heartodexId": "136"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-king-crab",
+    "nameEn": "King Crab",
+    "image": "/_astro/1783726582012-pez-king_crab_Z1RTHUG.webp",
+    "heartodexId": "154"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-golden-king-crab",
+    "nameEn": "Golden King Crab",
+    "image": "/_astro/1783689009820-pez-golden_king_crab_Z2fIraH.webp",
+    "heartodexId": "140"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-blue-european-crayfish",
+    "nameEn": "Blue European Crayfish",
+    "image": "/_astro/1783688864423-pez-europeancrayfisblue_boAFK.webp",
+    "heartodexId": "138"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-haddock",
+    "nameEn": "Haddock",
+    "image": "/_astro/1783689052572-pez-haddock_Z1MEXdS.webp",
+    "heartodexId": "142"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-goldfish",
+    "nameEn": "Goldfish",
+    "image": "/_astro/1783689023360-pez-goldfish_joNqY.webp",
+    "heartodexId": "141"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-european-mudminnow",
+    "nameEn": "European Mudminnow",
+    "image": "/_astro/1783688990000-pez-europeanmudminnow_Z2uNVrX.webp",
+    "heartodexId": "139"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-bluefin-tuna",
+    "nameEn": "Bluefin Tuna",
+    "image": "/_astro/1783689065592-pez-bluefintuna_ZG2gDR.webp",
+    "heartodexId": "143"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-northern-pike",
+    "nameEn": "Northern Pike",
+    "image": "/_astro/1783689202353-pez-northernpike_2uxBUm.webp",
+    "heartodexId": "146"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-moonfish",
+    "nameEn": "Moonfish",
+    "image": "/_astro/1783689191562-pez-moonfish_1B4MQJ.webp",
+    "heartodexId": "145"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-ocean-sunfish",
+    "nameEn": "Ocean Sunfish",
+    "image": "/_astro/1783689214208-pez-oceansunfish_jiKxL.webp",
+    "heartodexId": "147"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-pumpkinseed",
+    "nameEn": "Pumpkinseed",
+    "image": "/_astro/1783689232933-pez-pumpkinseed_1cBBUy.webp",
+    "heartodexId": "148"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-huchen",
+    "nameEn": "Huchen",
+    "image": "/_astro/1783689169654-pez-huchen_Z1nUYsI.webp",
+    "heartodexId": "144"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-swordfish",
+    "nameEn": "Swordfish",
+    "image": "/_astro/1783726560250-pez-pez_espada_lyuLG.webp",
+    "heartodexId": "152"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-wels-catfish",
+    "nameEn": "Wels Catfish",
+    "image": "/_astro/1783726574870-pez-welscatfish_25NjDW.webp",
+    "heartodexId": "153"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-bluegill",
+    "nameEn": "Bluegill",
+    "image": "/_astro/1783726540371-pez-bluegill_PQOvS.webp",
+    "heartodexId": "150"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-shortfin-mako-shark",
+    "nameEn": "Shortfin Mako Shark",
+    "image": "/_astro/1783726549671-pez-tiburonmako_Z1tGgIl.webp",
+    "heartodexId": "151"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-smooth-hammerhead",
+    "nameEn": "Smooth Hammerhead",
+    "image": "/_astro/1783726591973-pez-tiburonmartillo_2kvmdx.webp",
+    "heartodexId": "156"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-arctic-char",
+    "nameEn": "Arctic Char",
+    "image": "/_astro/1783689245026-pez-arcticchar_iYrXT.webp",
+    "heartodexId": "149"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-asian-arowana",
+    "nameEn": "Asian Arowana",
+    "image": "/_astro/1783727820420-pez-arowanadorada_Z18H7oO.webp",
+    "heartodexId": "185"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-blackspot-sergeant",
+    "nameEn": "Blackspot Sergeant",
+    "image": "/_astro/1783727949644-pez-pezdamisela_ZkbVms.webp",
+    "heartodexId": "186"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-lionhead",
+    "nameEn": "Lionhead",
+    "image": "/_astro/1783727366869-pez-pezdoradodecabeza_91fli.webp",
+    "heartodexId": "184"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-whale-shark",
+    "nameEn": "Whale Shark",
+    "image": "/_astro/1783727958692-pez-tiburonballena_Z8joDU.webp",
+    "heartodexId": "187"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-mahi-mahi",
+    "nameEn": "Mahi-Mahi",
+    "image": "/_astro/1783728042946-pez-dorado_23y7tV.webp",
+    "heartodexId": "192"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-moon-jelly",
+    "nameEn": "Moon Jelly",
+    "image": "/_astro/1783728007920-pez-medusa_aurita_ZvnWh9.webp",
+    "heartodexId": "190"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-angelfish",
+    "nameEn": "Angelfish",
+    "image": "/_astro/1783727978267-pez-pezangel_2qbiV2.webp",
+    "heartodexId": "189"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-pink-betta",
+    "nameEn": "Pink Betta",
+    "image": "/_astro/1783727967130-pez-pezluchador_1k74tV.webp",
+    "heartodexId": "188"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-green-sea-turtle",
+    "nameEn": "Green Sea Turtle",
+    "image": "/_astro/1783728027408-pez-tortugamarinaverde_uQQbU.webp",
+    "heartodexId": "191"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-white-faced-surgeonfish",
+    "nameEn": "White-Faced Surgeonfish",
+    "image": "/_astro/1783728051042-pez-cirujano_aleta_amarilla_WLKLR.webp",
+    "heartodexId": "193"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-lionfish",
+    "nameEn": "Lionfish",
+    "image": "/_astro/1783728196162-pez-pezleon_Z3g3H9.webp",
+    "heartodexId": "194"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-blue-and-yellow-wrasse",
+    "nameEn": "Blue-and-Yellow Wrasse",
+    "image": "/_astro/1783728127379-pez-lennardi_wrasse_Z1zEs2m.webp",
+    "heartodexId": "196"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-azure-demoiselle",
+    "nameEn": "Azure Demoiselle",
+    "image": "/_astro/1783728115227-pez-pezdamiselaazul_Z9O9AP.webp",
+    "heartodexId": "195"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-japanese-flying-squid",
+    "nameEn": "Japanese Flying Squid",
+    "image": "/_astro/1783796835646-pez-calamardelpacifico_Z1Pz3tc.webp",
+    "heartodexId": "200"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-firefly-squid",
+    "nameEn": "Firefly Squid",
+    "image": "/_astro/1783796954861-pez-calamarluciernaga_294B1P.webp",
+    "heartodexId": "201"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-sea-slug",
+    "nameEn": "Sea Slug",
+    "image": "/_astro/1783796787211-pez-nudibranquio_Z1noaW8.webp",
+    "heartodexId": "199"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-mandarin-fish",
+    "nameEn": "Mandarin Fish",
+    "image": "/_astro/1783796758378-pez-pezmandarin_Z1w1ORT.webp",
+    "heartodexId": "198"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-oliver-ridley-turtle",
+    "nameEn": "Oliver Ridley Turtle",
+    "image": "/_astro/1783797002978-pez-turtugacareydelpacifico_ZBosw4.webp",
+    "heartodexId": "203"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-flatback-turtle",
+    "nameEn": "Flatback Turtle",
+    "image": "/_astro/1783796981664-pez-tortugaplana_ZJrjvx.webp",
+    "heartodexId": "202"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-scallop",
+    "nameEn": "Scallop",
+    "image": "/_astro/1783795703440-pez-vieira_Z1iof7t.webp",
+    "heartodexId": "197"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-director-common-octopus-w-cinnamon-hat",
+    "nameEn": "Director Common Octopus w/ Cinnamon Hat",
+    "image": "/_astro/1783727268562-pez-pulposombrerodirmarron_ZEUlzL.webp",
+    "heartodexId": "174"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-director-common-octopus-w-patterned-hat",
+    "nameEn": "Director Common Octopus w/ Patterned Hat",
+    "image": "/_astro/1783727328428-pez-pulpoconsobrerodirector_1AK5U8.webp",
+    "heartodexId": "178"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-director-pygmy-octopus-w-cyan-hat",
+    "nameEn": "Director Pygmy Octopus w/ Cyan Hat",
+    "image": "/_astro/1783727275437-pez-pigmeo3_Z1vgoWr.webp",
+    "heartodexId": "175"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-director-pygmy-octopus-w-navy-hat",
+    "nameEn": "Director Pygmy Octopus w/ Navy Hat",
+    "image": "/_astro/1783727288533-pez-pigmeo1_Z1qraX1.webp",
+    "heartodexId": "177"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-director-pygmy-octopus-w-brown-hat",
+    "nameEn": "Director Pygmy Octopus w/ Brown Hat",
+    "image": "/_astro/1783727282290-pez-pigmeo2_ZyMVWo.webp",
+    "heartodexId": "176"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-golden-garfish",
+    "nameEn": "Golden Garfish",
+    "image": "/_astro/1789249745584-pez-pez_gar_dorado_22XCfJ.webp",
+    "heartodexId": "208"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-pale-gold-garfish",
+    "nameEn": "Pale Gold Garfish",
+    "image": "/_astro/1788208254294-pez-imagen_2026-08-31_162920281_t4BWo.webp",
+    "heartodexId": "206"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-brown-garfish",
+    "nameEn": "Brown Garfish",
+    "image": "/_astro/1788207871275-pez-pez_gar_moteado_marron_1BVGzl.webp",
+    "heartodexId": "204"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-black-garfish",
+    "nameEn": "Black Garfish",
+    "image": "/_astro/1788207961673-pez-pez_gar_moteado_negro_eWf3H.webp",
+    "heartodexId": "205"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-silver-garfish",
+    "nameEn": "Silver Garfish",
+    "image": "/_astro/1788208522039-pez-imagen_2026-08-31_163508460_rYnDa.webp",
+    "heartodexId": "207"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-blue-brick-clownfish",
+    "nameEn": "Blue Brick Clownfish",
+    "image": "/_astro/1783727335319-pez-pezpayasodebloquesazules_2hv25s.webp",
+    "heartodexId": "179"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-colorful-brick-clownfish",
+    "nameEn": "Colorful Brick Clownfish",
+    "image": "/_astro/1783727750119-pez-pespayasodebloquescolorados_1cp4Sj.webp",
+    "heartodexId": "183"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-purple-brick-clownfish",
+    "nameEn": "Purple Brick Clownfish",
+    "image": "/_astro/1783727354870-pez-pezpayasodebloquesmorado_1U3m6i.webp",
+    "heartodexId": "182"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-red-brick-clownfish",
+    "nameEn": "Red Brick Clownfish",
+    "image": "/_astro/1783727340980-pez-pezpayasodebloquesrojos_Z1K2ekB.webp",
+    "heartodexId": "180"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-green-brick-clownfish",
+    "nameEn": "Green Brick Clownfish",
+    "image": "/_astro/1783727346164-pez-pezpayasodebloquesverdes_2toIa5.webp",
+    "heartodexId": "181"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-frostspore-seahorse",
+    "nameEn": "Frostspore Seahorse",
+    "image": "/_astro/1783726631856-pez-frostsporeseahorse_17cBBe.webp",
+    "heartodexId": "159"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-frostspore-king-crab",
+    "nameEn": "Frostspore King Crab",
+    "image": "/_astro/1783634982183-pez-frostkingcrab_q4zFe.webp",
+    "heartodexId": "126"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-frostspore-puffer-fish",
+    "nameEn": "Frostspore Puffer Fish",
+    "image": "/_astro/1783726618862-pez-frostsporepufferfish_ZW6FfK.webp",
+    "heartodexId": "158"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-frostspore-ocean-sunfish",
+    "nameEn": "Frostspore Ocean Sunfish",
+    "image": "/_astro/1783726602394-pez-forstspore_Z1mOEGO.webp",
+    "heartodexId": "157"
+  },
+  {
+    "category": "Peces",
+    "id": "fish-frostspore-whale-shark",
+    "nameEn": "Frostspore Whale Shark",
+    "image": "/_astro/1783634825740-pez-frostwhaleshark_Z28frvd.webp",
+    "heartodexId": "125"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-long-toothed-fruit-bat",
+    "nameEn": "Long-Toothed Fruit Bat",
+    "image": "/_astro/1791817230596-ave-long-toothed-fruit-bat_1B9fGG.webp",
+    "heartodexId": "118"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-northern-white-faced-owl",
+    "nameEn": "Northern White-Faced Owl",
+    "image": "/_astro/1791817238179-ave-northern-white-faced-owl_Z2mfm1l.webp",
+    "heartodexId": "119"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-palau-scops-owl",
+    "nameEn": "Palau Scops Owl",
+    "image": "/_astro/1791817250364-ave-palau-scops-owl_2jktIX.webp",
+    "heartodexId": "121"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-eastern-screech-owl",
+    "nameEn": "Eastern Screech Owl",
+    "image": "/_astro/1791817244446-ave-eastern-screech-owl_1kES3N.webp",
+    "heartodexId": "120"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-pumpkin-raven",
+    "nameEn": "Pumpkin Raven",
+    "image": "/_astro/1791817183878-ave-pumpkin-raven_ZHOKuN.webp",
+    "heartodexId": "113"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-strawberry-raven",
+    "nameEn": "Strawberry Raven",
+    "image": "/_astro/1791817202291-ave-strawberry-raven_Z4QA5D.webp",
+    "heartodexId": "115"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-mandarin-raven",
+    "nameEn": "Mandarin Raven",
+    "image": "/_astro/1791817176575-ave-mandarin-raven_ZTEoJw.webp",
+    "heartodexId": "112"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-apple-raven",
+    "nameEn": "Apple Raven",
+    "image": "/_astro/1791817168166-ave-apple-raven_11QD0o.webp",
+    "heartodexId": "111"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-truffle-raven",
+    "nameEn": "Truffle Raven",
+    "image": "/_astro/1791817195074-ave-truffle-raven_Z2oSpkG.webp",
+    "heartodexId": "114"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-honduran-white-bat",
+    "nameEn": "Honduran White Bat",
+    "image": "/_astro/1791817213561-ave-honduran-white-bat_2nGVgH.webp",
+    "heartodexId": "116"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-tanzanian-woolly-bat",
+    "nameEn": "Tanzanian Woolly Bat",
+    "image": "/_astro/1791817225505-ave-tanzanian-woolly-bat_ZCLq0z.webp",
+    "heartodexId": "117"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-mallard",
+    "nameEn": "Mallard",
+    "image": "/_astro/1770757638029-canard-colvert_Z1e1Tgd.webp",
+    "heartodexId": "15"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-bearded-reedling",
+    "nameEn": "Bearded Reedling",
+    "image": "/_astro/1770758269623-panure-a-moustaches_sAvP.webp",
+    "heartodexId": "19"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-eurasian-bullfinch",
+    "nameEn": "Eurasian Bullfinch",
+    "image": "/_astro/1770752907021-camachuelodevientreroojo_b9szX.webp",
+    "heartodexId": "7"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-eurasian-wren",
+    "nameEn": "Eurasian Wren",
+    "image": "/_astro/1770696612030-troglodita_2l1yLr.webp",
+    "heartodexId": "6"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-pied-imperial-pigeon",
+    "nameEn": "Pied Imperial Pigeon",
+    "image": "/_astro/1770755859180-tourterelle-tigrine_Z1K0wv6.webp",
+    "heartodexId": "12"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-greater-flamingo",
+    "nameEn": "Greater Flamingo",
+    "image": "/_astro/1770756130899-grand-flamant_BmBpd.webp",
+    "heartodexId": "13"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-blue-and-yellow-macaw",
+    "nameEn": "Blue-and-yellow Macaw",
+    "image": "/_astro/1770755076990-ara-bleu-et-jaune_Z1MseRn.webp",
+    "heartodexId": "9"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-long-tailed-tit",
+    "nameEn": "Long-Tailed Tit",
+    "image": "/_astro/1770757909608-aegithalos-caudatus_1f70qO.webp",
+    "heartodexId": "17"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-wonga-pigeon",
+    "nameEn": "Wonga Pigeon",
+    "image": "/_astro/1770758551764-pigeon-de-wonga_Y8Ix8.webp",
+    "heartodexId": "21"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-blue-peafowl",
+    "nameEn": "Blue Peafowl",
+    "image": "/_astro/1770756268377-paon-bleu_Z13UOAE.webp",
+    "heartodexId": "14"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-european-robin",
+    "nameEn": "European Robin",
+    "image": "/_astro/1770696185062-europeanrobin_Z2i4yJd.webp",
+    "heartodexId": "4"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-eurasian-collared-dove",
+    "nameEn": "Eurasian Collared Dove",
+    "image": "/_astro/1770755599752-tourterelle-grise_Z1AkFgc.webp",
+    "heartodexId": "11"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-pink-necked-green-pigeon",
+    "nameEn": "Pink-Necked Green Pigeon",
+    "image": "/_astro/1770759327099-colombar-a-cou-rose_ZnubtN.webp",
+    "heartodexId": "22"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-woodchat-shrike",
+    "nameEn": "Woodchat Shrike",
+    "image": "/_astro/1770758370295-pie-grieche-a-tete-rousse_Z29KR0r.webp",
+    "heartodexId": "20"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-great-tit",
+    "nameEn": "Great Tit",
+    "image": "/_astro/1770696399726-gran_foto_Z1sBxNC.webp",
+    "heartodexId": "5"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-seagull",
+    "nameEn": "Seagull",
+    "image": "/_astro/1770759789107-mouette_ZhDnRy.webp",
+    "heartodexId": "24"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-eurasian-nuthatch",
+    "nameEn": "Eurasian Nuthatch",
+    "image": "/_astro/1770758103120-stitelle_Z1TQkn0.webp",
+    "heartodexId": "18"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-stock-dove",
+    "nameEn": "Stock Dove",
+    "image": "/_astro/1770755425193-pigeon-colombin_ZX8DcH.webp",
+    "heartodexId": "10"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-eurasian-chaffinch",
+    "nameEn": "Eurasian Chaffinch",
+    "image": "/_astro/1770754855137-fringilla-coelebs_Z1d3XAJ.webp",
+    "heartodexId": "8"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-eurasian-wigeon",
+    "nameEn": "Eurasian Wigeon",
+    "image": "/_astro/1770759521081-canard-siffleur_8uSy4.webp",
+    "heartodexId": "23"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-european-shag",
+    "nameEn": "European Shag",
+    "image": "/_astro/1770760524252-cormoran-vert-europeen_lYVuO.webp",
+    "heartodexId": "30"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-double-barred-finch",
+    "nameEn": "Double-Barred Finch",
+    "image": "/_astro/1772163166507-diamant-mandarin_Zb6Mlk.webp",
+    "heartodexId": "65"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-king-eider",
+    "nameEn": "King Eider",
+    "image": "/_astro/1770760336123-eider-royal_18Rq5T.webp",
+    "heartodexId": "28"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-audouins-gull",
+    "nameEn": "Audouin's Gull",
+    "image": "/_astro/1770760428846-goeland-d-audouin_ZoMi6K.webp",
+    "heartodexId": "29"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-red-and-green-macaw",
+    "nameEn": "Red-and-green Macaw",
+    "image": "/_astro/1772162868165-ara-rouge-et-vert_1WefQ.webp",
+    "heartodexId": "64"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-silver-throated-tit",
+    "nameEn": "Silver-Throated Tit",
+    "image": "/_astro/1770760120242-mesange-a-menton-argent_1nVpuE.webp",
+    "heartodexId": "26"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-eurasian-golden-oriole",
+    "nameEn": "Eurasian Golden Oriole",
+    "image": "/_astro/1770759965616-golden-oriole_D2B51.webp",
+    "heartodexId": "25"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-ruddy-shelduck",
+    "nameEn": "Ruddy Shelduck",
+    "image": "/_astro/1770760249148-tadorne-casarca_Z1kj39J.webp",
+    "heartodexId": "27"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-pine-grosbeak",
+    "nameEn": "Pine Grosbeak",
+    "image": "/_astro/1771624519485-pinson_Z1lzp5p.webp",
+    "heartodexId": "32"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-lady-amherst-pheasant",
+    "nameEn": "Lady Amherst Pheasant",
+    "image": "/_astro/1771132378827-faisa_de_amherst_Adf3m.webp",
+    "heartodexId": "31"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-white-wagtail",
+    "nameEn": "White Wagtail",
+    "image": "/_astro/1773076806024-bergeronnette-grise_ZVA5en.webp",
+    "heartodexId": "37"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-regent-bowerbird",
+    "nameEn": "Regent Bowerbird",
+    "image": "/_astro/1771624643332-jardinier-a-tete-jaune_Z21F551.webp",
+    "heartodexId": "34"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-przevalskis-parrotbill",
+    "nameEn": "Przevalski's Parrotbill",
+    "image": "/_astro/1771624581634-cardinal-a-couronne-grise_25PhO6.webp",
+    "heartodexId": "33"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-smew",
+    "nameEn": "Smew",
+    "image": "/_astro/1773503237751-smew_JYbrx.webp",
+    "heartodexId": "35"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-wallaces-fruit-dove",
+    "nameEn": "Wallace's Fruit Dove",
+    "image": "/_astro/1771625641870-pigeon-aux-fruits-d-or_2ktcVC.webp",
+    "heartodexId": "36"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-european-bee-eater",
+    "nameEn": "European Bee-eater",
+    "image": "/_astro/1771630147919-2026-02-15_02_54_34-european_bee-eater.png_1pUvCz.webp",
+    "heartodexId": "40"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-brown-noddy",
+    "nameEn": "Brown Noddy",
+    "image": "/_astro/1772150323313-sterne-blanche_Zj9ghX.webp",
+    "heartodexId": "39"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-lesser-flamingo",
+    "nameEn": "Lesser Flamingo",
+    "image": "/_astro/1771630938451-petit-flamand_DwpQC.webp",
+    "heartodexId": "42"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-great-green-macaw",
+    "nameEn": "Great Green Macaw",
+    "image": "/_astro/1771630843404-grand-ara-vert_Z117CqV.webp",
+    "heartodexId": "41"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-african-olive-pigeon",
+    "nameEn": "African Olive Pigeon",
+    "image": "/_astro/1771629662877-pigeon-a-yeux-jaunes_Z22RayK.webp",
+    "heartodexId": "38"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-yellow-bellied-flycatcher",
+    "nameEn": "Yellow Bellied Flycatcher",
+    "image": "/_astro/1772150454522-moucherolle-a-ventre-jaune_Zq5fvv.webp",
+    "heartodexId": "43"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-long-eared-owl",
+    "nameEn": "Long Eared Owl",
+    "image": "/_astro/1772759933040-buho_chico_EpREn.webp",
+    "heartodexId": "46"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-red-faced-cormorant",
+    "nameEn": "Red Faced Cormorant",
+    "image": "/_astro/1772158785645-red_faced_ZDwT62.webp",
+    "heartodexId": "47"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-cinnamon-ground-dove",
+    "nameEn": "Cinnamon Ground Dove",
+    "image": "/_astro/1773077287237-cinnamon_ground_dove_1iS1Me.webp",
+    "heartodexId": "44"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-hawfinch",
+    "nameEn": "Hawfinch",
+    "image": "/_astro/1772150193509-hawfinch_QQIIT.webp",
+    "heartodexId": "45"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-common-kestrel",
+    "nameEn": "Common Kestrel",
+    "image": "/_astro/1773077299521-coomon_kestrel_1mLTsO.webp",
+    "heartodexId": "49"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-tern",
+    "nameEn": "Tern",
+    "image": "/_astro/1773077320789-tern_VwIXT.webp",
+    "heartodexId": "54"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-lears-macaw",
+    "nameEn": "Lear's Macaw",
+    "image": "/_astro/1773076797955-2026-02-15_02_59_26-lears_macaw.png_Z1KTFf.webp",
+    "heartodexId": "51"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-azure-tit",
+    "nameEn": "Azure Tit",
+    "image": "/_astro/1773076791765-azure_tit_1hYYWS.webp",
+    "heartodexId": "48"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-jambu-fruit-dove",
+    "nameEn": "Jambu Fruit Dove",
+    "image": "/_astro/1772151765838-jambu_fruit_dove_2tpIIv.webp",
+    "heartodexId": "50"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-peregrine-falcon",
+    "nameEn": "Peregrine Falcon",
+    "image": "/_astro/1773503283802-peregrine_falcon_ZXJfl9.webp",
+    "heartodexId": "52"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-eastern-bluebird",
+    "nameEn": "Eastern Bluebird",
+    "image": "/_astro/1773504893824-eastern_bluebird_ZFON02.webp",
+    "heartodexId": "55"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-pink-pigeon",
+    "nameEn": "Pink Pigeon",
+    "image": "/_astro/1773502609254-pink_pigeon_Z1uxIsT.webp",
+    "heartodexId": "53"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-redpoll",
+    "nameEn": "Redpoll",
+    "image": "/_astro/1773505154790-redpolis_10f2IJ.webp",
+    "heartodexId": "56"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-imperial-shag",
+    "nameEn": "Imperial Shag",
+    "image": "/_astro/1772156859501-2026-02-15_02_55_00-imperial_shag.png_Z1e8iBq.webp",
+    "heartodexId": "58"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-american-flamingo",
+    "nameEn": "American Flamingo",
+    "image": "/_astro/1772155756327-american_flamingo_1YBrjJ.webp",
+    "heartodexId": "57"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-white-headed-duck",
+    "nameEn": "White-Headed Duck",
+    "image": "/_astro/1772157578409-2026-02-15_02_55_09-white-headed_duck.png_2tPtlh.webp",
+    "heartodexId": "60"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-green-peafowl",
+    "nameEn": "Green Peafowl",
+    "image": "/_astro/1773770536813-green_peafowl_Z1HpaVj.webp",
+    "heartodexId": "73"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-paradise-tanager",
+    "nameEn": "Paradise Tanager",
+    "image": "/_astro/1772157378777-paradise_tanager_Z1f5o4R.webp",
+    "heartodexId": "59"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-eagle-owl",
+    "nameEn": "Eagle-Owl",
+    "image": "/_astro/1771133134752-eagle-owl_Zq6HOO.webp",
+    "heartodexId": "63"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-azores-bullfinch",
+    "nameEn": "Azores Bullfinch",
+    "image": "/_astro/1772157985429-2026-02-15_02_53_19-azores_bullfinch.png_ZGxiC.webp",
+    "heartodexId": "62"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-amur-falcon",
+    "nameEn": "Amur Falcon",
+    "image": "/_astro/1772157838888-amur_falcon_23Hl0K.webp",
+    "heartodexId": "61"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-verditer-flycatcher",
+    "nameEn": "Verditer Flycatcher",
+    "image": "/_astro/1773590431084-2026-02-15_02_53_28-verditer_flycatcher.png_Z1HjKN1.webp",
+    "heartodexId": "72"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-baikal-teal",
+    "nameEn": "Baikal Teal",
+    "image": "/_astro/1778893162962-ave-cerceta_del_baikal_Z2aGJ2K.webp",
+    "heartodexId": "79"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-inca-tern",
+    "nameEn": "Inca Tern",
+    "image": "/_astro/1778893527110-ave-charr%C3%A3%C2%A1n_inca_9HrFB.webp",
+    "heartodexId": "83"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-violet-backed-starling",
+    "nameEn": "Violet-Backed Starling",
+    "image": "/_astro/1778893179822-ave-estornino_carirrojo_ThaV8.webp",
+    "heartodexId": "80"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-blue-headed-quail-dove",
+    "nameEn": "Blue-Headed Quail-Dove",
+    "image": "/_astro/1778893338536-ave-paloma_perdiz_Z1ingzL.webp",
+    "heartodexId": "82"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-white-peafowl",
+    "nameEn": "White Peafowl",
+    "image": "/_astro/1778893693596-ave-pavo_real_blanco_eEFoz.webp",
+    "heartodexId": "84"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-snowy-owl",
+    "nameEn": "Snowy Owl",
+    "image": "/_astro/1778894500559-ave-b%C3%A3%C2%BAho_nival_Z8WV8o.webp",
+    "heartodexId": "88"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-red-browed-finch",
+    "nameEn": "Red-Browed Finch",
+    "image": "/_astro/1778894267606-ave-diamante_cejirrojo_Z1soUA5.webp",
+    "heartodexId": "86"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-atlantic-puffin",
+    "nameEn": "Atlantic Puffin",
+    "image": "/_astro/1778894168121-ave-frailecillo_%C3%A3%C2%A1rtico_ZzkOld.webp",
+    "heartodexId": "85"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-blue-footed-booby",
+    "nameEn": "Blue-Footed Booby",
+    "image": "/_astro/1778894334026-ave-piquero_patiazul_Z2qI4Xp.webp",
+    "heartodexId": "87"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-whooper-swan",
+    "nameEn": "Whooper Swan",
+    "image": "/_astro/1778894599980-ave-cisne_grande_ZJBtEh.webp",
+    "heartodexId": "89"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-black-swan",
+    "nameEn": "Black Swan",
+    "image": "/_astro/1778894656640-ave-cisne_negro_Z2w2z0a.webp",
+    "heartodexId": "90"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-black-peafowl",
+    "nameEn": "Black Peafowl",
+    "image": "/_astro/1778894748150-ave-pavo_real_negro_nIcpU.webp",
+    "heartodexId": "91"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-black-stork",
+    "nameEn": "Black Stork",
+    "image": "/_astro/1778894811237-ave-cig%C3%A3%C2%BCe%C3%A3%C2%B1a_negra_Z1FQ5sd.webp",
+    "heartodexId": "92"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-spectacled-owl",
+    "nameEn": "Spectacled Owl",
+    "image": "/_astro/1778894979267-ave-lechuz%C3%A3%C2%B3n_de_anteojos_E3V14.webp",
+    "heartodexId": "93"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-wandering-albatross",
+    "nameEn": "Wandering Albatross",
+    "image": "/_astro/1783799860360-ave-albatroserrante_2ugTHM.webp",
+    "heartodexId": "103"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-grey-mantled-albatross",
+    "nameEn": "Grey-mantled Albatross",
+    "image": "/_astro/1783799896564-ave-albatrostiznado_a8pfz.webp",
+    "heartodexId": "104"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-white-spoonbill",
+    "nameEn": "White Spoonbill",
+    "image": "/_astro/1783799844849-ave-espatula_comun_3v3nN.webp",
+    "heartodexId": "102"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-roseate-spoonbill",
+    "nameEn": "Roseate Spoonbill",
+    "image": "/_astro/1784411230620-ave-espatularosada_9gHlp.webp",
+    "heartodexId": "105"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-white-winged-tern",
+    "nameEn": "White-winged Tern",
+    "image": "/_astro/1783799341837-ave-fumeral_aliblanco_28hbNN.webp",
+    "heartodexId": "99"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-pomarine-skua",
+    "nameEn": "Pomarine Skua",
+    "image": "/_astro/1783799817402-ave-pagalo_pomarino_cLSpm.webp",
+    "heartodexId": "101"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-blue-suit-dove",
+    "nameEn": "Blue Suit Dove",
+    "image": "/_astro/1774722797717-palomacaballeroazul_VU6Jk.webp",
+    "heartodexId": "75"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-gray-suit-dove",
+    "nameEn": "Gray Suit Dove",
+    "image": "/_astro/1774722987431-palomacaballerogris_Zti6HF.webp",
+    "heartodexId": "76"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-striped-suit-dove",
+    "nameEn": "Striped Suit Dove",
+    "image": "/_astro/1774723331302-palomacaballeromulticolor_ZzS2PH.webp",
+    "heartodexId": "78"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-red-suit-dove",
+    "nameEn": "Red Suit Dove",
+    "image": "/_astro/1774723157882-palomacaballeroroja_mM8IS.webp",
+    "heartodexId": "77"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-green-suit-dove",
+    "nameEn": "Green Suit Dove",
+    "image": "/_astro/1774722673705-palomacaballeroverde_1zfyon.webp",
+    "heartodexId": "74"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-blue-hoopoe",
+    "nameEn": "Blue Hoopoe",
+    "image": "/_astro/1789250553238-ave-abubilla_de_plumas_azules_Z2jdPuT.webp",
+    "heartodexId": "109"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-colorful-hoopoe",
+    "nameEn": "Colorful Hoopoe",
+    "image": "/_astro/1789250542376-ave-abubilla_de_plumas_multicolor_ZqW9vL.webp",
+    "heartodexId": "106"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-orange-hoopoe",
+    "nameEn": "Orange Hoopoe",
+    "image": "/_astro/1789250556529-ave-abubilla_de_plumas_naranja_1z9pY9.webp",
+    "heartodexId": "110"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-red-hoopoe",
+    "nameEn": "Red Hoopoe",
+    "image": "/_astro/1789250545687-ave-abubilla_de_plumas_rojas_AVizc.webp",
+    "heartodexId": "107"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-green-hoopoe",
+    "nameEn": "Green Hoopoe",
+    "image": "/_astro/1789250549282-ave-abubilla_de_plumas_verdes_ZxU2FD.webp",
+    "heartodexId": "108"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-blue-brick-sparrow",
+    "nameEn": "Blue Brick Sparrow",
+    "image": "/_astro/1778943996654-ave-2026-05-16_10_51_24-heartopia_1nc7QL.webp",
+    "heartodexId": "97"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-purple-brick-sparrow",
+    "nameEn": "Purple Brick Sparrow",
+    "image": "/_astro/1778943983835-ave-2026-05-16_10_51_36-heartopia_1AOtth.webp",
+    "heartodexId": "95"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-colorful-brick-sparrow",
+    "nameEn": "Colorful Brick Sparrow",
+    "image": "/_astro/1778943981169-ave-2026-05-16_10_51_42-heartopia_1cDemF.webp",
+    "heartodexId": "94"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-pink-brick-sparrow",
+    "nameEn": "Pink Brick Sparrow",
+    "image": "/_astro/1778944004062-ave-2026-05-16_10_51_16-heartopia_1qVmTq.webp",
+    "heartodexId": "98"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-green-brick-sparrow",
+    "nameEn": "Green Brick Sparrow",
+    "image": "/_astro/1778943987062-ave-2026-05-16_10_51_31-heartopia_Z1F7RS9.webp",
+    "heartodexId": "96"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-winter-mallard",
+    "nameEn": "Winter Mallard",
+    "image": "/_astro/1772164514788-winter_mallard_Z28Sb4u.webp",
+    "heartodexId": "68"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-winter-greater-flamingo",
+    "nameEn": "Winter Greater Flamingo",
+    "image": "/_astro/1772164400353-winter_greater_flamingo_ufuh0.webp",
+    "heartodexId": "67"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-winter-mandarin-duck",
+    "nameEn": "Winter Mandarin Duck",
+    "image": "/_astro/1772165256441-pato_mandarin_ropa_invierno_6nze9.webp",
+    "heartodexId": "71"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-winter-smew",
+    "nameEn": "Winter Smew",
+    "image": "/_astro/1772164665580-winter_smew_UWwnO.webp",
+    "heartodexId": "69"
+  },
+  {
+    "category": "Pájaros",
+    "id": "bird-winter-eurasian-wigeon",
+    "nameEn": "Winter Eurasian Wigeon",
+    "image": "/_astro/1772164790163-winter_wigon_Z1nQQHC.webp",
+    "heartodexId": "70"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-pumpkin-dung-beetle",
+    "nameEn": "Pumpkin Dung Beetle",
+    "image": "/_astro/1791774757931-insecto-captura_de_pantalla_2026-10-10_210142-photoroom_ZkFVPh.webp",
+    "heartodexId": "107"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-strawberry-dung-beetle",
+    "nameEn": "Strawberry Dung Beetle",
+    "image": "/_astro/1791774472437-insecto-captura_de_pantalla_2026-10-10_210138-photoroom_tgmSn.webp",
+    "heartodexId": "109"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-mandarin-dung-beetle",
+    "nameEn": "Mandarin Dung Beetle",
+    "image": "/_astro/1791774762968-insecto-captura_de_pantalla_2026-10-10_210131-photoroom_ndDJM.webp",
+    "heartodexId": "106"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-shiitake-dung-beetle",
+    "nameEn": "Shiitake Dung Beetle",
+    "image": "/_astro/1791774753429-insecto-captura_de_pantalla_2026-10-10_210126-photoroom_ldc8q.webp",
+    "heartodexId": "108"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-truffle-dung-beetle",
+    "nameEn": "Truffle Dung Beetle",
+    "image": "/_astro/1791816703296-insecto-truffle-dung-beetle-photoroom_236yky.webp",
+    "heartodexId": "110"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-cabbage-white",
+    "nameEn": "Cabbage White",
+    "image": "/_astro/1770847110254-papillon-blanc_14tb6i.webp",
+    "heartodexId": "21"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-large-red-damselfly",
+    "nameEn": "Large Red Damselfly",
+    "image": "/_astro/1770847731499-grand-agrion_Z1j3xQo.webp",
+    "heartodexId": "46"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-european-firebug",
+    "nameEn": "European Firebug",
+    "image": "/_astro/1770847641249-pyrrhocoris-apterus_1lpHqz.webp",
+    "heartodexId": "32"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-asparagus-beetle",
+    "nameEn": "Asparagus Beetle",
+    "image": "/_astro/1770847457967-criocere-de-l-asperge_ZQGmyn.webp",
+    "heartodexId": "14"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-gold-grasshopper",
+    "nameEn": "Gold Grasshopper",
+    "image": "/_astro/1770847575136-sauterelle-de-l-oasis_ZIv4Kd.webp",
+    "heartodexId": "37"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-apollo",
+    "nameEn": "Apollo",
+    "image": "/_astro/1770847191092-parnassien_ZU8CMu.webp",
+    "heartodexId": "12"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-orange-tip",
+    "nameEn": "Orange-Tip",
+    "image": "/_astro/1771117050435-captura_de_pantalla_2026-02-14_215518_ZOemsR.webp",
+    "heartodexId": "54"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-common-brimstone",
+    "nameEn": "Common Brimstone",
+    "image": "/_astro/1770846982066-citron-aspasia_1w1Gia.webp",
+    "heartodexId": "27"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-old-world-swallowtail",
+    "nameEn": "Old World Swallowtail",
+    "image": "/_astro/1770771910680-papillon-dore_Z1e3GXv.webp",
+    "heartodexId": "53"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-postman-butterfly",
+    "nameEn": "Postman Butterfly",
+    "image": "/_astro/1770847253989-papillon-a-anneaux-rouges_Z1HKQEO.webp",
+    "heartodexId": "58"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-sulkowskys-morpho",
+    "nameEn": "Sulkowsky's Morpho",
+    "image": "/_astro/1771118016020-captura_de_pantalla_2026-02-14_221105_1Bjz1S.webp",
+    "heartodexId": "68"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-bumblebee",
+    "nameEn": "Bumblebee",
+    "image": "/_astro/1770848622266-bourdon_Z2V4R6.webp",
+    "heartodexId": "20"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-green-tiger-beetle",
+    "nameEn": "Green Tiger Beetle",
+    "image": "/_astro/1770847919900-cicindele-verte_1R1fvW.webp",
+    "heartodexId": "41"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-wasp-beetle",
+    "nameEn": "Wasp Beetle",
+    "image": "/_astro/1770848261617-capricorne-tigre_1Fq6A.webp",
+    "heartodexId": "71"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-amethyst-flower-beetle",
+    "nameEn": "Amethyst Flower Beetle",
+    "image": "/_astro/1770848321349-cetoile-etoilee-bleue_Z1r14wv.webp",
+    "heartodexId": "10"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-siberian-grasshopper",
+    "nameEn": "Siberian Grasshopper",
+    "image": "/_astro/1770848396598-criquet-aux-pattes-massives_18bbuA.webp",
+    "heartodexId": "63"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-four-spotted-skimmer",
+    "nameEn": "Four-Spotted Skimmer",
+    "image": "/_astro/1770848557459-libellule-tachetee_1rBW5g.webp",
+    "heartodexId": "35"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-common-blue-butterfly",
+    "nameEn": "Common Blue Butterfly",
+    "image": "/_astro/1770847823982-azure-de-porcelaine_1wC2Dm.webp",
+    "heartodexId": "26"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-seven-spotted-ladybug",
+    "nameEn": "Seven-Spotted Ladybug",
+    "image": "/_astro/1770848461800-coccinelle-a-sept-points_Z23zzWN.webp",
+    "heartodexId": "62"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-waroona-cuckoo-bee",
+    "nameEn": "Waroona Cuckoo Bee",
+    "image": "/_astro/1770849137537-abeille-a-queue-blanche_Z1um5JD.webp",
+    "heartodexId": "70"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-fire-colored-beetle",
+    "nameEn": "Fire-Colored Beetle",
+    "image": "/_astro/1770848897408-pyrochroa_Z1hMSV7.webp",
+    "heartodexId": "33"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-ant",
+    "nameEn": "Ant",
+    "image": "/_astro/1770849211125-fourmi_8zl1b.webp",
+    "heartodexId": "11"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-rajah-brookes-birdwing",
+    "nameEn": "Rajah Brooke's Birdwing",
+    "image": "/_astro/1770848744591-papillon-a-col-rouge_ZnlEP1.webp",
+    "heartodexId": "61"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-purple-emperor",
+    "nameEn": "Purple Emperor",
+    "image": "/_astro/1770848691811-vanesse-violette_1Pa0bI.webp",
+    "heartodexId": "59"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-mini-moon-moth",
+    "nameEn": "Mini Moon Moth",
+    "image": "/_astro/1770848840860-actias-neidhoederi_Z2bcDaL.webp",
+    "heartodexId": "48"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-katydid",
+    "nameEn": "Katydid",
+    "image": "/_astro/1770849060861-grillon_2oIXBm.webp",
+    "heartodexId": "44"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-pink-katydid",
+    "nameEn": "Pink Katydid",
+    "image": "/_astro/1770848967531-sauterelle-rose_2uASFB.webp",
+    "heartodexId": "57"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-cicada",
+    "nameEn": "Cicada",
+    "image": "/_astro/1770849493789-cigale_vR2dE.webp",
+    "heartodexId": "24"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-large-banded-grasshopper",
+    "nameEn": "Large Banded Grasshopper",
+    "image": "/_astro/1771115815186-captura_de_pantalla_2026-02-14_213413_1wYdlk.webp",
+    "heartodexId": "45"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-common-whitetail",
+    "nameEn": "Common Whitetail",
+    "image": "/_astro/1770849582969-libellule-a-queue-blanche_Z1s1RmC.webp",
+    "heartodexId": "28"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-mediterranean-mantis",
+    "nameEn": "Mediterranean Mantis",
+    "image": "/_astro/1771116128926-captura_de_pantalla_2026-02-14_213749_1FpPkH.webp",
+    "heartodexId": "47"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-beautiful-leopard",
+    "nameEn": "Beautiful Leopard",
+    "image": "/_astro/1771112687159-captura_de_pantalla_2026-02-14_204115_Z20vzrn.webp",
+    "heartodexId": "17"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-four-spotted-ladybug",
+    "nameEn": "Four-Spotted Ladybug",
+    "image": "/_astro/1770849288941-coccinelle-a-quatre-etoiles_1ImTdJ.webp",
+    "heartodexId": "34"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-splay-footed-carpenter",
+    "nameEn": "Splay-Footed Carpenter",
+    "image": "/_astro/1771117593838-captura_de_pantalla_2026-02-14_220426_ZKQpG5.webp",
+    "heartodexId": "66"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-alpine-longhorn-beetle",
+    "nameEn": "Alpine Longhorn Beetle",
+    "image": "/_astro/1783510085498-insecto-escarabajo_longicornio_fygyf.webp",
+    "heartodexId": "9"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-giant-asian-mantis",
+    "nameEn": "Giant Asian Mantis",
+    "image": "/_astro/1771113827916-captura_de_pantalla_2026-02-14_210014_ZBINF2.webp",
+    "heartodexId": "36"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-mourning-cloak",
+    "nameEn": "Mourning Cloak",
+    "image": "/_astro/1771116857297-captura_de_pantalla_2026-02-14_215131_2hiUXy.webp",
+    "heartodexId": "52"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-white-witch",
+    "nameEn": "White Witch",
+    "image": "/_astro/1771118181840-captura_de_pantalla_2026-02-14_221426_2rEj6Y.webp",
+    "heartodexId": "72"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-peacock-butterfly",
+    "nameEn": "Peacock Butterfly",
+    "image": "/_astro/1771114660103-captura_de_pantalla_2026-02-14_211442_SOBos.webp",
+    "heartodexId": "55"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-asian-lady-beetle",
+    "nameEn": "Asian Lady Beetle",
+    "image": "/_astro/1771112235256-captura_de_pantalla_2026-02-14_203505_2dkky6.webp",
+    "heartodexId": "13"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-beautiful-demoiselle",
+    "nameEn": "Beautiful Demoiselle",
+    "image": "/_astro/1771112425567-captura_de_pantalla_2026-02-14_203808_1TU2FO.webp",
+    "heartodexId": "16"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-blue-shieldbug",
+    "nameEn": "Blue Shieldbug",
+    "image": "/_astro/1771113004551-captura_de_pantalla_2026-02-14_204808_2rB0XC.webp",
+    "heartodexId": "19"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-silver-jewel-scarab",
+    "nameEn": "Silver Jewel Scarab",
+    "image": "/_astro/1771117241697-captura_de_pantalla_2026-02-14_215834_Z1t88Pn.webp",
+    "heartodexId": "64"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-stag-beetle",
+    "nameEn": "Stag Beetle",
+    "image": "/_astro/1783446623658-insecto-lucanociervo_Z2lqNAR.webp",
+    "heartodexId": "67"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-green-birdwing",
+    "nameEn": "Green Birdwing",
+    "image": "/_astro/1771114420458-captura_de_pantalla_2026-02-14_211148_q2ugP.webp",
+    "heartodexId": "40"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-golden-jewel-scarab",
+    "nameEn": "Golden Jewel Scarab",
+    "image": "/_astro/1771114244347-captura_de_pantalla_2026-02-14_210739_22leMa.webp",
+    "heartodexId": "38"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-elegant-flower-beetle",
+    "nameEn": "Elegant Flower Beetle",
+    "image": "/_astro/1772071893836-elegant_flower_beetle_ZgrfT3.webp",
+    "heartodexId": "31"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-minotaur-beetle",
+    "nameEn": "Minotaur Beetle",
+    "image": "/_astro/1772778205243-escarabajo_pelotero_tifi_10jlGf.webp",
+    "heartodexId": "49"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-crimson-marsh-glider",
+    "nameEn": "Crimson Marsh Glider",
+    "image": "/_astro/1772071518849-crimson_marsh_glider_17ba8c.webp",
+    "heartodexId": "30"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-blue-morpho",
+    "nameEn": "Blue Morpho",
+    "image": "/_astro/1771112856837-captura_de_pantalla_2026-02-14_204535_Z5j2ng.webp",
+    "heartodexId": "18"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-chestnut-tiger",
+    "nameEn": "Chestnut Tiger",
+    "image": "/_astro/1772071624087-chestnut_tiger_ZOus2Y.webp",
+    "heartodexId": "23"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-picasso-bug",
+    "nameEn": "Picasso Bug",
+    "image": "/_astro/1771114902768-captura_de_pantalla_2026-02-14_211834_KV3me.webp",
+    "heartodexId": "56"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-horned-beetle",
+    "nameEn": "Horned Beetle",
+    "image": "/_astro/1783446935659-insecto-escarabajo_rinoceronte_Qdr2O.webp",
+    "heartodexId": "43"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-spanish-moon-moth",
+    "nameEn": "Spanish Moon Moth",
+    "image": "/_astro/1771117407284-captura_de_pantalla_2026-02-14_220134_1Az0fO.webp",
+    "heartodexId": "65"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-comet-moth",
+    "nameEn": "Comet Moth",
+    "image": "/_astro/1771114010477-captura_de_pantalla_2026-02-14_210448_Z2i8pr3.webp",
+    "heartodexId": "25"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-cerulean-carpenter",
+    "nameEn": "Cerulean Carpenter",
+    "image": "/_astro/1771131568527-cerulean_carpenter_Z1NLzo4.webp",
+    "heartodexId": "22"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-rainbow-stag-beetle",
+    "nameEn": "Rainbow Stag Beetle",
+    "image": "/_astro/1771130728848-rainbow_stag_beetle_nPIuj.webp",
+    "heartodexId": "60"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-golden-stag-beetle",
+    "nameEn": "Golden Stag Beetle",
+    "image": "/_astro/1771115378608-captura_de_pantalla_2026-02-14_212506_ZiHzsM.webp",
+    "heartodexId": "39"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-conehead-mantis",
+    "nameEn": "Conehead Mantis",
+    "image": "/_astro/1783514736303-insecto-mantisaguja_20pvpg.webp",
+    "heartodexId": "29"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-mother-of-pearl",
+    "nameEn": "Mother-Of-Pearl",
+    "image": "/_astro/1771116575868-captura_de_pantalla_2026-02-14_214651_Z3obQr.webp",
+    "heartodexId": "51"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-hercules-beetle",
+    "nameEn": "Hercules Beetle",
+    "image": "/_astro/1771130928899-hercules_beetle_Z1Xneje.webp",
+    "heartodexId": "42"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-sunset-morpho",
+    "nameEn": "Sunset Morpho",
+    "image": "/_astro/1771131375374-sunset_morpho_Z8QxF4.webp",
+    "heartodexId": "69"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-morpho-helena",
+    "nameEn": "Morpho Helena",
+    "image": "/_astro/1771131225390-morpho_helena_ZDpKAN.webp",
+    "heartodexId": "50"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-bagworm-moth",
+    "nameEn": "Bagworm Moth",
+    "image": "/_astro/1772777785462-bagworm_moth_Z1Qe4N6.webp",
+    "heartodexId": "15"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-atlas-beetle",
+    "nameEn": "Atlas Beetle",
+    "image": "/_astro/1792762824324-insecto-atlas_ZiK4BX.webp",
+    "heartodexId": "85"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-orchid-mantis",
+    "nameEn": "Orchid Mantis",
+    "image": "/_astro/1778898214030-insecto-mantis_orqu%C3%A3%C2%ADdea_2ilQ0z.webp",
+    "heartodexId": "87"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-queen-alexandras-birdwing",
+    "nameEn": "Queen Alexandra's Birdwing",
+    "image": "/_astro/1778897908880-insecto-mariposa_alas_de_p%C3%A3%C2%A1jaro_ZeGgLs.webp",
+    "heartodexId": "84"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-greater-asian-lady-beetle",
+    "nameEn": "Greater Asian Lady Beetle",
+    "image": "/_astro/1778898162634-insecto-mariquita_de_trece_puntos_252hQd.webp",
+    "heartodexId": "86"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-goliath-beetle",
+    "nameEn": "Goliath Beetle",
+    "image": "/_astro/1778898332662-insecto-escarabajo_goliat_2t14Uu.webp",
+    "heartodexId": "89"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-red-milkweed-locust",
+    "nameEn": "Red Milkweed Locust",
+    "image": "/_astro/1778898430300-insecto-langosta_del_algondoncillo_DLnyg.webp",
+    "heartodexId": "90"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-flamer-skimmer",
+    "nameEn": "Flamer Skimmer",
+    "image": "/_astro/1778898518326-insecto-lib%C3%A3%C2%A9lula_de_fuego_VuGaM.webp",
+    "heartodexId": "91"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-purple-spotted-swallowtail",
+    "nameEn": "Purple Spotted Swallowtail",
+    "image": "/_astro/1778898274648-insecto-mariposa_graphium_weiskei_ZHQnTc.webp",
+    "heartodexId": "88"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-scarce-morpho",
+    "nameEn": "Scarce Morpho",
+    "image": "/_astro/1778898580746-insecto-mariposa_morpho_de_ensue%C3%A3%C2%B1o_2niGBE.webp",
+    "heartodexId": "92"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-green-metalwing",
+    "nameEn": "Green Metalwing",
+    "image": "/_astro/1778898635981-insecto-stream_glory_Z1hikaq.webp",
+    "heartodexId": "93"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-green-snail",
+    "nameEn": "Green Snail",
+    "image": "/_astro/1778898743934-insecto-caracol_verde_Z6rAVM.webp",
+    "heartodexId": "95"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-glasswing-butterfly",
+    "nameEn": "Glasswing Butterfly",
+    "image": "/_astro/1778898697400-insecto-mariposa_de_alas_transparentes_2VNjC.webp",
+    "heartodexId": "94"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-white-banded-erebus-moth",
+    "nameEn": "White-banded Erebus Moth",
+    "image": "/_astro/1784412221478-insecto-erebus_albicinctus_Zmv9oL.webp",
+    "heartodexId": "99"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-blue-milkweed-beetle",
+    "nameEn": "Blue Milkweed Beetle",
+    "image": "/_astro/1784412201603-insecto-escarabajo_de_la_asclepia_1NmtS2.webp",
+    "heartodexId": "97"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-agrias-butterfly",
+    "nameEn": "Agrias Butterfly",
+    "image": "/_astro/1784412213454-insecto-mariposa_de_alas_pintadas_1cMmhP.webp",
+    "heartodexId": "98"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-morpho-luna",
+    "nameEn": "Morpho Luna",
+    "image": "/_astro/1785318025545-insecto-morpho_luna_1dIklN.webp",
+    "heartodexId": "100"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-green-flower-chafer",
+    "nameEn": "Green Flower Chafer",
+    "image": "/_astro/1784412191339-insecto-rhomborrhina_unicolor_1jV7lh.webp",
+    "heartodexId": "96"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-golden-script-supervisor-bumblebee",
+    "nameEn": "Golden Script Supervisor Bumblebee",
+    "image": "/_astro/1774723486502-avispacontinuistadorada_Z3izUC.webp",
+    "heartodexId": "78"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-purple-script-supervisor-bumblebee",
+    "nameEn": "Purple Script Supervisor Bumblebee",
+    "image": "/_astro/1774121161037-avispacontinuistamorada_2BMBM.webp",
+    "heartodexId": "77"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-red-script-supervisor-bumblebee",
+    "nameEn": "Red Script Supervisor Bumblebee",
+    "image": "/_astro/1774119580105-avispacontinuistaroja_Z1FfQiR.webp",
+    "heartodexId": "75"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-pink-script-supervisor-bumblebee",
+    "nameEn": "Pink Script Supervisor Bumblebee",
+    "image": "/_astro/1774119272766-avispacontinuisterosada_rFPIS.webp",
+    "heartodexId": "74"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-green-script-supervisor-bumblebee",
+    "nameEn": "Green Script Supervisor Bumblebee",
+    "image": "/_astro/1774123050176-avispacontinuistaverde_Z9K97w.webp",
+    "heartodexId": "76"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-brown-rhinoceros-beetle",
+    "nameEn": "Brown Rhinoceros Beetle",
+    "image": "/_astro/1788209974560-insecto-escarabajo_rinoceronte_marr%C3%A3%C2%B3n_Z1F7YaQ.webp",
+    "heartodexId": "103"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-iridescent-rhinoceros-beetle",
+    "nameEn": "Iridescent Rhinoceros Beetle",
+    "image": "/_astro/1789250815680-insecto-escarabajo_rinoceronte_multicolor_Z299G8D.webp",
+    "heartodexId": "105"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-grey-horned-firefly",
+    "nameEn": "Grey-horned Firefly",
+    "image": "/_astro/1788209965681-insecto-luciernaga_de_cuernos_grises_Z2pw8rX.webp",
+    "heartodexId": "101"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-purple-horned-firefly",
+    "nameEn": "Purple-horned Firefly",
+    "image": "/_astro/1788209978578-insecto-luci%C3%A3%C2%A9rnaga_de_cuernos_morados_ZGtX3a.webp",
+    "heartodexId": "104"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-pink-horned-firefly",
+    "nameEn": "Pink-horned Firefly",
+    "image": "/_astro/1788209969583-insecto-luci%C3%A3%C2%A9rnaga_de_cuernos_rosados_Z2shyNT.webp",
+    "heartodexId": "102"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-yellow-brick-large-red-damselfly",
+    "nameEn": "Yellow Brick Large Red Damselfly",
+    "image": "/_astro/1778342150811-insecto-2026-05-09_11_34_48-2026-05-09_11_28_56-heartopia.png_ZyNyEb.webp",
+    "heartodexId": "80"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-blue-brick-large-red-damselfly",
+    "nameEn": "Blue Brick Large Red Damselfly",
+    "image": "/_astro/1778342155151-insecto-2026-05-09_11_34_59-2026-05-09_11_29_03-heartopia.png_12QY2c.webp",
+    "heartodexId": "81"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-purple-brick-large-red-damselfly",
+    "nameEn": "Purple Brick Large Red Damselfly",
+    "image": "/_astro/1778342159372-insecto-2026-05-09_11_35_10-2026-05-09_11_29_09-heartopia.png_Z1ta6qW.webp",
+    "heartodexId": "82"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-colorful-brick-large-red-damselfly",
+    "nameEn": "Colorful Brick Large Red Damselfly",
+    "image": "/_astro/1778342163445-insecto-2026-05-09_11_35_18-2026-05-09_11_29_14-heartopia.png_OcBJK.webp",
+    "heartodexId": "83"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-pink-brick-large-red-damselfly",
+    "nameEn": "Pink Brick Large Red Damselfly",
+    "image": "/_astro/1778342146201-insecto-2026-05-09_11_34_31-2026-05-09_11_28_47-heartopia.png_Z2jCJd3.webp",
+    "heartodexId": "79"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-frostspore-queen-alexandras-birdwing",
+    "nameEn": "Frostspore Queen Alexandra's Birdwing",
+    "image": "/_astro/1770691978177-2026-02-07_11_53_05-heartopia_1hm3UI.webp",
+    "heartodexId": "5"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-frostspore-postman-butterfly",
+    "nameEn": "Frostspore Postman Butterfly",
+    "image": "/_astro/1771205205887-mariposa_cartero_de_cristal_nevado_1lvGUA.webp",
+    "heartodexId": "73"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-frostspore-purple-spotted-swallowtail",
+    "nameEn": "Frostspore Purple Spotted Swallowtail",
+    "image": "/_astro/1770691908812-2026-02-07_11_53_15-heartopia_2f0LCd.webp",
+    "heartodexId": "4"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-frostspore-mother-of-pearl",
+    "nameEn": "Frostspore Mother-of-Pearl",
+    "image": "/_astro/1770691784384-2026-02-07_11_53_23-heartopia_Z3Pw9d.webp",
+    "heartodexId": "3"
+  },
+  {
+    "category": "Insectos",
+    "id": "insect-frostspore-sulkowskys-morpho",
+    "nameEn": "Frostspore Sulkowsky's Morpho",
+    "image": "/_astro/1770692052040-2026-02-07_11_52_50-heartopia_ZmNiwU.webp",
+    "heartodexId": "6"
+  },
+  {
+    "category": "Fauna",
+    "id": "wildlife-alpaca",
+    "nameEn": "Alpaca",
+    "image": "/_astro/1783738190730-animal-alpaca_gDg6z.webp",
+    "heartodexId": ""
+  },
+  {
+    "category": "Fauna",
+    "id": "wildlife-capybara",
+    "nameEn": "Capybara",
+    "image": "/_astro/1783738150016-animal-capibara_qxpUA.webp",
+    "heartodexId": ""
+  },
+  {
+    "category": "Fauna",
+    "id": "wildlife-sika-deer",
+    "nameEn": "Sika Deer",
+    "image": "/_astro/1783738201643-animal-ciervosika_1WSxKk.webp",
+    "heartodexId": ""
+  },
+  {
+    "category": "Fauna",
+    "id": "wildlife-bunny",
+    "nameEn": "Bunny",
+    "image": "/_astro/1783738158505-animal-conejo_1tCt1y.webp",
+    "heartodexId": ""
+  },
+  {
+    "category": "Fauna",
+    "id": "wildlife-ferret",
+    "nameEn": "Ferret",
+    "image": "/_astro/1783738180133-animal-huron_ZCdP02.webp",
+    "heartodexId": ""
+  },
+  {
+    "category": "Fauna",
+    "id": "wildlife-sea-otter",
+    "nameEn": "Sea Otter",
+    "image": "/_astro/1783738186224-animal-nutriamarina_Z1eE5Nl.webp",
+    "heartodexId": ""
+  },
+  {
+    "category": "Fauna",
+    "id": "wildlife-panda",
+    "nameEn": "Panda",
+    "image": "/_astro/1783738206153-animal-panda_105qed.webp",
+    "heartodexId": ""
+  },
+  {
+    "category": "Fauna",
+    "id": "wildlife-fox",
+    "nameEn": "Fox",
+    "image": "/_astro/1783738126393-animal-zorro_WO9be.webp",
+    "heartodexId": ""
+  },
+  {
+    "category": "Fauna",
+    "id": "wildlife-dolphin",
+    "nameEn": "Dolphin",
+    "image": "/_astro/1784339062063-animal-delfin_TLqQb.webp",
+    "heartodexId": ""
+  },
+  {
+    "category": "Fauna",
+    "id": "wildlife-maltese",
+    "nameEn": "Maltese",
+    "image": "/_astro/1783738210562-animal-maltese_ZDrvFr.webp",
+    "heartodexId": ""
+  },
+  {
+    "category": "Fauna",
+    "id": "wildlife-penguin",
+    "nameEn": "Penguin",
+    "image": "/_astro/1783738195430-animal-pinguino_Z1dWc2l.webp",
+    "heartodexId": ""
+  }
+]
