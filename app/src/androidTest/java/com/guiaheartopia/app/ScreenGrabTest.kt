@@ -125,7 +125,7 @@ class ScreenGrabTest {
                 val entry = com.guiaheartopia.app.data.HeartodexCatalog.load(
                     androidx.compose.ui.platform.LocalContext.current,
                 ).first { it.category == "Peces" }
-                DexDetailScreen(entry, false, {}, {})
+                DexDetailScreen(entry, "America/Santiago", false, {}, {})
             }
         }
         }

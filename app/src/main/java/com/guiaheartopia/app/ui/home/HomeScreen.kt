@@ -18,11 +18,14 @@ import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.domain.Countries
 import com.guiaheartopia.app.domain.RoutineLogic
 import com.guiaheartopia.app.ui.GuideUi
+import com.guiaheartopia.app.domain.DexSchedule
+import com.guiaheartopia.app.ui.components.GameTimeCard
 import com.guiaheartopia.app.ui.components.LineNavIcon
 import com.guiaheartopia.app.ui.components.NavIcon
 import com.guiaheartopia.app.ui.components.PixelButton
 import com.guiaheartopia.app.ui.components.PixelCard
 import com.guiaheartopia.app.ui.components.PixelProgress
+import java.time.Instant
 import com.guiaheartopia.app.ui.theme.Dark
 import com.guiaheartopia.app.ui.theme.Green
 import com.guiaheartopia.app.ui.theme.Yellow
@@ -33,9 +36,11 @@ fun HomeScreen(ui: GuideUi, onOpen: (String) -> Unit) {
     val done = RoutineLogic.completedCount(ui.routine)
     val context = androidx.compose.ui.platform.LocalContext.current
     val catalog = androidx.compose.runtime.remember { com.guiaheartopia.app.data.HeartodexCatalog.load(context) }
-    val available = catalog.count { com.guiaheartopia.app.domain.DexSchedule.availableAllDay(it.schedule) }
+    val zone = DexSchedule.zoneOf(ui.profile.zoneId)
+    val nowInstant = Instant.now()
+    val available = catalog.count { DexSchedule.availableNow(it.schedule, nowInstant) }
     val byCategory = catalog.groupBy { it.category }
-    val today = java.time.LocalDate.now(runCatching { java.time.ZoneId.of(ui.profile.zoneId) }.getOrElse { java.time.ZoneId.systemDefault() })
+    val today = java.time.LocalDate.now(zone)
     val spot = com.guiaheartopia.app.data.VerifiedCatalog.novemberSpot(today)
     val event = com.guiaheartopia.app.data.VerifiedCatalog.events.firstOrNull()
     Column(
@@ -49,12 +54,13 @@ fun HomeScreen(ui: GuideUi, onOpen: (String) -> Unit) {
         Text(ui.todayLabel.replaceFirstChar { it.titlecase() }, style = MaterialTheme.typography.bodyMedium)
         Text("${country.name} · ${ui.profile.zoneId}", style = MaterialTheme.typography.bodySmall)
         Text("Guía independiente. No está afiliada a los creadores de Heartopia.", style = MaterialTheme.typography.bodySmall)
+        GameTimeCard(zone.id)
         PixelCard(container = Dark) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 LineNavIcon(NavIcon.GUIDE, Yellow)
                 Text("Tu colección", color = androidx.compose.ui.graphics.Color.White, style = MaterialTheme.typography.titleMedium)
             }
-            Text("$available de ${catalog.size} con horario de día completo", color = Yellow, style = MaterialTheme.typography.bodyMedium)
+            Text("$available de ${catalog.size} disponibles ahora", color = Yellow, style = MaterialTheme.typography.bodyMedium)
             PixelProgress(
                 if (catalog.isEmpty()) 0f else available.toFloat() / catalog.size,
                 color = Yellow,

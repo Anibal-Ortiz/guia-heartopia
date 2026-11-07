@@ -40,6 +40,7 @@ import com.guiaheartopia.app.domain.PlacedSlot
 import com.guiaheartopia.app.domain.ResourceKeys
 import com.guiaheartopia.app.domain.WeatherCalendar
 import com.guiaheartopia.app.domain.WeatherKind
+import com.guiaheartopia.app.ui.components.GameTimeCard
 import com.guiaheartopia.app.ui.components.PickerField
 import com.guiaheartopia.app.ui.components.PixelCard
 import com.guiaheartopia.app.ui.components.VerifyBadge
@@ -101,6 +102,8 @@ fun WeatherScreen(
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Text("Clima por país", style = MaterialTheme.typography.headlineSmall)
+        GameTimeCard(zone.id)
+        Text("Reloj: ${now.format(clock)} · UTC${now.offset.id}", style = MaterialTheme.typography.bodySmall)
         com.guiaheartopia.app.ui.components.PixelCard {
             Text("Recursos de noviembre 2026", style = MaterialTheme.typography.titleSmall)
             val spot = com.guiaheartopia.app.data.VerifiedCatalog.novemberSpot(java.time.LocalDate.now(zone))
@@ -124,11 +127,7 @@ fun WeatherScreen(
             "Las franjas son de ejemplo. La hora sí se convierte con la zona IANA del país, incluido el horario de verano. «flurita» y «Liuliu» se muestran con ese nombre: no hay fuente fiable aquí para corregirlos ni para decir dónde aparecen.",
             style = MaterialTheme.typography.bodyMedium,
         )
-        PixelCard {
-            Text("Ahora: ${now.format(clock)}", style = MaterialTheme.typography.titleSmall)
-            Text("${zone.id} · UTC${now.offset.id}", style = MaterialTheme.typography.bodySmall)
-            Text(origin.note, style = MaterialTheme.typography.bodySmall)
-        }
+        Text(origin.note, style = MaterialTheme.typography.bodySmall)
         PickerField(
             label = "País",
             value = country.name,

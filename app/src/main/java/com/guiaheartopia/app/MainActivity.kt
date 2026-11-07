@@ -211,6 +211,7 @@ private fun AppScaffold(
                 } else {
                     com.guiaheartopia.app.ui.guide.DexDetailScreen(
                         entry = item,
+                        zoneId = ui.profile.zoneId,
                         found = item.id in ui.found,
                         onToggle = { vm.toggleFound(item.id) },
                         onBack = { nav.popBackStack() },

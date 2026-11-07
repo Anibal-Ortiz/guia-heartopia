@@ -26,10 +26,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.guiaheartopia.app.data.DexEntry
 import com.guiaheartopia.app.domain.AnimalAnnotation
 import com.guiaheartopia.app.domain.AnimalRecord
 import com.guiaheartopia.app.domain.Collectible
+import com.guiaheartopia.app.domain.DexSchedule
 import com.guiaheartopia.app.ui.GuideUi
+import com.guiaheartopia.app.ui.components.NowBadge
+import java.time.Instant
 import com.guiaheartopia.app.ui.components.LabelValue
 import com.guiaheartopia.app.ui.components.PillTabs
 import com.guiaheartopia.app.ui.components.PixelButton
@@ -121,6 +125,9 @@ private fun DexTab(
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val all = remember { com.guiaheartopia.app.data.HeartodexCatalog.load(context) }
+    val zone = DexSchedule.zoneOf(ui.profile.zoneId)
+    val instant = Instant.now()
+    val current = DexSchedule.currentWindow(zone, instant)
     var query by rememberSaveable(category) { mutableStateOf("") }
     var place by rememberSaveable(category) { mutableStateOf("") }
     var onlyNow by rememberSaveable(category) { mutableStateOf(false) }
@@ -131,7 +138,7 @@ private fun DexTab(
             (query.isBlank() || entry.name.contains(query.trim(), ignoreCase = true)) &&
             (place.isBlank() || entry.location.any { it.contains(place.trim(), ignoreCase = true) }) &&
             (weather == "Todos" || weather in entry.weather) &&
-            (!onlyNow || com.guiaheartopia.app.domain.DexSchedule.availableAllDay(entry.schedule)) &&
+            (!onlyNow || DexSchedule.availableNow(entry.schedule, instant)) &&
             when (registered) {
                 "si" -> entry.id in ui.found
                 "no" -> entry.id !in ui.found
@@ -142,33 +149,37 @@ private fun DexTab(
     OutlinedTextField(place, { place = it }, label = { Text("Ubicación") }, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp))
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         listOf("Todos", "Sunny", "Rainy", "Rainbow").forEach { item ->
-            FilterChip(selected = weather == item, onClick = { weather = item }, label = { Text(if (item == "Todos") item else com.guiaheartopia.app.domain.DexSchedule.weatherEs(item)) })
+            FilterChip(selected = weather == item, onClick = { weather = item }, label = { Text(if (item == "Todos") item else DexSchedule.weatherEs(item)) })
         }
         FilterChip(selected = onlyNow, onClick = { onlyNow = !onlyNow }, label = { Text("Disponible ahora") })
         FilterChip(selected = registered == "si", onClick = { registered = if (registered == "si") "todos" else "si" }, label = { Text("Registrados") })
         FilterChip(selected = registered == "no", onClick = { registered = if (registered == "no") "todos" else "no" }, label = { Text("Sin registrar") })
     }
+    Text(
+        "${DexSchedule.titled(current.slot)} · ${DexSchedule.untilLabel(current, instant.atZone(zone))}. El clima se muestra y no cuenta para «Ahora».",
+        style = MaterialTheme.typography.bodySmall,
+    )
     Text("${items.size} fichas · heartodex · ${com.guiaheartopia.app.data.VerifiedCatalog.EXTRACTED}", style = MaterialTheme.typography.bodySmall)
     if (items.isEmpty()) Text("Nada coincide con el filtro.", style = MaterialTheme.typography.bodyMedium)
     items.forEach { entry ->
-        val now = com.guiaheartopia.app.domain.DexSchedule.availableAllDay(entry.schedule)
+        val now = DexSchedule.availableNow(entry.schedule, instant)
         PixelCard(Modifier.clickable { onOpen(entry.id) }) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(entry.name, style = MaterialTheme.typography.titleMedium)
                     Text(entry.event ?: entry.category, color = Muted, style = MaterialTheme.typography.bodySmall)
                 }
-                if (now) com.guiaheartopia.app.ui.components.NowBadge()
+                if (now) NowBadge()
             }
             LabelValue("Ubicación", entry.location.joinToString().ifBlank { "—" })
             LabelValue(
                 "Horario",
-                entry.schedule.joinToString { com.guiaheartopia.app.domain.DexSchedule.scheduleEs(it) }.ifBlank { "—" },
+                entry.schedule.joinToString { DexSchedule.scheduleLabel(it) }.ifBlank { "—" },
                 emphasize = false,
             )
             LabelValue(
                 "Clima",
-                entry.weather.joinToString { com.guiaheartopia.app.domain.DexSchedule.weatherEs(it) }.ifBlank { "—" },
+                entry.weather.joinToString { DexSchedule.weatherEs(it) }.ifBlank { "—" },
                 emphasize = false,
             )
             PixelButton(
@@ -181,8 +192,13 @@ private fun DexTab(
 }
 
 @Composable
-fun DexDetailScreen(entry: com.guiaheartopia.app.data.DexEntry, found: Boolean, onToggle: () -> Unit, onBack: () -> Unit) {
-    val now = com.guiaheartopia.app.domain.DexSchedule.availableAllDay(entry.schedule)
+fun DexDetailScreen(entry: DexEntry, zoneId: String, found: Boolean, onToggle: () -> Unit, onBack: () -> Unit) {
+    val zone = DexSchedule.zoneOf(zoneId)
+    val instant = Instant.now()
+    val now = DexSchedule.availableNow(entry.schedule, instant)
+    val localHours = DexSchedule.windowsAround(zone, instant)
+        .filter { it.slot.key in entry.schedule }
+        .joinToString(" · ") { "${DexSchedule.titled(it.slot)} ${DexSchedule.hoursLabel(it)}" }
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -192,16 +208,20 @@ fun DexDetailScreen(entry: com.guiaheartopia.app.data.DexEntry, found: Boolean, 
                 Text(entry.name, style = MaterialTheme.typography.headlineSmall)
                 Text(entry.nameEs ?: "Sin nombre en español en la fuente", color = Muted)
             }
-            if (now) com.guiaheartopia.app.ui.components.NowBadge()
+            if (now) NowBadge()
         }
         PixelCard {
             LabelValue("Ubicación", entry.location.joinToString().ifBlank { "—" })
-            LabelValue("Horario", entry.schedule.joinToString { com.guiaheartopia.app.domain.DexSchedule.scheduleEs(it) }.ifBlank { "—" }, false)
-            LabelValue("Clima", entry.weather.joinToString { com.guiaheartopia.app.domain.DexSchedule.weatherEs(it) }.ifBlank { "—" }, false)
+            LabelValue("Horario", entry.schedule.joinToString { DexSchedule.scheduleLabel(it) }.ifBlank { "—" }, false)
+            LabelValue("En tu zona", localHours.ifBlank { "—" }, false)
+            LabelValue("Clima", entry.weather.joinToString { DexSchedule.weatherEs(it) }.ifBlank { "—" }, false)
             LabelValue("Evento", entry.event ?: "—", false)
             LabelValue("Fuente", "heartodex · ${entry.extractedOn}", false)
         }
-        Text("«Ahora» solo si heartodex lista el día completo. No traduce tramos sueltos a horas: la web no las define.", style = MaterialTheme.typography.bodySmall)
+        Text(
+            "«Ahora» sigue el tramo del juego en la zona de tu país. El clima que pide la ficha se muestra, pero todavía no cuenta.",
+            style = MaterialTheme.typography.bodySmall,
+        )
         PixelButton(if (found) "✓ Registrado" else "Registrar", onClick = onToggle, outlined = !found)
         PixelButton("Volver", onClick = onBack, outlined = true)
     }
