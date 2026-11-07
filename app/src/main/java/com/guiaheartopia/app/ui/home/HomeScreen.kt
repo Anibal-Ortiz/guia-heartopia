@@ -36,9 +36,11 @@ fun HomeScreen(ui: GuideUi, onOpen: (String) -> Unit) {
     val done = RoutineLogic.completedCount(ui.routine)
     val context = androidx.compose.ui.platform.LocalContext.current
     val catalog = androidx.compose.runtime.remember { com.guiaheartopia.app.data.HeartodexCatalog.load(context) }
+    val sky = androidx.compose.runtime.remember { com.guiaheartopia.app.data.SkyCatalog.load(context) }
     val zone = DexSchedule.zoneOf(ui.profile.zoneId)
     val nowInstant = Instant.now()
-    val available = catalog.count { DexSchedule.availableNow(it.schedule, nowInstant) }
+    val skyDay = sky.on(nowInstant.atZone(java.time.ZoneOffset.UTC).toLocalDate())
+    val available = catalog.count { com.guiaheartopia.app.domain.SkyWeather.availableNow(it.schedule, it.weather, nowInstant, skyDay) }
     val byCategory = catalog.groupBy { it.category }
     val today = java.time.LocalDate.now(zone)
     val spot = com.guiaheartopia.app.domain.ResourceCalendar.on(today)

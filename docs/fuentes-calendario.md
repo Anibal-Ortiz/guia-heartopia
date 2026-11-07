@@ -37,12 +37,22 @@ Diciembre de 2026 no está día a día en heartodex. Se rellena con ese ciclo y 
 
 No apareció un ciclo por día de la semana. El que se sostiene es el de 50 días.
 
-## Clima
+## Clima de noviembre y diciembre de 2026
 
-No hay dos tablas hora a hora de noviembre o diciembre que se hayan podido poner una junto a la otra. Tidebell y th.gl dicen que el juego lleva un calendario fijo, y Tidebell anota tres cambios sueltos en noviembre, pero eso no basta para escribir cada hora. En la app el clima de esos días queda **pendiente de verificar**. No se estima el tiempo.
+Lectura del 7 de noviembre de 2026, solo esos dos meses.
+
+- Tidebell: https://tidebell.com/calendar — cuatro tramos por día (00–06, 06–12, 12–18, 18–24), hora de servidor.
+- heartopia.th.gl: https://heartopia.th.gl/forecast — los mismos cuatro tramos.
+- Parche más reciente que toca estos meses: https://tidebell.com/changelog/2026-09-24 . El 1 de noviembre sale del parche del 25 de agosto de 2026: https://tidebell.com/changelog/2026-08-25 .
+
+Se compararon 61 días × 4 tramos = 244 tramos. Lluvia, chubasco y lluvia de luna cuentan como la misma familia. Coinciden **226 de 244, un 92,6 %**.
+
+Los 18 que no coinciden son despejado o sol en Tidebell y nublado en th.gl. En el 1 de noviembre (los cuatro tramos) y en la madrugada del 2, el parche dice nublado: se usa ese valor y queda por confirmar. En los otros 14 el parche no nombra el tramo; se deja la lectura de th.gl, que ya incorporó ese parche, y también quedan por confirmar.
+
+El arcoíris de luna, los meteoros con su lugar, la nieve y la luna carmesí se guardan cuando aparecen. La hora de servidor se trata como UTC, porque el reloj de Tidebell coincidía con UTC ese día, y la app la pasa a la zona del país.
 
 ## Qué queda sin datos
 
 - Cualquier mes que no sea noviembre ni diciembre de 2026: sin datos de parcela.
-- El clima hora a hora de noviembre y diciembre de 2026: pendiente de verificar.
+- El clima de otros meses: sin datos. Noviembre y diciembre de 2026 sí tienen los cuatro tramos.
 - El cierre de la noche de la adivinación sigue sin una sola fecha: hay quien cierra el 20 de noviembre y quien el 21. La ficha de la app deja el 21 y lo dice.

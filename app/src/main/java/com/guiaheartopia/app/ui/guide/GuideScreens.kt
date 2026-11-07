@@ -31,8 +31,11 @@ import com.guiaheartopia.app.data.DexEntry
 import com.guiaheartopia.app.domain.AnimalAnnotation
 import com.guiaheartopia.app.domain.AnimalRecord
 import com.guiaheartopia.app.domain.Collectible
+import com.guiaheartopia.app.data.SkyCatalog
 import com.guiaheartopia.app.domain.DexSchedule
+import com.guiaheartopia.app.domain.SkyWeather
 import com.guiaheartopia.app.domain.TextMatch
+import java.time.ZoneOffset
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.ui.components.NowBadge
 import java.time.Instant
@@ -129,8 +132,10 @@ private fun DexTab(
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val all = remember { com.guiaheartopia.app.data.HeartodexCatalog.load(context) }
+    val sky = remember { SkyCatalog.load(context) }
     val zone = DexSchedule.zoneOf(ui.profile.zoneId)
     val instant = Instant.now()
+    val skyDay = sky.on(instant.atZone(ZoneOffset.UTC).toLocalDate())
     val current = DexSchedule.currentWindow(zone, instant)
     var query by rememberSaveable(category) { mutableStateOf("") }
     var place by rememberSaveable(category) { mutableStateOf("") }
@@ -142,7 +147,7 @@ private fun DexTab(
             (query.isBlank() || TextMatch.contains(entry.name, query) || TextMatch.contains(entry.nameEn, query)) &&
             (place.isBlank() || entry.location.any { TextMatch.contains(it, place) }) &&
             (weather == "Todos" || weather in entry.weather) &&
-            (!onlyNow || DexSchedule.availableNow(entry.schedule, instant)) &&
+            (!onlyNow || SkyWeather.availableNow(entry.schedule, entry.weather, instant, skyDay)) &&
             when (registered) {
                 "si" -> entry.id in ui.found
                 "no" -> entry.id !in ui.found
@@ -166,7 +171,7 @@ private fun DexTab(
     Text("${items.size} fichas", style = MaterialTheme.typography.bodySmall)
     if (items.isEmpty()) Text("Nada coincide con el filtro.", style = MaterialTheme.typography.bodyMedium)
     items.forEach { entry ->
-        val now = DexSchedule.availableNow(entry.schedule, instant)
+        val now = SkyWeather.availableNow(entry.schedule, entry.weather, instant, skyDay)
         PixelCard(Modifier.clickable { onOpen(entry.id) }) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 CreatureGlyph(entry.category, entry.location, entry.level, Modifier.size(52.dp))
@@ -200,7 +205,14 @@ private fun DexTab(
 fun DexDetailScreen(entry: DexEntry, zoneId: String, found: Boolean, onToggle: () -> Unit, onBack: () -> Unit) {
     val zone = DexSchedule.zoneOf(zoneId)
     val instant = Instant.now()
-    val now = DexSchedule.availableNow(entry.schedule, instant)
+    val detailContext = androidx.compose.ui.platform.LocalContext.current
+    val sky = remember { SkyCatalog.load(detailContext) }
+    val now = SkyWeather.availableNow(
+        entry.schedule,
+        entry.weather,
+        instant,
+        sky.on(instant.atZone(ZoneOffset.UTC).toLocalDate()),
+    )
     val localHours = DexSchedule.windowsAround(zone, instant)
         .filter { it.slot.key in entry.schedule }
         .joinToString(" · ") { "${DexSchedule.titled(it.slot)} ${DexSchedule.hoursLabel(it)}" }

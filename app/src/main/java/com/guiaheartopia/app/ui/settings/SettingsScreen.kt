@@ -122,7 +122,7 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(
-                "En noviembre de 2026, Liuliu y la flurita coinciden en Tidebell y heartodex. Diciembre sigue el ciclo de 50 días y se marca como estimado. El clima hora a hora sigue pendiente de verificar.",
+                "En noviembre de 2026, Liuliu y la flurita coinciden en Tidebell y heartodex. Diciembre sigue el ciclo de 50 días y se marca como estimado. El clima de noviembre y diciembre sale de Tidebell y heartopia.th.gl, revisado el 7 de noviembre de 2026 junto al parche del 24 de septiembre de 2026.",
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(

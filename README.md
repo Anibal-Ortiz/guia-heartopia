@@ -1,5 +1,7 @@
 # Guía Heartopia
 
+Versión 0.5.1. El clima de noviembre y diciembre de 2026 está en cuatro tramos, cruzado entre Tidebell y heartopia.th.gl.
+
 Versión 0.5.0. El calendario de noviembre de 2026 junta heartodex y Tidebell. Diciembre se marca como estimado con el ciclo de 50 días. Los iconos de las criaturas son dibujos de la app.
 
 Versión 0.4.1. Los nombres, lugares, climas y horarios del catálogo salen de las páginas índice en español de heartodex. El nombre en inglés se guarda solo para buscar y no se muestra. Créditos y fuentes están en Ajustes.
