@@ -1,119 +1,117 @@
 package com.guiaheartopia.app.ui.home
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.guiaheartopia.app.domain.Countries
-import com.guiaheartopia.app.domain.RoutineLogic
-import com.guiaheartopia.app.ui.GuideUi
-import com.guiaheartopia.app.domain.DexSchedule
-import com.guiaheartopia.app.ui.components.GameTimeCard
-import com.guiaheartopia.app.ui.components.LineNavIcon
-import com.guiaheartopia.app.ui.components.NavIcon
-import com.guiaheartopia.app.ui.components.PixelButton
-import com.guiaheartopia.app.ui.components.PixelCard
-import com.guiaheartopia.app.ui.components.PixelProgress
-import java.time.Instant
-import com.guiaheartopia.app.ui.theme.Dark
-import com.guiaheartopia.app.ui.theme.Green
-import com.guiaheartopia.app.ui.theme.Yellow
 
 @Composable
-fun HomeScreen(ui: GuideUi, onOpen: (String) -> Unit) {
-    val country = Countries.byId(ui.profile.countryId)
-    val done = RoutineLogic.completedCount(ui.routine)
-    val context = androidx.compose.ui.platform.LocalContext.current
-    val catalog = androidx.compose.runtime.remember { com.guiaheartopia.app.data.HeartodexCatalog.load(context) }
-    val sky = androidx.compose.runtime.remember { com.guiaheartopia.app.data.SkyCatalog.load(context) }
-    val zone = DexSchedule.zoneOf(ui.profile.zoneId)
-    val nowInstant = Instant.now()
-    val skyDay = sky.on(nowInstant.atZone(java.time.ZoneOffset.UTC).toLocalDate())
-    val available = catalog.count { com.guiaheartopia.app.domain.SkyWeather.availableNow(it.schedule, it.weather, nowInstant, skyDay) }
-    val byCategory = catalog.groupBy { it.category }
-    val today = java.time.LocalDate.now(zone)
-    val spot = com.guiaheartopia.app.domain.ResourceCalendar.on(today)
-    val event = com.guiaheartopia.app.data.VerifiedCatalog.events.firstOrNull()
-    Column(
-        Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(14.dp),
-    ) {
-        Text(ui.greeting, style = MaterialTheme.typography.headlineSmall)
-        Text(ui.todayLabel.replaceFirstChar { it.titlecase() }, style = MaterialTheme.typography.bodyMedium)
-        Text("${country.name} · ${Countries.zoneLabel(ui.profile.zoneId)}", style = MaterialTheme.typography.bodySmall)
-        GameTimeCard(zone.id)
-        PixelCard(container = Dark) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                LineNavIcon(NavIcon.GUIDE, Yellow)
-                Text("Tu colección", color = androidx.compose.ui.graphics.Color.White, style = MaterialTheme.typography.titleMedium)
-            }
-            Text("$available de ${catalog.size} disponibles ahora", color = Yellow, style = MaterialTheme.typography.bodyMedium)
-            PixelProgress(
-                if (catalog.isEmpty()) 0f else available.toFloat() / catalog.size,
-                color = Yellow,
-                track = androidx.compose.ui.graphics.Color(0xFF3A322C),
+fun HomeScreen(
+    // Ajusta estos nombres si en tu MainActivity se llaman distinto
+    onNavigateToGuide: () -> Unit = {},
+    onNavigateToRoutine: () -> Unit = {},
+    onNavigateToWeather: () -> Unit = {},
+    onNavigateToMap: () -> Unit = {},
+    onNavigateToHobbies: () -> Unit = {},
+    onNavigateToSettings: () -> Unit = {}
+) {
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(24.dp)
+        ) {
+            // Cabecera Acogedora
+            Text(
+                text = "¡Hola de nuevo!",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
             )
-            byCategory.forEach { (category, items) ->
-                val found = items.count { it.id in ui.found }
-                Text("$category  $found/${items.size}", color = androidx.compose.ui.graphics.Color(0xFFE7E0D6), style = MaterialTheme.typography.bodySmall)
-            }
-            PixelButton("Abrir la guía →", onClick = { onOpen("guide") }, container = Yellow, contentColor = Dark)
-        }
-        PixelCard {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                LineNavIcon(NavIcon.HOME, Green)
-                Text("Hoy", style = MaterialTheme.typography.titleMedium)
-            }
-            Text("Liuliu: ${com.guiaheartopia.app.domain.ResourceCalendar.label(spot.liuliu)}")
-            Text("flurita: ${com.guiaheartopia.app.domain.ResourceCalendar.label(spot.flurita)}", color = Green)
-            Text(spot.certainty.label, style = MaterialTheme.typography.bodySmall)
-            if (event != null) {
-                Text("${event.title}: ${event.start} → ${event.end}", style = MaterialTheme.typography.bodyMedium)
-            }
-        }
-        PixelCard {
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                LineNavIcon(NavIcon.ROUTINE, Green)
-                Column(Modifier.weight(1f)) {
-                    Text("Rutina de hoy", style = MaterialTheme.typography.titleMedium)
-                    Text("Se reinicia cuando cambia la fecha local.", style = MaterialTheme.typography.bodySmall)
-                }
-                Text("$done de ${ui.routine.tasks.size}\ncompletadas", color = Green, style = MaterialTheme.typography.titleSmall)
-            }
-            ui.routine.tasks.take(3).forEach { task ->
-                Text(
-                    (if (task.id in ui.routine.completedIds) "✓  " else "○  ") + task.title,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-            PixelButton("Ver rutina", onClick = { onOpen("routine") }, outlined = true)
-        }
-        listOf(
-            Triple("weather", "Calendario", NavIcon.GUIDE),
-            Triple("map", "Mapa ilustrado", NavIcon.HOME),
-            Triple("pixel", "Arte de píxel", NavIcon.PIXEL),
-            Triple("hobbies", "Aficiones", NavIcon.HOBBIES),
-        ).forEach { (route, label, icon) ->
-            PixelCard(Modifier.clickable { onOpen(route) }) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    LineNavIcon(icon, Green)
-                    Text(label, style = MaterialTheme.typography.titleMedium)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "¿Qué aventura toca hoy en Heartopia?",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Cuadrícula de Tarjetas Modernas (Sin Pixel Art)
+            val menuItems = listOf(
+                MenuItem("Guía", Icons.Rounded.MenuBook, onNavigateToGuide),
+                MenuItem("Rutinas", Icons.Rounded.Checklist, onNavigateToRoutine),
+                MenuItem("Clima", Icons.Rounded.WbSunny, onNavigateToWeather),
+                MenuItem("Mapa", Icons.Rounded.Map, onNavigateToMap),
+                MenuItem("Hobbies", Icons.Rounded.SportsEsports, onNavigateToHobbies),
+                MenuItem("Ajustes", Icons.Rounded.Settings, onNavigateToSettings)
+            )
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(menuItems) { item ->
+                    HomeCard(item)
                 }
             }
         }
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeCard(item: MenuItem) {
+    ElevatedCard(
+        onClick = item.onClick,
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(1f) // Hace que la tarjeta sea cuadrada
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = item.icon,
+                contentDescription = item.title,
+                modifier = Modifier.size(48.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = item.title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+    }
+}
+
+data class MenuItem(
+    val title: String,
+    val icon: ImageVector,
+    val onClick: () -> Unit
+)
