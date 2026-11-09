@@ -47,7 +47,6 @@ import com.guiaheartopia.app.ui.components.PixelButton
 import com.guiaheartopia.app.ui.components.PixelCard
 import com.guiaheartopia.app.ui.components.PixelProgress
 import com.guiaheartopia.app.ui.components.SoftCheck
-import com.guiaheartopia.app.ui.components.CozySunIcon
 import com.guiaheartopia.app.ui.weather.ClimateSkyBar
 import com.guiaheartopia.app.ui.theme.DarkCard
 import com.guiaheartopia.app.ui.theme.Green
@@ -363,13 +362,7 @@ fun HomeScreen(
         }
 
         PixelCard(container = Paper) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                CozySunIcon(tint = Honey, size = 22.dp)
-                Text("Clima de hoy", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold))
-            }
+            Text("Clima de hoy", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold))
             if (climateSpans.isEmpty()) {
                 Text("Sin datos de clima para hoy.", style = MaterialTheme.typography.bodyMedium)
             } else {
