@@ -44,12 +44,16 @@ data class LocalGameWindow(
  */
 object DexSchedule {
     /**
-     * Tramos en UTC, en un solo sitio.
+     * Tramos en UTC, en un solo sitio. El servidor no sigue el horario de verano del jugador;
+     * [UTC_SLOTS] no cambia con la zona IANA elegida. La conversión local usa java.time y el
+     * desfase vigente en cada límite (inicio inclusivo, fin exclusivo).
      *
-     * Horas tomadas de Chile a UTC−3 el 2026-11-06: Amanecer 02:00–08:00,
-     * Día 08:00–14:00, Tarde (Atardecer en heartodex) 14:00–20:00 y Noche 20:00–02:00.
-     * Se asume que el servidor usa un desfase fijo, sin horario de verano.
-     * Si el juego sigue el horario de verano de Chile, cambia estas horas.
+     * Referencia confirmada para Chile a UTC−3 el 2026-11-06 (ejemplo, no se fija UTC−3 todo el año):
+     * Noche 02:00–08:00, Amanecer 08:00–14:00, Día 14:00–20:00,
+     * Tarde (Atardecer en heartodex) 20:00–02:00 del día siguiente.
+     *
+     * Equivalente UTC: Noche 05:00–11:00, Amanecer 11:00–17:00, Día 17:00–23:00, Tarde 23:00–05:00.
+     * Pendiente confirmar si el reloj del servidor sigue el cambio de hora de Chile u otro origen.
      */
     val UTC_SLOTS: List<GameSlot> = listOf(
         GameSlot("Dawn", "Amanecer", "🌅", LocalTime.of(11, 0), LocalTime.of(17, 0)),

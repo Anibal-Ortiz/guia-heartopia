@@ -1,6 +1,6 @@
 # Guía Heartopia
 
-Versión 0.5.1. El clima de noviembre y diciembre de 2026 está en cuatro tramos, cruzado entre Tidebell y heartopia.th.gl.
+Versión 0.5.1. El clima de noviembre y diciembre de 2026 está en cuatro tramos, cruzado entre Tidebell y heartopia.th.gl. Los tramos de criaturas están en UTC fijo (Noche 05:00–11:00, Amanecer 11:00–17:00, Día 17:00–23:00, Tarde 23:00–05:00); en Chile a UTC−3 el 2026-11-06 equivalen a Noche 02:00–08:00, Amanecer 08:00–14:00, Día 14:00–20:00 y Tarde 20:00–02:00. La zona del país se convierte con `java.time` y horario de verano; el calendario de clima usa otro reloj (cuatro bloques de seis horas UTC).
 
 Versión 0.5.0. El calendario de noviembre de 2026 junta heartodex y Tidebell. Diciembre se marca como estimado con el ciclo de 50 días. Los iconos de las criaturas son dibujos de la app.
 

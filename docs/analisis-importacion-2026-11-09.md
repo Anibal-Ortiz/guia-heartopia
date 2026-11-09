@@ -18,7 +18,7 @@ Frente a v0.5.1 el delta es el mismo salvo `colors.xml` y `themes.xml`, que coin
 - Inicio se rediseñó: saludo, país, tramo de juego, colección por categoría (130 peces, 114 pájaros, 106 insectos, 11 fauna), flurita, Liuliu y accesos a Guía, Clima y Aficiones. Ya no abre Mapa, Rutina ni Píxel desde ahí. El menú «Hobbies» de `main` pasa a «Aficiones».
 - Guía, clima (Mes / Semana / Lista), rutina, píxel, aficiones y ajustes siguen. «Ahora» y «Disponible ahora» siguen usando horario y, si hay dato, clima (`SkyWeather.availableNow`).
 - Catálogo: los 361 ids y el resto de campos no cambian. Solo se añade `imageUrl`. Las 361 fichas apuntan a `https://www.heartodex.com/...webp`. Coil 3.2.0 las carga en runtime; si la URL está vacía, queda el glifo vectorial. `tools/merge_images.py` arma esas URLs y no descarga bytes.
-- Los animales de ejemplo también reciben URL remota. El horario de criaturas se desplaza +6 h UTC (ver riesgos). Etiquetas de clima del catálogo: Soleado → Despejado, Lluvioso → Lluvia.
+- Los animales de ejemplo también reciben URL remota. El horario UTC de criaturas en `DexSchedule` ya coincidía con la referencia confirmada (Noche 05–11, Amanecer 11–17, Día 17–23, Tarde 23–05 UTC; Chile UTC−3 el 2026-11-06: 02–08 / 08–14 / 14–20 / 20–02). Tras esta revisión se alinearon comentarios, leyenda de la guía y pruebas. Etiquetas de clima del catálogo: Soleado → Despejado, Lluvioso → Lluvia.
 - Respaldo compatible: campos nuevos con valor por defecto, `ignoreUnknownKeys = true`, mismos ids.
 
 ## Mapa y rutina
@@ -27,7 +27,7 @@ No se eliminaron. `MapScreen` y la ruta `map` siguen. El botón «Mapa» de la g
 
 ## Riesgos, sin corregir
 
-1. Horario UTC y comentario no coinciden. El comentario de `DexSchedule` sigue describiendo Chile el 2026-11-06 como Amanecer 02:00–08:00, Día 08:00–14:00, Tarde 14:00–20:00 y Noche 20:00–02:00, que era el resultado de UTC 05–11 / 11–17 / 17–23 / 23–05. El código ahora usa Amanecer 11:00–17:00, Día 17:00–23:00, Tarde 23:00–05:00 y Noche 05:00–11:00 UTC. En Chile (UTC−3) eso se ve 08:00–14:00, 14:00–20:00, 20:00–02:00 y 02:00–08:00. Los bloques de clima siguen en 00/06/12/18 UTC, así que «Ahora» mueve la criatura y no el cielo. A las 12:00 UTC del 6 de noviembre el tramo deja de ser Día y pasa a ser Amanecer: por eso falla `SkyWeatherTest` en la línea 52.
+1. Calendario de clima y franjas de criaturas son independientes (clima en bloques 00/06/12/18 UTC). `SkyWeatherTest` en la línea 52 sigue usando mediodía UTC como si fuera el tramo «Day» del catálogo; a las 12:00 UTC el tramo de criatura es Amanecer (11:00–17:00 UTC). Ese fallo es ajeno a la corrección de documentación de horarios.
 2. Créditos desactualizados. Ajustes sigue diciendo que no se copiaron imágenes, pero la app pide 361 imágenes de heartodex por red. Eso choca con la decisión previa de no usar esas imágenes. No se añadieron ni se quitaron en este import.
 3. Si la red falla, `CreatureImage` no vuelve al glifo: el glifo solo aparece con URL vacía.
 4. La fauna de ejemplo sigue rotulada Soleado / Lluvioso, mientras el catálogo dice Despejado / Lluvia.
@@ -35,6 +35,6 @@ No se eliminaron. `MapScreen` y la ruta `map` siguen. El botón «Mapa» de la g
 
 ## Pruebas y compilación
 
-`:app:testDebugUnitTest`: 50 pruebas, 42 correctas, 8 fallos, 0 errores. Fallan las 7 de `DexScheduleTest` y `SkyWeatherTest.rainbowCoversSunAndRainButRainDoesNotCoverRainbow`. El resto (rutina, catálogo en español, calendario, clima horario, píxel, v0.2) pasa. Los tests no se tocaron.
+`:app:testDebugUnitTest` (importación): 50 pruebas, 42 correctas, 8 fallos. Tras actualizar `DexScheduleTest` a la referencia correcta, las pruebas de horario deberían pasar; puede quedar un fallo en `SkyWeatherTest` por el instante de prueba (ver punto 1).
 
 `:app:assembleDebug` terminó. APK local `app/build/outputs/apk/debug/Guia-Heartopia-0.5.1-debug.apk`, 19 844 287 bytes. No se publicó. Gradle acaba en fallo porque los tests fallan. No se ejecutaron pruebas de instrumentación ni se revisó la interfaz en un dispositivo. Este entorno no tenía SDK ni `local.properties`; se instaló la plataforma `android-37.0` solo para compilar, fuera del repositorio.

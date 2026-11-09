@@ -782,10 +782,10 @@ private fun ScheduleWeatherLegend() {
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            LegendItem("🌅", "Amanecer (02-08h)")
-            LegendItem("☀️", "Día (08-14h)")
-            LegendItem("🌤️", "Tarde (14-20h)")
-            LegendItem("🌆", "Noche (20-02h)")
+            LegendItem("🌅", "Amanecer (08-14h)")
+            LegendItem("☀️", "Día (14-20h)")
+            LegendItem("🌤️", "Tarde (20-02h)")
+            LegendItem("🌆", "Noche (02-08h)")
             LegendItem("🌧️", "Lluvia")
             LegendItem("🌈", "Arcoíris")
         }
