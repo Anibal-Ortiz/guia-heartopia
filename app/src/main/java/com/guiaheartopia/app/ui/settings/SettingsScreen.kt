@@ -203,7 +203,7 @@ private fun BackupBlock(
     }
     PixelCard {
         Text("Respaldo", style = MaterialTheme.typography.titleMedium)
-        Text("Exporta o recupera perfil, rutina, colección, aficiones y ajustes. El archivo es un respaldo de la versión 1.", style = MaterialTheme.typography.bodySmall)
+        Text("Exporta o recupera perfil, colección, aficiones y ajustes. El archivo es un respaldo de la versión 1.", style = MaterialTheme.typography.bodySmall)
         PixelButton("Exportar respaldo", onClick = { create.launch("guia-heartopia-respaldo.json") }, outlined = true)
         PixelButton("Importar respaldo", onClick = { open.launch(arrayOf("application/json", "text/*")) }, outlined = true)
         message?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }

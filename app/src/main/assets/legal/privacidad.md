@@ -4,16 +4,16 @@ Versión 0.1.0
 Este texto describe lo que hace ESTA versión de la aplicación. Antes de publicarla en Google Play hay que completar el nombre de quien responde, un correo de contacto y el dominio del sitio. Esos datos todavía no existen: no los inventes ni los des por publicados.
 
 Qué es
-Guía Heartopia es una guía independiente para anotar tu propia partida y preparar referencias de pixel art. No está afiliada a los creadores de Heartopia ni a sus editores.
+Guía Heartopia es una guía independiente para anotar tu propia partida. No está afiliada a los creadores de Heartopia ni a sus editores.
 
 Qué se guarda en el dispositivo
-El nombre que escribes, el país y la zona horaria que eliges, la rutina, las fichas, los coleccionables, los hobbies y la última cuadrícula de pixel art se guardan solo en el teléfono, con DataStore y archivos de la app. La app no tiene cuenta, no tiene servidor propio y no envía esa información a un servicio de Guía Heartopia.
+El nombre que escribes, el país y la zona horaria que eliges, las fichas, los coleccionables, los hobbies y tus preferencias se guardan solo en el teléfono, con DataStore y archivos de la app. La app no tiene cuenta, no tiene servidor propio y no envía esa información a un servicio de Guía Heartopia.
 
 Recordatorios
 Si los activas en Ajustes, la app programa avisos locales con WorkManager. Pueden retrasarse unos minutos. No pide alarma exacta. En Android 13 o superior pide el permiso de notificaciones solo cuando enciendes un aviso. Esos avisos no salen del teléfono.
 
 Qué no pedimos
-No pedimos ubicación, contactos, fotos de forma permanente, micrófono ni notificaciones. La imagen para pixel art se abre con el selector del sistema y se procesa en el dispositivo. Exportar un PNG usa el almacenamiento que ofrece el sistema (MediaStore en Android 10 o superior) sin un permiso amplio de archivos.
+No pedimos ubicación, contactos, fotos de forma permanente, micrófono ni notificaciones.
 
 Anuncios, identificador de publicidad y consentimiento
 Esta versión puede mostrar un banner de Google AdMob.
