@@ -8,6 +8,7 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 import kotlin.math.max
 
 /**
@@ -91,15 +92,23 @@ object SkyWeatherLocal {
         if (coversFull) return "$label · Todo el día"
         val clock = DateTimeFormatter.ofPattern("HH:mm")
         val t1 = span.start.toLocalTime().format(clock)
-        val t2 = span.end.toLocalTime().format(clock)
-        val endDate = span.end.toLocalDate()
-        val crossesMidnight = endDate.isAfter(focusLocalDate)
-        val suffix = when {
-            span.end == dayEnd && crossesMidnight -> " (hasta medianoche, sigue al día siguiente)"
-            crossesMidnight -> " (hasta ${span.end.format(DateTimeFormatter.ofPattern("d MMM HH:mm"))})"
-            else -> ""
+        val endClock = span.end.toLocalTime()
+        val t2 = endClock.format(clock)
+        val minutes = java.time.Duration.between(span.start.toInstant(), span.end.toInstant()).toMinutes()
+        val duration = if (minutes % 60L == 0L) "${minutes / 60} h" else "$minutes min"
+        val endsAtLocalMidnight = span.end == dayEnd || endClock == LocalTime.MIDNIGHT
+        if (t1 == t2) {
+            val dateFmt = DateTimeFormatter.ofPattern("d MMM", Locale("es"))
+            return "$label del ${span.start.format(dateFmt)} $t1 al ${span.end.format(dateFmt)} $t2 ($duration)"
         }
-        return "$label $t1–$t2$suffix"
+        if (endsAtLocalMidnight) {
+            return "$label $t1–24:00 ($duration, hasta medianoche)"
+        }
+        val endDate = span.end.toLocalDate()
+        if (endDate.isAfter(focusLocalDate)) {
+            return "$label $t1–$t2 del ${endDate.format(DateTimeFormatter.ofPattern("d MMM"))} ($duration)"
+        }
+        return "$label $t1–$t2 ($duration)"
     }
 
     private fun durationMinutes(span: SkySpan): Long {

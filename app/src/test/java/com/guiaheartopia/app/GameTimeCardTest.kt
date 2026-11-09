@@ -5,6 +5,7 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -16,19 +17,22 @@ class GameTimeCardTest {
         val instant = ZonedDateTime.of(2026, 11, 9, 18, 31, 0, 0, santiago).toInstant()
         val model = GameTimePresentation.cardModel(santiago.id, instant)
 
-        assertEquals("☀️ Día", model.currentTitle)
+        assertEquals("Día", model.currentTitle)
+        assertFalse(model.currentTitle.contains("☀"))
         assertEquals("hasta las 20:00", model.untilLabel)
         assertEquals("18:31", model.localClock)
 
         val byKey = model.rows.associateBy { it.slotKey }
-        assertEquals("🌅 Amanecer", byKey.getValue("Dawn").title)
+        assertEquals("Amanecer", byKey.getValue("Dawn").title)
+        assertFalse(byKey.getValue("Dawn").title.contains("🌅"))
         assertEquals("08:00–14:00", byKey.getValue("Dawn").hours)
-        assertEquals("☀️ Día", byKey.getValue("Day").title)
+        assertEquals("Día", byKey.getValue("Day").title)
         assertEquals("14:00–20:00", byKey.getValue("Day").hours)
         assertTrue(byKey.getValue("Day").isCurrent)
-        assertEquals("🌤️ Tarde", byKey.getValue("Dusk").title)
+        assertEquals("Tarde", byKey.getValue("Dusk").title)
         assertEquals("20:00–02:00", byKey.getValue("Dusk").hours)
-        assertEquals("🌆 Noche", byKey.getValue("Night").title)
+        assertEquals("Noche", byKey.getValue("Night").title)
+        assertFalse(byKey.values.any { it.title.contains("☀") || it.title.contains("🌆") })
         assertEquals("02:00–08:00", byKey.getValue("Night").hours)
     }
 

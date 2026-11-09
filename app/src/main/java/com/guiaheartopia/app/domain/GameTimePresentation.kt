@@ -28,13 +28,13 @@ object GameTimePresentation {
         val current = DexSchedule.currentWindow(zone, instant)
         val windows = DexSchedule.windowsAround(zone, instant)
         return GameTimeCardModel(
-            currentTitle = DexSchedule.titled(current.slot),
+            currentTitle = current.slot.label,
             untilLabel = DexSchedule.untilLabel(current, now),
             localClock = now.format(clock),
             rows = windows.map { window ->
                 GameTimeRow(
                     slotKey = window.slot.key,
-                    title = DexSchedule.titled(window.slot),
+                    title = window.slot.label,
                     hours = DexSchedule.hoursLabel(window),
                     isCurrent = window.slot.key == current.slot.key,
                 )
