@@ -60,12 +60,13 @@ object SampleWeather {
     val origins: List<WeatherOrigin> = listOf(
         WeatherOrigin(
             id = SampleIds.WEATHER_ORIGIN,
-            name = "Origen de ejemplo",
+            name = "Hora del servidor (UTC)",
             zoneId = "UTC",
-            note = "Pendiente de verificar. No es un servidor confirmado de Heartopia.",
+            note = "Los tramos del calendario en assets/calendar/clima-2026.json están en UTC " +
+                "(fuentes Tidebell y heartopia.th.gl). La app los convierte a tu zona IANA.",
         ),
     )
 
-    /** El estado horario del clima no está contrastado. Las ubicaciones de noviembre viven en VerifiedCatalog. */
+    /** Reservado: no hay slots de muestra; el calendario real está en assets. */
     val slots: List<WeatherSlot> = emptyList()
 }

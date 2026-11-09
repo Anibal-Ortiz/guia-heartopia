@@ -121,7 +121,6 @@ fun MapScreen(zoneId: String) {
                 Text("Hoy", style = MaterialTheme.typography.titleMedium)
                 if (filter != MapFilter.FLURITA) Text("Liuliu: ${com.guiaheartopia.app.domain.ResourceCalendar.label(spot.liuliu)}", color = Green)
                 if (filter != MapFilter.LIULIU) Text("flurita: ${com.guiaheartopia.app.domain.ResourceCalendar.label(spot.flurita)}", color = Orange)
-                Text(spot.certainty.label, style = MaterialTheme.typography.bodySmall)
             }
         }
     }

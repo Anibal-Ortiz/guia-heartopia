@@ -324,6 +324,31 @@ fun CozyTreeIcon(
 }
 
 @Composable
+fun CozyCalendarIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = Color.Unspecified,
+    size: Dp = 24.dp,
+    filled: Boolean = false,
+) {
+    Canvas(modifier.size(size)) {
+        val w = this.size.width
+        val h = this.size.height
+        val stroke = 2.dp.toPx()
+        val style = if (filled) Fill else Stroke(stroke, cap = StrokeCap.Round, join = StrokeJoin.Round)
+        drawRoundRect(
+            color = tint,
+            topLeft = Offset(w * 0.12f, h * 0.18f),
+            size = Size(w * 0.76f, h * 0.70f),
+            cornerRadius = CornerRadius(4.dp.toPx()),
+            style = style,
+        )
+        drawLine(tint, Offset(w * 0.12f, h * 0.34f), Offset(w * 0.88f, h * 0.34f), stroke)
+        drawLine(tint, Offset(w * 0.30f, h * 0.10f), Offset(w * 0.30f, h * 0.26f), stroke, cap = StrokeCap.Round)
+        drawLine(tint, Offset(w * 0.70f, h * 0.10f), Offset(w * 0.70f, h * 0.26f), stroke, cap = StrokeCap.Round)
+    }
+}
+
+@Composable
 fun CozySunIcon(
     modifier: Modifier = Modifier,
     tint: Color = Color(0xFFF39C12),

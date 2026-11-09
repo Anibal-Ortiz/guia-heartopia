@@ -41,7 +41,12 @@ class SkyWeatherLabelTest {
                 )
             },
         )
-        val segments = com.guiaheartopia.app.domain.SkyWeather.barSegments(day)
+        val table = com.guiaheartopia.app.data.SkyTable("", "", mapOf(day.date to day))
+        val segments = com.guiaheartopia.app.domain.SkyWeatherLocal.barSegmentsOnLocalDay(
+            table,
+            day.date,
+            java.time.ZoneId.of("UTC"),
+        )
         assertEquals(1, segments.size)
         assertEquals(4, segments.first().weight)
         assertEquals(SkyKind.LLUVIA, segments.first().kind)

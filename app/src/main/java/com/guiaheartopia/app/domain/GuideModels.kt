@@ -25,7 +25,9 @@ data class PlayerProfile(
 )
 
 object SampleIds {
-    const val WEATHER_ORIGIN = "origen-ejemplo"
+    /** Hora civil en el JSON (`calendar/clima-2026.json`) guardada en UTC. */
+    const val WEATHER_ORIGIN = "utc-servidor"
+    const val LEGACY_WEATHER_ORIGIN = "origen-ejemplo"
 }
 
 @Serializable

@@ -101,17 +101,8 @@ object SkyWeather {
     }
 
     fun localWindow(date: LocalDate, slot: SkySlot, zone: ZoneId): Pair<ZonedDateTime, ZonedDateTime> {
-        val start = ZonedDateTime.of(date, slot.start, ZoneOffset.UTC).withZoneSameInstant(zone)
-        val endDate = if (!slot.end.isAfter(slot.start) || slot.end == LocalTime.MIDNIGHT) date.plusDays(1) else date
-        val endTime = if (slot.end == LocalTime.MIDNIGHT && slot.end.hour == 0 && slot.start.hour >= 18) {
-            LocalTime.MIDNIGHT
-        } else slot.end
-        val end = if (slot.end.hour == 0 && slot.start.hour == 18) {
-            ZonedDateTime.of(date.plusDays(1), LocalTime.MIDNIGHT, ZoneOffset.UTC).withZoneSameInstant(zone)
-        } else {
-            ZonedDateTime.of(endDate, endTime, ZoneOffset.UTC).withZoneSameInstant(zone)
-        }
-        return start to end
+        val (start, end) = SkyWeatherLocal.utcSlotRange(date, slot)
+        return ZonedDateTime.ofInstant(start, zone) to ZonedDateTime.ofInstant(end, zone)
     }
 
     fun slotAt(day: SkyDay?, instant: Instant): SkySlot? {
@@ -121,41 +112,16 @@ object SkyWeather {
         return day.slots.getOrNull(slotIndex(instant))
     }
 
-    /** Tramos seguidos con el mismo cielo (sol / lluvia / arcoíris) en hora local. */
+    /** @deprecated use [SkyWeatherLocal.spansOnLocalDay] con día local y [SkyTable] */
     fun merged(day: SkyDay, zone: ZoneId): List<SkySpan> {
-        val spans = ArrayList<SkySpan>()
-        for (slot in day.slots) {
-            val display = slot.kind.climateDisplay()
-            if (display == SkyKind.SIN_DATOS) continue
-            val (start, end) = localWindow(day.date, slot, zone)
-            val previous = spans.lastOrNull()
-            if (previous != null && previous.kind == display && previous.status == slot.status) {
-                spans[spans.lastIndex] = previous.copy(end = end)
-            } else {
-                spans += SkySpan(display, slot.status, null, null, start, end)
-            }
-        }
-        return spans
+        val table = com.guiaheartopia.app.data.SkyTable("", "", mapOf(day.date to day))
+        return SkyWeatherLocal.spansOnLocalDay(table, day.date, zone)
     }
 
-    /** Segmentos de la barra: un icono por bloque de tramos iguales. */
-    fun barSegments(day: SkyDay?): List<SkyBarSegment> {
-        if (day == null || day.slots.isEmpty()) return emptyList()
-        val out = ArrayList<SkyBarSegment>()
-        for (slot in day.slots) {
-            val display = slot.kind.climateDisplay()
-            val last = out.lastOrNull()
-            if (last != null && last.kind == display) {
-                out[out.lastIndex] = last.copy(weight = last.weight + 1)
-            } else {
-                out += SkyBarSegment(display, 1)
-            }
-        }
-        return out
+    fun summary(day: SkyDay, zone: ZoneId): String {
+        val table = com.guiaheartopia.app.data.SkyTable("", "", mapOf(day.date to day))
+        return SkyWeatherLocal.summaryOnLocalDay(table, day.date, zone)
     }
-
-    fun summary(day: SkyDay, zone: ZoneId): String =
-        merged(day, zone).joinToString(" · ") { it.text() }.ifBlank { "Sin datos de clima" }
 
     /**
      * El arcoíris cubre sol, lluvia y arcoíris. La lluvia no cubre el arcoíris.

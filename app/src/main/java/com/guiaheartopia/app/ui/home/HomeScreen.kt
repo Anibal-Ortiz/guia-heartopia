@@ -34,6 +34,7 @@ import com.guiaheartopia.app.domain.Countries
 import com.guiaheartopia.app.domain.DexSchedule
 import com.guiaheartopia.app.domain.ResourceCalendar
 import com.guiaheartopia.app.domain.SkyWeather
+import com.guiaheartopia.app.domain.SkyWeatherLocal
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.ui.components.CozyCrystalIcon
 import com.guiaheartopia.app.ui.components.CozyGuideIcon
@@ -46,7 +47,8 @@ import com.guiaheartopia.app.ui.components.PixelButton
 import com.guiaheartopia.app.ui.components.PixelCard
 import com.guiaheartopia.app.ui.components.PixelProgress
 import com.guiaheartopia.app.ui.components.SoftCheck
-import com.guiaheartopia.app.ui.components.VerifyBadge
+import com.guiaheartopia.app.ui.components.CozySunIcon
+import com.guiaheartopia.app.ui.weather.ClimateSkyBar
 import com.guiaheartopia.app.ui.theme.DarkCard
 import com.guiaheartopia.app.ui.theme.Green
 import com.guiaheartopia.app.ui.theme.GreenDark
@@ -90,6 +92,7 @@ fun HomeScreen(
     val available = catalog.count { SkyWeather.availableNow(it.schedule, it.weather, nowInstant, skyDay) }
     val byCategory = catalog.groupBy { it.category }
     val today = LocalDate.now(zone)
+    val climateSpans = SkyWeatherLocal.spansOnLocalDay(sky, today, zone)
     val spot = ResourceCalendar.on(today)
     val event = com.guiaheartopia.app.data.VerifiedCatalog.events.firstOrNull()
 
@@ -100,7 +103,7 @@ fun HomeScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        // Welcome Header Banner
+        Text("Mi día", style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold), color = Ink)
         PixelCard(container = PaperSubtle, elevation = 1.dp) {
             Row(
                 Modifier.fillMaxWidth(),
@@ -110,7 +113,7 @@ fun HomeScreen(
                 Column(Modifier.weight(1f)) {
                     Text(
                         ui.greeting,
-                        style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold),
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold),
                         color = Ink,
                     )
                     Spacer(Modifier.height(4.dp))
@@ -207,9 +210,9 @@ fun HomeScreen(
                     "Peces" to "🐟",
                     "Pájaros" to "🐦",
                     "Insectos" to "🐛",
-                    "Fauna" to "🦊",
                 )
-                byCategory.forEach { (cat, items) ->
+                listOf("Peces", "Pájaros", "Insectos").forEach { cat ->
+                    val items = byCategory[cat].orEmpty()
                     val foundCount = items.count { it.id in ui.found }
                     val icon = catIcons[cat] ?: "🐾"
                     Column(
@@ -235,6 +238,23 @@ fun HomeScreen(
                             color = GreenDark,
                         )
                     }
+                }
+                Column(
+                    Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(PaperSubtle)
+                        .border(1.dp, Line, RoundedCornerShape(12.dp))
+                        .padding(vertical = 8.dp, horizontal = 4.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text("🐾", fontSize = 16.sp)
+                    Text("Animales", style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp), color = Muted, maxLines = 1)
+                    Text(
+                        "${ui.sighted.size}/${ui.animals.size}",
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                        color = GreenDark,
+                    )
                 }
             }
 
@@ -314,8 +334,6 @@ fun HomeScreen(
                 }
             }
 
-            VerifyBadge(spot.certainty.label, tone = PaperSubtle)
-
             if (event != null) {
                 Row(
                     modifier = Modifier
@@ -344,84 +362,24 @@ fun HomeScreen(
             }
         }
 
-        // Accesos Directos
-        Text(
-            "Herramientas & Secciones",
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold),
-            color = Ink,
-        )
-
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            // Weather
-            QuickAccessTile(
-                modifier = Modifier.weight(1f),
-                title = "Clima y Ciclos",
-                subtitle = "Predicciones y días",
-                iconEmoji = "🌤️",
-                tint = SkyBlue,
-                bg = Sky,
-                border = SkyTint,
-                onClick = { onOpen("weather") },
-            )
-            // Hobbies
-            QuickAccessTile(
-                modifier = Modifier.weight(1f),
-                title = "Aficiones",
-                subtitle = "Cocina, pesca y más",
-                iconEmoji = "⭐",
-                tint = Yellow,
-                bg = HoneySoft,
-                border = HoneyTint,
-                onClick = { onOpen("hobbies") },
-            )
+        PixelCard(container = Paper) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                CozySunIcon(tint = Honey, size = 22.dp)
+                Text("Clima de hoy", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold))
+            }
+            if (climateSpans.isEmpty()) {
+                Text("Sin datos de clima para hoy.", style = MaterialTheme.typography.bodyMedium)
+            } else {
+                ClimateSkyBar(sky, today, zone, Modifier.fillMaxWidth().height(20.dp))
+                climateSpans.forEach { span ->
+                    Text(SkyWeatherLocal.formatSpan(span, today, zone), style = MaterialTheme.typography.bodyMedium)
+                }
+            }
         }
 
         Spacer(Modifier.height(8.dp))
-    }
-}
-
-@Composable
-private fun QuickAccessTile(
-    modifier: Modifier = Modifier,
-    title: String,
-    subtitle: String,
-    iconEmoji: String,
-    tint: Color,
-    bg: Color,
-    border: Color,
-    onClick: () -> Unit,
-) {
-    Column(
-        modifier = modifier
-            .clip(RoundedCornerShape(18.dp))
-            .background(bg)
-            .border(1.dp, border, RoundedCornerShape(18.dp))
-            .clickable(onClick = onClick)
-            .padding(14.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-        Box(
-            Modifier
-                .size(36.dp)
-                .clip(CircleShape)
-                .background(Paper.copy(alpha = 0.85f)),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(iconEmoji, fontSize = 18.sp)
-        }
-        Text(
-            title,
-            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-            color = Ink,
-        )
-        Text(
-            subtitle,
-            style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
-            color = Muted,
-            maxLines = 1,
-        )
     }
 }

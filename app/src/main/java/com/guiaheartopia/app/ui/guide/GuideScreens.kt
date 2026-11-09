@@ -80,14 +80,13 @@ import com.guiaheartopia.app.ui.theme.SkyTint
 import java.time.Instant
 import java.time.ZoneOffset
 
-private val Tabs = listOf("🐾 Animales", "🐟 Peces", "🐛 Insectos", "🐦 Pájaros", "🦊 Fauna")
-private val CategoryNames = listOf("Animales", "Peces", "Insectos", "Pájaros", "Fauna")
+private val Tabs = listOf("🐾 Animales", "🐟 Peces", "🐛 Insectos", "🐦 Pájaros")
+private val DexCategories = listOf("Peces", "Insectos", "Pájaros")
 
 @Composable
 fun GuideScreen(
     ui: GuideUi,
     onOpenAnimal: (String) -> Unit,
-    onOpenWeather: () -> Unit,
     onOpenMap: () -> Unit,
     onOpenDex: (String) -> Unit,
     onToggleFound: (String) -> Unit,
@@ -135,17 +134,9 @@ fun GuideScreen(
         // Pill Tabs with Icons
         PillTabs(Tabs, tab) { tab = it }
 
-        // Action shortcut: Weather
-        PixelButton(
-            text = "🌤️ Calendario de Clima",
-            onClick = onOpenWeather,
-            outlined = true,
-            modifier = Modifier.fillMaxWidth(),
-        )
-
         when (tab) {
             0 -> AnimalsTab(ui, onOpenAnimal, onAddAnimal)
-            else -> DexTab(CategoryNames[tab], ui, onOpenDex, onToggleFound)
+            else -> DexTab(DexCategories[tab - 1], ui, onOpenDex, onToggleFound)
         }
 
         Spacer(Modifier.height(8.dp))

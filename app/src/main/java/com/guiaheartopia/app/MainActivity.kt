@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
@@ -65,6 +66,7 @@ import com.guiaheartopia.app.ui.hobbies.HobbiesScreen
 import com.guiaheartopia.app.ui.home.HomeScreen
 import com.guiaheartopia.app.ui.legal.LegalScreen
 import com.guiaheartopia.app.ui.AppNavigation
+import com.guiaheartopia.app.ui.NavigationPolicy
 import com.guiaheartopia.app.ui.map.MapScreen
 import com.guiaheartopia.app.ui.settings.SettingsScreen
 import com.guiaheartopia.app.ui.theme.Cream
@@ -150,7 +152,14 @@ private fun AppScaffold(
     val backStack by nav.currentBackStackEntryAsState()
     val route = backStack?.destination?.route
     val tabs = AppNavigation.BottomNavTabs
-    val tab = tabs.firstOrNull { route?.startsWith(it.route) == true }?.route
+    val tab = when (route) {
+        "settings", "map", "weather", null -> null
+        else -> tabs.firstOrNull { route.startsWith(it.route) }?.route
+            ?: when {
+                route.startsWith("animal/") || route.startsWith("dex/") -> "guide"
+                else -> null
+            }
+    }
 
     Scaffold(
         containerColor = Cream,
@@ -194,6 +203,7 @@ private fun AppScaffold(
                 }
                 Box(
                     modifier = Modifier
+                        .testTag("open_settings")
                         .size(38.dp)
                         .clip(CircleShape)
                         .background(PaperSubtle)
@@ -225,10 +235,14 @@ private fun AppScaffold(
                     }
                 }
                 PixelNavBar(tabs, tab) { dest ->
+                    val policy = NavigationPolicy.onBottomTabSelected(dest)
                     nav.navigate(dest) {
-                        popUpTo("home") { saveState = true }
+                        popUpTo(policy.popUpToRoute) {
+                            inclusive = policy.inclusive
+                            saveState = policy.saveState
+                        }
                         launchSingleTop = true
-                        restoreState = true
+                        restoreState = policy.restoreState
                     }
                 }
             }
@@ -246,12 +260,16 @@ private fun AppScaffold(
                 GuideScreen(
                     ui = ui,
                     onOpenAnimal = { nav.navigate("animal/$it") },
-                    onOpenWeather = { nav.navigate("weather") },
                     onOpenMap = { nav.navigate("map") },
                     onOpenDex = { nav.navigate("dex/$it") },
                     onToggleFound = vm::toggleFound,
                     onAddAnimal = vm::addAnimal,
                 )
+            }
+            composable("calendar") {
+                WeatherScreen(ui.profile.countryId, ui.profile.zoneId) { country, zone ->
+                    vm.updateRegion(country, zone)
+                }
             }
             composable("hobbies") {
                 HobbiesScreen(ui.hobbies, vm::setHobby, vm::addHobby, vm::removeHobby)
@@ -277,9 +295,6 @@ private fun AppScaffold(
                         onBack = { nav.popBackStack() },
                     )
                 }
-            }
-            composable("weather") {
-                WeatherScreen(ui.profile.countryId, ui.profile.zoneId, ui.profile.weatherOriginId, vm::updateRegion)
             }
             composable("settings") {
                 SettingsScreen(

@@ -49,7 +49,8 @@ class ScreenGrabTest {
         rule.setContent {
             GuiaTheme {
                 val current = when (index.intValue) {
-                    2, 3 -> "guide"
+                    2 -> "guide"
+                    3 -> "calendar"
                     4 -> "hobbies"
                     else -> "home"
                 }
@@ -72,8 +73,8 @@ class ScreenGrabTest {
             when (index) {
                 0 -> WelcomeScreen(PlayerProfile(countryId = "CL", zoneId = "America/Santiago"), {}, {}, {})
                 1 -> HomeScreen(ui) {}
-                2 -> GuideScreen(ui, {}, {}, {}, {}, {}, { _, _, _, _ -> }, initialTab = 1)
-                3 -> WeatherScreen("CL", "America/Santiago", "origen-ejemplo") { _, _, _ -> }
+                2 -> GuideScreen(ui, {}, {}, {}, {}, { _, _, _, _ -> }, initialTab = 1)
+                3 -> WeatherScreen("CL", "America/Santiago") { _, _ -> }
                 else -> HobbiesScreen(ui.hobbies, { _, _, _, _ -> }, {}, {})
             }
         }

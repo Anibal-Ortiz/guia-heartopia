@@ -31,7 +31,9 @@ import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import com.guiaheartopia.app.data.VerifiedCatalog
 import com.guiaheartopia.app.domain.Countries
+import com.guiaheartopia.app.domain.SampleIds
 import com.guiaheartopia.app.domain.ImportResult
 import com.guiaheartopia.app.domain.PlaySession
 import com.guiaheartopia.app.domain.PlayerProfile
@@ -66,6 +68,29 @@ fun SettingsScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text("Ajustes", style = MaterialTheme.typography.headlineSmall)
+        PixelCard {
+            Text("Datos y coincidencia de fuentes", style = MaterialTheme.typography.titleMedium)
+            Text(
+                "Aquí se resume cómo se contrastan las listas. En el calendario y en Inicio ya no se muestran avisos día a día.",
+                style = MaterialTheme.typography.bodySmall,
+            )
+            Text(VerifiedCatalog.SPOT_SOURCES, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                "El clima hora a hora sale de calendar/clima-2026.json (Tidebell y heartopia.th.gl), " +
+                    "guardado en UTC y convertido a tu zona. Revisado según metadatos del archivo.",
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Text(
+                "«Origen de ejemplo» era solo el marcador por defecto en SampleCatalog (origen-ejemplo): " +
+                    "no era una fuente del juego. El horario real es el del servidor en UTC citado arriba.",
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Text(
+                "Tramos de criaturas: servidor UTC fijo; en Chile continental (UTC−3) " +
+                    "Noche 02–08, Amanecer 08–14, Día 14–20, Tarde 20–02.",
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
         OutlinedTextField(name, { name = it }, label = { Text("Nombre") }, modifier = Modifier.fillMaxWidth())
         Text("Cuándo sueles jugar", style = MaterialTheme.typography.bodyMedium)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -84,14 +109,14 @@ fun SettingsScreen(
                 Countries.all.map { it.id to it.name },
                 onPick = { id ->
                     val next = Countries.byId(id)
-                    onRegion(id, next.zones.first().zoneId, profile.weatherOriginId)
+                    onRegion(id, next.zones.first().zoneId, SampleIds.WEATHER_ORIGIN)
                 },
             )
             PickerField(
                 "Zona",
                 country.zones.firstOrNull { it.zoneId == profile.zoneId }?.label ?: country.zones.first().label,
                 country.zones.map { it.zoneId to it.label },
-                onPick = { onRegion(country.id, it, profile.weatherOriginId) },
+                onPick = { onRegion(country.id, it, SampleIds.WEATHER_ORIGIN) },
             )
         }
         PixelCard {

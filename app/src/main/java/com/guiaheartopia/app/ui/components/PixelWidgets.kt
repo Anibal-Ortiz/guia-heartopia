@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
@@ -268,7 +269,7 @@ fun PixelProgress(
     }
 }
 
-enum class NavIcon { HOME, GUIDE, HOBBIES }
+enum class NavIcon { HOME, GUIDE, CALENDAR, HOBBIES }
 
 data class NavItem(val route: String, val label: String, val icon: NavIcon)
 
@@ -301,6 +302,7 @@ fun PixelNavBar(
                 Column(
                     Modifier
                         .weight(1f)
+                        .testTag("nav_${item.route}")
                         .semantics {
                             role = Role.Tab
                             this.selected = selected
@@ -338,6 +340,7 @@ fun LineNavIcon(icon: NavIcon, tint: Color, filled: Boolean = false) {
     when (icon) {
         NavIcon.HOME -> CozyHomeIcon(tint = tint, size = 22.dp, filled = filled)
         NavIcon.GUIDE -> CozyGuideIcon(tint = tint, size = 22.dp, filled = filled)
+        NavIcon.CALENDAR -> CozyCalendarIcon(tint = tint, size = 22.dp, filled = filled)
         NavIcon.HOBBIES -> CozyHobbiesIcon(tint = tint, size = 22.dp, filled = filled)
     }
 }

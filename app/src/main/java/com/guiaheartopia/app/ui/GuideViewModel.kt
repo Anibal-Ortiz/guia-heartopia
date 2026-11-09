@@ -14,6 +14,7 @@ import com.guiaheartopia.app.domain.GuideSnapshot
 import com.guiaheartopia.app.domain.Hobby
 import com.guiaheartopia.app.domain.HobbyProgress
 import com.guiaheartopia.app.domain.PlayerProfile
+import com.guiaheartopia.app.domain.SampleIds
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
@@ -109,14 +110,18 @@ class GuideViewModel(
         }
     }
 
-    fun updateRegion(countryId: String, zoneId: String, originId: String) {
+    fun updateRegion(countryId: String, zoneId: String, originId: String = SampleIds.WEATHER_ORIGIN) {
+        val resolved = when (originId) {
+            SampleIds.LEGACY_WEATHER_ORIGIN, "" -> SampleIds.WEATHER_ORIGIN
+            else -> originId
+        }
         viewModelScope.launch {
             repository.update { snap ->
                 snap.copy(
                     profile = snap.profile.copy(
                         countryId = countryId,
                         zoneId = zoneId,
-                        weatherOriginId = originId,
+                        weatherOriginId = resolved,
                     ),
                 )
             }
