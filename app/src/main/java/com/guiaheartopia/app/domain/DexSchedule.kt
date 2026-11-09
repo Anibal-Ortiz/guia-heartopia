@@ -52,10 +52,10 @@ object DexSchedule {
      * Si el juego sigue el horario de verano de Chile, cambia estas horas.
      */
     val UTC_SLOTS: List<GameSlot> = listOf(
-        GameSlot("Dawn", "Amanecer", "🌅", LocalTime.of(5, 0), LocalTime.of(11, 0)),
-        GameSlot("Day", "Día", "☀️", LocalTime.of(11, 0), LocalTime.of(17, 0)),
-        GameSlot("Dusk", "Tarde", "🌤️", LocalTime.of(17, 0), LocalTime.of(23, 0)),
-        GameSlot("Night", "Noche", "🌆", LocalTime.of(23, 0), LocalTime.of(5, 0)),
+        GameSlot("Dawn", "Amanecer", "🌅", LocalTime.of(11, 0), LocalTime.of(17, 0)),
+        GameSlot("Day", "Día", "☀️", LocalTime.of(17, 0), LocalTime.of(23, 0)),
+        GameSlot("Dusk", "Tarde", "🌤️", LocalTime.of(23, 0), LocalTime.of(5, 0)),
+        GameSlot("Night", "Noche", "🌆", LocalTime.of(5, 0), LocalTime.of(11, 0)),
     )
 
     val allDay = setOf("Day", "Dawn", "Dusk", "Night")
@@ -130,8 +130,8 @@ object DexSchedule {
     }
 
     fun weatherEs(value: String): String = when (value) {
-        "Sunny" -> "Soleado"
-        "Rainy" -> "Lluvioso"
+        "Sunny" -> "Despejado"
+        "Rainy" -> "Lluvia"
         "Rainbow" -> "Arcoíris"
         else -> value
     }

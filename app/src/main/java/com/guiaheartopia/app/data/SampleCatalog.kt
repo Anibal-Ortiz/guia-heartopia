@@ -22,17 +22,24 @@ object SeedCatalog {
     )
 
     val animals: List<AnimalRecord> = listOf(
-        animal("panda", "Panda", listOf("Bambú", "Manzana", "Maíz"), listOf("Plataformas"), "Lluvioso"),
-        animal("capibara", "Capibara", listOf("Frambuesa", "Tomate", "Uva"), listOf("Lago volcánico", "Ruinas"), "Arcoíris, Lluvioso"),
-        animal("conejo", "Conejo", listOf("Hierba", "Zanahoria", "Fresa"), listOf("Suburbio"), "Soleado"),
-        animal("zorro", "Zorro", listOf("Carne", "Perca americana", "Perca de río"), listOf("Florimolino", "Costa purpura", "Lago de la pradera"), "Arcoíris"),
-        animal("nutria", "Nutria marina", listOf("Camarón azul", "Camarón marino", "Mejillón"), listOf("Plaza del pueblo pesquero"), "Lluvioso"),
-        animal("huron", "Hurón", listOf("Huevo", "Lubina marina", "Gobio"), listOf("Rio de crepusculo"), "Arcoíris"),
-        animal("ciervo", "Ciervo sika", listOf("Rama", "Lechuga", "Ensalada de la casa"), listOf("Lago del bosque"), "Soleado"),
-        animal("alpaca", "Alpaca", listOf("Trigo", "Piña", "Arándano"), listOf("Costa purpura"), "Soleado"),
+        animal("panda", "Panda", listOf("Bambú", "Manzana", "Maíz"), listOf("Plataformas"), "Lluvioso", "https://www.heartodex.com/_astro/1783738206153-animal-panda_105qed.webp"),
+        animal("capibara", "Capibara", listOf("Frambuesa", "Tomate", "Uva"), listOf("Lago volcánico", "Ruinas"), "Arcoíris, Lluvioso", "https://www.heartodex.com/_astro/1783738150016-animal-capibara_qxpUA.webp"),
+        animal("conejo", "Conejo", listOf("Hierba", "Zanahoria", "Fresa"), listOf("Suburbio"), "Soleado", "https://www.heartodex.com/_astro/1783738158505-animal-conejo_1tCt1y.webp"),
+        animal("zorro", "Zorro", listOf("Carne", "Perca americana", "Perca de río"), listOf("Florimolino", "Costa purpura", "Lago de la pradera"), "Arcoíris", "https://www.heartodex.com/_astro/1783738126393-animal-zorro_WO9be.webp"),
+        animal("nutria", "Nutria marina", listOf("Camarón azul", "Camarón marino", "Mejillón"), listOf("Plaza del pueblo pesquero"), "Lluvioso", "https://www.heartodex.com/_astro/1783738186224-animal-nutriamarina_Z1eE5Nl.webp"),
+        animal("huron", "Hurón", listOf("Huevo", "Lubina marina", "Gobio"), listOf("Rio de crepusculo"), "Arcoíris", "https://www.heartodex.com/_astro/1783738180133-animal-huron_ZCdP02.webp"),
+        animal("ciervo", "Ciervo sika", listOf("Rama", "Lechuga", "Ensalada de la casa"), listOf("Lago del bosque"), "Soleado", "https://www.heartodex.com/_astro/1783738201643-animal-ciervosika_1WSxKk.webp"),
+        animal("alpaca", "Alpaca", listOf("Trigo", "Piña", "Arándano"), listOf("Costa purpura"), "Soleado", "https://www.heartodex.com/_astro/1783738190730-animal-alpaca_gDg6z.webp"),
     )
 
-    private fun animal(id: String, name: String, foods: List<String>, places: List<String>, weather: String) = AnimalRecord(
+    private fun animal(
+        id: String,
+        name: String,
+        foods: List<String>,
+        places: List<String>,
+        weather: String,
+        imageUrl: String = "",
+    ) = AnimalRecord(
         id = id,
         name = name,
         group = "Fauna",
@@ -43,6 +50,7 @@ object SeedCatalog {
         verified = false,
         foodsVerified = true,
         locationVerified = true,
+        imageUrl = imageUrl,
     )
 
     val collectibles: List<Collectible> = emptyList()

@@ -56,7 +56,7 @@ fun CreatureGlyph(
     }
 }
 
-private fun habitatColor(habitat: Habitat, level: Int?): Color = when (habitat) {
+fun habitatColor(habitat: Habitat, level: Int?): Color = when (habitat) {
     Habitat.MAR -> Color(0xFF2C6E8A)
     Habitat.AGUA -> Color(0xFF1C7A68)
     Habitat.BOSQUE -> Green

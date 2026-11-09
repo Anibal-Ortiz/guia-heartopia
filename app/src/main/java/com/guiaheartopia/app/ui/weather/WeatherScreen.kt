@@ -102,7 +102,7 @@ fun WeatherScreen(
     val month = YearMonth.parse(monthToken)
     val filter = WeatherFilter.valueOf(filterName)
     val now = ZonedDateTime.now(zone)
-    val clock = DateTimeFormatter.ofPattern("d MMM yyyy HH:mm", Locale("es"))
+    val clock = DateTimeFormatter.ofPattern("d MMM yyyy HH:mm", Locale.forLanguageTag("es"))
     val selected = selectedToken?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
 
     Column(
@@ -152,7 +152,7 @@ fun WeatherScreen(
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
             TextButton(onClick = { monthToken = month.minusMonths(1).toString() }) { Text("Mes anterior") }
             Text(
-                month.format(DateTimeFormatter.ofPattern("LLLL yyyy", Locale("es"))).replaceFirstChar { it.titlecase() },
+                month.format(DateTimeFormatter.ofPattern("LLLL yyyy", Locale.forLanguageTag("es"))).replaceFirstChar { it.titlecase() },
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.titleMedium,
             )
@@ -197,19 +197,66 @@ fun WeatherScreen(
 @Composable
 private fun TodayResources(today: LocalDate) {
     val day = ResourceCalendar.on(today)
-    PixelCard {
-        Text("Hoy", style = MaterialTheme.typography.titleSmall)
-        Text("Liuliu: ${ResourceCalendar.label(day.liuliu)}", color = Green)
-        Text("flurita: ${ResourceCalendar.label(day.flurita)}", color = Orange)
-        Text(certaintyCopy(day.certainty), style = MaterialTheme.typography.bodySmall)
+    PixelCard(container = Paper) {
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text("💎", fontSize = 16.sp)
+                Text("Recursos de hoy", style = MaterialTheme.typography.titleMedium.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold))
+            }
+            com.guiaheartopia.app.ui.components.VerifyBadge(day.certainty.label, tone = com.guiaheartopia.app.ui.theme.PaperSubtle)
+        }
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Column(
+                Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(com.guiaheartopia.app.ui.theme.HoneySoft)
+                    .padding(10.dp),
+            ) {
+                Text("🌳 Liuliu", style = MaterialTheme.typography.labelSmall, color = Honey)
+                Text(ResourceCalendar.label(day.liuliu), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold), color = Ink)
+            }
+            Column(
+                Modifier
+                    .weight(1f)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(com.guiaheartopia.app.ui.theme.GreenSoft)
+                    .padding(10.dp),
+            ) {
+                Text("💎 Flurita", style = MaterialTheme.typography.labelSmall, color = Green)
+                Text(ResourceCalendar.label(day.flurita), style = MaterialTheme.typography.bodyMedium.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold), color = Ink)
+            }
+        }
+        Text(certaintyCopy(day.certainty), style = MaterialTheme.typography.bodySmall, color = com.guiaheartopia.app.ui.theme.Muted)
     }
 }
 
 @Composable
 private fun WeekHeader() {
-    Row(Modifier.fillMaxWidth()) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(com.guiaheartopia.app.ui.theme.PaperSubtle)
+            .padding(vertical = 6.dp),
+    ) {
         listOf("L", "M", "X", "J", "V", "S", "D").forEach { label ->
-            Text(label, modifier = Modifier.weight(1f), style = MaterialTheme.typography.labelMedium)
+            Text(
+                label,
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                ),
+                color = Ink,
+            )
         }
     }
 }
@@ -238,28 +285,44 @@ private fun MonthGrid(
                     } else {
                         val date = month.atDay(dayNumber)
                         val data = ResourceCalendar.on(date)
+                        val isToday = date == today
+                        val isSelected = selected == date
                         val bg = when {
-                            selected == date -> GreenSoft
-                            date == today -> Sky
+                            isSelected -> GreenSoft
+                            isToday -> Sky
                             else -> Paper
                         }
+                        val borderStroke = if (isSelected) 2.dp else 1.dp
+                        val borderColor = when {
+                            isSelected -> Green
+                            isToday -> com.guiaheartopia.app.ui.theme.SkyTint
+                            else -> com.guiaheartopia.app.ui.theme.Line
+                        }
+
                         Box(
                             Modifier
                                 .weight(1f)
-                                .aspectRatio(0.62f)
-                                .border(if (selected == date) 2.dp else 1.dp, if (selected == date) Green else Ink.copy(alpha = 0.35f), RoundedCornerShape(10.dp))
-                                .background(bg, RoundedCornerShape(10.dp))
+                                .aspectRatio(0.64f)
+                                .clip(RoundedCornerShape(10.dp))
+                                .border(borderStroke, borderColor, RoundedCornerShape(10.dp))
+                                .background(bg)
                                 .clickable { onSelect(date) }
-                                .padding(2.dp),
+                                .padding(3.dp),
                         ) {
-                            Text("$dayNumber", style = MaterialTheme.typography.labelMedium)
+                            Text(
+                                "$dayNumber",
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontWeight = if (isToday || isSelected) androidx.compose.ui.text.font.FontWeight.Bold else androidx.compose.ui.text.font.FontWeight.Medium,
+                                ),
+                                color = if (isSelected) Green else Ink,
+                            )
                             SkyBar(sky.on(date), Modifier.align(Alignment.Center).fillMaxWidth().height(16.dp))
                             Column(Modifier.align(Alignment.BottomCenter)) {
                                 if (filter != WeatherFilter.FLURITA && data.liuliu != null) {
-                                    Text(shortSpot(data.liuliu), color = Green, style = MaterialTheme.typography.labelMedium, fontSize = 9.sp)
+                                    Text(shortSpot(data.liuliu), color = Green, style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
                                 }
                                 if (filter != WeatherFilter.LIULIU && data.flurita != null) {
-                                    Text(shortSpot(data.flurita), color = Orange, style = MaterialTheme.typography.labelMedium, fontSize = 9.sp)
+                                    Text(shortSpot(data.flurita), color = Orange, style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
                                 }
                             }
                         }
@@ -284,7 +347,7 @@ private fun certaintyCopy(certainty: DayCertainty): String = when (certainty) {
 
 @Composable
 private fun DayDetail(date: LocalDate, zone: ZoneId, sky: com.guiaheartopia.app.data.SkyTable) {
-    val title = date.format(DateTimeFormatter.ofPattern("EEEE d 'de' MMMM", Locale("es")))
+    val title = date.format(DateTimeFormatter.ofPattern("EEEE d 'de' MMMM", Locale.forLanguageTag("es")))
     val data = ResourceCalendar.on(date)
     val event = VerifiedCatalog.events.firstOrNull { event ->
         event.start != null && event.end != null && !date.isBefore(event.start) && !date.isAfter(event.end)
@@ -427,7 +490,12 @@ private fun Legend() {
 
 @Composable
 fun WeatherGlyph(kind: WeatherKind, modifier: Modifier = Modifier) {
-    Canvas(modifier.border(1.dp, Ink).background(Paper)) {
+    Canvas(
+        modifier
+            .clip(RoundedCornerShape(8.dp))
+            .border(1.dp, com.guiaheartopia.app.ui.theme.Line, RoundedCornerShape(8.dp))
+            .background(Paper),
+    ) {
         val ink = Ink
         val w = size.minDimension
         when (kind) {

@@ -56,6 +56,7 @@ data class AnimalRecord(
     val locationVerified: Boolean = false,
     val sourceNote: String = "",
     val playerOwned: Boolean = false,
+    val imageUrl: String = "",
 )
 
 @Serializable

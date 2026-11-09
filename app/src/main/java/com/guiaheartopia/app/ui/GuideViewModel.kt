@@ -54,7 +54,7 @@ class GuideViewModel(
     private val zone: ZoneId = ZoneId.systemDefault(),
 ) : ViewModel() {
     private val today = MutableStateFlow(LocalDate.now(zone))
-    private val dateFormat = DateTimeFormatter.ofPattern("EEEE d 'de' MMMM", Locale("es"))
+    private val dateFormat = DateTimeFormatter.ofPattern("EEEE d 'de' MMMM", Locale.forLanguageTag("es"))
 
     val ui = combine(repository.snapshots, today) { snap, day ->
         present(snap, day)

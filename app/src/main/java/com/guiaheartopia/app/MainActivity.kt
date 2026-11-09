@@ -4,22 +4,45 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -31,37 +54,32 @@ import androidx.navigation.navArgument
 import com.guiaheartopia.app.ads.DiscreteBanner
 import com.guiaheartopia.app.ads.rememberAdsState
 import com.guiaheartopia.app.data.GuideRepository
+import com.guiaheartopia.app.reminders.ReminderScheduler
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.ui.GuideViewModel
-import androidx.compose.runtime.LaunchedEffect
-import com.guiaheartopia.app.reminders.ReminderScheduler
+import com.guiaheartopia.app.ui.components.CozySettingsIcon
 import com.guiaheartopia.app.ui.components.NavIcon
 import com.guiaheartopia.app.ui.components.NavItem
 import com.guiaheartopia.app.ui.components.PixelNavBar
-import com.guiaheartopia.app.ui.map.MapScreen
 import com.guiaheartopia.app.ui.guide.AnimalDetailScreen
 import com.guiaheartopia.app.ui.guide.GuideScreen
 import com.guiaheartopia.app.ui.hobbies.HobbiesScreen
 import com.guiaheartopia.app.ui.home.HomeScreen
 import com.guiaheartopia.app.ui.legal.LegalScreen
+import com.guiaheartopia.app.ui.map.MapScreen
 import com.guiaheartopia.app.ui.pixel.PixelArtScreen
 import com.guiaheartopia.app.ui.routine.RoutineScreen
 import com.guiaheartopia.app.ui.settings.SettingsScreen
 import com.guiaheartopia.app.ui.theme.Cream
+import com.guiaheartopia.app.ui.theme.GreenSoft
 import com.guiaheartopia.app.ui.theme.GuiaTheme
 import com.guiaheartopia.app.ui.theme.Ink
+import com.guiaheartopia.app.ui.theme.Line
+import com.guiaheartopia.app.ui.theme.Muted
+import com.guiaheartopia.app.ui.theme.Paper
+import com.guiaheartopia.app.ui.theme.PaperSubtle
 import com.guiaheartopia.app.ui.weather.WeatherScreen
 import com.guiaheartopia.app.ui.welcome.WelcomeScreen
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.material3.Scaffold
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.compose.runtime.DisposableEffect
-import androidx.lifecycle.LifecycleEventObserver
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -143,23 +161,79 @@ private fun AppScaffold(
     val backStack by nav.currentBackStackEntryAsState()
     val route = backStack?.destination?.route
     val tab = Tabs.firstOrNull { route?.startsWith(it.route) == true }?.route
+
     Scaffold(
         containerColor = Cream,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
-            Column(
-                Modifier
-                    .background(Cream)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Paper)
                     .windowInsetsPadding(WindowInsets.statusBars)
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                    .border(width = 1.dp, color = Line)
+                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Text("Guía Heartopia", color = Ink)
-                TextButton(onClick = { nav.navigate("settings") }) { Text("Ajustes") }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                ) {
+                    Box(
+                        Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(GreenSoft),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text("🌱", fontSize = 18.sp)
+                    }
+                    Column {
+                        Text(
+                            "Guía Heartopia",
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold),
+                            color = Ink,
+                        )
+                        Text(
+                            "Compañero no oficial",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Muted,
+                        )
+                    }
+                }
+                Box(
+                    modifier = Modifier
+                        .size(38.dp)
+                        .clip(CircleShape)
+                        .background(PaperSubtle)
+                        .border(1.dp, Line, CircleShape)
+                        .clickable { nav.navigate("settings") },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CozySettingsIcon(tint = Ink, size = 18.dp)
+                }
             }
         },
         bottomBar = {
-            Column(Modifier.windowInsetsPadding(WindowInsets.navigationBars)) {
-                if (showBanner) DiscreteBanner(adsMode)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Paper)
+                    .windowInsetsPadding(WindowInsets.navigationBars),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                if (showBanner) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Paper)
+                            .padding(vertical = 4.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        DiscreteBanner(adsMode)
+                    }
+                }
                 PixelNavBar(Tabs, tab) { dest ->
                     nav.navigate(dest) {
                         popUpTo("home") { saveState = true }
@@ -177,7 +251,7 @@ private fun AppScaffold(
                 .padding(padding)
                 .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         ) {
-            composable("home") { HomeScreen(ui) { dest -> nav.navigate(dest) } }
+            composable("home") { HomeScreen(ui, vm::toggleTask) { dest -> nav.navigate(dest) } }
             composable("routine") {
                 RoutineScreen(ui, vm::toggleTask, vm::restoreRoutine, vm::addTask, vm::removeTask)
             }
