@@ -29,7 +29,8 @@ object ReminderScheduler {
         val zone = runCatching { ZoneId.of(profile.zoneId) }.getOrElse { ZoneId.systemDefault() }
         val now = ZonedDateTime.now(zone)
         val prefs = profile.reminders
-        schedule(context, "recordatorio-rutina", prefs.routineEnabled, prefs.routineMinutes, now)
+        val manager = WorkManager.getInstance(context)
+        manager.cancelUniqueWork("recordatorio-rutina")
         schedule(context, "recordatorio-clima", prefs.weatherEnabled, prefs.weatherMinutes, now)
         schedule(context, "recordatorio-eventos", prefs.eventsEnabled, prefs.eventsMinutes, now)
     }

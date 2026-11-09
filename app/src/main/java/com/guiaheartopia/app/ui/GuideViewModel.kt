@@ -14,8 +14,6 @@ import com.guiaheartopia.app.domain.GuideSnapshot
 import com.guiaheartopia.app.domain.Hobby
 import com.guiaheartopia.app.domain.HobbyProgress
 import com.guiaheartopia.app.domain.PlayerProfile
-import com.guiaheartopia.app.domain.RoutineLogic
-import com.guiaheartopia.app.domain.RoutineState
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
@@ -35,8 +33,6 @@ import kotlinx.coroutines.launch
 data class GuideUi(
     val ready: Boolean = false,
     val profile: PlayerProfile = PlayerProfile(),
-    val routine: RoutineState = RoutineState(),
-    val routineFraction: Float = 0f,
     val animals: List<AnimalRecord> = emptyList(),
     val annotations: Map<String, AnimalAnnotation> = emptyMap(),
     val sighted: Set<String> = emptySet(),
@@ -65,21 +61,20 @@ class GuideViewModel(
     }
 
     fun refreshDay() {
-        val day = LocalDate.now(zone)
-        today.value = day
+        today.value = LocalDate.now(zone)
         viewModelScope.launch {
             repository.update { snap ->
-                val routine = RoutineLogic.prepare(snap.routine, day, SeedCatalog.routine)
                 val hobbies = ensureHobbies(snap)
-                if (routine == snap.routine && hobbies == snap.hobbies && snap.hobbiesInitialized) snap
-                else snap.copy(routine = routine, hobbies = hobbies, hobbiesInitialized = true)
+                if (hobbies == snap.hobbies && snap.hobbiesInitialized) snap
+                else snap.copy(hobbies = hobbies, hobbiesInitialized = true)
             }
         }
     }
 
     fun saveReminders(reminders: ReminderPrefs) {
+        val withoutRoutine = reminders.copy(routineEnabled = false)
         viewModelScope.launch {
-            repository.update { snap -> snap.copy(profile = snap.profile.copy(reminders = reminders)) }
+            repository.update { snap -> snap.copy(profile = snap.profile.copy(reminders = withoutRoutine)) }
         }
     }
 
@@ -92,14 +87,25 @@ class GuideViewModel(
     fun importBackup(raw: String, onResult: (ImportResult) -> Unit) {
         val parsed = BackupCodec.import(raw)
         if (parsed is ImportResult.Ok) {
-            viewModelScope.launch { repository.replace(parsed.snapshot) }
+            viewModelScope.launch {
+                val snap = parsed.snapshot
+                repository.replace(
+                    snap.copy(
+                        profile = snap.profile.copy(
+                            reminders = snap.profile.reminders.copy(routineEnabled = false),
+                        ),
+                    ),
+                )
+            }
         }
         onResult(parsed)
     }
 
     fun saveProfile(profile: PlayerProfile) {
         viewModelScope.launch {
-            repository.update { it.copy(profile = profile.copy(onboarded = true, name = profile.name.trim())) }
+            repository.update {
+                it.copy(profile = profile.copy(onboarded = true, name = profile.name.trim()))
+            }
         }
     }
 
@@ -116,14 +122,6 @@ class GuideViewModel(
             }
         }
     }
-
-    fun toggleTask(id: String) = updateRoutine { RoutineLogic.toggle(it, id) }
-
-    fun restoreRoutine() = updateRoutine { RoutineLogic.restoreDay(it) }
-
-    fun addTask(title: String) = updateRoutine { RoutineLogic.addTask(it, title, "task-${UUID.randomUUID()}") }
-
-    fun removeTask(id: String) = updateRoutine { RoutineLogic.removeTask(it, id) }
 
     fun toggleSighted(id: String) {
         viewModelScope.launch {
@@ -224,17 +222,7 @@ class GuideViewModel(
         }
     }
 
-    private fun updateRoutine(block: (RoutineState) -> RoutineState) {
-        viewModelScope.launch {
-            repository.update { snap ->
-                val prepared = RoutineLogic.prepare(snap.routine, LocalDate.now(zone), SeedCatalog.routine)
-                snap.copy(routine = block(prepared))
-            }
-        }
-    }
-
     private fun present(snap: GuideSnapshot, day: LocalDate): GuideUi {
-        val routine = RoutineLogic.prepare(snap.routine, day, SeedCatalog.routine)
         val animals = SeedCatalog.animals.filter { it.id !in snap.hiddenSeedAnimalIds } + snap.customAnimals
         val collectibles = SeedCatalog.collectibles.filter { it.id !in snap.hiddenSeedCollectibleIds } +
             snap.customCollectibles
@@ -242,9 +230,7 @@ class GuideViewModel(
         val hobbies = ensureHobbies(snap)
         return GuideUi(
             ready = true,
-            profile = snap.profile,
-            routine = routine,
-            routineFraction = RoutineLogic.fraction(routine),
+            profile = snap.profile.copy(reminders = snap.profile.reminders.copy(routineEnabled = false)),
             animals = animals,
             annotations = snap.annotations,
             sighted = snap.sightedIds.toSet(),

@@ -377,7 +377,7 @@ private fun DayDetail(date: LocalDate, zone: ZoneId, sky: com.guiaheartopia.app.
                 val (start, end) = SkyWeather.localWindow(date, slot, zone)
                 val clock = DateTimeFormatter.ofPattern("HH:mm")
                 Text(
-                    "${slot.title()}  ${start.toLocalTime().format(clock)}–${end.toLocalTime().format(clock)}",
+                    "${slot.plainTitle()}  ${start.toLocalTime().format(clock)}–${end.toLocalTime().format(clock)}",
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }

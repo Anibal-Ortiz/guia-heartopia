@@ -58,17 +58,14 @@ import com.guiaheartopia.app.reminders.ReminderScheduler
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.ui.GuideViewModel
 import com.guiaheartopia.app.ui.components.CozySettingsIcon
-import com.guiaheartopia.app.ui.components.NavIcon
-import com.guiaheartopia.app.ui.components.NavItem
 import com.guiaheartopia.app.ui.components.PixelNavBar
 import com.guiaheartopia.app.ui.guide.AnimalDetailScreen
 import com.guiaheartopia.app.ui.guide.GuideScreen
 import com.guiaheartopia.app.ui.hobbies.HobbiesScreen
 import com.guiaheartopia.app.ui.home.HomeScreen
 import com.guiaheartopia.app.ui.legal.LegalScreen
+import com.guiaheartopia.app.ui.AppNavigation
 import com.guiaheartopia.app.ui.map.MapScreen
-import com.guiaheartopia.app.ui.pixel.PixelArtScreen
-import com.guiaheartopia.app.ui.routine.RoutineScreen
 import com.guiaheartopia.app.ui.settings.SettingsScreen
 import com.guiaheartopia.app.ui.theme.Cream
 import com.guiaheartopia.app.ui.theme.GreenSoft
@@ -137,14 +134,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-private val Tabs = listOf(
-    NavItem("home", "Inicio", NavIcon.HOME),
-    NavItem("routine", "Rutina", NavIcon.ROUTINE),
-    NavItem("guide", "Guía", NavIcon.GUIDE),
-    NavItem("pixel", "Píxel", NavIcon.PIXEL),
-    NavItem("hobbies", "Aficiones", NavIcon.HOBBIES),
-)
-
 @Composable
 private fun AppScaffold(
     ui: GuideUi,
@@ -160,7 +149,8 @@ private fun AppScaffold(
     val nav = rememberNavController()
     val backStack by nav.currentBackStackEntryAsState()
     val route = backStack?.destination?.route
-    val tab = Tabs.firstOrNull { route?.startsWith(it.route) == true }?.route
+    val tabs = AppNavigation.BottomNavTabs
+    val tab = tabs.firstOrNull { route?.startsWith(it.route) == true }?.route
 
     Scaffold(
         containerColor = Cream,
@@ -234,7 +224,7 @@ private fun AppScaffold(
                         DiscreteBanner(adsMode)
                     }
                 }
-                PixelNavBar(Tabs, tab) { dest ->
+                PixelNavBar(tabs, tab) { dest ->
                     nav.navigate(dest) {
                         popUpTo("home") { saveState = true }
                         launchSingleTop = true
@@ -251,10 +241,7 @@ private fun AppScaffold(
                 .padding(padding)
                 .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         ) {
-            composable("home") { HomeScreen(ui, vm::toggleTask) { dest -> nav.navigate(dest) } }
-            composable("routine") {
-                RoutineScreen(ui, vm::toggleTask, vm::restoreRoutine, vm::addTask, vm::removeTask)
-            }
+            composable("home") { HomeScreen(ui) { dest -> nav.navigate(dest) } }
             composable("guide") {
                 GuideScreen(
                     ui = ui,
@@ -266,7 +253,6 @@ private fun AppScaffold(
                     onAddAnimal = vm::addAnimal,
                 )
             }
-            composable("pixel") { PixelArtScreen(ui.profile.pixelCols, ui.profile.pixelRows) }
             composable("hobbies") {
                 HobbiesScreen(ui.hobbies, vm::setHobby, vm::addHobby, vm::removeHobby)
             }

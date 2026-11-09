@@ -33,15 +33,12 @@ import androidx.compose.ui.unit.sp
 import com.guiaheartopia.app.domain.Countries
 import com.guiaheartopia.app.domain.DexSchedule
 import com.guiaheartopia.app.domain.ResourceCalendar
-import com.guiaheartopia.app.domain.RoutineLogic
 import com.guiaheartopia.app.domain.SkyWeather
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.ui.components.CozyCrystalIcon
 import com.guiaheartopia.app.ui.components.CozyGuideIcon
 import com.guiaheartopia.app.ui.components.CozyHobbiesIcon
 import com.guiaheartopia.app.ui.components.CozyHomeIcon
-import com.guiaheartopia.app.ui.components.CozyPixelIcon
-import com.guiaheartopia.app.ui.components.CozyRoutineIcon
 import com.guiaheartopia.app.ui.components.CozyTreeIcon
 import com.guiaheartopia.app.ui.components.GameTimeCard
 import com.guiaheartopia.app.ui.components.NowBadge
@@ -81,11 +78,9 @@ import java.time.ZoneOffset
 @Composable
 fun HomeScreen(
     ui: GuideUi,
-    onToggleTask: (String) -> Unit = {},
     onOpen: (String) -> Unit,
 ) {
     val country = Countries.byId(ui.profile.countryId)
-    val done = RoutineLogic.completedCount(ui.routine)
     val context = androidx.compose.ui.platform.LocalContext.current
     val catalog = remember { com.guiaheartopia.app.data.HeartodexCatalog.load(context) }
     val sky = remember { com.guiaheartopia.app.data.SkyCatalog.load(context) }

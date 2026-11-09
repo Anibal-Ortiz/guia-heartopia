@@ -3,7 +3,6 @@ package com.guiaheartopia.app.data
 import com.guiaheartopia.app.domain.AnimalRecord
 import com.guiaheartopia.app.domain.Collectible
 import com.guiaheartopia.app.domain.Hobby
-import com.guiaheartopia.app.domain.RoutineTask
 import com.guiaheartopia.app.domain.SampleIds
 import com.guiaheartopia.app.domain.WeatherOrigin
 import com.guiaheartopia.app.domain.WeatherSlot
@@ -14,13 +13,6 @@ import com.guiaheartopia.app.domain.WeatherSlot
  * hasta tener una fuente que se pueda citar.
  */
 object SeedCatalog {
-    val routine: List<RoutineTask> = listOf(
-        RoutineTask("sug-recordar", "Anotar lo que quieras recordar hoy"),
-        RoutineTask("sug-animal", "Revisar una ficha de animal o de comedero"),
-        RoutineTask("sug-hobby", "Actualizar el nivel de un hobby"),
-        RoutineTask("sug-pixel", "Dejar lista una referencia de pixel art"),
-    )
-
     val animals: List<AnimalRecord> = listOf(
         animal("panda", "Panda", listOf("Bambú", "Manzana", "Maíz"), listOf("Plataformas"), "Lluvioso", "https://www.heartodex.com/_astro/1783738206153-animal-panda_105qed.webp"),
         animal("capibara", "Capibara", listOf("Frambuesa", "Tomate", "Uva"), listOf("Lago volcánico", "Ruinas"), "Arcoíris, Lluvioso", "https://www.heartodex.com/_astro/1783738150016-animal-capibara_qxpUA.webp"),

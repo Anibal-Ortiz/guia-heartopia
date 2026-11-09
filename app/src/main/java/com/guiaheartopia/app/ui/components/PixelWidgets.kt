@@ -268,7 +268,7 @@ fun PixelProgress(
     }
 }
 
-enum class NavIcon { HOME, ROUTINE, GUIDE, PIXEL, HOBBIES }
+enum class NavIcon { HOME, GUIDE, HOBBIES }
 
 data class NavItem(val route: String, val label: String, val icon: NavIcon)
 
@@ -337,9 +337,7 @@ fun PixelNavBar(
 fun LineNavIcon(icon: NavIcon, tint: Color, filled: Boolean = false) {
     when (icon) {
         NavIcon.HOME -> CozyHomeIcon(tint = tint, size = 22.dp, filled = filled)
-        NavIcon.ROUTINE -> CozyRoutineIcon(tint = tint, size = 22.dp, filled = filled)
         NavIcon.GUIDE -> CozyGuideIcon(tint = tint, size = 22.dp, filled = filled)
-        NavIcon.PIXEL -> CozyPixelIcon(tint = tint, size = 22.dp, filled = filled)
         NavIcon.HOBBIES -> CozyHobbiesIcon(tint = tint, size = 22.dp, filled = filled)
     }
 }

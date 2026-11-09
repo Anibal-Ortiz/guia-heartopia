@@ -56,7 +56,6 @@ fun SettingsScreen(
     onImport: (String, (ImportResult) -> Unit) -> Unit,
 ) {
     var name by rememberSaveable(profile.name) { mutableStateOf(profile.name) }
-    var place by rememberSaveable(profile.placeName) { mutableStateOf(profile.placeName) }
     var session by rememberSaveable(profile.session) { mutableStateOf(profile.session) }
     val country = Countries.byId(profile.countryId)
     Column(
@@ -68,7 +67,6 @@ fun SettingsScreen(
     ) {
         Text("Ajustes", style = MaterialTheme.typography.headlineSmall)
         OutlinedTextField(name, { name = it }, label = { Text("Nombre") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(place, { place = it }, label = { Text("Tu lugar") }, modifier = Modifier.fillMaxWidth())
         Text("Cuándo sueles jugar", style = MaterialTheme.typography.bodyMedium)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             PlaySession.entries.forEach { option ->
@@ -76,7 +74,7 @@ fun SettingsScreen(
             }
         }
         PixelButton("Guardar perfil", onClick = {
-            if (name.isNotBlank()) onSave(profile.copy(name = name.trim(), placeName = place.trim(), session = session))
+            if (name.isNotBlank()) onSave(profile.copy(name = name.trim(), session = session))
         })
         PixelCard {
             Text("Calendario", style = MaterialTheme.typography.titleMedium)
@@ -126,7 +124,7 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(
-                "Las comidas de la fauna coinciden en tres guías y aquí están en español. La letra de la interfaz es Plus Jakarta Sans, licencia OFL. La paleta y los tamaños de la cuadrícula son una referencia aproximada, no el lienzo del juego.",
+                "Las comidas de la fauna coinciden en tres guías y aquí están en español. La letra de la interfaz es Plus Jakarta Sans, licencia OFL.",
                 style = MaterialTheme.typography.bodyMedium,
             )
         }
@@ -144,8 +142,8 @@ private fun ReminderBlock(current: ReminderPrefs, onChange: (ReminderPrefs) -> U
         if (granted && next != null) onChange(next)
     }
     fun update(next: ReminderPrefs) {
-        val turningOn = (next.routineEnabled || next.weatherEnabled || next.eventsEnabled) &&
-            !(current.routineEnabled || current.weatherEnabled || current.eventsEnabled)
+        val turningOn = (next.weatherEnabled || next.eventsEnabled) &&
+            !(current.weatherEnabled || current.eventsEnabled)
         if (turningOn && Build.VERSION.SDK_INT >= 33) {
             pending = next
             permission.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -159,7 +157,6 @@ private fun ReminderBlock(current: ReminderPrefs, onChange: (ReminderPrefs) -> U
             "Avisos locales a la hora de tu zona. El sistema puede retrasarlos unos minutos. No pedimos una alarma exacta.",
             style = MaterialTheme.typography.bodySmall,
         )
-        ToggleRow("Rutina", current.routineEnabled) { update(current.copy(routineEnabled = it)) }
         ToggleRow("Clima y recursos", current.weatherEnabled) { update(current.copy(weatherEnabled = it)) }
         ToggleRow("Eventos", current.eventsEnabled) { update(current.copy(eventsEnabled = it)) }
     }

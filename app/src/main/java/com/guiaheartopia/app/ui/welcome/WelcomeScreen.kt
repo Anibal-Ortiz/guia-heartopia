@@ -46,13 +46,12 @@ fun WelcomeScreen(
 ) {
     var step by rememberSaveable { mutableIntStateOf(0) }
     var name by rememberSaveable { mutableStateOf(initial.name) }
-    var place by rememberSaveable { mutableStateOf(initial.placeName) }
     var countryId by rememberSaveable { mutableStateOf(initial.countryId) }
     var zoneId by rememberSaveable { mutableStateOf(initial.zoneId) }
     var session by rememberSaveable { mutableStateOf(initial.session.name) }
     val country = Countries.byId(countryId)
     if (country.zones.none { it.zoneId == zoneId }) zoneId = country.zones.first().zoneId
-    val total = 5
+    val total = 4
 
     Column(
         Modifier
@@ -69,11 +68,13 @@ fun WelcomeScreen(
             }
         }
         when (step) {
-            0 -> StepName(name, place, { name = it }, { place = it }, onPrivacy, onTerms)
+            0 -> StepName(name, { name = it }, onPrivacy, onTerms)
             1 -> StepCountry(countryId) { countryId = it }
             2 -> StepZone(country, zoneId) { zoneId = it }
-            3 -> StepPlay(session) { session = it }
-            else -> StepSummary(name, place, country.name, country.zones.first { it.zoneId == zoneId }.label, session)
+            else -> {
+                StepPlay(session) { session = it }
+                StepSummary(name, country.name, country.zones.first { it.zoneId == zoneId }.label, session)
+            }
         }
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             if (step > 0) {
@@ -90,7 +91,6 @@ fun WelcomeScreen(
                         onContinue(
                             initial.copy(
                                 name = name.trim(),
-                                placeName = place.trim(),
                                 session = PlaySession.valueOf(session),
                                 countryId = countryId,
                                 zoneId = zoneId,
@@ -110,9 +110,7 @@ fun WelcomeScreen(
 @Composable
 private fun StepName(
     name: String,
-    place: String,
     onName: (String) -> Unit,
-    onPlace: (String) -> Unit,
     onPrivacy: () -> Unit,
     onTerms: () -> Unit,
 ) {
@@ -122,7 +120,6 @@ private fun StepName(
         style = MaterialTheme.typography.bodyLarge,
     )
     OutlinedTextField(name, onName, label = { Text("Tu nombre") }, singleLine = true, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp))
-    OutlinedTextField(place, onPlace, label = { Text("Cómo llamas a tu lugar (opcional)") }, singleLine = true, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp))
     TextButton(onClick = onPrivacy) { Text("Política de privacidad") }
     TextButton(onClick = onTerms) { Text("Términos") }
 }
@@ -163,12 +160,11 @@ private fun StepPlay(session: String, onPick: (String) -> Unit) {
 }
 
 @Composable
-private fun StepSummary(name: String, place: String, country: String, zone: String, session: String) {
+private fun StepSummary(name: String, country: String, zone: String, session: String) {
     Text("Listo, $name", style = MaterialTheme.typography.headlineSmall)
     PixelCard {
         Text(country, style = MaterialTheme.typography.titleMedium)
         Text(zone, style = MaterialTheme.typography.bodyMedium)
-        if (place.isNotBlank()) Text(place, style = MaterialTheme.typography.bodySmall)
         Text(PlaySession.valueOf(session).label, style = MaterialTheme.typography.bodySmall)
     }
     Text("Puedes cambiarlo cuando quieras en Ajustes.", style = MaterialTheme.typography.bodyMedium)

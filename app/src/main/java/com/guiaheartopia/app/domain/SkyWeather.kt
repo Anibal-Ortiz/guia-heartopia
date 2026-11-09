@@ -47,6 +47,18 @@ data class SkySlot(
         val mark = if (status == SkyStatus.POR_CONFIRMAR) " (por confirmar)" else ""
         return base + extra + mark
     }
+
+    /** Mismo texto que [title] sin emoji (la barra o el icono ya lo muestran). */
+    fun plainTitle(): String {
+        val base = if (kind == SkyKind.METEORO && !place.isNullOrBlank()) {
+            "${kind.label} en $place"
+        } else {
+            kind.label
+        }
+        val extra = if (special == "luna_carmesi") " · Luna carmesí" else ""
+        val mark = if (status == SkyStatus.POR_CONFIRMAR) " (por confirmar)" else ""
+        return base + extra + mark
+    }
 }
 
 data class SkySpan(
@@ -60,9 +72,9 @@ data class SkySpan(
     fun text(): String {
         val clock = DateTimeFormatter.ofPattern("HH:mm")
         val label = if (kind == SkyKind.METEORO && !place.isNullOrBlank()) {
-            "${kind.emoji} ${kind.label} en $place"
+            "${kind.label} en $place"
         } else {
-            "${kind.emoji} ${kind.label}"
+            kind.label
         }
         return "$label ${start.toLocalTime().format(clock)}–${end.toLocalTime().format(clock)}"
     }
