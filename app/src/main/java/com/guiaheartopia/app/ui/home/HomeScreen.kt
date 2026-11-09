@@ -34,7 +34,7 @@ import com.guiaheartopia.app.domain.Countries
 import com.guiaheartopia.app.domain.DexSchedule
 import com.guiaheartopia.app.domain.ResourceCalendar
 import com.guiaheartopia.app.domain.SkyWeather
-import com.guiaheartopia.app.domain.SkyWeatherLocal
+import com.guiaheartopia.app.domain.SkyWeatherGameDay
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.ui.components.CozyCrystalIcon
 import com.guiaheartopia.app.ui.components.CozyGuideIcon
@@ -91,7 +91,7 @@ fun HomeScreen(
     val available = catalog.count { SkyWeather.availableNow(it.schedule, it.weather, nowInstant, skyDay) }
     val byCategory = catalog.groupBy { it.category }
     val today = LocalDate.now(zone)
-    val climateSpans = SkyWeatherLocal.spansOnLocalDay(sky, today, zone)
+    val climateSpans = SkyWeatherGameDay.spansForGameDay(sky, today, zone)
     val spot = ResourceCalendar.on(today)
     val event = com.guiaheartopia.app.data.VerifiedCatalog.events.firstOrNull()
 
@@ -352,7 +352,7 @@ fun HomeScreen(
                             color = Purple,
                         )
                         Text(
-                            "${event.start} → ${event.end}",
+                            "${event.start} – ${event.end}",
                             style = MaterialTheme.typography.bodySmall,
                             color = Muted,
                         )
@@ -368,7 +368,7 @@ fun HomeScreen(
             } else {
                 ClimateSkyBar(sky, today, zone, Modifier.fillMaxWidth().height(20.dp))
                 climateSpans.forEach { span ->
-                    Text(SkyWeatherLocal.formatSpan(span, today, zone), style = MaterialTheme.typography.bodyMedium)
+                    Text(SkyWeatherGameDay.formatSpan(span, today), style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }

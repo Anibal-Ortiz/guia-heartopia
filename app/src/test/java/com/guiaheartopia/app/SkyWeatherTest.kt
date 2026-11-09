@@ -32,12 +32,10 @@ class SkyWeatherTest {
     fun consecutiveRainMergesInChileLocalTime() {
         val table = SkyCatalog.fromJson(catalogText())
         val local = LocalDate.of(2026, 11, 7)
-        val spans = com.guiaheartopia.app.domain.SkyWeatherLocal.spansOnLocalDay(table, local, santiago)
-        val rain = spans.first { it.kind == SkyKind.LLUVIA }
-        assertEquals(LocalTime.of(3, 0), rain.start.toLocalTime())
-        assertEquals(LocalTime.of(15, 0), rain.end.toLocalTime())
-        val summary = com.guiaheartopia.app.domain.SkyWeatherLocal.summaryOnLocalDay(table, local, santiago)
-        assertTrue(summary.contains("Lluvia 03:00–15:00") || summary.contains("Lluvia"))
+        val spans = com.guiaheartopia.app.domain.SkyWeatherGameDay.spansForGameDay(table, local, santiago)
+        val dawnRain = spans.first { it.frameKey == "Dawn" && it.kind == SkyKind.LLUVIA }
+        assertEquals(LocalTime.of(8, 0), dawnRain.start.toLocalTime())
+        assertEquals(LocalTime.of(14, 0), dawnRain.end.toLocalTime())
     }
 
     @Test

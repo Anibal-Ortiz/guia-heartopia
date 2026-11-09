@@ -7,6 +7,7 @@ import com.guiaheartopia.app.domain.climateDisplay
 import java.time.LocalTime
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SkyWeatherLabelTest {
@@ -42,14 +43,13 @@ class SkyWeatherLabelTest {
             },
         )
         val table = com.guiaheartopia.app.data.SkyTable("", "", mapOf(day.date to day))
-        val segments = com.guiaheartopia.app.domain.SkyWeatherLocal.barSegmentsOnLocalDay(
+        val segments = com.guiaheartopia.app.domain.SkyWeatherGameDay.barSegmentsForGameDay(
             table,
             day.date,
-            java.time.ZoneId.of("UTC"),
+            java.time.ZoneId.of("America/Santiago"),
         )
-        assertEquals(1, segments.size)
-        assertEquals(4, segments.first().weight)
-        assertEquals(SkyKind.LLUVIA, segments.first().kind)
+        assertEquals(4, segments.size)
+        assertTrue(segments.all { it.weight == 1 })
     }
 
     @Test

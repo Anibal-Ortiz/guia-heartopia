@@ -75,6 +75,7 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.bodySmall,
             )
             Text(VerifiedCatalog.SPOT_SOURCES, style = MaterialTheme.typography.bodyMedium)
+            Text(VerifiedCatalog.EVENT_SOURCES, style = MaterialTheme.typography.bodyMedium)
             Text(
                 "El clima hora a hora sale de calendar/clima-2026.json (Tidebell y heartopia.th.gl), " +
                     "guardado en UTC y convertido a tu zona. Revisado según metadatos del archivo.",

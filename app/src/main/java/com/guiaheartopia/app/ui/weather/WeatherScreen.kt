@@ -40,13 +40,12 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.dp
-import com.guiaheartopia.app.domain.SkyWeatherLocal
+import com.guiaheartopia.app.domain.SkyWeatherGameDay
 import com.guiaheartopia.app.data.SkyCatalog
 import com.guiaheartopia.app.data.VerifiedCatalog
 import com.guiaheartopia.app.domain.Countries
 import com.guiaheartopia.app.domain.ResourceCalendar
 import com.guiaheartopia.app.domain.SkyKind
-import com.guiaheartopia.app.domain.climateDisplay
 import com.guiaheartopia.app.domain.climateDisplay
 import com.guiaheartopia.app.domain.WeatherKind
 import com.guiaheartopia.app.ui.components.PickerField
@@ -73,11 +72,6 @@ private enum class WeatherFilter(val label: String) {
     WEATHER("Con clima"),
 }
 
-private enum class CalendarView(val label: String) {
-    MONTH("Mes"),
-    WEEK("Semana"),
-    LIST("Lista"),
-}
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -92,7 +86,6 @@ fun WeatherScreen(
     var monthToken by rememberSaveable { mutableStateOf(YearMonth.now(zone).toString()) }
     var selectedToken by rememberSaveable { mutableStateOf<String?>(null) }
     var filterName by rememberSaveable { mutableStateOf(WeatherFilter.ALL.name) }
-    var viewName by rememberSaveable { mutableStateOf(CalendarView.MONTH.name) }
     val skyContext = androidx.compose.ui.platform.LocalContext.current
     val sky = androidx.compose.runtime.remember { SkyCatalog.load(skyContext) }
     val month = YearMonth.parse(monthToken)
@@ -148,17 +141,10 @@ fun WeatherScreen(
             TextButton(onClick = { monthToken = YearMonth.from(now).toString() }) { Text("Volver a este mes") }
         }
         Text("Hora local: $zoneLabel · ${now.format(clock)}", style = MaterialTheme.typography.bodySmall)
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            CalendarView.entries.forEach { item ->
-                FilterChip(
-                    selected = viewName == item.name,
-                    onClick = { viewName = item.name },
-                    label = { Text(item.label) },
-                )
-            }
-        }
-        val view = CalendarView.valueOf(viewName)
-        if (view == CalendarView.MONTH) {
+        Text(
+            "Cada día sigue las franjas del juego (noche, amanecer, día, tarde), no el día civil 00:00–24:00.",
+            style = MaterialTheme.typography.bodySmall,
+        )
         WeekHeader()
         MonthGrid(
             month = month,
@@ -169,11 +155,6 @@ fun WeatherScreen(
             zone = zone,
             onSelect = { selectedToken = it.toString() },
         )
-        } else if (view == CalendarView.WEEK) {
-            WeekList(month, selected ?: now.toLocalDate(), zone, sky) { selectedToken = it.toString() }
-        } else {
-            MonthList(month, selected, zone, sky) { selectedToken = it.toString() }
-        }
         Legend()
         val day = selected ?: now.toLocalDate()
         DayDetail(day, zone, sky)
@@ -295,22 +276,22 @@ private fun DayDetail(date: LocalDate, zone: ZoneId, sky: com.guiaheartopia.app.
         Text("Liuliu: ${ResourceCalendar.label(data.liuliu)}", color = Green, style = MaterialTheme.typography.titleSmall)
         Text("flurita: ${ResourceCalendar.label(data.flurita)}", color = Orange, style = MaterialTheme.typography.titleSmall)
     }
-    val spans = SkyWeatherLocal.spansOnLocalDay(sky, date, zone)
+    val spans = SkyWeatherGameDay.spansForGameDay(sky, date, zone)
     PixelCard {
-        Text("Clima en tu hora", style = MaterialTheme.typography.titleSmall)
+        Text("Clima por franjas del juego", style = MaterialTheme.typography.titleSmall)
         if (spans.isEmpty()) {
             Text("Sin datos de clima para este día.", style = MaterialTheme.typography.bodyMedium)
         } else {
             ClimateSkyBar(sky, date, zone, Modifier.fillMaxWidth().height(22.dp))
             spans.forEach { span ->
-                Text(SkyWeatherLocal.formatSpan(span, date, zone), style = MaterialTheme.typography.bodyMedium)
+                Text(SkyWeatherGameDay.formatSpan(span, date), style = MaterialTheme.typography.bodyMedium)
             }
         }
     }
     if (event != null) {
         PixelCard {
             Text(event.title, style = MaterialTheme.typography.titleSmall)
-            Text(event.summary, style = MaterialTheme.typography.bodyMedium)
+            Text("${event.start} → ${event.end}", style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
@@ -322,7 +303,7 @@ fun ClimateSkyBar(
     zone: ZoneId,
     modifier: Modifier = Modifier,
 ) {
-    val segments = SkyWeatherLocal.barSegmentsOnLocalDay(sky, localDate, zone)
+    val segments = SkyWeatherGameDay.barSegmentsForGameDay(sky, localDate, zone)
     Row(modifier.clip(RoundedCornerShape(8.dp)).background(Beige)) {
         if (segments.isEmpty()) {
             Box(Modifier.weight(1f).fillMaxHeight().background(Beige))
@@ -350,57 +331,6 @@ private fun skyColor(kind: SkyKind): Color = when (kind.climateDisplay()) {
     SkyKind.ARCOIRIS -> Color(0xFFD7B4E8)
     SkyKind.SIN_DATOS -> Beige
     else -> Beige
-}
-
-@Composable
-private fun WeekList(
-    month: YearMonth,
-    anchor: LocalDate,
-    zone: ZoneId,
-    sky: com.guiaheartopia.app.data.SkyTable,
-    onSelect: (LocalDate) -> Unit,
-) {
-    val start = anchor.minusDays((anchor.dayOfWeek.value - 1).toLong())
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        for (offset in 0 until 7) {
-            val date = start.plusDays(offset.toLong())
-            if (date.month != month.month) continue
-            DayHoursRow(date, zone, sky, onSelect)
-        }
-    }
-}
-
-@Composable
-private fun MonthList(
-    month: YearMonth,
-    selected: LocalDate?,
-    zone: ZoneId,
-    sky: com.guiaheartopia.app.data.SkyTable,
-    onSelect: (LocalDate) -> Unit,
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        for (day in 1..month.lengthOfMonth()) {
-            DayHoursRow(month.atDay(day), zone, sky, onSelect, selected)
-        }
-    }
-}
-
-@Composable
-private fun DayHoursRow(
-    date: LocalDate,
-    zone: ZoneId,
-    sky: com.guiaheartopia.app.data.SkyTable,
-    onSelect: (LocalDate) -> Unit,
-    selected: LocalDate? = null,
-) {
-    PixelCard(Modifier.clickable { onSelect(date) }.then(if (selected == date) Modifier.border(2.dp, Green, RoundedCornerShape(22.dp)) else Modifier)) {
-        Text("${date.dayOfMonth}", style = MaterialTheme.typography.titleSmall)
-        ClimateSkyBar(sky, date, zone, Modifier.fillMaxWidth().height(18.dp))
-        Text(
-            SkyWeatherLocal.summaryOnLocalDay(sky, date, zone),
-            style = MaterialTheme.typography.bodySmall,
-        )
-    }
 }
 
 @Composable

@@ -88,9 +88,9 @@ data class SkyDay(
 )
 
 /**
- * El reloj del calendario de Tidebell coincidía con UTC el 2026-11-07.
- * Los tramos 00–06, 06–12, 12–18 y 18–24 se guardan en esa hora de servidor
- * y se convierten a la zona del país, con horario de verano.
+ * El JSON guarda bloques UTC 00–06 … 18–24 por fecha civil del servidor.
+ * La UI del calendario usa [SkyWeatherGameDay] (franjas del juego, mismo UTC que [DexSchedule]).
+ * [slotAt] conserva los bloques de 6 h para criaturas.
  */
 object SkyWeather {
     private val allCreatureWeather = setOf("Sunny", "Rainy", "Rainbow")
@@ -112,15 +112,16 @@ object SkyWeather {
         return day.slots.getOrNull(slotIndex(instant))
     }
 
-    /** @deprecated use [SkyWeatherLocal.spansOnLocalDay] con día local y [SkyTable] */
     fun merged(day: SkyDay, zone: ZoneId): List<SkySpan> {
         val table = com.guiaheartopia.app.data.SkyTable("", "", mapOf(day.date to day))
-        return SkyWeatherLocal.spansOnLocalDay(table, day.date, zone)
+        return SkyWeatherGameDay.spansForGameDay(table, day.date, zone).map { span ->
+            SkySpan(span.kind, span.status, null, null, span.start, span.end)
+        }
     }
 
     fun summary(day: SkyDay, zone: ZoneId): String {
         val table = com.guiaheartopia.app.data.SkyTable("", "", mapOf(day.date to day))
-        return SkyWeatherLocal.summaryOnLocalDay(table, day.date, zone)
+        return SkyWeatherGameDay.summaryForGameDay(table, day.date, zone)
     }
 
     /**
