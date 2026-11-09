@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guiaheartopia.app.domain.Countries
 import com.guiaheartopia.app.domain.DexSchedule
+import com.guiaheartopia.app.domain.GameTimePresentation
 import com.guiaheartopia.app.ui.theme.Dark
 import com.guiaheartopia.app.ui.theme.DarkCard
 import com.guiaheartopia.app.ui.theme.Green
@@ -47,16 +48,12 @@ import com.guiaheartopia.app.ui.theme.Purple
 import com.guiaheartopia.app.ui.theme.Sky
 import com.guiaheartopia.app.ui.theme.SkyBlue
 import java.time.Instant
-import java.time.format.DateTimeFormatter
-
 @Composable
-fun GameTimeCard(zoneId: String, modifier: Modifier = Modifier) {
+fun GameTimeCard(zoneId: String, modifier: Modifier = Modifier, instant: Instant = Instant.now()) {
     val zone = DexSchedule.zoneOf(zoneId)
-    val instant = Instant.now()
+    val model = GameTimePresentation.cardModel(zoneId, instant)
     val now = instant.atZone(zone)
     val current = DexSchedule.currentWindow(zone, instant)
-    val windows = DexSchedule.windowsAround(zone, instant)
-    val clock = DateTimeFormatter.ofPattern("HH:mm")
 
     val (slotEmoji, slotColor, slotBg) = when (current.slot.key.lowercase()) {
         "dawn" -> Triple("🌅", Orange, Peach)
@@ -89,17 +86,17 @@ fun GameTimeCard(zoneId: String, modifier: Modifier = Modifier) {
                         color = Muted,
                     )
                     Text(
-                        DexSchedule.titled(current.slot),
+                        model.currentTitle,
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold),
                         color = Ink,
                     )
                 }
             }
-            NowBadge(DexSchedule.untilLabel(current, now))
+            NowBadge(model.untilLabel)
         }
 
         Text(
-            "Hora local: ${now.format(clock)} · ${Countries.zoneLabel(zoneId)}",
+            "Hora local: ${model.localClock} · ${Countries.zoneLabel(zoneId)}",
             style = MaterialTheme.typography.bodySmall,
             color = Muted,
         )
@@ -108,11 +105,11 @@ fun GameTimeCard(zoneId: String, modifier: Modifier = Modifier) {
 
         // Grid of 4 time periods
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            windows.forEach { window ->
-                val isCurrent = window.slot.key == current.slot.key
+            model.rows.forEach { row ->
+                val isCurrent = row.isCurrent
                 val itemBg = if (isCurrent) GreenSoft else PaperSubtle
                 val itemBorder = if (isCurrent) GreenTint else Line
-                val icon = when (window.slot.key.lowercase()) {
+                val icon = when (row.slotKey.lowercase()) {
                     "dawn" -> "🌅"
                     "day" -> "☀️"
                     "dusk" -> "🌤️"
@@ -136,7 +133,7 @@ fun GameTimeCard(zoneId: String, modifier: Modifier = Modifier) {
                     ) {
                         Text(icon, fontSize = 14.sp)
                         Text(
-                            DexSchedule.titled(window.slot),
+                            row.title,
                             style = MaterialTheme.typography.bodyMedium.copy(
                                 fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Medium,
                             ),
@@ -148,7 +145,7 @@ fun GameTimeCard(zoneId: String, modifier: Modifier = Modifier) {
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
                         Text(
-                            DexSchedule.hoursLabel(window),
+                            row.hours,
                             style = MaterialTheme.typography.bodySmall.copy(
                                 fontWeight = if (isCurrent) FontWeight.Bold else FontWeight.Normal,
                             ),
