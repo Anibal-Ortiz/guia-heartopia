@@ -3,6 +3,7 @@ package com.guiaheartopia.app
 import com.guiaheartopia.app.domain.SkyKind
 import com.guiaheartopia.app.domain.SkySlot
 import com.guiaheartopia.app.domain.SkyStatus
+import com.guiaheartopia.app.domain.climateDisplay
 import java.time.LocalTime
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -15,6 +16,35 @@ class SkyWeatherLabelTest {
         assertEquals("🌧️ Lluvia", slot.title())
         assertEquals("Lluvia", slot.plainTitle())
         assertFalse(slot.plainTitle().contains("🌧"))
+    }
+
+    @Test
+    fun climateDisplayCollapsesToThreeKinds() {
+        assertEquals(SkyKind.SOLEADO, SkyKind.NUBLADO.climateDisplay())
+        assertEquals(SkyKind.SOLEADO, SkyKind.METEORO.climateDisplay())
+        assertEquals(SkyKind.ARCOIRIS, SkyKind.ARCOIRIS_LUNA.climateDisplay())
+        assertEquals(SkyKind.LLUVIA, SkyKind.LLUVIA.climateDisplay())
+        val cloudy = SkySlot(LocalTime.NOON, LocalTime.MIDNIGHT, SkyKind.NUBLADO, SkyStatus.ACUERDO)
+        assertEquals("Sol", cloudy.plainTitle())
+    }
+
+    @Test
+    fun barSegmentsMergeSameWeather() {
+        val day = com.guiaheartopia.app.domain.SkyDay(
+            java.time.LocalDate.of(2026, 11, 1),
+            List(4) {
+                SkySlot(
+                    LocalTime.of(it * 6, 0),
+                    LocalTime.of((it + 1) * 6 % 24, 0),
+                    SkyKind.LLUVIA,
+                    SkyStatus.ACUERDO,
+                )
+            },
+        )
+        val segments = com.guiaheartopia.app.domain.SkyWeather.barSegments(day)
+        assertEquals(1, segments.size)
+        assertEquals(4, segments.first().weight)
+        assertEquals(SkyKind.LLUVIA, segments.first().kind)
     }
 
     @Test

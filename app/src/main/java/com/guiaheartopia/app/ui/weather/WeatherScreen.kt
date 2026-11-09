@@ -49,6 +49,7 @@ import com.guiaheartopia.app.domain.ResourceCalendar
 import com.guiaheartopia.app.domain.SkyDay
 import com.guiaheartopia.app.domain.SkyKind
 import com.guiaheartopia.app.domain.SkyWeather
+import com.guiaheartopia.app.domain.climateDisplay
 import com.guiaheartopia.app.domain.WeatherKind
 import com.guiaheartopia.app.ui.components.GameTimeCard
 import com.guiaheartopia.app.ui.components.PickerField
@@ -372,14 +373,8 @@ private fun DayDetail(date: LocalDate, zone: ZoneId, sky: com.guiaheartopia.app.
             Text("Sin datos de clima para este día.", style = MaterialTheme.typography.bodyMedium)
         } else {
             SkyBar(weatherDay, Modifier.fillMaxWidth().height(22.dp))
-            Text(SkyWeather.summary(weatherDay, zone), style = MaterialTheme.typography.bodyLarge)
-            weatherDay.slots.forEach { slot ->
-                val (start, end) = SkyWeather.localWindow(date, slot, zone)
-                val clock = DateTimeFormatter.ofPattern("HH:mm")
-                Text(
-                    "${slot.plainTitle()}  ${start.toLocalTime().format(clock)}–${end.toLocalTime().format(clock)}",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+            SkyWeather.merged(weatherDay, zone).forEach { span ->
+                Text(span.text(), style = MaterialTheme.typography.bodyMedium)
             }
         }
     }
@@ -393,36 +388,34 @@ private fun DayDetail(date: LocalDate, zone: ZoneId, sky: com.guiaheartopia.app.
 
 @Composable
 private fun SkyBar(day: SkyDay?, modifier: Modifier = Modifier) {
-    val slots = day?.slots
+    val segments = SkyWeather.barSegments(day)
     Row(modifier.clip(RoundedCornerShape(8.dp)).background(Beige)) {
-        if (slots.isNullOrEmpty()) {
+        if (segments.isEmpty()) {
             Box(Modifier.weight(1f).fillMaxHeight().background(Beige))
         } else {
-            slots.forEach { slot ->
+            segments.forEach { segment ->
                 Box(
-                    Modifier.weight(1f).fillMaxHeight().background(skyColor(slot.kind)),
+                    Modifier.weight(segment.weight.toFloat()).fillMaxHeight().background(skyColor(segment.kind)),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text(slot.kind.emoji, fontSize = 9.sp, maxLines = 1, overflow = TextOverflow.Clip)
+                    Text(
+                        segment.kind.emoji,
+                        fontSize = 9.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Clip,
+                    )
                 }
             }
         }
     }
 }
 
-private fun skyColor(kind: SkyKind): Color = when (kind) {
+private fun skyColor(kind: SkyKind): Color = when (kind.climateDisplay()) {
     SkyKind.SOLEADO -> Honey
-    SkyKind.DESPEJADO -> Color(0xFFD9E4F2)
-    SkyKind.NUBLADO -> Color(0xFFC5CED6)
     SkyKind.LLUVIA -> Color(0xFF7EB6D6)
     SkyKind.ARCOIRIS -> Color(0xFFD7B4E8)
-    SkyKind.ARCOIRIS_LUNA -> Color(0xFFB9A6D6)
-    SkyKind.METEORO -> Color(0xFFE7B15A)
-    SkyKind.NIEVE -> Color(0xFFF4F7FB)
-    SkyKind.AURORA -> Color(0xFF9AD7C4)
-    SkyKind.CALOR -> Color(0xFFF0A07A)
-    SkyKind.PETALOS -> Color(0xFFF3C1D4)
     SkyKind.SIN_DATOS -> Beige
+    else -> Beige
 }
 
 @Composable
@@ -483,7 +476,7 @@ private fun Legend() {
         Text("Número verde: Liuliu", color = Green, style = MaterialTheme.typography.bodySmall)
         Text("Número naranja: flurita", color = Orange, style = MaterialTheme.typography.bodySmall)
         Text("B bosque · R ruinas", style = MaterialTheme.typography.bodySmall)
-        Text("Barra: sol, lluvia, arcoíris y el resto, en tu hora", style = MaterialTheme.typography.bodySmall)
+        Text("Barra: sol ☀️, lluvia 🌧️ o arcoíris 🌈 en tu hora", style = MaterialTheme.typography.bodySmall)
         Text("Fondo verde: día elegido", style = MaterialTheme.typography.bodySmall)
     }
 }

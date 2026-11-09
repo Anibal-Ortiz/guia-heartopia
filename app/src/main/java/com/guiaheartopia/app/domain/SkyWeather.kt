@@ -27,6 +27,14 @@ enum class SkyKind(
     SIN_DATOS("Sin datos", "·", "NONE"),
 }
 
+/** Clima en la app: solo sol, lluvia o arcoíris (los datos siguen con el kind original). */
+fun SkyKind.climateDisplay(): SkyKind = when (this) {
+    SkyKind.LLUVIA -> SkyKind.LLUVIA
+    SkyKind.ARCOIRIS, SkyKind.ARCOIRIS_LUNA -> SkyKind.ARCOIRIS
+    SkyKind.SIN_DATOS -> SkyKind.SIN_DATOS
+    else -> SkyKind.SOLEADO
+}
+
 enum class SkyStatus { ACUERDO, POR_CONFIRMAR, SIN_DATOS }
 
 data class SkySlot(
@@ -48,16 +56,11 @@ data class SkySlot(
         return base + extra + mark
     }
 
-    /** Mismo texto que [title] sin emoji (la barra o el icono ya lo muestran). */
+    /** Etiqueta sin emoji para la UI de clima (tres tipos: sol, lluvia, arcoíris). */
     fun plainTitle(): String {
-        val base = if (kind == SkyKind.METEORO && !place.isNullOrBlank()) {
-            "${kind.label} en $place"
-        } else {
-            kind.label
-        }
-        val extra = if (special == "luna_carmesi") " · Luna carmesí" else ""
+        val base = kind.climateDisplay().label
         val mark = if (status == SkyStatus.POR_CONFIRMAR) " (por confirmar)" else ""
-        return base + extra + mark
+        return base + mark
     }
 }
 
@@ -71,14 +74,13 @@ data class SkySpan(
 ) {
     fun text(): String {
         val clock = DateTimeFormatter.ofPattern("HH:mm")
-        val label = if (kind == SkyKind.METEORO && !place.isNullOrBlank()) {
-            "${kind.label} en $place"
-        } else {
-            kind.label
-        }
-        return "$label ${start.toLocalTime().format(clock)}–${end.toLocalTime().format(clock)}"
+        val label = kind.climateDisplay().label
+        val mark = if (status == SkyStatus.POR_CONFIRMAR) " (por confirmar)" else ""
+        return "$label$mark ${start.toLocalTime().format(clock)}–${end.toLocalTime().format(clock)}"
     }
 }
+
+data class SkyBarSegment(val kind: SkyKind, val weight: Int)
 
 data class SkyDay(
     val date: LocalDate,
@@ -119,20 +121,37 @@ object SkyWeather {
         return day.slots.getOrNull(slotIndex(instant))
     }
 
-    /** Tramos seguidos con el mismo cielo se juntan en la hora local. */
+    /** Tramos seguidos con el mismo cielo (sol / lluvia / arcoíris) en hora local. */
     fun merged(day: SkyDay, zone: ZoneId): List<SkySpan> {
         val spans = ArrayList<SkySpan>()
         for (slot in day.slots) {
-            if (slot.kind == SkyKind.SIN_DATOS) continue
+            val display = slot.kind.climateDisplay()
+            if (display == SkyKind.SIN_DATOS) continue
             val (start, end) = localWindow(day.date, slot, zone)
             val previous = spans.lastOrNull()
-            if (previous != null && previous.kind == slot.kind && previous.place == slot.place && previous.status == slot.status) {
-                spans[spans.lastIndex] = previous.copy(end = end, special = previous.special ?: slot.special)
+            if (previous != null && previous.kind == display && previous.status == slot.status) {
+                spans[spans.lastIndex] = previous.copy(end = end)
             } else {
-                spans += SkySpan(slot.kind, slot.status, slot.place, slot.special, start, end)
+                spans += SkySpan(display, slot.status, null, null, start, end)
             }
         }
         return spans
+    }
+
+    /** Segmentos de la barra: un icono por bloque de tramos iguales. */
+    fun barSegments(day: SkyDay?): List<SkyBarSegment> {
+        if (day == null || day.slots.isEmpty()) return emptyList()
+        val out = ArrayList<SkyBarSegment>()
+        for (slot in day.slots) {
+            val display = slot.kind.climateDisplay()
+            val last = out.lastOrNull()
+            if (last != null && last.kind == display) {
+                out[out.lastIndex] = last.copy(weight = last.weight + 1)
+            } else {
+                out += SkyBarSegment(display, 1)
+            }
+        }
+        return out
     }
 
     fun summary(day: SkyDay, zone: ZoneId): String =
