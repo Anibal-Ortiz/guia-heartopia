@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.BuildConfig
 import com.guiaheartopia.app.ads.AdsMode
@@ -32,8 +34,11 @@ import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.guiaheartopia.app.data.AndroidContentStore
+import com.guiaheartopia.app.data.ContentCheckStore
 import com.guiaheartopia.app.data.ContentSignals
+import com.guiaheartopia.app.domain.ContentSyncResult
 import com.guiaheartopia.app.data.VerifiedCatalog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -168,6 +173,9 @@ private fun ContentUpdateCard() {
     val scope = rememberCoroutineScope()
     var status by remember { mutableStateOf(AndroidContentStore.status(context)) }
     var busy by remember { mutableStateOf(false) }
+    val checkState by ContentCheckStore.observe(context).collectAsStateWithLifecycle(
+        com.guiaheartopia.app.data.ContentCheckState(),
+    )
     PixelCard {
         Text("Contenido", style = MaterialTheme.typography.titleMedium)
         Text("Versión de contenido: ${status.contentVersion}", style = MaterialTheme.typography.bodyMedium)
@@ -175,29 +183,35 @@ private fun ContentUpdateCard() {
             "Última actualización: ${publishedLabel(status.publishedOn)}",
             style = MaterialTheme.typography.bodyMedium,
         )
-        if (status.needsNewerApp) {
-            Text(
-                "Hay contenido nuevo que pide una versión más nueva de la app. Actualízala desde Play Store.",
-                style = MaterialTheme.typography.bodyMedium,
-            )
+        Text(
+            ContentCheckStore.lastCheckedLabel(checkState.lastCheckedMillis),
+            style = MaterialTheme.typography.bodySmall,
+        )
+        if (busy) {
+            CircularProgressIndicator(modifier = Modifier.padding(vertical = 4.dp))
         }
         PixelButton(
-            text = if (busy) "Buscando actualizaciones…" else "Buscar actualizaciones",
+            text = "Buscar actualizaciones",
+            modifier = Modifier.alpha(if (busy) 0.45f else 1f),
             onClick = {
                 if (!busy) {
                     busy = true
                     scope.launch {
-                        withContext(Dispatchers.IO) {
-                            AndroidContentStore.markAttempt(context, System.currentTimeMillis())
-                            AndroidContentStore.syncNow(context)
+                        val report = withContext(Dispatchers.IO) { AndroidContentStore.syncNow(context) }
+                        val now = System.currentTimeMillis()
+                        ContentCheckStore.record(context, report, now)
+                        if (report.result == ContentSyncResult.APPLIED) {
+                            ContentSignals.note(context)
                         }
-                        ContentSignals.note(context)
                         status = AndroidContentStore.status(context)
                         busy = false
                     }
                 }
             },
         )
+        if (checkState.lastMessage.isNotBlank()) {
+            Text(checkState.lastMessage, style = MaterialTheme.typography.bodyMedium)
+        }
     }
 }
 

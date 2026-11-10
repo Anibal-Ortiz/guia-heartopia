@@ -8,6 +8,7 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.guiaheartopia.app.domain.ContentSyncResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -50,9 +51,11 @@ class ContentUpdateWorker(
         val now = System.currentTimeMillis()
         val last = AndroidContentStore.lastAttemptMillis(applicationContext)
         if (last != 0L && now - last < 24L * 60L * 60L * 1000L) return Result.success()
-        AndroidContentStore.markAttempt(applicationContext, now)
-        AndroidContentStore.syncNow(applicationContext)
-        ContentSignals.note(applicationContext)
+        val report = AndroidContentStore.syncNow(applicationContext)
+        ContentCheckStore.record(applicationContext, report, now)
+        if (report.result == ContentSyncResult.APPLIED) {
+            ContentSignals.note(applicationContext)
+        }
         return Result.success()
     }
 }

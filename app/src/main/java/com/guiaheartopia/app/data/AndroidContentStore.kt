@@ -5,7 +5,6 @@ import com.guiaheartopia.app.BuildConfig
 import com.guiaheartopia.app.domain.ContentLibrary
 import com.guiaheartopia.app.domain.ContentManifest
 import com.guiaheartopia.app.domain.ContentPackage
-import com.guiaheartopia.app.domain.ContentSyncResult
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
@@ -52,7 +51,7 @@ object AndroidContentStore {
             .apply()
     }
 
-    fun syncNow(context: Context): ContentSyncResult {
+    fun syncNow(context: Context): com.guiaheartopia.app.domain.ContentSyncReport {
         val library = AndroidContentLibrary(context)
         return ContentPackage.sync(
             library = library,

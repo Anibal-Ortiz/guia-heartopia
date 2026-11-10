@@ -69,12 +69,12 @@ class ContentSyncTest {
         val listed = manifest(2, 23, "2026-12-01", mapOf("catalog/creatures.json" to good))
         val wrong = remoteFiles(listed, keep = mapOf("catalog/creatures.json" to good)).toMutableMap()
         wrong[ContentPackage.fileUrl(baseUrl, "catalog/creatures.json")] = "no-es-el-archivo".toByteArray()
-        assertEquals(ContentSyncResult.FAILED, sync(library, wrong))
+        assertEquals(ContentSyncResult.VERIFY_FAILED, sync(library, wrong))
         assertNull(library.installedManifest())
 
         val incomplete = remoteFiles(listed, keep = mapOf("catalog/creatures.json" to good)).toMutableMap()
         incomplete.remove(ContentPackage.fileUrl(baseUrl, "catalog/creatures.json"))
-        assertEquals(ContentSyncResult.FAILED, sync(library, incomplete))
+        assertEquals(ContentSyncResult.NETWORK_ERROR, sync(library, incomplete))
         assertEquals(1, ContentPackage.currentVersion(library))
         assertNull(library.overlayBytes("catalog/creatures.json"))
     }
@@ -157,7 +157,7 @@ class ContentSyncTest {
         assertNotNull(rootManifest)
         assertEquals(rootManifest, appManifest)
         assertEquals(1, appManifest!!.contentVersion)
-        assertEquals(23, appManifest.minAppVersionCode)
+        assertEquals(24, appManifest.minAppVersionCode)
         assertTrue(appManifest.files.any { it.path == "catalog/creatures.json" })
         assertTrue(appManifest.files.any { it.path == "calendar/clima-2026.json" })
 
@@ -175,7 +175,7 @@ class ContentSyncTest {
             emptyMap(),
             ContentManifest(contentVersion = 0, minAppVersionCode = 23, publishedOn = "2026-01-01"),
         )
-        assertEquals(ContentSyncResult.APPLIED, sync(library, served))
+        assertEquals(ContentSyncResult.APPLIED, sync(library, served, appVersionCode = 24))
 
         val creatures = parseCreatures(library.overlayBytes("catalog/creatures.json")!!)
         assertTrue(creatures.size > 100)
@@ -192,8 +192,8 @@ class ContentSyncTest {
     private fun sync(
         library: MemoryContentLibrary,
         remote: Map<String, ByteArray>,
-        appVersionCode: Int = 23,
-    ): ContentSyncResult = ContentPackage.sync(library, { remote[it] }, appVersionCode, baseUrl)
+        appVersionCode: Int = 24,
+    ): ContentSyncResult = ContentPackage.sync(library, { remote[it] }, appVersionCode, baseUrl).result
 
     private fun remoteFiles(manifest: ContentManifest, keep: Map<String, ByteArray> = emptyMap()): Map<String, ByteArray> {
         val out = LinkedHashMap<String, ByteArray>()

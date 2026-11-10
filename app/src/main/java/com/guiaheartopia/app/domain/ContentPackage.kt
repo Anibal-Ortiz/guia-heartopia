@@ -23,14 +23,6 @@ data class ContentManifest(
     val files: List<ContentFileEntry> = emptyList(),
 )
 
-enum class ContentSyncResult {
-    APPLIED,
-    UNCHANGED,
-    OLDER,
-    NEEDS_NEWER_APP,
-    FAILED,
-}
-
 interface ContentLibrary {
     fun bundledManifest(): ContentManifest
     fun installedManifest(): ContentManifest?
@@ -96,18 +88,22 @@ object ContentPackage {
         fetch: (String) -> ByteArray?,
         appVersionCode: Int,
         baseUrl: String,
-    ): ContentSyncResult {
-        val raw = fetch(manifestUrl(baseUrl)) ?: return ContentSyncResult.FAILED
-        val remote = parseManifest(raw.decodeToString()) ?: return ContentSyncResult.FAILED
+    ): ContentSyncReport {
         val current = currentVersion(library)
-        if (remote.contentVersion < current) return ContentSyncResult.OLDER
+        val raw = fetch(manifestUrl(baseUrl)) ?: return ContentSyncReport(ContentSyncResult.NETWORK_ERROR, current, null)
+        val remote = parseManifest(raw.decodeToString())
+            ?: return ContentSyncReport(ContentSyncResult.VERIFY_FAILED, current, null)
+        val remoteVersion = remote.contentVersion
+        if (remote.contentVersion < current) {
+            return ContentSyncReport(ContentSyncResult.OLDER, current, remoteVersion)
+        }
         if (remote.contentVersion == current) {
             if (remote.minAppVersionCode <= appVersionCode) library.setNeedsNewerApp(false)
-            return ContentSyncResult.UNCHANGED
+            return ContentSyncReport(ContentSyncResult.UNCHANGED, current, remoteVersion)
         }
         if (remote.minAppVersionCode > appVersionCode) {
             library.setNeedsNewerApp(true)
-            return ContentSyncResult.NEEDS_NEWER_APP
+            return ContentSyncReport(ContentSyncResult.NEEDS_NEWER_APP, current, remoteVersion)
         }
         val next = LinkedHashMap<String, ByteArray>()
         for (file in remote.files) {
@@ -119,9 +115,10 @@ object ContentPackage {
                 val overlay = library.overlayBytes(file.path)
                 if (overlay != null) next[file.path] = overlay
             } else {
-                val bytes = fetch(fileUrl(baseUrl, file.path)) ?: return ContentSyncResult.FAILED
+                val bytes = fetch(fileUrl(baseUrl, file.path))
+                    ?: return ContentSyncReport(ContentSyncResult.NETWORK_ERROR, current, remoteVersion)
                 if (bytes.size.toLong() != file.size || sha256(bytes) != file.sha256) {
-                    return ContentSyncResult.FAILED
+                    return ContentSyncReport(ContentSyncResult.VERIFY_FAILED, current, remoteVersion)
                 }
                 next[file.path] = bytes
             }
@@ -129,9 +126,13 @@ object ContentPackage {
         return try {
             library.publish(remote, next)
             library.setNeedsNewerApp(false)
-            ContentSyncResult.APPLIED
+            ContentSyncReport(
+                ContentSyncResult.APPLIED,
+                currentVersion(library),
+                remoteVersion,
+            )
         } catch (_: Exception) {
-            ContentSyncResult.FAILED
+            ContentSyncReport(ContentSyncResult.VERIFY_FAILED, current, remoteVersion)
         }
     }
 }
