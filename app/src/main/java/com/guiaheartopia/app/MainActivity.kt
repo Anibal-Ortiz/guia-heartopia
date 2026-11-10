@@ -1,6 +1,7 @@
 package com.guiaheartopia.app
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -33,7 +34,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -59,8 +62,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.guiaheartopia.app.ads.AdConfig
 import com.guiaheartopia.app.ads.DiscreteBanner
 import com.guiaheartopia.app.ads.rememberAdsState
+import com.guiaheartopia.app.data.AdRewardStore
+import com.guiaheartopia.app.data.AdRewardState
+import kotlinx.coroutines.launch
 import com.guiaheartopia.app.data.GuideRepository
 import com.guiaheartopia.app.data.ContentSignals
 import com.guiaheartopia.app.data.ContentUpdateScheduler
@@ -112,6 +119,10 @@ class MainActivity : ComponentActivity() {
                 onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
             }
             val ads = rememberAdsState(this, ui.ready && ui.profile.onboarded)
+            val adRewards by AdRewardStore.observe(this).collectAsStateWithLifecycle(AdRewardState())
+            LaunchedEffect(adRewards.adFreeActive) {
+                ads.setAdFree(adRewards.adFreeActive)
+            }
             LaunchedEffect(ui.profile) {
                 if (ui.ready && ui.profile.onboarded) ReminderScheduler.sync(this@MainActivity, ui.profile)
             }
@@ -147,7 +158,8 @@ class MainActivity : ComponentActivity() {
                     else -> AppScaffold(
                         ui = ui,
                         vm = vm,
-                        showBanner = ads.state.canShowBanner,
+                        ads = ads,
+                        adRewards = adRewards,
                         adsMode = ads.state.mode,
                         adsStatus = ads.state.status,
                         privacyOptions = ads.state.privacyOptionsRequired,
@@ -166,7 +178,8 @@ class MainActivity : ComponentActivity() {
 private fun AppScaffold(
     ui: GuideUi,
     vm: GuideViewModel,
-    showBanner: Boolean,
+    ads: com.guiaheartopia.app.ads.AdsController,
+    adRewards: AdRewardState,
     adsMode: com.guiaheartopia.app.ads.AdsMode,
     adsStatus: String,
     privacyOptions: Boolean,
@@ -174,7 +187,53 @@ private fun AppScaffold(
     onTerms: () -> Unit,
     onAdPrivacy: () -> Unit,
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val nav = rememberNavController()
+    val showBanner = ads.state.canShowBanner(adRewards.adFreeActive)
+    fun toast(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    }
+    val watchAdFree: () -> Unit = {
+        ads.showRewardedAdFree(
+            onReward = { scope.launch { AdRewardStore.grantAdFreeHours(context) } },
+            onUnavailable = {
+                toast("El video no está listo todavía. Prueba en unos segundos.")
+            },
+        )
+    }
+    fun navigateBottomTab(dest: String) {
+        val policy = NavigationPolicy.onBottomTabSelected(dest)
+        fun go() {
+            nav.navigate(dest) {
+                popUpTo(policy.popUpToRoute) {
+                    inclusive = policy.inclusive
+                    saveState = policy.saveState
+                }
+                launchSingleTop = true
+                restoreState = policy.restoreState
+            }
+        }
+        if (dest == "calendar" && !adRewards.calendarUnlocked && AdConfig.hasRewardedCalendar) {
+            ads.showRewardedCalendar(
+                onReward = {
+                    scope.launch {
+                        AdRewardStore.grantCalendarHours(context)
+                        go()
+                    }
+                },
+                onUnavailable = {
+                    toast("El video no está listo todavía. Prueba en unos segundos.")
+                },
+            )
+            return
+        }
+        if (dest != "home" && AdConfig.hasInterstitial) {
+            ads.showInterstitial(adRewards.adFreeActive, onDone = { go() })
+        } else {
+            go()
+        }
+    }
     val backStack by nav.currentBackStackEntryAsState()
     val route = backStack?.destination?.route
     val tabs = AppNavigation.BottomNavTabs
@@ -240,7 +299,7 @@ private fun AppScaffold(
                     .windowInsetsPadding(WindowInsets.navigationBars),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                if (showBanner) {
+                if (showBanner && route != "home") {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -258,17 +317,7 @@ private fun AppScaffold(
                         DiscreteBanner(adsMode)
                     }
                 }
-                PixelNavBar(tabs, tab) { dest ->
-                    val policy = NavigationPolicy.onBottomTabSelected(dest)
-                    nav.navigate(dest) {
-                        popUpTo(policy.popUpToRoute) {
-                            inclusive = policy.inclusive
-                            saveState = policy.saveState
-                        }
-                        launchSingleTop = true
-                        restoreState = policy.restoreState
-                    }
-                }
+                PixelNavBar(tabs, tab, onSelect = { navigateBottomTab(it) })
             }
         },
     ) { padding ->
@@ -280,7 +329,15 @@ private fun AppScaffold(
                 .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         ) {
             composable("home") {
-                HomeScreen(ui, { dest -> nav.navigate(dest) }, vm::dismissReminderPrompt)
+                HomeScreen(
+                    ui = ui,
+                    onOpen = { dest -> nav.navigate(dest) },
+                    onDismissReminderPrompt = vm::dismissReminderPrompt,
+                    showHomeBanner = showBanner,
+                    adsMode = adsMode,
+                    adFreeActive = adRewards.adFreeActive,
+                    onWatchAdFree = watchAdFree,
+                )
             }
             composable("guide") {
                 GuideScreen(
@@ -339,6 +396,8 @@ private fun AppScaffold(
                     onImport = vm::importBackup,
                     onPhotoCredits = { nav.navigate("photo-credits") },
                     scrollToReminders = true,
+                    adFreeUntilMillis = adRewards.adFreeUntilMillis,
+                    onWatchAdFree = watchAdFree,
                 )
             }
             composable("settings") {
@@ -356,6 +415,8 @@ private fun AppScaffold(
                     onExport = vm::exportBackup,
                     onImport = vm::importBackup,
                     onPhotoCredits = { nav.navigate("photo-credits") },
+                    adFreeUntilMillis = adRewards.adFreeUntilMillis,
+                    onWatchAdFree = watchAdFree,
                 )
             }
             composable("photo-credits") {

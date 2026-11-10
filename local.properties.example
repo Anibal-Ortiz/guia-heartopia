@@ -7,6 +7,10 @@ sdk.dir=/ruta/al/Android/Sdk
 # ni inventes un publisher ID. Si faltan, la variante release no solicita anuncios.
 # ADMOB_APP_ID=
 # ADMOB_BANNER_AD_UNIT_ID=
+# ADMOB_INTERSTITIAL_AD_UNIT_ID=
+# ADMOB_REWARDED_CALENDAR_AD_UNIT_ID=
+# ADMOB_REWARDED_ADFREE_AD_UNIT_ID=
+# Si APP_ID y BANNER están vacíos o son marcadores, release usa los IDs de prueba oficiales de Google.
 
 # Opcional, solo depuración. Vacío = no se fuerza geografía UMP.
 # Valores: EEA, NOT_EEA, REGULATED_US_STATE, OTHER

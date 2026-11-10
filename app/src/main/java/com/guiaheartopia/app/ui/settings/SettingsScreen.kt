@@ -58,6 +58,8 @@ import com.guiaheartopia.app.domain.ImportResult
 import com.guiaheartopia.app.domain.PlaySession
 import com.guiaheartopia.app.domain.PlayerProfile
 import com.guiaheartopia.app.domain.ReminderPrefs
+import com.guiaheartopia.app.data.AdRewardStore
+import com.guiaheartopia.app.ui.components.NotebookCard
 import com.guiaheartopia.app.ui.components.PickerField
 import com.guiaheartopia.app.ui.components.PixelButton
 import com.guiaheartopia.app.ui.components.PixelCard
@@ -78,6 +80,8 @@ fun SettingsScreen(
     onImport: (String, (ImportResult) -> Unit) -> Unit,
     onPhotoCredits: () -> Unit,
     scrollToReminders: Boolean = false,
+    adFreeUntilMillis: Long = 0L,
+    onWatchAdFree: () -> Unit = {},
 ) {
     var name by rememberSaveable(profile.name) { mutableStateOf(profile.name) }
     var session by rememberSaveable(profile.session) { mutableStateOf(profile.session) }
@@ -150,6 +154,30 @@ fun SettingsScreen(
             )
             if (privacyOptions) {
                 PixelButton("Opciones de privacidad de anuncios", onClick = onAdPrivacy)
+            }
+        }
+        NotebookCard {
+            Text(
+                "Ver un video y quitar anuncios por 24 horas",
+                style = MaterialTheme.typography.titleMedium,
+            )
+            val remaining = AdRewardStore.remainingLabel(adFreeUntilMillis)
+            if (remaining.isNotBlank()) {
+                Text(
+                    "Sin banners ni intersticiales. Quedan $remaining.",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            } else {
+                Text(
+                    "El video no desbloquea el Calendario. Solo oculta banners e intersticiales.",
+                    style = MaterialTheme.typography.bodySmall,
+                )
+                PixelButton(
+                    "Ver video",
+                    onClick = onWatchAdFree,
+                    outlined = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
         androidx.compose.foundation.layout.Box(
@@ -362,7 +390,7 @@ private fun BackupBlock(
 private fun adsCopy(mode: AdsMode, status: String): String {
     val base = when {
         BuildConfig.ADS_USE_GOOGLE_TEST_IDS ->
-            "Compilación de prueba: los anuncios usan identificadores de demostración. No son de un editor real."
+            "Los anuncios usan identificadores de demostración de Google (prueba o release sin IDs reales)."
         !BuildConfig.ADS_ENABLED ->
             "Esta compilación no pide anuncios."
         else ->

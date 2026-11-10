@@ -2,6 +2,7 @@ package com.guiaheartopia.app.ads
 
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import androidx.compose.runtime.Composable
@@ -24,16 +25,23 @@ import com.google.android.ump.ConsentRequestParameters
 import com.google.android.ump.UserMessagingPlatform
 import com.guiaheartopia.app.BuildConfig
 
+private const val TAG = "GuiaAds"
+
 /**
  * IDs y banderas salen de BuildConfig.
- * Debug: IDs oficiales de prueba de Google.
- * Release: solo si ADMOB_APP_ID y ADMOB_BANNER_AD_UNIT_ID llegan por local.properties o el entorno.
+ * Con marcadores en gradle.properties/local.properties, release usa los IDs oficiales de prueba.
  */
 object AdConfig {
     val adsEnabled: Boolean = BuildConfig.ADS_ENABLED &&
         BuildConfig.ADMOB_APP_ID.isNotBlank() &&
         BuildConfig.ADMOB_BANNER_UNIT_ID.isNotBlank()
     val bannerUnitId: String = BuildConfig.ADMOB_BANNER_UNIT_ID
+    val interstitialUnitId: String = BuildConfig.ADMOB_INTERSTITIAL_UNIT_ID
+    val rewardedCalendarUnitId: String = BuildConfig.ADMOB_REWARDED_CALENDAR_UNIT_ID
+    val rewardedAdFreeUnitId: String = BuildConfig.ADMOB_REWARDED_ADFREE_UNIT_ID
+    val hasInterstitial: Boolean = interstitialUnitId.isNotBlank()
+    val hasRewardedCalendar: Boolean = rewardedCalendarUnitId.isNotBlank()
+    val hasRewardedAdFree: Boolean = rewardedAdFreeUnitId.isNotBlank()
     val usesGoogleTestIds: Boolean = BuildConfig.ADS_USE_GOOGLE_TEST_IDS
     val umpDebugGeography: Int? = if (BuildConfig.DEBUG) geography(BuildConfig.UMP_DEBUG_GEOGRAPHY) else null
     val umpTestDeviceId: String = if (BuildConfig.DEBUG) BuildConfig.UMP_TEST_DEVICE_ID else ""
@@ -61,9 +69,10 @@ data class AdsUiState(
     val initialized: Boolean = false,
     val privacyOptionsRequired: Boolean = false,
     val status: String = "",
+    val adFreeActive: Boolean = false,
 ) {
-    val canShowBanner: Boolean
-        get() = initialized && (mode == AdsMode.PERSONALIZED || mode == AdsMode.NON_PERSONALIZED)
+    fun canShowBanner(adFree: Boolean): Boolean =
+        !adFree && initialized && (mode == AdsMode.PERSONALIZED || mode == AdsMode.NON_PERSONALIZED)
 }
 
 enum class ConsentOutcome {
@@ -76,11 +85,6 @@ fun interface AdsConsentGateway {
     fun gather(activity: Activity, onResult: (ConsentOutcome) -> Unit)
 }
 
-/**
- * Pide el formulario UMP real. No marca el consentimiento como dado.
- * Si la consulta falla, el resultado es [ConsentOutcome.FAILED] y los anuncios,
- * si se piden, van como no personalizados.
- */
 class UmpConsentGateway : AdsConsentGateway {
     override fun gather(activity: Activity, onResult: (ConsentOutcome) -> Unit) {
         try {
@@ -120,10 +124,15 @@ class AdsController(
     private val activity: Activity,
     private val gateway: AdsConsentGateway = UmpConsentGateway(),
 ) {
+    val fullscreen = FullscreenAds(activity)
     var state by mutableStateOf(AdsUiState())
         private set
     private var started = false
     private var initStarted = false
+
+    fun setAdFree(active: Boolean) {
+        state = state.copy(adFreeActive = active)
+    }
 
     fun start() {
         if (started) return
@@ -160,6 +169,20 @@ class AdsController(
         }
     }
 
+    fun onAdsReady() = fullscreen.preload(state.mode)
+
+    fun showInterstitial(adFree: Boolean, onDone: () -> Unit = {}) {
+        fullscreen.showInterstitial(adFree, onDone)
+    }
+
+    fun showRewardedAdFree(onReward: () -> Unit, onUnavailable: () -> Unit) {
+        fullscreen.showRewardedAdFree(onReward, onUnavailable)
+    }
+
+    fun showRewardedCalendar(onReward: () -> Unit, onUnavailable: () -> Unit) {
+        fullscreen.showRewardedCalendar(onReward, onUnavailable)
+    }
+
     private fun initialize(personalized: Boolean) {
         if (initStarted) return
         initStarted = true
@@ -176,7 +199,9 @@ class AdsController(
                         } else {
                             "Anuncios no personalizados: el consentimiento no se pudo completar."
                         },
+                        adFreeActive = state.adFreeActive,
                     )
+                    fullscreen.preload(mode)
                 }
             }
         } catch (_: Throwable) {
@@ -221,6 +246,11 @@ fun DiscreteBanner(mode: AdsMode, modifier: Modifier = Modifier) {
                     adUnitId = AdConfig.bannerUnitId
                     adListener = object : AdListener() {
                         override fun onAdFailedToLoad(error: LoadAdError) {
+                            Log.w(
+                                TAG,
+                                "load error kind=banner unit=${AdConfig.bannerUnitId} " +
+                                    "code=${error.code} message=${error.message}",
+                            )
                             visibility = View.GONE
                             visible = false
                         }
@@ -236,7 +266,7 @@ fun DiscreteBanner(mode: AdsMode, modifier: Modifier = Modifier) {
     )
 }
 
-private fun adRequest(mode: AdsMode): AdRequest {
+fun adRequest(mode: AdsMode): AdRequest {
     val builder = AdRequest.Builder()
     if (mode == AdsMode.NON_PERSONALIZED) {
         val extras = Bundle().apply { putString("npa", "1") }

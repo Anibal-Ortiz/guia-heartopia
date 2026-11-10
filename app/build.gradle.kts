@@ -19,21 +19,50 @@ fun secret(name: String): String {
     return System.getenv(name)?.trim().orEmpty()
 }
 
+fun admobPlaceholder(id: String): Boolean {
+    val value = id.trim()
+    if (value.isEmpty()) return true
+    val lower = value.lowercase()
+    return lower.contains("xxxx") ||
+        lower.contains("yyyy") ||
+        lower.contains("placeholder") ||
+        lower.contains("tu_id") ||
+        lower.contains("reemplazar") ||
+        lower.contains("ejemplo") ||
+        lower.startsWith("admob_")
+}
+
+val testAdMobApp = "ca-app-pub-3940256099942544~3347511713"
+val testAdMobBanner = "ca-app-pub-3940256099942544/6300978111"
+val testAdMobInterstitial = "ca-app-pub-3940256099942544/1033173712"
+val testAdMobRewarded = "ca-app-pub-3940256099942544/5224354917"
+
 val releaseAppId = secret("ADMOB_APP_ID")
 val releaseBannerId = secret("ADMOB_BANNER_AD_UNIT_ID")
+val releaseInterstitialId = secret("ADMOB_INTERSTITIAL_AD_UNIT_ID")
+val releaseRewardedCalendarId = secret("ADMOB_REWARDED_CALENDAR_AD_UNIT_ID")
+val releaseRewardedAdFreeId = secret("ADMOB_REWARDED_ADFREE_AD_UNIT_ID")
 val releaseAdsReady = releaseAppId.isNotEmpty() && releaseBannerId.isNotEmpty()
+val releaseUseRealAdIds = !admobPlaceholder(releaseAppId) && !admobPlaceholder(releaseBannerId)
+val releaseUseTestAdIds = !releaseUseRealAdIds
+val releaseAdsEnabled = releaseUseTestAdIds || releaseAdsReady
+
+fun effectiveAdId(real: String, test: String, useTest: Boolean): String =
+    if (useTest) test else real.trim().takeUnless { admobPlaceholder(it) }.orEmpty()
+
+val effectiveReleaseAppId = effectiveAdId(releaseAppId, testAdMobApp, releaseUseTestAdIds)
 
 val releaseManifestFile = rootProject.file("app/generated-release-manifest/AndroidManifest.xml")
 releaseManifestFile.parentFile.mkdirs()
 releaseManifestFile.writeText(
-    if (releaseAdsReady) {
+    if (releaseAdsEnabled) {
         """
         <?xml version="1.0" encoding="utf-8"?>
         <manifest xmlns:android="http://schemas.android.com/apk/res/android">
             <application>
                 <meta-data
                     android:name="com.google.android.gms.ads.APPLICATION_ID"
-                    android:value="${releaseAppId}" />
+                    android:value="${effectiveReleaseAppId}" />
             </application>
         </manifest>
         """.trimIndent()
@@ -61,7 +90,7 @@ val releaseSigningReady = storeFilePath.isNotEmpty() && releaseStorePassword.isN
     releaseKeyAlias.isNotEmpty() && releaseKeyPassword.isNotEmpty()
 
 base {
-    archivesName.set("Guia-Heartopia-0.9.2")
+    archivesName.set("Guia-Heartopia-0.9.3")
 }
 
 android {
@@ -72,8 +101,8 @@ android {
         applicationId = "com.guiaheartopia.app"
         minSdk = 26
         targetSdk = 37
-        versionCode = 30
-        versionName = "0.9.2"
+        versionCode = 31
+        versionName = "0.9.3"
         buildConfigField(
             "String",
             "CONTENT_BASE_URL",
@@ -96,8 +125,11 @@ android {
     buildTypes {
         debug {
             // ID oficiales de prueba de Google. Solo esta variante.
-            buildConfigField("String", "ADMOB_APP_ID", "\"ca-app-pub-3940256099942544~3347511713\"")
-            buildConfigField("String", "ADMOB_BANNER_UNIT_ID", "\"ca-app-pub-3940256099942544/6300978111\"")
+            buildConfigField("String", "ADMOB_APP_ID", "\"$testAdMobApp\"")
+            buildConfigField("String", "ADMOB_BANNER_UNIT_ID", "\"$testAdMobBanner\"")
+            buildConfigField("String", "ADMOB_INTERSTITIAL_UNIT_ID", "\"$testAdMobInterstitial\"")
+            buildConfigField("String", "ADMOB_REWARDED_CALENDAR_UNIT_ID", "\"$testAdMobRewarded\"")
+            buildConfigField("String", "ADMOB_REWARDED_ADFREE_UNIT_ID", "\"$testAdMobRewarded\"")
             buildConfigField("boolean", "ADS_ENABLED", "true")
             buildConfigField("boolean", "ADS_USE_GOOGLE_TEST_IDS", "true")
             val geo = secret("UMP_DEBUG_GEOGRAPHY")
@@ -111,10 +143,33 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-            buildConfigField("String", "ADMOB_APP_ID", "\"${releaseAppId.replace("\"", "")}\"")
-            buildConfigField("String", "ADMOB_BANNER_UNIT_ID", "\"${releaseBannerId.replace("\"", "")}\"")
-            buildConfigField("boolean", "ADS_ENABLED", releaseAdsReady.toString())
-            buildConfigField("boolean", "ADS_USE_GOOGLE_TEST_IDS", "false")
+            buildConfigField(
+                "String",
+                "ADMOB_APP_ID",
+                "\"${effectiveAdId(releaseAppId, testAdMobApp, releaseUseTestAdIds).replace("\"", "")}\"",
+            )
+            buildConfigField(
+                "String",
+                "ADMOB_BANNER_UNIT_ID",
+                "\"${effectiveAdId(releaseBannerId, testAdMobBanner, releaseUseTestAdIds).replace("\"", "")}\"",
+            )
+            buildConfigField(
+                "String",
+                "ADMOB_INTERSTITIAL_UNIT_ID",
+                "\"${effectiveAdId(releaseInterstitialId, testAdMobInterstitial, releaseUseTestAdIds).replace("\"", "")}\"",
+            )
+            buildConfigField(
+                "String",
+                "ADMOB_REWARDED_CALENDAR_UNIT_ID",
+                "\"${effectiveAdId(releaseRewardedCalendarId, testAdMobRewarded, releaseUseTestAdIds).replace("\"", "")}\"",
+            )
+            buildConfigField(
+                "String",
+                "ADMOB_REWARDED_ADFREE_UNIT_ID",
+                "\"${effectiveAdId(releaseRewardedAdFreeId, testAdMobRewarded, releaseUseTestAdIds).replace("\"", "")}\"",
+            )
+            buildConfigField("boolean", "ADS_ENABLED", releaseAdsEnabled.toString())
+            buildConfigField("boolean", "ADS_USE_GOOGLE_TEST_IDS", releaseUseTestAdIds.toString())
             buildConfigField("String", "UMP_DEBUG_GEOGRAPHY", "\"\"")
             buildConfigField("String", "UMP_TEST_DEVICE_ID", "\"\"")
             if (releaseSigningReady) {
