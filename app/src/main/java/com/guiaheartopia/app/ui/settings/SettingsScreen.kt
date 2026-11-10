@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -31,7 +32,12 @@ import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import com.guiaheartopia.app.data.AndroidContentStore
+import com.guiaheartopia.app.data.ContentSignals
 import com.guiaheartopia.app.data.VerifiedCatalog
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.guiaheartopia.app.domain.Countries
 import com.guiaheartopia.app.domain.SampleIds
 import com.guiaheartopia.app.domain.ImportResult
@@ -68,6 +74,7 @@ fun SettingsScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text("Ajustes", style = MaterialTheme.typography.headlineSmall)
+        ContentUpdateCard()
         PixelCard {
             Text("Créditos y fuentes", style = MaterialTheme.typography.titleMedium)
             Text(VerifiedCatalog.SPOT_SOURCES, style = MaterialTheme.typography.bodyMedium)
@@ -131,7 +138,7 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(
-                "Las imágenes de esas fichas se copiaron una vez desde heartodex el 9 de noviembre de 2026 y van dentro de la app. No se vuelven a descargar. No se pudo comprobar permiso de redistribución.",
+                "Las imágenes de esas fichas se copiaron una vez desde heartodex el 9 de noviembre de 2026 y van dentro de la app. Si el sitio de esta guía publica un paquete nuevo, esas imágenes se guardan en el teléfono y no se piden al mostrar la ficha. No se pudo comprobar permiso de redistribución.",
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(
@@ -153,6 +160,50 @@ fun SettingsScreen(
         }
         Text("Versión ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})", style = MaterialTheme.typography.bodySmall)
     }
+}
+
+@Composable
+private fun ContentUpdateCard() {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var status by remember { mutableStateOf(AndroidContentStore.status(context)) }
+    var busy by remember { mutableStateOf(false) }
+    PixelCard {
+        Text("Contenido", style = MaterialTheme.typography.titleMedium)
+        Text("Versión de contenido: ${status.contentVersion}", style = MaterialTheme.typography.bodyMedium)
+        Text(
+            "Última actualización: ${publishedLabel(status.publishedOn)}",
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        if (status.needsNewerApp) {
+            Text(
+                "Hay contenido nuevo que pide una versión más nueva de la app. Actualízala desde Play Store.",
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+        PixelButton(
+            text = if (busy) "Buscando actualizaciones…" else "Buscar actualizaciones",
+            onClick = {
+                if (!busy) {
+                    busy = true
+                    scope.launch {
+                        withContext(Dispatchers.IO) {
+                            AndroidContentStore.markAttempt(context, System.currentTimeMillis())
+                            AndroidContentStore.syncNow(context)
+                        }
+                        ContentSignals.note(context)
+                        status = AndroidContentStore.status(context)
+                        busy = false
+                    }
+                }
+            },
+        )
+    }
+}
+
+private fun publishedLabel(iso: String): String {
+    val parts = iso.split("-")
+    return if (parts.size == 3) "${parts[2]}/${parts[1]}/${parts[0]}" else iso
 }
 
 @Composable

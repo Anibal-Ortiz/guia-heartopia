@@ -88,7 +88,8 @@ fun WeatherScreen(
     var selectedToken by rememberSaveable { mutableStateOf<String?>(null) }
     var filterName by rememberSaveable { mutableStateOf(WeatherFilter.ALL.name) }
     val skyContext = androidx.compose.ui.platform.LocalContext.current
-    val sky = androidx.compose.runtime.remember { SkyCatalog.load(skyContext) }
+    val revision = com.guiaheartopia.app.ui.contentRevision()
+    val sky = androidx.compose.runtime.remember(revision) { SkyCatalog.load(skyContext) }
     val month = YearMonth.parse(monthToken)
     val filter = WeatherFilter.valueOf(filterName)
     val now = ZonedDateTime.now(zone)

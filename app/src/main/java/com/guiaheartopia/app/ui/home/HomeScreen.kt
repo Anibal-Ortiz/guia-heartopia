@@ -79,8 +79,9 @@ fun HomeScreen(
 ) {
     val country = Countries.byId(ui.profile.countryId)
     val context = androidx.compose.ui.platform.LocalContext.current
-    val catalog = remember { com.guiaheartopia.app.data.HeartodexCatalog.load(context) }
-    val sky = remember { com.guiaheartopia.app.data.SkyCatalog.load(context) }
+    val revision = com.guiaheartopia.app.ui.contentRevision()
+    val catalog = remember(revision) { com.guiaheartopia.app.data.HeartodexCatalog.load(context) }
+    val sky = remember(revision) { com.guiaheartopia.app.data.SkyCatalog.load(context) }
     val zone = DexSchedule.zoneOf(ui.profile.zoneId)
     val nowInstant = Instant.now()
     val available = catalog.count { SkyWeather.availableNow(it.schedule, it.weather, nowInstant, sky, zone) }

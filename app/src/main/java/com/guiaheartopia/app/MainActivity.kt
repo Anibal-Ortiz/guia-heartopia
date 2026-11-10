@@ -55,6 +55,8 @@ import androidx.navigation.navArgument
 import com.guiaheartopia.app.ads.DiscreteBanner
 import com.guiaheartopia.app.ads.rememberAdsState
 import com.guiaheartopia.app.data.GuideRepository
+import com.guiaheartopia.app.data.ContentSignals
+import com.guiaheartopia.app.data.ContentUpdateScheduler
 import com.guiaheartopia.app.reminders.ReminderScheduler
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.ui.GuideViewModel
@@ -91,7 +93,11 @@ class MainActivity : ComponentActivity() {
             val lifecycleOwner = LocalLifecycleOwner.current
             DisposableEffect(lifecycleOwner) {
                 val observer = LifecycleEventObserver { _, event ->
-                    if (event == Lifecycle.Event.ON_RESUME) vm.refreshDay()
+                    if (event == Lifecycle.Event.ON_RESUME) {
+                        vm.refreshDay()
+                        ContentUpdateScheduler.enqueueIfDue(this@MainActivity)
+                        ContentSignals.note(this@MainActivity)
+                    }
                 }
                 lifecycleOwner.lifecycle.addObserver(observer)
                 onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
@@ -281,7 +287,8 @@ private fun AppScaffold(
             ) { entry ->
                 val id = entry.arguments?.getString("id")
                 val context = androidx.compose.ui.platform.LocalContext.current
-                val item = androidx.compose.runtime.remember(id) {
+                val revision = com.guiaheartopia.app.ui.contentRevision()
+                val item = androidx.compose.runtime.remember(id, revision) {
                     com.guiaheartopia.app.data.HeartodexCatalog.load(context).firstOrNull { it.id == id }
                 }
                 if (item == null) {

@@ -271,8 +271,9 @@ private fun DexTab(
     onToggleFound: (String) -> Unit,
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
-    val all = remember { com.guiaheartopia.app.data.HeartodexCatalog.load(context) }
-    val sky = remember { SkyCatalog.load(context) }
+    val revision = com.guiaheartopia.app.ui.contentRevision()
+    val all = remember(revision) { com.guiaheartopia.app.data.HeartodexCatalog.load(context) }
+    val sky = remember(revision) { SkyCatalog.load(context) }
     val zone = DexSchedule.zoneOf(ui.profile.zoneId)
     val instant = Instant.now()
     val current = DexSchedule.currentWindow(zone, instant)
@@ -509,7 +510,8 @@ fun DexDetailScreen(entry: DexEntry, zoneId: String, found: Boolean, onToggle: (
     val zone = DexSchedule.zoneOf(zoneId)
     val instant = Instant.now()
     val detailContext = androidx.compose.ui.platform.LocalContext.current
-    val sky = remember { SkyCatalog.load(detailContext) }
+    val revision = com.guiaheartopia.app.ui.contentRevision()
+    val sky = remember(revision) { SkyCatalog.load(detailContext) }
     val now = SkyWeather.availableNow(
         entry.schedule,
         entry.weather,

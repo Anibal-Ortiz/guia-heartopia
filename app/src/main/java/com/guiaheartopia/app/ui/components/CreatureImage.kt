@@ -20,18 +20,22 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
+import com.guiaheartopia.app.data.AndroidContentStore
+import com.guiaheartopia.app.domain.ContentPackage
 import com.guiaheartopia.app.domain.CreatureMark
 import com.guiaheartopia.app.ui.theme.Line
+import java.io.File
 
 /**
- * Solo archivos ya empaquetados (`asset:catalog/images/…`).
- * Una URL http(s) no se pide: se muestra el marcador local.
+ * Imagen ya guardada: primero el archivo descargado, si no el del APK.
+ * Una URL http(s) no se pide al mostrar la ficha.
  */
-fun bundledCreatureModel(imageUrl: String?): String? {
+fun bundledCreatureModel(imageUrl: String?, downloaded: File? = null): Any? {
     if (imageUrl.isNullOrBlank()) return null
     if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) return null
-    val path = imageUrl.removePrefix("asset:").removePrefix("/")
-    if (!path.startsWith("catalog/images/")) return null
+    val path = imageUrl.removePrefix("asset:").removePrefix("content:").removePrefix("/")
+    if (!ContentPackage.isSafePath(path) || !path.startsWith("catalog/images/")) return null
+    if (downloaded != null && downloaded.isFile) return downloaded
     return "file:///android_asset/$path"
 }
 
@@ -48,7 +52,10 @@ fun CreatureImage(
     val habitat = CreatureMark.habitat(locations, level)
     val tint = habitatColor(habitat, level)
     val shape = RoundedCornerShape(shapeRadius)
-    val model = bundledCreatureModel(imageUrl)
+    val context = LocalContext.current
+    val path = imageUrl?.removePrefix("asset:")?.removePrefix("content:")?.removePrefix("/")
+    val downloaded = path?.let { AndroidContentStore.overlayFile(context, it) }
+    val model = bundledCreatureModel(imageUrl, downloaded)
     var failed by remember(model) { mutableStateOf(false) }
 
     Box(
