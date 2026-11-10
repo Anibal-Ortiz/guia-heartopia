@@ -50,7 +50,9 @@ import com.guiaheartopia.app.domain.TextMatch
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.ui.components.CozyGuideIcon
 import com.guiaheartopia.app.ui.components.CreatureGlyph
+import com.guiaheartopia.app.data.PhotoCredits
 import com.guiaheartopia.app.ui.components.CreatureImage
+import com.guiaheartopia.app.ui.settings.PhotoCreditCaption
 import com.guiaheartopia.app.ui.components.LabelValue
 import com.guiaheartopia.app.ui.components.NowBadge
 import com.guiaheartopia.app.ui.components.PillTabs
@@ -523,6 +525,9 @@ fun DexDetailScreen(entry: DexEntry, zoneId: String, found: Boolean, onToggle: (
     val localHours = DexSchedule.windowsAround(zone, instant)
         .filter { it.slot.key in entry.schedule }
         .joinToString(" · ") { "${DexSchedule.titled(it.slot)} ${DexSchedule.hoursLabel(it)}" }
+    val photoCredit = remember(revision, entry.id) {
+        PhotoCredits.byId(detailContext)[entry.id]
+    }
 
     Column(
         Modifier
@@ -535,17 +540,25 @@ fun DexDetailScreen(entry: DexEntry, zoneId: String, found: Boolean, onToggle: (
         PixelCard(container = PaperSubtle) {
             Row(
                 Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.Top,
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                CreatureImage(
-                    imageUrl = entry.imageUrl,
-                    category = entry.category,
-                    locations = entry.location,
-                    level = entry.level,
-                    modifier = Modifier.size(86.dp),
-                    shapeRadius = 20.dp,
-                )
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    CreatureImage(
+                        imageUrl = entry.imageUrl,
+                        category = entry.category,
+                        locations = entry.location,
+                        level = entry.level,
+                        modifier = Modifier.size(86.dp),
+                        shapeRadius = 20.dp,
+                    )
+                    photoCredit?.let { credit ->
+                        PhotoCreditCaption(
+                            credit,
+                            modifier = Modifier.padding(top = 4.dp).width(92.dp),
+                        )
+                    }
+                }
                 Column(Modifier.weight(1f)) {
                     Text(entry.name, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold))
                     Text(entry.nameEn.ifBlank { entry.category }, color = Muted, style = MaterialTheme.typography.bodyMedium)

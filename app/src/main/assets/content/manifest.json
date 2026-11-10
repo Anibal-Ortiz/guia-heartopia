@@ -1,12 +1,17 @@
 {
   "contentVersion": 1,
-  "minAppVersionCode": 25,
+  "minAppVersionCode": 26,
   "publishedOn": "2026-11-10",
   "files": [
     {
       "path": "catalog/heartodex.json",
       "size": 220872,
       "sha256": "1748353384d9087901f89a6de06ff71994aef5b1b9420241815ccd6b17ff4d94"
+    },
+    {
+      "path": "catalog/creditos.json",
+      "size": 127243,
+      "sha256": "96ee374a953d3c43ac4561bcf3c45595cd0662ed4f70eaf4540f9d1597a8b21c"
     },
     {
       "path": "calendar/clima-2026.json",

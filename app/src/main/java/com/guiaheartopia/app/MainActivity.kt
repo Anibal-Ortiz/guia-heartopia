@@ -159,7 +159,7 @@ private fun AppScaffold(
     val route = backStack?.destination?.route
     val tabs = AppNavigation.BottomNavTabs
     val tab = when (route) {
-        "settings", "map", "weather", null -> null
+        "settings", "map", "weather", "photo-credits", null -> null
         else -> tabs.firstOrNull { route.startsWith(it.route) }?.route
             ?: when {
                 route.startsWith("animal/") || route.startsWith("dex/") -> "guide"
@@ -326,7 +326,11 @@ private fun AppScaffold(
                     onReminders = vm::saveReminders,
                     onExport = vm::exportBackup,
                     onImport = vm::importBackup,
+                    onPhotoCredits = { nav.navigate("photo-credits") },
                 )
+            }
+            composable("photo-credits") {
+                com.guiaheartopia.app.ui.settings.PhotoCreditsScreen(onBack = { nav.popBackStack() })
             }
             composable(
                 "animal/{id}",

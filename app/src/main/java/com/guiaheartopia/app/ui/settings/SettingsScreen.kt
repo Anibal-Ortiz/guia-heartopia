@@ -68,6 +68,7 @@ fun SettingsScreen(
     onReminders: (ReminderPrefs) -> Unit,
     onExport: ((String) -> Unit) -> Unit,
     onImport: (String, (ImportResult) -> Unit) -> Unit,
+    onPhotoCredits: () -> Unit,
 ) {
     var name by rememberSaveable(profile.name) { mutableStateOf(profile.name) }
     var session by rememberSaveable(profile.session) { mutableStateOf(profile.session) }
@@ -142,9 +143,10 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(
-                "Esta app no incluye dibujos ni capturas del juego. Cada categoría usa un ícono propio. Si un paquete de contenido trae un archivo de imagen para una ficha, se muestra esa copia guardada en el teléfono y no se pide al abrir la ficha.",
+                "Las fotos son de especies reales, con licencias libres (CC BY, CC0 o dominio público), tomadas de Wikimedia Commons e iNaturalist. Las criaturas inventadas del juego usan la foto de su especie base.",
                 style = MaterialTheme.typography.bodyMedium,
             )
+            PixelButton(text = "Créditos de las fotos", onClick = onPhotoCredits, outlined = true)
             Text(
                 "Liuliu y la fluorita de noviembre 2026 salen de heartodex (ubicación diaria). Diciembre no está día a día en esa página: se muestra Sin datos.",
                 style = MaterialTheme.typography.bodyMedium,
