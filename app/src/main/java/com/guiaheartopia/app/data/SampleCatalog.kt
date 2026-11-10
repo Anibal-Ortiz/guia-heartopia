@@ -14,14 +14,14 @@ import com.guiaheartopia.app.domain.WeatherSlot
  */
 object SeedCatalog {
     val animals: List<AnimalRecord> = listOf(
-        animal("panda", "Panda", listOf("Bambú", "Manzana", "Maíz"), listOf("Plataformas"), "Lluvioso", "https://www.heartodex.com/_astro/1783738206153-animal-panda_105qed.webp"),
-        animal("capibara", "Capibara", listOf("Frambuesa", "Tomate", "Uva"), listOf("Lago volcánico", "Ruinas"), "Arcoíris, Lluvioso", "https://www.heartodex.com/_astro/1783738150016-animal-capibara_qxpUA.webp"),
-        animal("conejo", "Conejo", listOf("Hierba", "Zanahoria", "Fresa"), listOf("Suburbio"), "Soleado", "https://www.heartodex.com/_astro/1783738158505-animal-conejo_1tCt1y.webp"),
-        animal("zorro", "Zorro", listOf("Carne", "Perca americana", "Perca de río"), listOf("Florimolino", "Costa purpura", "Lago de la pradera"), "Arcoíris", "https://www.heartodex.com/_astro/1783738126393-animal-zorro_WO9be.webp"),
-        animal("nutria", "Nutria marina", listOf("Camarón azul", "Camarón marino", "Mejillón"), listOf("Plaza del pueblo pesquero"), "Lluvioso", "https://www.heartodex.com/_astro/1783738186224-animal-nutriamarina_Z1eE5Nl.webp"),
-        animal("huron", "Hurón", listOf("Huevo", "Lubina marina", "Gobio"), listOf("Rio de crepusculo"), "Arcoíris", "https://www.heartodex.com/_astro/1783738180133-animal-huron_ZCdP02.webp"),
-        animal("ciervo", "Ciervo sika", listOf("Rama", "Lechuga", "Ensalada de la casa"), listOf("Lago del bosque"), "Soleado", "https://www.heartodex.com/_astro/1783738201643-animal-ciervosika_1WSxKk.webp"),
-        animal("alpaca", "Alpaca", listOf("Trigo", "Piña", "Arándano"), listOf("Costa purpura"), "Soleado", "https://www.heartodex.com/_astro/1783738190730-animal-alpaca_gDg6z.webp"),
+        animal("panda", "Panda", listOf("Bambú", "Manzana", "Maíz"), listOf("Plataformas"), "Lluvioso", "asset:catalog/images/sample-panda.webp"),
+        animal("capibara", "Capibara", listOf("Frambuesa", "Tomate", "Uva"), listOf("Lago volcánico", "Ruinas"), "Arcoíris, Lluvioso", "asset:catalog/images/sample-capibara.webp"),
+        animal("conejo", "Conejo", listOf("Hierba", "Zanahoria", "Fresa"), listOf("Suburbio"), "Soleado", "asset:catalog/images/sample-conejo.webp"),
+        animal("zorro", "Zorro", listOf("Carne", "Perca americana", "Perca de río"), listOf("Florimolino", "Costa purpura", "Lago de la pradera"), "Arcoíris", "asset:catalog/images/sample-zorro.webp"),
+        animal("nutria", "Nutria marina", listOf("Camarón azul", "Camarón marino", "Mejillón"), listOf("Plaza del pueblo pesquero"), "Lluvioso", "asset:catalog/images/sample-nutria.webp"),
+        animal("huron", "Hurón", listOf("Huevo", "Lubina marina", "Gobio"), listOf("Rio de crepusculo"), "Arcoíris", "asset:catalog/images/sample-huron.webp"),
+        animal("ciervo", "Ciervo sika", listOf("Rama", "Lechuga", "Ensalada de la casa"), listOf("Lago del bosque"), "Soleado", "asset:catalog/images/sample-ciervo.webp"),
+        animal("alpaca", "Alpaca", listOf("Trigo", "Piña", "Arándano"), listOf("Costa purpura"), "Soleado", "asset:catalog/images/sample-alpaca.webp"),
     )
 
     private fun animal(
@@ -62,8 +62,8 @@ object SampleWeather {
             id = SampleIds.WEATHER_ORIGIN,
             name = "Hora del servidor (UTC)",
             zoneId = "UTC",
-            note = "Los tramos del calendario en assets/calendar/clima-2026.json están en UTC " +
-                "(fuentes Tidebell y heartopia.th.gl). La app los convierte a tu zona IANA.",
+            note = "Si el calendario trae tramos, están en UTC y se convierten a la zona IANA elegida. " +
+                "Heartodex no publica el clima por fecha: el archivo actual no trae días.",
         ),
     )
 

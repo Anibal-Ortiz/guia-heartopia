@@ -23,19 +23,17 @@ object VerifiedCatalog {
             "y heartopia.noobgo.com/animals. Consultados en noviembre 2026."
 
     const val SPOT_SOURCES =
-        "Tidebell, tidebell.com/oak-and-fluorite, y heartodex.com/en/daily-location. " +
-            "Noviembre 2026 coincide en las dos listas. La hora 6:00 la cita solo Tidebell " +
-            "y no identifica la zona del servidor."
+        "Liuliu y fluorita de noviembre 2026: heartodex.com/ubicacion-diaria, consulta del 9 de noviembre de 2026. " +
+            "Diciembre de 2026 no trae los días en esa página."
 
     const val EVENT_SOURCES =
-        "Inicio 10 oct 2026: heartopia.th.gl (Noche de la adivinación / Night of Divination) " +
-            "y build-heartopia.com/calendar. El cierre no coincide: 20 nov (th.gl) y 21 nov (build-heartopia)."
+        "Noche de la adivinación: heartodex la muestra del 10 de octubre al 21 de noviembre de 2026."
 
     val events: List<GameEvent> = listOf(
         GameEvent(
             id = "noche-adivinacion",
             title = "Noche de la adivinación",
-            summary = "Empieza el 10 de octubre de 2026. El cierre no coincide entre las listas, así que se deja el 21 de noviembre.",
+            summary = "heartodex muestra el evento del 10 de octubre al 21 de noviembre de 2026.",
             start = LocalDate.of(2026, 10, 10),
             end = LocalDate.of(2026, 11, 21),
             verified = true,

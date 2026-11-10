@@ -69,23 +69,9 @@ fun SettingsScreen(
     ) {
         Text("Ajustes", style = MaterialTheme.typography.headlineSmall)
         PixelCard {
-            Text("Datos y coincidencia de fuentes", style = MaterialTheme.typography.titleMedium)
-            Text(
-                "Aquí se resume cómo se contrastan las listas. En el calendario y en Inicio ya no se muestran avisos día a día.",
-                style = MaterialTheme.typography.bodySmall,
-            )
+            Text("Créditos y fuentes", style = MaterialTheme.typography.titleMedium)
             Text(VerifiedCatalog.SPOT_SOURCES, style = MaterialTheme.typography.bodyMedium)
             Text(VerifiedCatalog.EVENT_SOURCES, style = MaterialTheme.typography.bodyMedium)
-            Text(
-                "El clima hora a hora sale de calendar/clima-2026.json (Tidebell y heartopia.th.gl), " +
-                    "guardado en UTC y convertido a tu zona. Revisado según metadatos del archivo.",
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            Text(
-                "«Origen de ejemplo» era solo el marcador por defecto en SampleCatalog (origen-ejemplo): " +
-                    "no era una fuente del juego. El horario real es el del servidor en UTC citado arriba.",
-                style = MaterialTheme.typography.bodyMedium,
-            )
             Text(
                 "Tramos de criaturas: servidor UTC fijo; en Chile continental (UTC−3) " +
                     "Noche 02–08, Amanecer 08–14, Día 14–20, Tarde 20–02.",
@@ -142,11 +128,15 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(
-                "Peces, aves, insectos y fauna salen de las páginas índice en español de heartodex, leídas el 7 de noviembre de 2026. No se abrió cada ficha ni se copiaron imágenes. El índice no trae precio ni cebo. Nivel y sombra se muestran solo cuando la tarjeta los incluye.",
+                "Peces, aves, insectos y fauna salen de las páginas índice en español de heartodex, leídas el 7 de noviembre de 2026. El índice no trae precio ni cebo. Nivel y sombra se muestran solo cuando la tarjeta los incluye.",
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(
-                "En noviembre de 2026, Liuliu y la flurita coinciden en Tidebell y heartodex. Diciembre sigue el ciclo de 50 días y se marca como estimado. El clima de noviembre y diciembre sale de Tidebell y heartopia.th.gl, revisado el 7 de noviembre de 2026 junto al parche del 24 de septiembre de 2026.",
+                "Las imágenes de esas fichas se copiaron una vez desde heartodex el 9 de noviembre de 2026 y van dentro de la app. No se vuelven a descargar. No se pudo comprobar permiso de redistribución.",
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Text(
+                "Liuliu y la fluorita de noviembre 2026 salen de heartodex (ubicación diaria). Diciembre no está día a día en esa página: se muestra Sin datos. El clima por fecha tampoco está en heartodex (consulta del 9 de noviembre de 2026): Sin datos. No se rellena con otras webs.",
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(

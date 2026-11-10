@@ -84,8 +84,7 @@ object SkyWeatherLocal {
             .ifBlank { "Sin datos de clima" }
 
     fun formatSpan(span: SkySpan, focusLocalDate: LocalDate, zone: ZoneId): String {
-        val mark = if (span.status == SkyStatus.POR_CONFIRMAR) " (por confirmar)" else ""
-        val label = span.kind.climateDisplay().label + mark
+        val label = span.kind.climateDisplay().label
         val dayStart = focusLocalDate.atStartOfDay(zone)
         val dayEnd = focusLocalDate.plusDays(1).atStartOfDay(zone)
         val coversFull = !span.start.isAfter(dayStart) && !span.end.isBefore(dayEnd)

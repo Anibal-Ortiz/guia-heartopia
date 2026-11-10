@@ -24,7 +24,7 @@ enum class WeatherKind(val label: String) {
     SNOW("Nieve"),
     STORM("Tormenta"),
     FOG("Niebla"),
-    UNVERIFIED("Sin confirmar"),
+    UNVERIFIED("Sin datos"),
 }
 
 data class WeatherOrigin(

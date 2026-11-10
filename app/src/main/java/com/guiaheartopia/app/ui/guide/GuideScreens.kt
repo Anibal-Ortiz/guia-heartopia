@@ -676,7 +676,7 @@ fun AnimalDetailScreen(
 
         // Guide verified info
         PixelCard(container = Paper) {
-            Text("Información Verificada", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
+            Text("Ficha", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
             LabelValue("🍎 Comidas favoritas", animal.favoriteFoods.joinToString(", ").ifBlank { "—" })
             LabelValue("🪵 Comedero", animal.feederLocations.joinToString().ifBlank { "—" }, emphasize = false)
             if (animal.likedWeather.isNotBlank()) LabelValue("🌤️ Clima favorable", animal.likedWeather, emphasize = false)

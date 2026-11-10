@@ -7,7 +7,6 @@ import com.guiaheartopia.app.domain.ResourceCalendar
 import java.time.LocalDate
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ResourceCalendarTest {
@@ -16,17 +15,16 @@ class ResourceCalendarTest {
         val day = ResourceCalendar.on(LocalDate.of(2026, 11, 6))
         assertEquals("8", day.liuliu)
         assertEquals("8", day.flurita)
-        assertEquals(DayCertainty.CONSENSO, day.certainty)
-        assertEquals(2, day.sources)
+        assertEquals(DayCertainty.PUBLICADO, day.certainty)
+        assertEquals(1, day.sources)
     }
 
     @Test
-    fun decemberIsEstimatedFromTheFiftyDayLoop() {
+    fun decemberIsMissingOnHeartodex() {
         val day = ResourceCalendar.on(LocalDate.of(2026, 12, 1))
-        assertEquals("7", day.liuliu)
-        assertEquals("6", day.flurita)
-        assertEquals(DayCertainty.ESTIMADO, day.certainty)
-        assertTrue(ResourceCalendar.decemberFollowsTheNovemberLoop())
+        assertEquals(DayCertainty.SIN_DATOS, day.certainty)
+        assertNull(day.liuliu)
+        assertNull(day.flurita)
         val outside = ResourceCalendar.on(LocalDate.of(2026, 1, 15))
         assertEquals(DayCertainty.SIN_DATOS, outside.certainty)
         assertNull(outside.liuliu)

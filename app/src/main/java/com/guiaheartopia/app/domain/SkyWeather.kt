@@ -52,15 +52,12 @@ data class SkySlot(
             "${kind.emoji} ${kind.label}"
         }
         val extra = if (special == "luna_carmesi") " · Luna carmesí" else ""
-        val mark = if (status == SkyStatus.POR_CONFIRMAR) " (por confirmar)" else ""
-        return base + extra + mark
+        return base + extra
     }
 
     /** Etiqueta sin emoji para la UI de clima (tres tipos: sol, lluvia, arcoíris). */
     fun plainTitle(): String {
-        val base = kind.climateDisplay().label
-        val mark = if (status == SkyStatus.POR_CONFIRMAR) " (por confirmar)" else ""
-        return base + mark
+        return kind.climateDisplay().label
     }
 }
 
@@ -75,8 +72,7 @@ data class SkySpan(
     fun text(): String {
         val clock = DateTimeFormatter.ofPattern("HH:mm")
         val label = kind.climateDisplay().label
-        val mark = if (status == SkyStatus.POR_CONFIRMAR) " (por confirmar)" else ""
-        return "$label$mark ${start.toLocalTime().format(clock)}–${end.toLocalTime().format(clock)}"
+        return "$label ${start.toLocalTime().format(clock)}–${end.toLocalTime().format(clock)}"
     }
 }
 

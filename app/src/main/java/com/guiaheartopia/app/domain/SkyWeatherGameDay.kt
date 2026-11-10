@@ -31,8 +31,7 @@ object SkyWeatherGameDay {
         val frameKey: String,
     ) {
         fun label(): String {
-            val mark = if (status == SkyStatus.POR_CONFIRMAR) " (por confirmar)" else ""
-            return kind.climateDisplay().label + mark
+            return kind.climateDisplay().label
         }
     }
 

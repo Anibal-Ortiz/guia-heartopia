@@ -8,7 +8,6 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -16,12 +15,15 @@ class SkyWeatherGameDayTest {
     private val santiago = ZoneId.of("America/Santiago")
     private val madrid = ZoneId.of("Europe/Madrid")
 
+    /**
+     * La lógica de franjas se comprueba con un día sintético.
+     * El archivo publicado no trae el 12 de noviembre: heartodex no lista el clima por fecha.
+     */
     @Test
-    fun nov12ChileShowsFourGameFramesWithAcceptanceTexts() {
-        val table = SkyCatalog.fromJson(catalogText())
+    fun syntheticDayKeepsChileGameFramesAndNextDayDusk() {
+        val table = SkyCatalog.fromJson(syntheticDay("2026-11-12"))
         val day = LocalDate.of(2026, 11, 12)
         val spans = SkyWeatherGameDay.spansForGameDay(table, day, santiago)
-        assertEquals(4, spans.size)
         assertEquals(
             listOf(SkyKind.SOLEADO, SkyKind.LLUVIA, SkyKind.ARCOIRIS, SkyKind.SOLEADO),
             spans.map { it.kind },
@@ -31,22 +33,12 @@ class SkyWeatherGameDayTest {
         assertEquals("Lluvia 08:00–14:00", lines[1])
         assertEquals("Arcoíris 14:00–20:00", lines[2])
         assertEquals("Sol 20:00–02:00 del día siguiente", lines[3])
-        assertEquals(LocalTime.of(2, 0), spans[0].start.toLocalTime())
-        assertEquals(LocalTime.of(2, 0), spans[3].end.toLocalTime())
+        assertTrue(spans.last().end.toLocalDate().isAfter(day))
     }
 
     @Test
-    fun duskFrameCrossesToNextCalendarDay() {
-        val table = SkyCatalog.fromJson(catalogText())
-        val day = LocalDate.of(2026, 11, 12)
-        val dusk = SkyWeatherGameDay.spansForGameDay(table, day, santiago).last()
-        assertEquals("Dusk", dusk.frameKey)
-        assertTrue(dusk.end.toLocalDate().isAfter(day))
-    }
-
-    @Test
-    fun otherZoneUsesSameCatalogOverlapButDifferentLocalClock() {
-        val table = SkyCatalog.fromJson(catalogText())
+    fun otherZoneKeepsKindsAndShiftsTheClock() {
+        val table = SkyCatalog.fromJson(syntheticDay("2026-11-12"))
         val day = LocalDate.of(2026, 11, 12)
         val cl = SkyWeatherGameDay.spansForGameDay(table, day, santiago)
         val eu = SkyWeatherGameDay.spansForGameDay(table, day, madrid)
@@ -54,6 +46,43 @@ class SkyWeatherGameDayTest {
         assertEquals(LocalTime.of(2, 0), cl[0].start.toLocalTime())
         assertEquals(LocalTime.of(6, 0), eu[0].start.toLocalTime())
     }
+
+    @Test
+    fun shippedCalendarHasNoNovember12BecauseHeartodexDoesNotPublishIt() {
+        val table = SkyCatalog.fromJson(catalogText())
+        val day = LocalDate.of(2026, 11, 12)
+        assertTrue(table.on(day) == null)
+        assertTrue(SkyWeatherGameDay.spansForGameDay(table, day, santiago).isEmpty())
+        val raw = catalogText()
+        assertTrue(!raw.contains("por_confirmar"))
+        assertTrue(!raw.contains("acuerdo"))
+        assertTrue(!raw.contains("matchingSlots"))
+    }
+
+    private fun syntheticDay(date: String): String = """
+        {
+          "days": [
+            {
+              "date": "$date",
+              "slots": [
+                {"start":"00:00","end":"06:00","kind":"despejado","status":"acuerdo"},
+                {"start":"06:00","end":"12:00","kind":"soleado","status":"acuerdo"},
+                {"start":"12:00","end":"18:00","kind":"lluvia","status":"acuerdo"},
+                {"start":"18:00","end":"24:00","kind":"arcoiris_luna","status":"acuerdo"}
+              ]
+            },
+            {
+              "date": "2026-11-13",
+              "slots": [
+                {"start":"00:00","end":"06:00","kind":"despejado","status":"acuerdo"},
+                {"start":"06:00","end":"12:00","kind":"nublado","status":"acuerdo"},
+                {"start":"12:00","end":"18:00","kind":"lluvia","status":"acuerdo"},
+                {"start":"18:00","end":"24:00","kind":"lluvia","status":"acuerdo"}
+              ]
+            }
+          ]
+        }
+    """.trimIndent()
 
     private fun catalogText(): String = listOf(
         File("src/main/assets/calendar/clima-2026.json"),
