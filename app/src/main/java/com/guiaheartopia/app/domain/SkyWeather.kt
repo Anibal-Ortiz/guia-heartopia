@@ -13,7 +13,7 @@ enum class SkyKind(
     val emoji: String,
     val creature: String,
 ) {
-    DESPEJADO("Despejado", "🌕", "SUN"),
+    DESPEJADO("Despejado", "☀️", "SUN"),
     NUBLADO("Nublado", "☁️", "SUN"),
     SOLEADO("Sol", "☀️", "SUN"),
     LLUVIA("Lluvia", "🌧️", "RAIN"),
@@ -27,12 +27,13 @@ enum class SkyKind(
     SIN_DATOS("Sin datos", "·", "NONE"),
 }
 
-/** Clima en la app: solo sol, lluvia o arcoíris (los datos siguen con el kind original). */
+/** Clima en la app: despejado, lluvia, arcoíris o nieve (el JSON conserva el kind original). */
 fun SkyKind.climateDisplay(): SkyKind = when (this) {
     SkyKind.LLUVIA -> SkyKind.LLUVIA
     SkyKind.ARCOIRIS, SkyKind.ARCOIRIS_LUNA -> SkyKind.ARCOIRIS
+    SkyKind.NIEVE -> SkyKind.NIEVE
     SkyKind.SIN_DATOS -> SkyKind.SIN_DATOS
-    else -> SkyKind.SOLEADO
+    else -> SkyKind.DESPEJADO
 }
 
 enum class SkyStatus { ACUERDO, POR_CONFIRMAR, SIN_DATOS }
@@ -56,7 +57,7 @@ data class SkySlot(
         return base + extra
     }
 
-    /** Etiqueta sin emoji para la UI de clima (tres tipos: sol, lluvia, arcoíris). */
+    /** Etiqueta sin emoji para la UI de clima (cuatro tipos). */
     fun plainTitle(): String {
         return kind.climateDisplay().label
     }

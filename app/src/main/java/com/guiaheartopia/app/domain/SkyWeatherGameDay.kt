@@ -26,7 +26,7 @@ object SkyWeatherGameDay {
         val frameKey: String,
         val detail: String = "",
     ) {
-        fun label(): String = detail.ifBlank { kind.climateDisplay().label }
+        fun label(): String = kind.climateDisplay().label
     }
 
     fun spansForGameDay(table: SkyTable, localGameDay: LocalDate, zone: ZoneId): List<GameClimateSpan> {
@@ -46,12 +46,12 @@ object SkyWeatherGameDay {
                     if (!clipStart.isBefore(clipEnd)) continue
                     val zonedStart = clipStart.atZone(zone)
                     raw += GameClimateSpan(
-                        kind = slot.kind,
+                        kind = slot.kind.climateDisplay(),
                         status = slot.status,
                         start = zonedStart,
                         end = clipEnd.atZone(zone),
                         frameKey = frameKeyAt(windows, zonedStart.toInstant()),
-                        detail = slot.detail,
+                        detail = "",
                     )
                 }
             }
@@ -70,11 +70,20 @@ object SkyWeatherGameDay {
         }
     }
 
-    fun barSegmentsForGameDay(table: SkyTable, localGameDay: LocalDate, zone: ZoneId): List<SkyBarSegment> =
-        spansForGameDay(table, localGameDay, zone).map { span ->
+    fun barSegmentsForGameDay(table: SkyTable, localGameDay: LocalDate, zone: ZoneId): List<SkyBarSegment> {
+        val merged = ArrayList<SkyBarSegment>()
+        for (span in spansForGameDay(table, localGameDay, zone)) {
             val minutes = Duration.between(span.start.toInstant(), span.end.toInstant()).toMinutes().toInt()
-            SkyBarSegment(span.kind, minutes.coerceAtLeast(1))
+            val piece = SkyBarSegment(span.kind, minutes.coerceAtLeast(1))
+            val last = merged.lastOrNull()
+            if (last != null && last.kind == piece.kind) {
+                merged[merged.lastIndex] = last.copy(weight = last.weight + piece.weight)
+            } else {
+                merged += piece
+            }
         }
+        return merged
+    }
 
     fun formatSpan(span: GameClimateSpan, focusLocalDate: LocalDate): String {
         val clock = DateTimeFormatter.ofPattern("HH:mm")

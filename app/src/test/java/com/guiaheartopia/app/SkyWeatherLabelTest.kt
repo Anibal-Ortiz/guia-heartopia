@@ -20,13 +20,15 @@ class SkyWeatherLabelTest {
     }
 
     @Test
-    fun climateDisplayCollapsesToThreeKinds() {
-        assertEquals(SkyKind.SOLEADO, SkyKind.NUBLADO.climateDisplay())
-        assertEquals(SkyKind.SOLEADO, SkyKind.METEORO.climateDisplay())
+    fun climateDisplayCollapsesToFourKinds() {
+        assertEquals(SkyKind.DESPEJADO, SkyKind.NUBLADO.climateDisplay())
+        assertEquals(SkyKind.DESPEJADO, SkyKind.SOLEADO.climateDisplay())
+        assertEquals(SkyKind.DESPEJADO, SkyKind.METEORO.climateDisplay())
         assertEquals(SkyKind.ARCOIRIS, SkyKind.ARCOIRIS_LUNA.climateDisplay())
         assertEquals(SkyKind.LLUVIA, SkyKind.LLUVIA.climateDisplay())
+        assertEquals(SkyKind.NIEVE, SkyKind.NIEVE.climateDisplay())
         val cloudy = SkySlot(LocalTime.NOON, LocalTime.MIDNIGHT, SkyKind.NUBLADO, SkyStatus.ACUERDO)
-        assertEquals("Sol", cloudy.plainTitle())
+        assertEquals("Despejado", cloudy.plainTitle())
     }
 
     @Test
@@ -55,14 +57,14 @@ class SkyWeatherLabelTest {
     @Test
     fun summarySpanOmitsEmoji() {
         val span = com.guiaheartopia.app.domain.SkySpan(
-            SkyKind.SOLEADO,
+            SkyKind.DESPEJADO,
             SkyStatus.ACUERDO,
             null,
             null,
             java.time.ZonedDateTime.parse("2026-11-06T08:00-03:00"),
             java.time.ZonedDateTime.parse("2026-11-06T14:00-03:00"),
         )
-        assertEquals("Sol 08:00–14:00", span.text())
+        assertEquals("Despejado 08:00–14:00", span.text())
         assertFalse(span.text().contains("☀"))
     }
 }
