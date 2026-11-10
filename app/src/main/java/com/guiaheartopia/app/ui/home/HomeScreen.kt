@@ -158,7 +158,7 @@ fun HomeScreen(
                 Text("Sin datos de clima para hoy.", style = MaterialTheme.typography.bodyMedium)
             } else {
                 ClimateSkyBar(sky, climateDay, zone, Modifier.fillMaxWidth().height(20.dp))
-                com.guiaheartopia.app.ui.weather.ClimateDetailList(climateLines)
+                com.guiaheartopia.app.ui.weather.ClimateDetailList(climateLines, showFrames = false)
             }
         }
 

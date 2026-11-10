@@ -295,12 +295,16 @@ private fun DayDetail(date: LocalDate, zone: ZoneId, sky: com.guiaheartopia.app.
 }
 
 @Composable
-fun ClimateDetailList(lines: List<com.guiaheartopia.app.domain.SkyWeatherGameDay.ClimateLine>) {
+fun ClimateDetailList(
+    lines: List<com.guiaheartopia.app.domain.SkyWeatherGameDay.ClimateLine>,
+    showFrames: Boolean = true,
+) {
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         lines.forEach { line ->
+            if (line.frame && !showFrames) return@forEach
             Text(
                 line.text,
-                modifier = if (line.frame) Modifier else Modifier.padding(start = 8.dp),
+                modifier = if (line.frame || !showFrames) Modifier else Modifier.padding(start = 8.dp),
                 style = if (line.frame) {
                     MaterialTheme.typography.titleSmall
                 } else {
