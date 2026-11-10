@@ -1,14 +1,16 @@
 # Ficha de Google Play
 
-Nombre: **Guía para Heartopia (no oficial)**
+Nombre en la ficha: **WikiFan para Heartopia**
+
+Etiqueta bajo el ícono (launcher): **WikiFan Heartopia**
 
 ## Descripción corta (máximo 80 caracteres)
 
-Guía no oficial de criaturas, horarios y clima. Hecha por fans.
+WikiFan: guía de criaturas, horarios y clima. No oficial, hecha por fans.
 
 ## Descripción larga
 
-App no oficial creada por fans. No está afiliada, asociada ni respaldada por los creadores de Heartopia. Heartopia y sus marcas pertenecen a sus respectivos dueños.
+App no oficial, no afiliada ni respaldada por los creadores de Heartopia.
 
 Guía para consultar peces, aves, insectos y fauna, con horario, clima y lugar. También puedes anotar lo que tú viste. Esos apuntes se quedan en el teléfono.
 

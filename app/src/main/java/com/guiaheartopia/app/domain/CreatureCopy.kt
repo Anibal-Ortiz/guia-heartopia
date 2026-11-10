@@ -21,5 +21,5 @@ object CreatureCopy {
 
 object StoreCopy {
     const val UNOFFICIAL =
-        "App no oficial creada por fans. No está afiliada, asociada ni respaldada por los creadores de Heartopia. Heartopia y sus marcas pertenecen a sus respectivos dueños."
+        "App no oficial, no afiliada ni respaldada por los creadores de Heartopia."
 }

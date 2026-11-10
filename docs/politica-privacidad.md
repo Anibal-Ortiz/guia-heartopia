@@ -1,10 +1,11 @@
 # Política de privacidad
 
-**Guía para Heartopia (no oficial)**  
-Versión de la app: 0.7.0  
+**WikiFan para Heartopia**  
+Etiqueta del launcher: **WikiFan Heartopia**  
+Versión de la app: 0.9.1  
 Contacto: primero010102@gmail.com
 
-App no oficial creada por fans. No está afiliada, asociada ni respaldada por los creadores de Heartopia. Heartopia y sus marcas pertenecen a sus respectivos dueños.
+App no oficial, no afiliada ni respaldada por los creadores de Heartopia.
 
 ## Qué es esta app
 

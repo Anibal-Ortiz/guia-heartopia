@@ -27,8 +27,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.BuildConfig
+import com.guiaheartopia.app.R
 import com.guiaheartopia.app.ads.AdsMode
 import android.Manifest
 import android.os.Build
@@ -85,6 +87,7 @@ fun SettingsScreen(
             title = "Ajustes",
             subtitle = "Contenido, anuncios y créditos",
         )
+        Text(stringResource(R.string.app_full_name), style = MaterialTheme.typography.titleMedium)
         Text(StoreCopy.UNOFFICIAL, style = MaterialTheme.typography.bodyMedium)
         PixelButton("Política de privacidad", onClick = onPrivacy, outlined = true)
         ContentUpdateCard()

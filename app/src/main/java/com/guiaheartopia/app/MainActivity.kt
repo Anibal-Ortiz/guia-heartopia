@@ -36,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.ImageShader
@@ -67,6 +68,8 @@ import com.guiaheartopia.app.reminders.ReminderScheduler
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.ui.GuideViewModel
 import com.guiaheartopia.app.ui.components.CozySettingsIcon
+import com.guiaheartopia.app.ui.components.WikiFanAppIcon
+import com.guiaheartopia.app.R
 import com.guiaheartopia.app.ui.components.PixelNavBar
 import com.guiaheartopia.app.ui.guide.AnimalDetailScreen
 import com.guiaheartopia.app.ui.guide.GuideScreen
@@ -201,18 +204,10 @@ private fun AppScaffold(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
-                    Box(
-                        Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(GreenSoft),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text("🌱", fontSize = 18.sp)
-                    }
+                    WikiFanAppIcon(Modifier.size(36.dp))
                     Column {
                         Text(
-                            "Guía para Heartopia (no oficial)",
+                            stringResource(R.string.app_name),
                             style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.ExtraBold),
                             color = Ink,
                             maxLines = 2,

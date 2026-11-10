@@ -157,7 +157,7 @@ class ContentSyncTest {
         assertNotNull(rootManifest)
         assertEquals(rootManifest, appManifest)
         assertEquals(1, appManifest!!.contentVersion)
-        assertEquals(28, appManifest.minAppVersionCode)
+        assertEquals(29, appManifest.minAppVersionCode)
         assertTrue(appManifest.files.any { it.path == "catalog/creatures.json" })
         assertTrue(appManifest.files.any { it.path == "calendar/clima-2026.json" })
         assertTrue(appManifest.files.none { it.path.startsWith("catalog/images/") })
@@ -176,7 +176,7 @@ class ContentSyncTest {
             emptyMap(),
             ContentManifest(contentVersion = 0, minAppVersionCode = 23, publishedOn = "2026-01-01"),
         )
-        assertEquals(ContentSyncResult.APPLIED, sync(library, served, appVersionCode = 28))
+        assertEquals(ContentSyncResult.APPLIED, sync(library, served, appVersionCode = 29))
 
         val creatures = parseCreatures(library.overlayBytes("catalog/creatures.json")!!)
         assertTrue(creatures.size > 100)
@@ -190,7 +190,7 @@ class ContentSyncTest {
     private fun sync(
         library: MemoryContentLibrary,
         remote: Map<String, ByteArray>,
-        appVersionCode: Int = 28,
+        appVersionCode: Int = 29,
     ): ContentSyncResult = ContentPackage.sync(library, { remote[it] }, appVersionCode, baseUrl).result
 
     private fun remoteFiles(manifest: ContentManifest, keep: Map<String, ByteArray> = emptyMap()): Map<String, ByteArray> {
