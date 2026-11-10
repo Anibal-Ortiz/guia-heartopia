@@ -21,29 +21,55 @@ class ReminderPlanTest {
     private val server = ZoneId.of("Etc/GMT+5")
 
     @Test
-    fun nonClearBandWarnsThirtyMinutesBefore() {
+    fun rainWarnsThirtyMinutesBeforeInChileLocalTime() {
         val day = sky(
-            slot(10, 12, SkyKind.LLUVIA),
-            slot(14, 16, SkyKind.DESPEJADO),
+            slot(10, 12, SkyKind.LLUVIA, "lluvia"),
+            slot(14, 16, SkyKind.DESPEJADO, "despejado"),
         )
         val now = ZonedDateTime.of(2026, 6, 2, 8, 0, 0, 0, santiago)
         val notices = ReminderPlan.weatherNotices(listOf(day), santiago, now)
         assertEquals(1, notices.size)
-        assertEquals("En 30 min: Lluvia (10:00–12:00)", notices[0].body)
-        assertEquals(9, notices[0].fireAt.hour)
+        assertEquals("En 30 min: Lluvia (11:00)", notices[0].body)
+        assertEquals(10, notices[0].fireAt.hour)
         assertEquals(30, notices[0].fireAt.minute)
+        val serverStart = ReminderPlan.serverRange(
+            day.date,
+            day.slots.first(),
+            server,
+            santiago,
+        ).first
+        assertEquals(serverStart.minusMinutes(30).toInstant(), notices[0].fireAt.toInstant())
     }
 
     @Test
-    fun adjacentBandsOfTheSameClimateBecomeOneNotice() {
+    fun nubladoDoesNotSchedule() {
+        val day = sky(slot(10, 12, SkyKind.NUBLADO, "nublado"))
+        val now = ZonedDateTime.of(2026, 6, 2, 8, 0, 0, 0, santiago)
+        assertTrue(ReminderPlan.weatherNotices(listOf(day), santiago, now).isEmpty())
+    }
+
+    @Test
+    fun arcoirisAndMeteoritosScheduleAlerts() {
         val day = sky(
-            slot(10, 12, SkyKind.LLUVIA),
-            slot(12, 14, SkyKind.LLUVIA),
-            slot(14, 15, SkyKind.NIEVE),
+            slot(18, 19, SkyKind.ARCOIRIS, "arcoiris"),
+            slot(20, 21, SkyKind.METEORO, "meteoro"),
+        )
+        val now = ZonedDateTime.of(2026, 6, 2, 12, 0, 0, 0, santiago)
+        val notices = ReminderPlan.weatherNotices(listOf(day), santiago, now).sortedBy { it.fireAt.toInstant() }
+        assertEquals(2, notices.size)
+        assertEquals("En 30 min: Arcoíris (19:00)", notices[0].body)
+        assertEquals("En 30 min: Lluvia de meteoritos (21:00)", notices[1].body)
+    }
+
+    @Test
+    fun adjacentRainBandsBecomeOneNotice() {
+        val day = sky(
+            slot(10, 12, SkyKind.LLUVIA, "lluvia"),
+            slot(12, 14, SkyKind.LLUVIA, "lluvia"),
         )
         val now = ZonedDateTime.of(2026, 6, 2, 8, 0, 0, 0, santiago)
         val notices = ReminderPlan.weatherNotices(listOf(day), santiago, now)
-        assertEquals(listOf("En 30 min: Lluvia (10:00–14:00)", "En 30 min: Nieve (14:00–15:00)"), notices.map { it.body })
+        assertEquals(listOf("En 30 min: Lluvia (11:00)"), notices.map { it.body })
     }
 
     @Test
@@ -106,10 +132,11 @@ class ReminderPlanTest {
 
     private fun sky(vararg slots: SkySlot) = SkyDay(LocalDate.of(2026, 6, 2), slots.toList())
 
-    private fun slot(from: Int, to: Int, kind: SkyKind) = SkySlot(
+    private fun slot(from: Int, to: Int, kind: SkyKind, rawKind: String = "") = SkySlot(
         start = LocalTime.of(from, 0),
         end = LocalTime.of(to, 0),
         kind = kind,
         status = SkyStatus.ACUERDO,
+        rawKind = rawKind,
     )
 }

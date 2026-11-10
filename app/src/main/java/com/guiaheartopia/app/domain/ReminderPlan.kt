@@ -49,15 +49,14 @@ data class RemoteEvent(
 )
 
 /**
- * Avisos de las próximas 48 h. Las horas del clima son las del calendario, puestas
- * en la zona del usuario. El día del servidor que usa la guía empieza a las 08:00
- * de Chile (amanecer; en invierno UTC−3) y acaba a las 08:00 siguientes: un tramo
- * anterior a esa hora sigue siendo de esa fecha del calendario, no se descarta.
- * Los eventos traen hora de servidor fija ([EventosDocument.zonaFuente]) y se
- * convierten con java.time a la zona del usuario.
+ * Avisos de las próximas 48 h. El calendario de clima usa reloj de servidor
+ * ([climateSourceZone], America / Etc/GMT+5); solo avisa lluvia, arcoíris y meteoritos,
+ * 30 min antes del inicio en hora local del usuario. Los eventos usan
+ * [EventosDocument.zonaFuente] y java.time para convertir a la zona del usuario.
  */
 object ReminderPlan {
     val horizon: Duration = Duration.ofHours(48)
+    val climateSourceZone: ZoneId = ZoneId.of("Etc/GMT+5")
     private val clock: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
     private val json = Json { ignoreUnknownKeys = true }
     private val weekdays = mapOf(
@@ -74,9 +73,10 @@ object ReminderPlan {
 
     fun weatherNotices(
         days: Collection<SkyDay>,
-        zone: ZoneId,
+        viewerZone: ZoneId,
         now: ZonedDateTime,
         within: Duration = horizon,
+        sourceZone: ZoneId = climateSourceZone,
     ): List<PlannedNotice> {
         val until = now.plus(within)
         val spans = ArrayList<ClimateSpan>()
@@ -85,23 +85,23 @@ object ReminderPlan {
         for (day in days) {
             if (day.date.isBefore(first) || day.date.isAfter(last)) continue
             for (slot in day.slots) {
-                if (isDespejado(slot) || isSinDatos(slot)) continue
-                val (start, end) = localRange(day.date, slot, zone)
+                if (!alertsClimate(slot)) continue
+                val (start, end) = serverRange(day.date, slot, sourceZone, viewerZone)
                 if (!end.toInstant().isAfter(now.toInstant())) continue
                 if (!start.toInstant().isBefore(until.plusMinutes(30).toInstant())) continue
-                spans += ClimateSpan(labelOf(slot), start, end)
+                spans += ClimateSpan(alertLabel(slot), start, end)
             }
         }
         return merge(spans).mapNotNull { span ->
             val fire = span.start.minusMinutes(30)
             if (!fire.toInstant().isAfter(now.toInstant())) return@mapNotNull null
             if (fire.toInstant().isAfter(until.toInstant())) return@mapNotNull null
-            val range = "${span.start.toLocalTime().format(clock)}–${span.end.toLocalTime().format(clock)}"
+            val localStart = span.start.toLocalTime().format(clock)
             PlannedNotice(
-                id = "clima-${span.start.toInstant().toEpochMilli()}-${span.end.toInstant().toEpochMilli()}",
-                fireAt = fire,
+                id = "clima-${span.start.toInstant().toEpochMilli()}",
+                fireAt = fire.withZoneSameInstant(viewerZone),
                 title = "Clima",
-                body = "En 30 min: ${span.label} ($range)",
+                body = "En 30 min: ${span.label} ($localStart)",
             )
         }
     }
@@ -274,29 +274,35 @@ object ReminderPlan {
             ?: runCatching { LocalDate.parse(raw).atStartOfDay() }.getOrNull()
     }
 
-    private fun isDespejado(slot: SkySlot): Boolean =
-        slot.kind == SkyKind.DESPEJADO || slot.rawKind.equals("despejado", ignoreCase = true)
-
-    private fun isSinDatos(slot: SkySlot): Boolean {
-        if (slot.kind != SkyKind.SIN_DATOS) return false
-        val raw = slot.rawKind.trim()
-        return raw.isEmpty() || raw.equals("sin_datos", true) || raw.equals("sin datos", true)
+    fun alertsClimate(slot: SkySlot): Boolean {
+        val raw = slot.rawKind.trim().lowercase(Locale.ROOT)
+        if (slot.kind == SkyKind.LLUVIA || raw == "lluvia") return true
+        if (slot.kind == SkyKind.ARCOIRIS || slot.kind == SkyKind.ARCOIRIS_LUNA || raw.contains("arcoiris")) return true
+        if (slot.kind == SkyKind.METEORO || raw == "meteoro") return true
+        return false
     }
 
-    private fun labelOf(slot: SkySlot): String {
-        if (slot.kind != SkyKind.SIN_DATOS) return slot.kind.label
-        val raw = slot.rawKind.trim().replace('_', ' ')
-        return raw.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
+    fun alertLabel(slot: SkySlot): String = when {
+        slot.kind == SkyKind.METEORO || slot.rawKind.equals("meteoro", ignoreCase = true) ->
+            "Lluvia de meteoritos"
+        slot.kind == SkyKind.ARCOIRIS || slot.kind == SkyKind.ARCOIRIS_LUNA -> "Arcoíris"
+        slot.kind == SkyKind.LLUVIA -> "Lluvia"
+        else -> slot.kind.label
     }
 
-    private fun localRange(date: LocalDate, slot: SkySlot, zone: ZoneId): Pair<ZonedDateTime, ZonedDateTime> {
-        val start = ZonedDateTime.of(date, slot.start, zone)
-        val end = if (slot.end == LocalTime.MIDNIGHT || !slot.end.isAfter(slot.start)) {
-            ZonedDateTime.of(date.plusDays(1), LocalTime.MIDNIGHT, zone)
+    fun serverRange(
+        date: LocalDate,
+        slot: SkySlot,
+        sourceZone: ZoneId,
+        viewerZone: ZoneId,
+    ): Pair<ZonedDateTime, ZonedDateTime> {
+        val startServer = ZonedDateTime.of(date, slot.start, sourceZone)
+        val endServer = if (slot.end == LocalTime.MIDNIGHT || !slot.end.isAfter(slot.start)) {
+            ZonedDateTime.of(date.plusDays(1), LocalTime.MIDNIGHT, sourceZone)
         } else {
-            ZonedDateTime.of(date, slot.end, zone)
+            ZonedDateTime.of(date, slot.end, sourceZone)
         }
-        return start to end
+        return startServer.withZoneSameInstant(viewerZone) to endServer.withZoneSameInstant(viewerZone)
     }
 
     private fun merge(spans: List<ClimateSpan>): List<ClimateSpan> {

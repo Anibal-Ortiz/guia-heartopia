@@ -26,6 +26,7 @@ import java.util.UUID
 import com.guiaheartopia.app.domain.BackupCodec
 import com.guiaheartopia.app.domain.ImportResult
 import com.guiaheartopia.app.domain.ReminderPrefs
+import com.guiaheartopia.app.reminders.ReminderScheduler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -87,7 +88,12 @@ class GuideViewModel(
     fun saveReminders(reminders: ReminderPrefs) {
         val withoutRoutine = reminders.copy(routineEnabled = false)
         viewModelScope.launch {
-            repository.update { snap -> snap.copy(profile = snap.profile.copy(reminders = withoutRoutine)) }
+            repository.update { current ->
+                current.copy(profile = current.profile.copy(reminders = withoutRoutine))
+            }
+            appContext?.let { ctx ->
+                ReminderScheduler.sync(ctx, repository.snapshots.first().profile)
+            }
         }
     }
 
@@ -128,14 +134,17 @@ class GuideViewModel(
             else -> originId
         }
         viewModelScope.launch {
-            repository.update { snap ->
-                snap.copy(
-                    profile = snap.profile.copy(
+            repository.update { current ->
+                current.copy(
+                    profile = current.profile.copy(
                         countryId = countryId,
                         zoneId = zoneId,
                         weatherOriginId = resolved,
                     ),
                 )
+            }
+            appContext?.let { ctx ->
+                ReminderScheduler.sync(ctx, repository.snapshots.first().profile)
             }
         }
     }

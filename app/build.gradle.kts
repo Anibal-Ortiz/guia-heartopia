@@ -1,3 +1,4 @@
+import java.io.File
 import java.util.Properties
 
 plugins {
@@ -89,8 +90,11 @@ val releaseKeyPassword = secret("RELEASE_KEY_PASSWORD")
 val releaseSigningReady = storeFilePath.isNotEmpty() && releaseStorePassword.isNotEmpty() &&
     releaseKeyAlias.isNotEmpty() && releaseKeyPassword.isNotEmpty()
 
+val distroKeystore = File(System.getProperty("user.home"), ".wikifan-heartopia/release.jks")
+val distroSigningReady = distroKeystore.isFile
+
 base {
-    archivesName.set("Guia-Heartopia-0.9.3")
+    archivesName.set("Guia-Heartopia-0.9.4")
 }
 
 android {
@@ -101,8 +105,8 @@ android {
         applicationId = "com.guiaheartopia.app"
         minSdk = 26
         targetSdk = 37
-        versionCode = 31
-        versionName = "0.9.3"
+        versionCode = 32
+        versionName = "0.9.4"
         buildConfigField(
             "String",
             "CONTENT_BASE_URL",
@@ -118,6 +122,14 @@ android {
                 storePassword = releaseStorePassword
                 keyAlias = releaseKeyAlias
                 keyPassword = releaseKeyPassword
+            }
+        }
+        if (distroSigningReady) {
+            create("distro") {
+                storeFile = distroKeystore
+                storePassword = "wikifan-dist"
+                keyAlias = "wikifan"
+                keyPassword = "wikifan-dist"
             }
         }
     }
@@ -172,8 +184,10 @@ android {
             buildConfigField("boolean", "ADS_USE_GOOGLE_TEST_IDS", releaseUseTestAdIds.toString())
             buildConfigField("String", "UMP_DEBUG_GEOGRAPHY", "\"\"")
             buildConfigField("String", "UMP_TEST_DEVICE_ID", "\"\"")
-            if (releaseSigningReady) {
-                signingConfig = signingConfigs.getByName("release")
+            signingConfig = when {
+                releaseSigningReady -> signingConfigs.getByName("release")
+                distroSigningReady -> signingConfigs.getByName("distro")
+                else -> signingConfigs.getByName("debug")
             }
         }
     }
