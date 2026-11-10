@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guiaheartopia.app.domain.Hobby
 import com.guiaheartopia.app.domain.HobbyProgress
-import com.guiaheartopia.app.ui.components.CozyHobbiesIcon
 import com.guiaheartopia.app.ui.components.PixelButton
 import com.guiaheartopia.app.ui.components.PixelCard
 import com.guiaheartopia.app.ui.components.PixelProgress
@@ -69,33 +68,16 @@ fun HobbiesScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        // Header
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column {
-                com.guiaheartopia.app.ui.components.NotebookTitle(
-                    "Aficiones",
-                    com.guiaheartopia.app.ui.components.NotebookMark.SPROUT,
-                )
-                Text(
-                    "Cinco oficios fijos. Cada uno guarda tu nivel y una nota.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Muted,
-                )
-            }
-            Box(
-                Modifier
-                    .size(42.dp)
-                    .clip(CircleShape)
-                    .background(HoneySoft),
-                contentAlignment = Alignment.Center,
-            ) {
-                CozyHobbiesIcon(tint = Honey, size = 22.dp, filled = true)
-            }
-        }
+        com.guiaheartopia.app.ui.components.SectionBanner(
+            image = com.guiaheartopia.app.R.drawable.header_aficiones,
+            title = "Aficiones",
+            subtitle = "Cinco oficios, con su tope",
+        )
+        Text(
+            "Cinco oficios fijos. Cada uno guarda tu nivel y una nota.",
+            style = MaterialTheme.typography.bodySmall,
+            color = Muted,
+        )
 
         // Hobbies list
         hobbies.forEach { hobby ->
@@ -132,7 +114,7 @@ private fun HobbyCard(
     val fraction = HobbyProgress.fraction(hobby.level, hobby.maxLevel)
     val isMaxed = hobby.level >= hobby.maxLevel
 
-    PixelCard(container = Paper) {
+    PixelCard(container = Paper, category = hobby.name) {
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -157,7 +139,7 @@ private fun HobbyCard(
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     )
                     Text(
-                        "Mi nivel: ${hobby.level}",
+                        "Nivel ${hobby.level} / ${hobby.maxLevel}",
                         style = MaterialTheme.typography.bodySmall,
                         color = Muted,
                     )
@@ -205,26 +187,18 @@ private fun HobbyCard(
                 )
 
                 // Increment Button
+                val canRaise = hobby.level < hobby.maxLevel
                 Box(
                     Modifier
                         .size(38.dp)
                         .clip(CircleShape)
-                        .background(GreenSoft)
-                        .border(1.dp, GreenTint, CircleShape)
-                        .clickable { onChange(hobby.id, hobby.level + 1, null, null) },
+                        .background(if (canRaise) GreenSoft else PaperSubtle)
+                        .border(1.dp, if (canRaise) GreenTint else Line, CircleShape)
+                        .clickable(enabled = canRaise) { onChange(hobby.id, hobby.level + 1, null, null) },
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text("+", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = GreenDark)
+                    Text("+", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = if (canRaise) GreenDark else Muted)
                 }
-            }
-
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                PixelButton(
-                    text = "Subir tope (+1)",
-                    onClick = { onChange(hobby.id, null, hobby.maxLevel + 1, null) },
-                    outlined = true,
-                    container = Paper,
-                )
             }
         }
 

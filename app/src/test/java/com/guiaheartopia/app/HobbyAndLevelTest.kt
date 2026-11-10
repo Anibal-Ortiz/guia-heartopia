@@ -53,4 +53,48 @@ class HobbyAndLevelTest {
         assertTrue(CreatureAvailability.availableNow("Fauna", 99, hobbies, timeAndWeatherOk = true))
         assertNull(HobbyCatalog.forCategory("Fauna"))
     }
+
+    @Test
+    fun fixedCapsAreTheVerifiedOnes() {
+        assertEquals(13, HobbyCatalog.CAP_COCINA)
+        assertEquals(13, HobbyCatalog.CAP_SIEMBRA)
+        assertEquals(14, HobbyCatalog.CAP_PESCA)
+        assertEquals(14, HobbyCatalog.CAP_AVES)
+        assertEquals(14, HobbyCatalog.CAP_INSECTOS)
+        assertEquals(13, HobbyCatalog.fixed.first { it.id == "hob-cocina" }.maxLevel)
+        assertEquals(14, HobbyCatalog.fixed.first { it.id == "hob-insectos" }.maxLevel)
+    }
+
+    @Test
+    fun savedCapOfTenBecomesTheRealCapAndKeepsTheLevel() {
+        val next = HobbyCatalog.migrate(
+            listOf(Hobby("hob-pesca", "Pesca", level = 8, maxLevel = 10, note = "río")),
+        )
+        val pesca = next.first { it.id == "hob-pesca" }
+        assertEquals(14, pesca.maxLevel)
+        assertEquals(8, pesca.level)
+        assertEquals("río", pesca.note)
+    }
+
+    @Test
+    fun levelAboveTheCapIsClamped() {
+        val next = HobbyCatalog.migrate(
+            listOf(Hobby("hob-cocina", "Cocina", level = 20, maxLevel = 10)),
+        )
+        val cocina = next.first { it.id == "hob-cocina" }
+        assertEquals(13, cocina.maxLevel)
+        assertEquals(13, cocina.level)
+    }
+
+    @Test
+    fun remoteOverrideAppliesAndAMissingFileKeepsTheConstants() {
+        val parsed = HobbyCatalog.parseOverrides("""{"hob-pesca":16,"hob-cocina":11}""")
+        val raised = HobbyCatalog.migrate(emptyList(), parsed)
+        assertEquals(16, raised.first { it.id == "hob-pesca" }.maxLevel)
+        assertEquals(11, raised.first { it.id == "hob-cocina" }.maxLevel)
+        assertEquals(emptyMap<String, Int>(), HobbyCatalog.parseOverrides(null))
+        assertEquals(emptyMap<String, Int>(), HobbyCatalog.parseOverrides("{"))
+        val plain = HobbyCatalog.migrate(emptyList(), HobbyCatalog.parseOverrides(null))
+        assertEquals(14, plain.first { it.id == "hob-pesca" }.maxLevel)
+    }
 }

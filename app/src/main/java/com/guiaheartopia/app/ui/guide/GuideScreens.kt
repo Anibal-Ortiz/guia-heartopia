@@ -58,8 +58,7 @@ import com.guiaheartopia.app.data.PhotoCredits
 import com.guiaheartopia.app.ui.components.CreatureImage
 import com.guiaheartopia.app.ui.settings.PhotoCreditCaption
 import com.guiaheartopia.app.ui.components.LabelValue
-import com.guiaheartopia.app.ui.components.NotebookMark
-import com.guiaheartopia.app.ui.components.NotebookTitle
+import com.guiaheartopia.app.ui.components.SectionBanner
 import com.guiaheartopia.app.ui.components.NowBadge
 import com.guiaheartopia.app.ui.components.PillTabs
 import com.guiaheartopia.app.ui.components.PixelButton
@@ -117,42 +116,11 @@ fun GuideScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         // Header
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column {
-                NotebookTitle(
-                    when (GuideSections.dexCategories[tab]) {
-                        "Peces" -> "Peces"
-                        "Pájaros" -> "Aves"
-                        "Insectos" -> "Insectos"
-                        else -> "Fauna"
-                    },
-                    when (GuideSections.dexCategories[tab]) {
-                        "Peces" -> NotebookMark.FISH
-                        "Pájaros" -> NotebookMark.BIRD
-                        "Insectos" -> NotebookMark.INSECT
-                        else -> NotebookMark.FAUNA
-                    },
-                )
-                Text(
-                    "Catálogo y animales silvestres",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Muted,
-                )
-            }
-            Box(
-                Modifier
-                    .size(42.dp)
-                    .clip(CircleShape)
-                    .background(GreenSoft),
-                contentAlignment = Alignment.Center,
-            ) {
-                CozyGuideIcon(tint = GreenDark, size = 22.dp, filled = true)
-            }
-        }
+        SectionBanner(
+            image = com.guiaheartopia.app.R.drawable.header_guia,
+            title = "Guía",
+            subtitle = "Peces, aves, insectos y fauna",
+        )
 
         // Pill Tabs with Icons
         PillTabs(Tabs, tab) { tab = it }
@@ -453,7 +421,7 @@ private fun DexTab(
         val isFound = entry.id in ui.found
         val now = SkyWeather.availableNow(entry.schedule, entry.weather, instant, sky, zone)
 
-        PixelCard(Modifier.clickable { onOpen(entry.id) }) {
+        PixelCard(Modifier.clickable { onOpen(entry.id) }, category = entry.category) {
             Row(
                 Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -557,8 +525,7 @@ fun DexDetailScreen(entry: DexEntry, zoneId: String, found: Boolean, onToggle: (
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        // Hero Card
-        PixelCard(container = PaperSubtle) {
+        PixelCard(container = PaperSubtle, category = entry.category) {
             Row(
                 Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.Top,

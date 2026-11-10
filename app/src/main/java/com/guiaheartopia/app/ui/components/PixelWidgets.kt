@@ -3,6 +3,7 @@ package com.guiaheartopia.app.ui.components
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -38,6 +39,9 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
@@ -67,34 +71,13 @@ import com.guiaheartopia.app.ui.theme.PaperSubtle
 fun PixelCard(
     modifier: Modifier = Modifier,
     container: Color = Paper,
-    shape: RoundedCornerShape = RoundedCornerShape(22.dp),
-    elevation: Dp = 2.dp,
-    borderColor: Color = if (container == Dark || container == DarkCard) Color(0xFF453B34) else Line,
+    shape: RoundedCornerShape = RoundedCornerShape(12.dp),
+    elevation: Dp = 0.dp,
+    borderColor: Color = Color(0xFFD6C8AA),
+    category: String? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    val actualContainer = if (container == Dark) DarkCard else container
-    Box(modifier.fillMaxWidth()) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .shadow(elevation, shape, ambientColor = Color(0x144A3B2A), spotColor = Color(0x184A3B2A))
-                .clip(shape)
-                .background(actualContainer)
-                .border(1.dp, borderColor, shape)
-                .padding(18.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-            content = content,
-        )
-        Box(
-            Modifier
-                .align(Alignment.TopEnd)
-                .offset(x = (-14).dp, y = 8.dp)
-                .rotate(-8f)
-                .size(width = 42.dp, height = 14.dp)
-                .clip(RoundedCornerShape(2.dp))
-                .background(com.guiaheartopia.app.ui.theme.Ochre.copy(alpha = 0.72f)),
-        )
-    }
+    NotebookCard(category = category, modifier = modifier, content = content)
 }
 
 @Composable
@@ -230,16 +213,27 @@ fun PillTabs(
             val fg by animateColorAsState(if (on) Color.White else Ink, tween(200), label = "tabFg")
             val borderCol = if (on) Green else Line
 
-            Surface(
-                shape = RoundedCornerShape(999.dp),
-                color = bg,
+            Box(
                 modifier = Modifier
+                    .clip(RoundedCornerShape(999.dp))
+                    .background(bg)
                     .border(1.dp, borderCol, RoundedCornerShape(999.dp))
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = ripple(),
                     ) { onSelect(index) },
+                contentAlignment = Alignment.Center,
             ) {
+                watercolorFor(label)?.let { stain ->
+                    Image(
+                        painter = painterResource(stain),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .matchParentSize()
+                            .graphicsLayer { alpha = 0.4f },
+                        contentScale = ContentScale.Crop,
+                    )
+                }
                 Text(
                     label,
                     modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp),
@@ -297,7 +291,7 @@ fun PixelNavBar(
         modifier = modifier
             .fillMaxWidth()
             .shadow(8.dp, ambientColor = Color(0x10000000), spotColor = Color(0x18000000)),
-        color = Paper,
+        color = Color.Transparent,
     ) {
         Row(
             Modifier

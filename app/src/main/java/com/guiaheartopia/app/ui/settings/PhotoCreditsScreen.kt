@@ -49,10 +49,7 @@ fun PhotoCreditsScreen(onBack: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         TextButton(onClick = onBack) { Text("Volver") }
-        com.guiaheartopia.app.ui.components.NotebookTitle(
-            "Créditos de las fotos",
-            com.guiaheartopia.app.ui.components.NotebookMark.BIRD,
-        )
+        Text("Créditos de las fotos", style = MaterialTheme.typography.headlineSmall)
         when {
             file == null || file.entries.isEmpty() -> {
                 Text(

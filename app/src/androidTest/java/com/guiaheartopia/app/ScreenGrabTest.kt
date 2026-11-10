@@ -13,7 +13,6 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onRoot
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.guiaheartopia.app.domain.Hobby
 import com.guiaheartopia.app.domain.PlayerProfile
 import com.guiaheartopia.app.ui.AppNavigation
 import com.guiaheartopia.app.ui.GuideUi
@@ -40,7 +39,9 @@ class ScreenGrabTest {
         val ui = GuideUi(
             ready = true,
             profile = PlayerProfile(onboarded = true, name = "Nico", countryId = "CL", zoneId = "America/Santiago"),
-            hobbies = listOf(Hobby("hob-cocina", "Cocina", level = 2, maxLevel = 10)),
+            hobbies = com.guiaheartopia.app.domain.HobbyCatalog.fixed.map { hobby ->
+                if (hobby.id == "hob-cocina") hobby.copy(level = 2) else hobby
+            },
             greeting = "Buenas noches, Nico",
             todayLabel = "viernes 6 de noviembre",
         )
@@ -73,9 +74,9 @@ class ScreenGrabTest {
             when (index) {
                 0 -> WelcomeScreen(PlayerProfile(countryId = "CL", zoneId = "America/Santiago"), {}, {}, {})
                 1 -> HomeScreen(ui) {}
-                2 -> GuideScreen(ui, {}, {}, {}, {}, { _, _, _, _ -> }, initialTab = 1)
+                2 -> GuideScreen(ui, {}, {}, {}, {}, { _, _, _, _ -> }, initialTab = 0)
                 3 -> WeatherScreen("CL", "America/Santiago") { _, _ -> }
-                else -> HobbiesScreen(ui.hobbies, { _, _, _, _ -> }, {}, {})
+                else -> HobbiesScreen(ui.hobbies, { _, _, _, _ -> })
             }
         }
     }

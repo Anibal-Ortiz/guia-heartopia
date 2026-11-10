@@ -36,6 +36,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.ImageShader
+import androidx.compose.ui.graphics.ShaderBrush
+import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.platform.testTag
@@ -88,7 +94,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         val repository = GuideRepository(this)
         setContent {
-            val vm: GuideViewModel = viewModel(factory = GuideViewModel.factory(repository))
+            val vm: GuideViewModel = viewModel(factory = GuideViewModel.factory(repository, this))
             val ui by vm.ui.collectAsStateWithLifecycle()
             val lifecycleOwner = LocalLifecycleOwner.current
             DisposableEffect(lifecycleOwner) {
@@ -107,9 +113,19 @@ class MainActivity : ComponentActivity() {
                 if (ui.ready && ui.profile.onboarded) ReminderScheduler.sync(this@MainActivity, ui.profile)
             }
             GuiaTheme {
+                val paper = ImageBitmap.imageResource(R.drawable.papel_textura)
+                val paperBrush = remember(paper) {
+                    ShaderBrush(ImageShader(paper, TileMode.Repeated, TileMode.Repeated))
+                }
                 var legal by remember { mutableStateOf<String?>(null) }
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .background(Color(0xFFF7EFDB))
+                        .background(paperBrush),
+                ) {
                 when {
-                    !ui.ready -> Box(Modifier.fillMaxSize().background(Cream))
+                    !ui.ready -> Box(Modifier.fillMaxSize())
                     legal != null -> Box(Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
                         LegalScreen(
                             asset = if (legal == "terminos") "legal/terminos.md" else "legal/privacidad.md",
@@ -141,6 +157,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+}
 
 @Composable
 private fun AppScaffold(
@@ -168,13 +185,12 @@ private fun AppScaffold(
     }
 
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = androidx.compose.ui.graphics.Color.Transparent,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Paper)
                     .windowInsetsPadding(WindowInsets.statusBars)
                     .border(width = 1.dp, color = Line)
                     .padding(horizontal = 16.dp, vertical = 10.dp),
@@ -226,7 +242,6 @@ private fun AppScaffold(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Paper)
                     .windowInsetsPadding(WindowInsets.navigationBars),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -234,7 +249,6 @@ private fun AppScaffold(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Paper)
                             .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 12.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {

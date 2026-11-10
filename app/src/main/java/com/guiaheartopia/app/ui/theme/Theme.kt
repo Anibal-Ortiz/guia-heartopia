@@ -5,7 +5,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
 import androidx.compose.material3.lightColorScheme
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -20,12 +19,12 @@ import com.guiaheartopia.app.R
 val Ink = Color(0xFF4A3B2A)
 val InkSubtle = Color(0xFF5C4A36)
 val Muted = Color(0xFF6E5B48)
-val Cream = Color(0xFFF6F0E1)
+val Cream = Color(0xFFF7EFDB)
 val Paper = Color(0xFFFFFBF4)
 val PaperSubtle = Color(0xFFF3E7D2)
 val Line = Color(0xFFD9CDB8)
 
-val Green = Color(0xFF3E6F6A)
+val Green = Color(0xFF5E9C98)
 val GreenDark = Color(0xFF2C554F)
 val GreenSoft = Color(0xFFD7E6E3)
 val GreenTint = Color(0xFFB7D0CC)
@@ -87,12 +86,6 @@ private val Hand = FontFamily(
     caveat(700),
 )
 
-private val NightPaper = Color(0xFF2C2824)
-private val NightInk = Color(0xFFF3E6D0)
-private val NightMuted = Color(0xFFD2C3AE)
-private val NightLine = Color(0xFF4A4036)
-private val NightTeal = Color(0xFF8FBFB8)
-
 private val Colors = lightColorScheme(
     primary = Green,
     onPrimary = Color.White,
@@ -140,27 +133,9 @@ private val AppShapes = Shapes(
 
 @Composable
 fun GuiaTheme(content: @Composable () -> Unit) {
-    val dark = isSystemInDarkTheme()
-    val scheme = if (dark) {
-        Colors.copy(
-            primary = NightTeal,
-            onPrimary = NightPaper,
-            primaryContainer = Color(0xFF3A4A46),
-            onPrimaryContainer = NightInk,
-            background = NightPaper,
-            onBackground = NightInk,
-            surface = Color(0xFF342F2A),
-            onSurface = NightInk,
-            surfaceVariant = Color(0xFF3C362F),
-            onSurfaceVariant = NightMuted,
-            outline = NightLine,
-        )
-    } else {
-        Colors
-    }
     MaterialTheme(
-        colorScheme = scheme,
-        typography = type(if (dark) NightInk else Ink, if (dark) NightMuted else Muted),
+        colorScheme = Colors,
+        typography = type(Ink, Muted),
         shapes = AppShapes,
         content = content,
     )

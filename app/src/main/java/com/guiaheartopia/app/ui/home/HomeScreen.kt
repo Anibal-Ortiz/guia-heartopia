@@ -98,7 +98,11 @@ fun HomeScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        com.guiaheartopia.app.ui.components.NotebookTitle("Mi día", com.guiaheartopia.app.ui.components.NotebookMark.HOME)
+        com.guiaheartopia.app.ui.components.SectionBanner(
+            image = com.guiaheartopia.app.R.drawable.header_inicio,
+            title = "Mi día",
+            subtitle = "Horario, clima y lo que toca hoy",
+        )
         PixelCard(container = PaperSubtle, elevation = 1.dp) {
             Row(
                 Modifier.fillMaxWidth(),
@@ -271,7 +275,7 @@ fun HomeScreen(
             )
         }
 
-        // Recursos y Eventos Especiales de Hoy
+        com.guiaheartopia.app.ui.components.TwigDivider(0)
         PixelCard(container = Paper) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,

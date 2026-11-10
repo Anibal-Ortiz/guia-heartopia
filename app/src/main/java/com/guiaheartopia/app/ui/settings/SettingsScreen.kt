@@ -80,9 +80,10 @@ fun SettingsScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        com.guiaheartopia.app.ui.components.NotebookTitle(
-            "Ajustes",
-            com.guiaheartopia.app.ui.components.NotebookMark.SETTINGS,
+        com.guiaheartopia.app.ui.components.SectionBanner(
+            image = com.guiaheartopia.app.R.drawable.header_aficiones,
+            title = "Ajustes",
+            subtitle = "Contenido, anuncios y créditos",
         )
         Text(StoreCopy.UNOFFICIAL, style = MaterialTheme.typography.bodyMedium)
         PixelButton("Política de privacidad", onClick = onPrivacy, outlined = true)
@@ -138,6 +139,7 @@ fun SettingsScreen(
         BackupBlock(onExport, onImport)
         PixelButton("Política de privacidad", onClick = onPrivacy, outlined = true)
         PixelButton("Términos", onClick = onTerms, outlined = true)
+        com.guiaheartopia.app.ui.components.TwigDivider(1)
         PixelCard {
             Text("Créditos y fuentes", style = MaterialTheme.typography.titleMedium)
             Text(VerifiedCatalog.SPOT_SOURCES, style = MaterialTheme.typography.bodyMedium)

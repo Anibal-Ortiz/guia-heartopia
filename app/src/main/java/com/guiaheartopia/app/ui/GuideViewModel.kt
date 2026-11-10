@@ -1,5 +1,6 @@
 package com.guiaheartopia.app.ui
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -50,6 +51,7 @@ data class GuideUi(
 class GuideViewModel(
     private val repository: GuideRepository,
     private val zone: ZoneId = ZoneId.systemDefault(),
+    private val appContext: Context? = null,
 ) : ViewModel() {
     private val today = MutableStateFlow(LocalDate.now(zone))
     private val dateFormat = DateTimeFormatter.ofPattern("EEEE d 'de' MMMM", Locale.forLanguageTag("es"))
@@ -199,7 +201,7 @@ class GuideViewModel(
                     else {
                         val (lvl, max) = HobbyProgress.clamp(
                             level ?: hobby.level,
-                            maxLevel ?: hobby.maxLevel,
+                            hobby.maxLevel,
                         )
                         hobby.copy(level = lvl, maxLevel = max, note = note ?: hobby.note)
                     }
@@ -250,17 +252,25 @@ class GuideViewModel(
         )
     }
 
-    private fun ensureHobbies(snap: GuideSnapshot): List<Hobby> = HobbyCatalog.migrate(snap.hobbies)
+    private fun ensureHobbies(snap: GuideSnapshot): List<Hobby> =
+        HobbyCatalog.migrate(snap.hobbies, hobbyOverrides())
+
+    private fun hobbyOverrides(): Map<String, Int> {
+        val context = appContext ?: return emptyMap()
+        val bytes = com.guiaheartopia.app.data.AndroidContentLibrary(context).effectiveBytes("hobbies.json")
+            ?: return emptyMap()
+        return HobbyCatalog.parseOverrides(bytes.decodeToString())
+    }
 
     private fun splitLines(raw: String): List<String> =
         raw.split('\n', ',').map { it.trim() }.filter { it.isNotEmpty() }
 
     companion object {
-        fun factory(repository: GuideRepository): ViewModelProvider.Factory =
+        fun factory(repository: GuideRepository, context: Context): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
                 override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                    GuideViewModel(repository) as T
+                    GuideViewModel(repository, appContext = context.applicationContext) as T
             }
     }
 }

@@ -1,10 +1,12 @@
 package com.guiaheartopia.app.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -14,10 +16,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.painterResource
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import com.guiaheartopia.app.data.AndroidContentStore
@@ -50,43 +54,53 @@ fun CreatureImage(
     contentDescription: String = "Dibujo de la criatura",
     creatureId: String = "",
 ) {
-    val habitat = CreatureMark.habitat(locations, level)
-    val tint = habitatColor(habitat, level)
     val shape = RoundedCornerShape(shapeRadius)
     val context = LocalContext.current
     val downloaded = CreatureImagePaths.candidates(imageUrl, creatureId)
         .firstNotNullOfOrNull { AndroidContentStore.overlayFile(context, it) }
     val model = bundledCreatureModel(imageUrl, downloaded, creatureId)
     var failed by remember(model) { mutableStateOf(false) }
+    val stain = watercolorFor(category)
 
-    Box(
-        modifier = modifier
-            .size(size)
-            .clip(shape)
-            .background(tint.copy(alpha = 0.14f))
-            .border(1.dp, Line.copy(alpha = 0.5f), shape),
-        contentAlignment = Alignment.Center,
-    ) {
-        if (model != null && !failed) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(model)
-                    .build(),
-                contentDescription = contentDescription,
-                contentScale = ContentScale.Fit,
-                onError = { failed = true },
+    Box(modifier.wrapContentSize(unbounded = true), contentAlignment = Alignment.Center) {
+        if (stain != null) {
+            Image(
+                painter = painterResource(stain),
+                contentDescription = null,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .clip(shape),
+                    .size(size * 1.3f)
+                    .graphicsLayer { alpha = 0.85f },
+                contentScale = ContentScale.Fit,
             )
-        } else {
-            CreatureGlyph(
-                category = category,
-                locations = locations,
-                level = level,
-                modifier = Modifier.fillMaxSize(),
-                size = size,
-            )
+        }
+        Box(
+            Modifier
+                .size(size)
+                .clip(shape)
+                .border(1.dp, Line.copy(alpha = 0.5f), shape),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (model != null && !failed) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(model)
+                        .build(),
+                    contentDescription = contentDescription,
+                    contentScale = ContentScale.Fit,
+                    onError = { failed = true },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(shape),
+                )
+            } else {
+                CreatureGlyph(
+                    category = category,
+                    locations = locations,
+                    level = level,
+                    modifier = Modifier.fillMaxSize(),
+                    size = size,
+                )
+            }
         }
     }
 }

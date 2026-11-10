@@ -103,9 +103,10 @@ fun WeatherScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        com.guiaheartopia.app.ui.components.NotebookTitle(
-            "Calendario",
-            com.guiaheartopia.app.ui.components.NotebookMark.CALENDAR,
+        com.guiaheartopia.app.ui.components.SectionBanner(
+            image = com.guiaheartopia.app.R.drawable.header_clima,
+            title = "Calendario",
+            subtitle = "El clima del mes, arriba del detalle",
         )
         val zoneLabel = Countries.zoneLabel(zone.id)
         PickerField(
