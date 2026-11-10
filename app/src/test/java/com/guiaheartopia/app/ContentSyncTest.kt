@@ -9,6 +9,7 @@ import com.guiaheartopia.app.domain.ContentManifest
 import com.guiaheartopia.app.domain.ContentPackage
 import com.guiaheartopia.app.domain.ContentSyncResult
 import java.io.File
+import java.nio.file.Files
 import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -130,6 +131,62 @@ class ContentSyncTest {
             assertEquals(bytes.size.toLong(), entry.size)
             assertEquals(ContentPackage.sha256(bytes), entry.sha256)
         }
+    }
+
+    @Test
+    fun generatedPackageIsReadByTheApp() {
+        val repo = listOf(File(".."), File(".")).first { File(it, "tools/publicar_contenido.py").isFile }
+        val output = Files.createTempDirectory("contenido-publicado").toFile()
+        val process = ProcessBuilder(
+            "python3",
+            File(repo, "tools/publicar_contenido.py").absolutePath,
+            "--inicial",
+            "--fecha",
+            "2026-11-10",
+            "--salida",
+            output.absolutePath,
+        )
+            .directory(repo)
+            .redirectErrorStream(true)
+            .start()
+        val log = process.inputStream.bufferedReader().readText()
+        assertEquals(log, 0, process.waitFor())
+
+        val rootManifest = ContentPackage.parseManifest(File(output, "manifest.json").readText())
+        val appManifest = ContentPackage.parseManifest(File(output, "content/manifest.json").readText())
+        assertNotNull(rootManifest)
+        assertEquals(rootManifest, appManifest)
+        assertEquals(1, appManifest!!.contentVersion)
+        assertEquals(23, appManifest.minAppVersionCode)
+        assertTrue(appManifest.files.any { it.path == "catalog/creatures.json" })
+        assertTrue(appManifest.files.any { it.path == "calendar/clima-2026.json" })
+
+        val served = LinkedHashMap<String, ByteArray>()
+        appManifest.files.forEach { file ->
+            val packed = File(output, "content/${file.path}")
+            val bytes = packed.readBytes()
+            assertEquals(file.size, bytes.size.toLong())
+            assertEquals(file.sha256, ContentPackage.sha256(bytes))
+            served[ContentPackage.fileUrl(baseUrl, file.path)] = bytes
+        }
+        served[ContentPackage.manifestUrl(baseUrl)] = File(output, "content/manifest.json").readBytes()
+
+        val library = MemoryContentLibrary(
+            emptyMap(),
+            ContentManifest(contentVersion = 0, minAppVersionCode = 23, publishedOn = "2026-01-01"),
+        )
+        assertEquals(ContentSyncResult.APPLIED, sync(library, served))
+
+        val creatures = parseCreatures(library.overlayBytes("catalog/creatures.json")!!)
+        assertTrue(creatures.size > 100)
+        assertTrue(creatures.map { it.id }.distinct().size == creatures.size)
+        val weather = SkyCatalog.fromJson(library.overlayBytes("calendar/clima-2026.json")!!.decodeToString())
+        assertNotNull(weather.on(java.time.LocalDate.of(2026, 11, 12)))
+        val image = appManifest.files.first { it.path.endsWith(".webp") }
+        val header = library.overlayBytes(image.path)!!.copyOfRange(0, 12)
+        assertTrue(header.copyOfRange(0, 4).contentEquals("RIFF".toByteArray()))
+        assertTrue(header.copyOfRange(8, 12).contentEquals("WEBP".toByteArray()))
+        output.deleteRecursively()
     }
 
     private fun sync(
