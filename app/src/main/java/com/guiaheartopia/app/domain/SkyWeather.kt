@@ -44,6 +44,7 @@ data class SkySlot(
     val status: SkyStatus,
     val place: String? = null,
     val special: String? = null,
+    val detail: String = "",
 ) {
     fun title(): String {
         val base = if (kind == SkyKind.METEORO && !place.isNullOrBlank()) {
@@ -84,12 +85,20 @@ data class SkyDay(
 )
 
 /**
- * El JSON guarda bloques UTC 00–06 … 18–24 por fecha civil del servidor.
- * La UI del calendario usa [SkyWeatherGameDay] (franjas del juego, mismo UTC que [DexSchedule]).
- * [slotAt] conserva los bloques de 6 h para criaturas.
+ * Las horas del calendario son el reloj local de la zona elegida, no UTC.
+ * La UI usa [SkyWeatherGameDay]. El horario de las criaturas sigue en [DexSchedule].
  */
 object SkyWeather {
     private val allCreatureWeather = setOf("Sunny", "Rainy", "Rainbow")
+
+    private fun containsClock(slot: SkySlot, time: LocalTime): Boolean {
+        val end = slot.end
+        return if (end == LocalTime.MIDNIGHT || !end.isAfter(slot.start)) {
+            !time.isBefore(slot.start)
+        } else {
+            !time.isBefore(slot.start) && time.isBefore(end)
+        }
+    }
 
     fun slotIndex(instant: Instant): Int {
         val hour = instant.atZone(ZoneOffset.UTC).hour
@@ -103,9 +112,22 @@ object SkyWeather {
 
     fun slotAt(day: SkyDay?, instant: Instant): SkySlot? {
         if (day == null) return null
-        val utcDate = instant.atZone(ZoneOffset.UTC).toLocalDate()
-        if (day.date != utcDate) return null
-        return day.slots.getOrNull(slotIndex(instant))
+        val utc = instant.atZone(ZoneOffset.UTC)
+        if (day.date != utc.toLocalDate()) return null
+        return day.slots.firstOrNull { slot -> containsClock(slot, utc.toLocalTime()) }
+    }
+
+    fun availableNow(
+        schedule: List<String>,
+        neededWeather: List<String>,
+        instant: Instant,
+        table: com.guiaheartopia.app.data.SkyTable,
+        zone: ZoneId,
+    ): Boolean {
+        if (!DexSchedule.availableNow(schedule, instant)) return false
+        val slot = SkyWeatherGameDay.conditionAt(table, instant, zone) ?: return true
+        if (slot.status == SkyStatus.SIN_DATOS || slot.kind == SkyKind.SIN_DATOS) return true
+        return allows(neededWeather, slot.kind)
     }
 
     fun merged(day: SkyDay, zone: ZoneId): List<SkySpan> {

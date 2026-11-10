@@ -48,8 +48,8 @@ class SkyWeatherLabelTest {
             day.date,
             java.time.ZoneId.of("America/Santiago"),
         )
-        assertEquals(4, segments.size)
-        assertTrue(segments.all { it.weight == 1 })
+        assertEquals(1, segments.size)
+        assertEquals(22 * 60, segments.first().weight)
     }
 
     @Test

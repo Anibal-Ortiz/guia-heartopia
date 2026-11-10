@@ -32,6 +32,7 @@ data class SkySlotFile(
     val status: String,
     val place: String? = null,
     val special: String? = null,
+    val label: String = "",
 )
 
 object SkyCatalog {
@@ -54,12 +55,12 @@ object SkyCatalog {
                         kind = SkyKind.entries.firstOrNull { it.name.equals(slot.kind, ignoreCase = true) }
                             ?: kindOf(slot.kind),
                         status = when (slot.status) {
-                            "acuerdo" -> SkyStatus.ACUERDO
-                            "por_confirmar" -> SkyStatus.POR_CONFIRMAR
+                            "acuerdo", "incluido" -> SkyStatus.ACUERDO
                             else -> SkyStatus.SIN_DATOS
                         },
                         place = slot.place,
                         special = slot.special,
+                        detail = slot.label,
                     )
                 },
             )

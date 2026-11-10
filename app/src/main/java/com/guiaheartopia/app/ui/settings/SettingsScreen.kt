@@ -136,7 +136,15 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(
-                "Liuliu y la fluorita de noviembre 2026 salen de heartodex (ubicación diaria). Diciembre no está día a día en esa página: se muestra Sin datos. El clima por fecha tampoco está en heartodex (consulta del 9 de noviembre de 2026): Sin datos. No se rellena con otras webs.",
+                "Liuliu y la fluorita de noviembre 2026 salen de heartodex (ubicación diaria). Diciembre no está día a día en esa página: se muestra Sin datos.",
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Text(
+                "Clima de 2026, hora a hora, leído el 10 de noviembre de 2026 en tidebell.com/calendar. " +
+                    "heartopia.lol/en/weather repite las mismas 366 series. heartopia.th.gl/forecast llama a esas horas «hora de servidor» " +
+                    "(América UTC−5, Global UTC+1, SEA UTC+7, TW/HK/MO UTC+8, Asia UTC+9); el 1 de enero de 2026 coincide con Tidebell. " +
+                    "Tidebell no las documenta como UTC: las aplica a la fecha y hora locales. La app las muestra en tu zona IANA. " +
+                    "Solo entra 2026. El sitio dice que el ciclo se repite; eso no se usa para otros años. Son datos de la comunidad, no oficiales.",
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(

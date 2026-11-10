@@ -74,7 +74,6 @@ import com.guiaheartopia.app.ui.theme.SkyTint
 import com.guiaheartopia.app.ui.theme.Yellow
 import java.time.Instant
 import java.time.LocalDate
-import java.time.ZoneOffset
 
 @Composable
 fun HomeScreen(
@@ -87,8 +86,7 @@ fun HomeScreen(
     val sky = remember { com.guiaheartopia.app.data.SkyCatalog.load(context) }
     val zone = DexSchedule.zoneOf(ui.profile.zoneId)
     val nowInstant = Instant.now()
-    val skyDay = sky.on(nowInstant.atZone(ZoneOffset.UTC).toLocalDate())
-    val available = catalog.count { SkyWeather.availableNow(it.schedule, it.weather, nowInstant, skyDay) }
+    val available = catalog.count { SkyWeather.availableNow(it.schedule, it.weather, nowInstant, sky, zone) }
     val byCategory = catalog.groupBy { it.category }
     val today = LocalDate.now(zone)
     val climateSpans = SkyWeatherGameDay.spansForGameDay(sky, today, zone)
@@ -150,6 +148,18 @@ fun HomeScreen(
                     style = MaterialTheme.typography.bodySmall,
                     color = Muted,
                 )
+            }
+        }
+
+        PixelCard(container = Paper) {
+            Text("Clima de hoy", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold))
+            if (climateSpans.isEmpty()) {
+                Text("Sin datos de clima para hoy.", style = MaterialTheme.typography.bodyMedium)
+            } else {
+                ClimateSkyBar(sky, today, zone, Modifier.fillMaxWidth().height(20.dp))
+                climateSpans.forEach { span ->
+                    Text(SkyWeatherGameDay.formatSpan(span, today), style = MaterialTheme.typography.bodyMedium)
+                }
             }
         }
 
@@ -357,18 +367,6 @@ fun HomeScreen(
                             color = Muted,
                         )
                     }
-                }
-            }
-        }
-
-        PixelCard(container = Paper) {
-            Text("Clima de hoy", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold))
-            if (climateSpans.isEmpty()) {
-                Text("Sin datos de clima para hoy.", style = MaterialTheme.typography.bodyMedium)
-            } else {
-                ClimateSkyBar(sky, today, zone, Modifier.fillMaxWidth().height(20.dp))
-                climateSpans.forEach { span ->
-                    Text(SkyWeatherGameDay.formatSpan(span, today), style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }

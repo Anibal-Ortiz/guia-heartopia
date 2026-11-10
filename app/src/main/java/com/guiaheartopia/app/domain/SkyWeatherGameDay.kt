@@ -6,21 +6,16 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
-import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 /**
- * Clima del calendario alineado al **día del juego** (franjas DexSchedule en UTC),
- * no al día civil 00:00–24:00 recortado.
+ * Clima del día del juego (noche → amanecer → día → tarde).
  *
- * El JSON guarda bloques UTC 00–06, 06–12, 12–18, 18–24 por fecha civil UTC.
- * Cada franja de juego toma la condición del bloque con mayor solapamiento en UTC
- * (misma regla para mes, detalle e Inicio).
+ * Las horas del JSON son el reloj de la zona elegida, no UTC. Si el cielo
+ * cambia dentro de esa ventana, cada tramo conserva su inicio y su fin.
  */
 object SkyWeatherGameDay {
-    /** Orden mostrado: noche → amanecer → día → tarde. */
     private val frameOrder = listOf("Night", "Dawn", "Day", "Dusk")
 
     data class GameClimateSpan(
@@ -29,30 +24,57 @@ object SkyWeatherGameDay {
         val start: ZonedDateTime,
         val end: ZonedDateTime,
         val frameKey: String,
+        val detail: String = "",
     ) {
-        fun label(): String {
-            return kind.climateDisplay().label
-        }
+        fun label(): String = detail.ifBlank { kind.climateDisplay().label }
     }
 
     fun spansForGameDay(table: SkyTable, localGameDay: LocalDate, zone: ZoneId): List<GameClimateSpan> {
-        val utcAnchor = localGameDay
-        return frameOrder.mapNotNull { key ->
-            val window = DexSchedule.window(key, utcAnchor, zone)
-            val pick = pickCatalogSlot(table, window.start.toInstant(), window.end.toInstant())
-                ?: return@mapNotNull null
-            GameClimateSpan(
-                kind = pick.kind.climateDisplay(),
-                status = pick.status,
-                start = window.start,
-                end = window.end,
-                frameKey = key,
-            )
+        val windows = frameOrder.map { DexSchedule.window(it, localGameDay, zone) }
+        val from = windows.first().start.toInstant()
+        val to = windows.last().end.toInstant()
+        val raw = ArrayList<GameClimateSpan>()
+        var date = localGameDay.minusDays(1)
+        val last = localGameDay.plusDays(1)
+        while (!date.isAfter(last)) {
+            val day = table.on(date)
+            if (day != null) {
+                for (slot in day.slots) {
+                    val (start, end) = localRange(date, slot, zone)
+                    val clipStart = maxOf(start.toInstant(), from)
+                    val clipEnd = minOf(end.toInstant(), to)
+                    if (!clipStart.isBefore(clipEnd)) continue
+                    val zonedStart = clipStart.atZone(zone)
+                    raw += GameClimateSpan(
+                        kind = slot.kind,
+                        status = slot.status,
+                        start = zonedStart,
+                        end = clipEnd.atZone(zone),
+                        frameKey = frameKeyAt(windows, zonedStart.toInstant()),
+                        detail = slot.detail,
+                    )
+                }
+            }
+            date = date.plusDays(1)
+        }
+        raw.sortBy { it.start.toInstant() }
+        return merge(raw)
+    }
+
+    fun conditionAt(table: SkyTable, instant: Instant, zone: ZoneId): SkySlot? {
+        val local = instant.atZone(zone)
+        val day = table.on(local.toLocalDate()) ?: return null
+        return day.slots.firstOrNull { slot ->
+            val (start, end) = localRange(local.toLocalDate(), slot, zone)
+            !instant.isBefore(start.toInstant()) && instant.isBefore(end.toInstant())
         }
     }
 
     fun barSegmentsForGameDay(table: SkyTable, localGameDay: LocalDate, zone: ZoneId): List<SkyBarSegment> =
-        spansForGameDay(table, localGameDay, zone).map { SkyBarSegment(it.kind, 1) }
+        spansForGameDay(table, localGameDay, zone).map { span ->
+            val minutes = Duration.between(span.start.toInstant(), span.end.toInstant()).toMinutes().toInt()
+            SkyBarSegment(span.kind, minutes.coerceAtLeast(1))
+        }
 
     fun formatSpan(span: GameClimateSpan, focusLocalDate: LocalDate): String {
         val clock = DateTimeFormatter.ofPattern("HH:mm")
@@ -67,52 +89,35 @@ object SkyWeatherGameDay {
             .joinToString(" · ") { formatSpan(it, localGameDay) }
             .ifBlank { "Sin datos de clima" }
 
-    /**
-     * Bloque del catálogo con mayor duración de solapamiento con [utcStart, utcEnd).
-     */
-    internal fun pickCatalogSlot(table: SkyTable, utcStart: Instant, utcEnd: Instant): SkySlot? {
-        var best: Pair<SkySlot, Long>? = null
-        val utcDates = utcDatesBetween(utcStart, utcEnd)
-        for (utcDate in utcDates) {
-            val day = table.on(utcDate) ?: continue
-            for (slot in day.slots) {
-                val (s, e) = utcSlotRange(utcDate, slot)
-                val overlap = overlapMinutes(utcStart, utcEnd, s, e)
-                if (overlap <= 0) continue
-                if (best == null || overlap > best!!.second) {
-                    best = slot to overlap
-                }
-            }
-        }
-        return best?.first
-    }
-
-    private fun utcDatesBetween(start: Instant, end: Instant): List<LocalDate> {
-        val a = start.atZone(ZoneOffset.UTC).toLocalDate()
-        val b = end.minusNanos(1).atZone(ZoneOffset.UTC).toLocalDate()
-        val out = ArrayList<LocalDate>()
-        var cur = a
-        while (!cur.isAfter(b)) {
-            out += cur
-            cur = cur.plusDays(1)
-        }
-        return out
-    }
-
-    private fun utcSlotRange(utcDate: LocalDate, slot: SkySlot): Pair<Instant, Instant> {
-        val start = ZonedDateTime.of(utcDate, slot.start, ZoneOffset.UTC).toInstant()
-        val end = when {
-            slot.end == LocalTime.MIDNIGHT || !slot.end.isAfter(slot.start) ->
-                ZonedDateTime.of(utcDate.plusDays(1), LocalTime.MIDNIGHT, ZoneOffset.UTC).toInstant()
-            else -> ZonedDateTime.of(utcDate, slot.end, ZoneOffset.UTC).toInstant()
+    private fun localRange(date: LocalDate, slot: SkySlot, zone: ZoneId): Pair<ZonedDateTime, ZonedDateTime> {
+        val start = ZonedDateTime.of(date, slot.start, zone)
+        val end = if (slot.end == LocalTime.MIDNIGHT || !slot.end.isAfter(slot.start)) {
+            ZonedDateTime.of(date.plusDays(1), LocalTime.MIDNIGHT, zone)
+        } else {
+            ZonedDateTime.of(date, slot.end, zone)
         }
         return start to end
     }
 
-    private fun overlapMinutes(aStart: Instant, aEnd: Instant, bStart: Instant, bEnd: Instant): Long {
-        val start = maxOf(aStart, bStart)
-        val end = minOf(aEnd, bEnd)
-        if (!start.isBefore(end)) return 0
-        return Duration.between(start, end).toMinutes()
+    private fun frameKeyAt(windows: List<LocalGameWindow>, instant: Instant): String =
+        windows.firstOrNull { it.contains(instant) }?.slot?.key ?: windows.first().slot.key
+
+    private fun merge(spans: List<GameClimateSpan>): List<GameClimateSpan> {
+        if (spans.isEmpty()) return spans
+        val out = ArrayList<GameClimateSpan>()
+        for (span in spans) {
+            val prev = out.lastOrNull()
+            if (
+                prev != null &&
+                prev.label() == span.label() &&
+                prev.kind == span.kind &&
+                prev.end.toInstant() == span.start.toInstant()
+            ) {
+                out[out.lastIndex] = prev.copy(end = span.end)
+            } else {
+                out += span
+            }
+        }
+        return out
     }
 }

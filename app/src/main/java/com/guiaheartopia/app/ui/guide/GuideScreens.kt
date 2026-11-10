@@ -78,7 +78,6 @@ import com.guiaheartopia.app.ui.theme.Sky
 import com.guiaheartopia.app.ui.theme.SkyBlue
 import com.guiaheartopia.app.ui.theme.SkyTint
 import java.time.Instant
-import java.time.ZoneOffset
 
 private val Tabs = listOf("🐾 Animales", "🐟 Peces", "🐛 Insectos", "🐦 Pájaros")
 private val DexCategories = listOf("Peces", "Insectos", "Pájaros")
@@ -276,7 +275,6 @@ private fun DexTab(
     val sky = remember { SkyCatalog.load(context) }
     val zone = DexSchedule.zoneOf(ui.profile.zoneId)
     val instant = Instant.now()
-    val skyDay = sky.on(instant.atZone(ZoneOffset.UTC).toLocalDate())
     val current = DexSchedule.currentWindow(zone, instant)
 
     var query by rememberSaveable(category) { mutableStateOf("") }
@@ -290,7 +288,7 @@ private fun DexTab(
             (query.isBlank() || TextMatch.contains(entry.name, query) || TextMatch.contains(entry.nameEn, query)) &&
             (place.isBlank() || entry.location.any { TextMatch.contains(it, place) }) &&
             (weather == "Todos" || weather in entry.weather) &&
-            (!onlyNow || SkyWeather.availableNow(entry.schedule, entry.weather, instant, skyDay)) &&
+            (!onlyNow || SkyWeather.availableNow(entry.schedule, entry.weather, instant, sky, zone)) &&
             when (registered) {
                 "si" -> entry.id in ui.found
                 "no" -> entry.id !in ui.found
@@ -398,7 +396,7 @@ private fun DexTab(
 
     items.forEach { entry ->
         val isFound = entry.id in ui.found
-        val now = SkyWeather.availableNow(entry.schedule, entry.weather, instant, skyDay)
+        val now = SkyWeather.availableNow(entry.schedule, entry.weather, instant, sky, zone)
 
         PixelCard(Modifier.clickable { onOpen(entry.id) }) {
             Row(
@@ -516,7 +514,8 @@ fun DexDetailScreen(entry: DexEntry, zoneId: String, found: Boolean, onToggle: (
         entry.schedule,
         entry.weather,
         instant,
-        sky.on(instant.atZone(ZoneOffset.UTC).toLocalDate()),
+        sky,
+        zone,
     )
     val localHours = DexSchedule.windowsAround(zone, instant)
         .filter { it.slot.key in entry.schedule }

@@ -325,12 +325,15 @@ fun ClimateSkyBar(
     }
 }
 
-private fun skyColor(kind: SkyKind): Color = when (kind.climateDisplay()) {
-    SkyKind.SOLEADO -> Honey
+private fun skyColor(kind: SkyKind): Color = when (kind) {
     SkyKind.LLUVIA -> Color(0xFF7EB6D6)
-    SkyKind.ARCOIRIS -> Color(0xFFD7B4E8)
+    SkyKind.ARCOIRIS, SkyKind.ARCOIRIS_LUNA -> Color(0xFFD7B4E8)
+    SkyKind.NIEVE -> Color(0xFFE7F2FA)
+    SkyKind.NUBLADO -> Color(0xFFD5DDE6)
+    SkyKind.METEORO -> Color(0xFF2C3A4A)
+    SkyKind.AURORA -> Color(0xFF9AD7C8)
     SkyKind.SIN_DATOS -> Beige
-    else -> Beige
+    else -> Honey
 }
 
 @Composable

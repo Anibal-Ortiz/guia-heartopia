@@ -14,10 +14,11 @@ import org.junit.Test
 
 class SkyWeatherTest {
     @Test
-    fun shippedClimateFileHasNoDatedSlots() {
+    fun shippedClimateCovers2026Only() {
         val table = SkyCatalog.fromJson(catalogText())
-        assertTrue(table.days.isEmpty())
-        assertEquals(null, table.on(LocalDate.of(2026, 11, 1)))
+        assertEquals(365, table.days.size)
+        assertTrue(table.on(LocalDate.of(2026, 11, 12)) != null)
+        assertEquals(null, table.on(LocalDate.of(2027, 1, 1)))
     }
 
     @Test
@@ -61,9 +62,9 @@ class SkyWeatherTest {
             LocalDate.of(2026, 11, 7),
             java.time.ZoneId.of("America/Santiago"),
         )
-        val dawnRain = spans.first { it.frameKey == "Dawn" && it.kind == SkyKind.LLUVIA }
-        assertEquals(LocalTime.of(8, 0), dawnRain.start.toLocalTime())
-        assertEquals(LocalTime.of(14, 0), dawnRain.end.toLocalTime())
+        val rain = spans.filter { it.kind == SkyKind.LLUVIA }
+        assertEquals(LocalTime.of(6, 0), rain.first().start.toLocalTime())
+        assertEquals(LocalTime.of(18, 0), rain.last().end.toLocalTime())
     }
 
     private fun catalogText(): String = listOf(
