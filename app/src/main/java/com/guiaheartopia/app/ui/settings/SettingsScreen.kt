@@ -71,7 +71,6 @@ fun SettingsScreen(
         PixelCard {
             Text("Créditos y fuentes", style = MaterialTheme.typography.titleMedium)
             Text(VerifiedCatalog.SPOT_SOURCES, style = MaterialTheme.typography.bodyMedium)
-            Text(VerifiedCatalog.EVENT_SOURCES, style = MaterialTheme.typography.bodyMedium)
             Text(
                 "Tramos de criaturas: servidor UTC fijo; en Chile continental (UTC−3) " +
                     "Noche 02–08, Amanecer 08–14, Día 14–20, Tarde 20–02.",

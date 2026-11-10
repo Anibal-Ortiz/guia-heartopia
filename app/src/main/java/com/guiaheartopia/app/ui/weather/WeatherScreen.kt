@@ -43,7 +43,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.domain.SkyWeatherGameDay
 import com.guiaheartopia.app.data.SkyCatalog
-import com.guiaheartopia.app.data.VerifiedCatalog
 import com.guiaheartopia.app.domain.Countries
 import com.guiaheartopia.app.domain.ResourceCalendar
 import com.guiaheartopia.app.domain.SkyKind
@@ -269,9 +268,6 @@ private fun shortSpot(raw: String): String = when (raw) {
 private fun DayDetail(date: LocalDate, zone: ZoneId, sky: com.guiaheartopia.app.data.SkyTable) {
     val title = date.format(DateTimeFormatter.ofPattern("EEEE d 'de' MMMM", Locale.forLanguageTag("es")))
     val data = ResourceCalendar.on(date)
-    val event = VerifiedCatalog.events.firstOrNull { event ->
-        event.start != null && event.end != null && !date.isBefore(event.start) && !date.isAfter(event.end)
-    }
     Text(title.replaceFirstChar { it.titlecase() }, style = MaterialTheme.typography.titleMedium)
     Text("Hora local de ${Countries.zoneLabel(zone.id)}", style = MaterialTheme.typography.bodySmall)
     PixelCard {
@@ -286,12 +282,6 @@ private fun DayDetail(date: LocalDate, zone: ZoneId, sky: com.guiaheartopia.app.
         } else {
             ClimateSkyBar(sky, date, zone, Modifier.fillMaxWidth().height(22.dp))
             ClimateDetailList(lines, showFrames = false)
-        }
-    }
-    if (event != null) {
-        PixelCard {
-            Text(event.title, style = MaterialTheme.typography.titleSmall)
-            Text("${event.start} → ${event.end}", style = MaterialTheme.typography.bodyMedium)
         }
     }
 }

@@ -57,7 +57,6 @@ import com.guiaheartopia.app.ui.theme.Honey
 import com.guiaheartopia.app.ui.theme.HoneySoft
 import com.guiaheartopia.app.ui.theme.HoneyTint
 import com.guiaheartopia.app.ui.theme.Ink
-import com.guiaheartopia.app.ui.theme.Lilac
 import com.guiaheartopia.app.ui.theme.Line
 import com.guiaheartopia.app.ui.theme.Muted
 import com.guiaheartopia.app.ui.theme.Orange
@@ -65,8 +64,6 @@ import com.guiaheartopia.app.ui.theme.Paper
 import com.guiaheartopia.app.ui.theme.PaperSubtle
 import com.guiaheartopia.app.ui.theme.Peach
 import com.guiaheartopia.app.ui.theme.PinkSoft
-import com.guiaheartopia.app.ui.theme.Purple
-import com.guiaheartopia.app.ui.theme.PurpleTint
 import com.guiaheartopia.app.ui.theme.Rose
 import com.guiaheartopia.app.ui.theme.Sky
 import com.guiaheartopia.app.ui.theme.SkyBlue
@@ -92,7 +89,6 @@ fun HomeScreen(
     val climateDay = SkyWeatherGameDay.serverDawnLocalDate(nowInstant, zone)
     val climateLines = SkyWeatherGameDay.compactLinesForGameDay(sky, climateDay, zone)
     val spot = ResourceCalendar.on(today)
-    val event = com.guiaheartopia.app.data.VerifiedCatalog.events.firstOrNull()
 
     Column(
         Modifier
@@ -342,32 +338,6 @@ fun HomeScreen(
                 }
             }
 
-            if (event != null) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Lilac)
-                        .border(1.dp, PurpleTint, RoundedCornerShape(12.dp))
-                        .padding(10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Text("🎉", fontSize = 16.sp)
-                    Column {
-                        Text(
-                            event.title,
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                            color = Purple,
-                        )
-                        Text(
-                            "${event.start} – ${event.end}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Muted,
-                        )
-                    }
-                }
-            }
         }
 
         Spacer(Modifier.height(8.dp))

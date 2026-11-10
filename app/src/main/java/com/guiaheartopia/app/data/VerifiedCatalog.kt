@@ -26,20 +26,7 @@ object VerifiedCatalog {
         "Liuliu y fluorita de noviembre 2026: heartodex.com/ubicacion-diaria, consulta del 9 de noviembre de 2026. " +
             "Diciembre de 2026 no trae los días en esa página."
 
-    const val EVENT_SOURCES =
-        "Noche de la adivinación: heartodex la muestra del 10 de octubre al 21 de noviembre de 2026."
-
-    val events: List<GameEvent> = listOf(
-        GameEvent(
-            id = "noche-adivinacion",
-            title = "Noche de la adivinación",
-            summary = "heartodex muestra el evento del 10 de octubre al 21 de noviembre de 2026.",
-            start = LocalDate.of(2026, 10, 10),
-            end = LocalDate.of(2026, 11, 21),
-            verified = true,
-            sources = "heartodex.com/en/events (extracción 2026-11-06): activo del 10 oct al 21 nov 2026.",
-        ),
-    )
+    val events: List<GameEvent> = emptyList()
 
     /** Día de noviembre 2026 → parcela o zona del roble (Liuliu, según heartodex) y de la flurita. */
     val novemberSpots: List<Pair<String, String>> = listOf(

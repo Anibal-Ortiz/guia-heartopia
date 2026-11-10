@@ -39,16 +39,17 @@ class SkyWeatherGameDayTest {
         )
         assertEquals(
             listOf(
-                "Lluvia 12:00–14:00",
-                "Lluvia 14:00–18:00",
-                "Arcoíris 18:00–20:00",
-                "Arcoíris 20:00–00:00 del día siguiente",
+                "Lluvia 14:00–20:00",
+                "Arcoíris 20:00–02:00 del día siguiente",
             ),
             detail,
         )
         val frames = SkyWeatherGameDay.barFrameSegmentsForGameDay(table, day, santiago)
         assertEquals(4, frames.size)
-        assertEquals(listOf(2, 2, 2, 1), frames.map { it.size })
+        assertEquals(
+            listOf("DESPEJADO", "LLUVIA", "ARCOIRIS", "DESPEJADO"),
+            frames.map { it.single().kind.name },
+        )
     }
 
     @Test
@@ -101,7 +102,7 @@ class SkyWeatherGameDayTest {
     fun climateClockStaysLocalWhileFramesConvertFromUtc() {
         val table = SkyCatalog.fromJson(catalogText())
         val detail = detailTexts(table, LocalDate.of(2026, 11, 12), santiago)
-        assertTrue(detail.contains("Lluvia 12:00–14:00"))
+        assertTrue(detail.contains("Lluvia 14:00–20:00"))
         val madridDawn = SkyWeatherGameDay.windowsForLocalDawn(LocalDate.of(2026, 11, 12), madrid).first()
         assertEquals(LocalTime.of(12, 0), madridDawn.start.toLocalTime())
         assertEquals("Amanecer 12:00–18:00", groupedTexts(table, LocalDate.of(2026, 11, 12), madrid).first())

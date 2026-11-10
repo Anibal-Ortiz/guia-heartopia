@@ -71,15 +71,33 @@ object SkyWeatherGameDay {
     }
 
     /**
-     * Leyenda breve: solo climas distintos de despejado, o «Despejado todo el día» si no hay otros.
+     * Un clima por franja del juego (el que más dura). La leyenda omite el despejado,
+     * salvo que las cuatro franjas lo sean.
      */
+    fun frameClimatesForGameDay(
+        table: SkyTable,
+        localDawnDate: LocalDate,
+        zone: ZoneId,
+    ): List<GameClimateSpan> =
+        windowsForLocalDawn(localDawnDate, zone).mapNotNull { window ->
+            val spans = spansInWindow(table, window, zone)
+            if (spans.isEmpty()) return@mapNotNull null
+            val kind = dominantKind(spans)
+            spans.first().copy(
+                kind = kind,
+                start = window.start,
+                end = window.end,
+                frameKey = window.slot.key,
+            )
+        }
+
     fun compactLinesForGameDay(table: SkyTable, localDawnDate: LocalDate, zone: ZoneId): List<ClimateLine> {
-        val spans = spansForGameDay(table, localDawnDate, zone)
-        if (spans.isEmpty()) return emptyList()
-        if (spans.all { it.kind == SkyKind.DESPEJADO }) {
+        val frames = frameClimatesForGameDay(table, localDawnDate, zone)
+        if (frames.isEmpty()) return emptyList()
+        if (frames.all { it.kind == SkyKind.DESPEJADO }) {
             return listOf(ClimateLine("Despejado todo el día", frame = false))
         }
-        return spans
+        return frames
             .filter { it.kind != SkyKind.DESPEJADO }
             .map { ClimateLine(formatSpan(it, localDawnDate), frame = false) }
     }
@@ -99,7 +117,7 @@ object SkyWeatherGameDay {
             SkyBarSegment(span.kind, minutes.coerceAtLeast(1))
         }
 
-    /** Cuatro columnas (Amanecer, Día, Tarde, Noche), cada una con sus tramos de clima. */
+    /** Cuatro columnas, una por franja del juego y un solo clima en cada una. */
     fun barFrameSegmentsForGameDay(
         table: SkyTable,
         localDawnDate: LocalDate,
@@ -107,16 +125,22 @@ object SkyWeatherGameDay {
     ): List<List<SkyBarSegment>> =
         windowsForLocalDawn(localDawnDate, zone).map { window ->
             val spans = spansInWindow(table, window, zone)
-            if (spans.isEmpty()) {
-                val minutes = Duration.between(window.start.toInstant(), window.end.toInstant()).toMinutes().toInt()
-                listOf(SkyBarSegment(SkyKind.SIN_DATOS, minutes.coerceAtLeast(1)))
-            } else {
-                spans.map { span ->
-                    val minutes = Duration.between(span.start.toInstant(), span.end.toInstant()).toMinutes().toInt()
-                    SkyBarSegment(span.kind, minutes.coerceAtLeast(1))
-                }
-            }
+            val kind = if (spans.isEmpty()) SkyKind.SIN_DATOS else dominantKind(spans)
+            listOf(SkyBarSegment(kind, 1))
         }
+
+    private fun dominantKind(spans: List<GameClimateSpan>): SkyKind {
+        val rank = listOf(SkyKind.DESPEJADO, SkyKind.LLUVIA, SkyKind.ARCOIRIS, SkyKind.NIEVE, SkyKind.METEORO)
+        return spans
+            .groupBy { it.kind }
+            .maxWith(
+                compareBy<Map.Entry<SkyKind, List<GameClimateSpan>>>(
+                    { entry -> entry.value.sumOf { Duration.between(it.start.toInstant(), it.end.toInstant()).toMinutes() } },
+                    { entry -> rank.indexOf(entry.key) },
+                ),
+            )
+            .key
+    }
 
     fun formatSpan(span: GameClimateSpan, focusLocalDate: LocalDate): String =
         "${span.label()} ${rangeLabel(span.start, span.end, focusLocalDate)}"
