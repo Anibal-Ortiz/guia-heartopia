@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Typography
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -16,21 +17,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guiaheartopia.app.R
 
-// Cozy Heartopia Color Palette
-val Ink = Color(0xFF292524)              // Deep warm espresso
-val InkSubtle = Color(0xFF4A4440)        // Secondary text
-val Muted = Color(0xFF7E766E)            // Muted placeholder/captions
-val Cream = Color(0xFFFAF7F0)            // Cozy warm milk-tea background
-val Paper = Color(0xFFFFFFFF)            // Pure card surface
-val PaperSubtle = Color(0xFFF7F3EA)      // Subtle card background
-val Line = Color(0xFFEBE4D8)             // Delicate warm card borders
+val Ink = Color(0xFF4A3B2A)
+val InkSubtle = Color(0xFF5C4A36)
+val Muted = Color(0xFF6E5B48)
+val Cream = Color(0xFFF6F0E1)
+val Paper = Color(0xFFFFFBF4)
+val PaperSubtle = Color(0xFFF3E7D2)
+val Line = Color(0xFFD9CDB8)
 
-// Nature / Clover Greens
-val Green = Color(0xFF2A8356)            // Vibrant clover green
-val GreenDark = Color(0xFF1E6340)        // Deep forest green
-val GreenSoft = Color(0xFFE6F6ED)        // Pastel mint container
-val GreenTint = Color(0xFFCEECD9)        // Accent mint border
-val Mint = Color(0xFFE6F7F0)
+val Green = Color(0xFF3E6F6A)
+val GreenDark = Color(0xFF2C554F)
+val GreenSoft = Color(0xFFD7E6E3)
+val GreenTint = Color(0xFFB7D0CC)
+val Mint = Color(0xFFE4F0EE)
+val Ochre = Color(0xFFC4A15A)
+val Moss = Color(0xFF6B8F71)
 
 // Warm Honey / Sun
 val Yellow = Color(0xFFF39C12)           // Golden amber
@@ -75,6 +76,23 @@ private val Jakarta = FontFamily(
     jakarta(800),
 )
 
+private fun caveat(weight: Int) = Font(
+    R.font.caveat,
+    weight = FontWeight(weight),
+    variationSettings = FontVariation.Settings(FontVariation.weight(weight)),
+)
+
+private val Hand = FontFamily(
+    caveat(500),
+    caveat(700),
+)
+
+private val NightPaper = Color(0xFF2C2824)
+private val NightInk = Color(0xFFF3E6D0)
+private val NightMuted = Color(0xFFD2C3AE)
+private val NightLine = Color(0xFF4A4036)
+private val NightTeal = Color(0xFF8FBFB8)
+
 private val Colors = lightColorScheme(
     primary = Green,
     onPrimary = Color.White,
@@ -97,19 +115,19 @@ private val Colors = lightColorScheme(
     outline = Line,
 )
 
-private val Type = Typography(
-    headlineLarge = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.ExtraBold, fontSize = 32.sp, lineHeight = 38.sp, color = Ink),
-    headlineMedium = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.ExtraBold, fontSize = 26.sp, lineHeight = 32.sp, color = Ink),
-    headlineSmall = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.Bold, fontSize = 22.sp, lineHeight = 28.sp, color = Ink),
-    titleLarge = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.Bold, fontSize = 20.sp, lineHeight = 26.sp, color = Ink),
-    titleMedium = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.Bold, fontSize = 17.sp, lineHeight = 23.sp, color = Ink),
-    titleSmall = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, lineHeight = 20.sp, color = Ink),
-    bodyLarge = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.Normal, fontSize = 16.sp, lineHeight = 24.sp, color = Ink),
-    bodyMedium = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.Normal, fontSize = 14.sp, lineHeight = 20.sp, color = Ink),
-    bodySmall = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.Normal, fontSize = 13.sp, lineHeight = 18.sp, color = Muted),
-    labelLarge = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.Bold, fontSize = 15.sp, lineHeight = 20.sp, color = Ink),
-    labelMedium = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.SemiBold, fontSize = 12.sp, lineHeight = 16.sp, color = Ink),
-    labelSmall = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.SemiBold, fontSize = 11.sp, lineHeight = 14.sp, color = Muted),
+private fun type(ink: Color, muted: Color) = Typography(
+    headlineLarge = TextStyle(fontFamily = Hand, fontWeight = FontWeight.Bold, fontSize = 40.sp, lineHeight = 44.sp, color = ink),
+    headlineMedium = TextStyle(fontFamily = Hand, fontWeight = FontWeight.Bold, fontSize = 34.sp, lineHeight = 38.sp, color = ink),
+    headlineSmall = TextStyle(fontFamily = Hand, fontWeight = FontWeight.Bold, fontSize = 30.sp, lineHeight = 34.sp, color = ink),
+    titleLarge = TextStyle(fontFamily = Hand, fontWeight = FontWeight.Medium, fontSize = 28.sp, lineHeight = 32.sp, color = ink),
+    titleMedium = TextStyle(fontFamily = Hand, fontWeight = FontWeight.Medium, fontSize = 24.sp, lineHeight = 28.sp, color = ink),
+    titleSmall = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, lineHeight = 20.sp, color = ink),
+    bodyLarge = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.Normal, fontSize = 16.sp, lineHeight = 24.sp, color = ink),
+    bodyMedium = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.Normal, fontSize = 14.sp, lineHeight = 20.sp, color = ink),
+    bodySmall = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.Normal, fontSize = 13.sp, lineHeight = 18.sp, color = muted),
+    labelLarge = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.Bold, fontSize = 15.sp, lineHeight = 20.sp, color = ink),
+    labelMedium = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.SemiBold, fontSize = 12.sp, lineHeight = 16.sp, color = ink),
+    labelSmall = TextStyle(fontFamily = Jakarta, fontWeight = FontWeight.SemiBold, fontSize = 11.sp, lineHeight = 14.sp, color = muted),
 )
 
 private val AppShapes = Shapes(
@@ -122,5 +140,28 @@ private val AppShapes = Shapes(
 
 @Composable
 fun GuiaTheme(content: @Composable () -> Unit) {
-    MaterialTheme(colorScheme = Colors, typography = Type, shapes = AppShapes, content = content)
+    val dark = isSystemInDarkTheme()
+    val scheme = if (dark) {
+        Colors.copy(
+            primary = NightTeal,
+            onPrimary = NightPaper,
+            primaryContainer = Color(0xFF3A4A46),
+            onPrimaryContainer = NightInk,
+            background = NightPaper,
+            onBackground = NightInk,
+            surface = Color(0xFF342F2A),
+            onSurface = NightInk,
+            surfaceVariant = Color(0xFF3C362F),
+            onSurfaceVariant = NightMuted,
+            outline = NightLine,
+        )
+    } else {
+        Colors
+    }
+    MaterialTheme(
+        colorScheme = scheme,
+        typography = type(if (dark) NightInk else Ink, if (dark) NightMuted else Muted),
+        shapes = AppShapes,
+        content = content,
+    )
 }

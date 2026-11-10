@@ -168,7 +168,7 @@ private fun AppScaffold(
     }
 
     Scaffold(
-        containerColor = Cream,
+        containerColor = MaterialTheme.colorScheme.background,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             Row(
@@ -287,7 +287,7 @@ private fun AppScaffold(
                 }
             }
             composable("hobbies") {
-                HobbiesScreen(ui.hobbies, vm::setHobby, vm::addHobby, vm::removeHobby)
+                HobbiesScreen(ui.hobbies, vm::setHobby)
             }
             composable("map") { MapScreen(ui.profile.zoneId) }
             composable(

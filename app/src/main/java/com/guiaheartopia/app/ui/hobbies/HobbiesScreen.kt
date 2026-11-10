@@ -61,11 +61,7 @@ import com.guiaheartopia.app.ui.theme.Yellow
 fun HobbiesScreen(
     hobbies: List<Hobby>,
     onChange: (id: String, level: Int?, max: Int?, note: String?) -> Unit,
-    onAdd: (String) -> Unit,
-    onRemove: (String) -> Unit,
 ) {
-    var draft by remember { mutableStateOf("") }
-
     Column(
         Modifier
             .fillMaxSize()
@@ -81,12 +77,12 @@ fun HobbiesScreen(
         ) {
             Column {
                 Text(
-                    "Aficiones & Habilidades",
-                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold),
+                    "Aficiones",
+                    style = MaterialTheme.typography.headlineSmall,
                     color = Ink,
                 )
                 Text(
-                    "Registro personal de niveles de tu personaje",
+                    "Cinco oficios fijos. Cada uno guarda tu nivel y una nota.",
                     style = MaterialTheme.typography.bodySmall,
                     color = Muted,
                 )
@@ -104,40 +100,7 @@ fun HobbiesScreen(
 
         // Hobbies list
         hobbies.forEach { hobby ->
-            HobbyCard(hobby, onChange, onRemove)
-        }
-
-        // Add hobby card
-        PixelCard(container = PaperSubtle) {
-            Text(
-                "Añadir Nueva Afición",
-                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-            )
-            Row(
-                Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                OutlinedTextField(
-                    value = draft,
-                    onValueChange = { draft = it },
-                    placeholder = { Text("Ej: Pintura, Minería...") },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(14.dp),
-                    singleLine = true,
-                )
-                PixelButton(
-                    text = "Añadir",
-                    onClick = {
-                        if (draft.isNotBlank()) {
-                            onAdd(draft.trim())
-                            draft = ""
-                        }
-                    },
-                    container = Honey,
-                    contentColor = Ink,
-                )
-            }
+            HobbyCard(hobby, onChange)
         }
 
         Spacer(Modifier.height(8.dp))
@@ -149,9 +112,9 @@ private fun hobbyEmoji(name: String): String {
     return when {
         "cocina" in lower -> "🍳"
         "pesca" in lower -> "🎣"
-        "jardin" in lower || "huerto" in lower || "flor" in lower -> "🌱"
+        "siembra" in lower || "jardin" in lower || "huerto" in lower || "flor" in lower -> "🌱"
         "insect" in lower || "bicho" in lower -> "🦋"
-        "pájaro" in lower || "ave" in lower -> "🐦"
+        "observación" in lower || "pájaro" in lower || "ave" in lower -> "🐦"
         "mascota" in lower || "animal" in lower -> "🐾"
         "miner" in lower || "piedra" in lower -> "⛏️"
         "música" in lower || "canto" in lower -> "🎵"
@@ -164,7 +127,6 @@ private fun hobbyEmoji(name: String): String {
 private fun HobbyCard(
     hobby: Hobby,
     onChange: (id: String, level: Int?, max: Int?, note: String?) -> Unit,
-    onRemove: (String) -> Unit,
 ) {
     var note by remember(hobby.id, hobby.note) { mutableStateOf(hobby.note) }
     val emoji = hobbyEmoji(hobby.name)
@@ -196,7 +158,7 @@ private fun HobbyCard(
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     )
                     Text(
-                        "Nivel ${hobby.level} de ${hobby.maxLevel}",
+                        "Mi nivel: ${hobby.level}",
                         style = MaterialTheme.typography.bodySmall,
                         color = Muted,
                     )
@@ -204,16 +166,6 @@ private fun HobbyCard(
             }
             if (isMaxed) {
                 VerifyBadge("¡Tope! ⭐", tone = HoneySoft)
-            } else {
-                Box(
-                    Modifier
-                        .size(32.dp)
-                        .clip(CircleShape)
-                        .clickable { onRemove(hobby.id) },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text("✕", color = Muted, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                }
             }
         }
 

@@ -8,20 +8,14 @@ data class TabNavigationPolicy(
 )
 
 object NavigationPolicy {
-    private const val ROOT = AppNavigation.HOME_ROUTE
-
-    fun onBottomTabSelected(route: String): TabNavigationPolicy = when (route) {
-        ROOT -> TabNavigationPolicy(
-            popUpToRoute = ROOT,
-            inclusive = true,
-            saveState = false,
-            restoreState = false,
-        )
-        else -> TabNavigationPolicy(
-            popUpToRoute = ROOT,
-            inclusive = false,
-            saveState = true,
-            restoreState = true,
-        )
-    }
+    /**
+     * Cada pestaña abre la raíz de su sección y no recupera una ficha interna.
+     * Inicio vuelve a Mi día.
+     */
+    fun onBottomTabSelected(route: String): TabNavigationPolicy = TabNavigationPolicy(
+        popUpToRoute = AppNavigation.HOME_ROUTE,
+        inclusive = route == AppNavigation.HOME_ROUTE,
+        saveState = false,
+        restoreState = false,
+    )
 }

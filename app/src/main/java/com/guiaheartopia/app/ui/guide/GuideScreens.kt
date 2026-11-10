@@ -37,13 +37,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guiaheartopia.app.data.DexEntry
 import com.guiaheartopia.app.data.SkyCatalog
 import com.guiaheartopia.app.domain.AnimalAnnotation
 import com.guiaheartopia.app.domain.AnimalRecord
+import com.guiaheartopia.app.domain.CreatureAvailability
 import com.guiaheartopia.app.domain.CreatureCopy
+import com.guiaheartopia.app.domain.GuideSections
+import com.guiaheartopia.app.domain.Hobby
 import com.guiaheartopia.app.domain.DexSchedule
 import com.guiaheartopia.app.domain.SkyWeather
 import com.guiaheartopia.app.domain.TextMatch
@@ -82,8 +86,14 @@ import com.guiaheartopia.app.ui.theme.SkyBlue
 import com.guiaheartopia.app.ui.theme.SkyTint
 import java.time.Instant
 
-private val Tabs = listOf("🐾 Animales", "🐟 Peces", "🐛 Insectos", "🐦 Pájaros")
-private val DexCategories = listOf("Peces", "Insectos", "Pájaros")
+private val Tabs = GuideSections.dexCategories.map { section ->
+    when (section) {
+        "Peces" -> "Peces"
+        "Pájaros" -> "Aves"
+        "Insectos" -> "Insectos"
+        else -> "Fauna"
+    }
+}
 
 @Composable
 fun GuideScreen(
@@ -136,10 +146,7 @@ fun GuideScreen(
         // Pill Tabs with Icons
         PillTabs(Tabs, tab) { tab = it }
 
-        when (tab) {
-            0 -> AnimalsTab(ui, onOpenAnimal, onAddAnimal)
-            else -> DexTab(DexCategories[tab - 1], ui, onOpenDex, onToggleFound)
-        }
+        DexTab(GuideSections.dexCategories[tab], ui, onOpenDex, onToggleFound)
 
         Spacer(Modifier.height(8.dp))
     }
@@ -286,13 +293,23 @@ private fun DexTab(
     var onlyNow by rememberSaveable(category) { mutableStateOf(false) }
     var registered by rememberSaveable(category) { mutableStateOf("todos") }
     var weather by rememberSaveable(category) { mutableStateOf("Todos") }
+    var allLevels by rememberSaveable(category) { mutableStateOf(false) }
+    var chosenLevel by rememberSaveable(category) { mutableStateOf(-1) }
+    val hobbyLevel = CreatureAvailability.hobbyLevel(category, ui.hobbies)
+    val levelCap = when {
+        hobbyLevel == null || allLevels -> null
+        chosenLevel >= 0 -> chosenLevel
+        else -> hobbyLevel
+    }
 
     val items = all.filter { entry ->
+        val timeOk = SkyWeather.availableNow(entry.schedule, entry.weather, instant, sky, zone)
         entry.category == category &&
             (query.isBlank() || TextMatch.contains(entry.name, query) || TextMatch.contains(entry.nameEn, query)) &&
             (place.isBlank() || entry.location.any { TextMatch.contains(it, place) }) &&
             (weather == "Todos" || weather in entry.weather) &&
-            (!onlyNow || SkyWeather.availableNow(entry.schedule, entry.weather, instant, sky, zone)) &&
+            CreatureAvailability.levelAllowed(entry.level, levelCap) &&
+            (!onlyNow || CreatureAvailability.availableNow(category, entry.level, ui.hobbies, timeOk)) &&
             when (registered) {
                 "si" -> entry.id in ui.found
                 "no" -> entry.id !in ui.found
@@ -340,10 +357,17 @@ private fun DexTab(
                 )
             }
 
+            if (hobbyLevel != null) {
+                FilterChip(
+                    selected = allLevels,
+                    onClick = { allLevels = !allLevels },
+                    label = { Text("Todos los niveles") },
+                )
+            }
             FilterChip(
                 selected = onlyNow,
                 onClick = { onlyNow = !onlyNow },
-                label = { Text("✦ Disponible ahora") },
+                label = { Text("Disponible ahora") },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = GreenSoft,
                     selectedLabelColor = GreenDark,
@@ -390,6 +414,22 @@ private fun DexTab(
 
         // Guía / Leyenda visual de horarios y climas
         ScheduleWeatherLegend()
+        if (hobbyLevel != null && !allLevels) {
+            Text(
+                "Nivel máximo: ${levelCap ?: hobbyLevel}. Se ven las criaturas con nivel requerido igual o menor.",
+                style = MaterialTheme.typography.bodySmall,
+                color = Muted,
+            )
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                (0..10).forEach { level ->
+                    FilterChip(
+                        selected = (levelCap ?: hobbyLevel) == level,
+                        onClick = { chosenLevel = level },
+                        label = { Text(level.toString()) },
+                    )
+                }
+            }
+        }
     }
 
     if (items.isEmpty()) {
@@ -413,6 +453,8 @@ private fun DexTab(
                     category = entry.category,
                     locations = entry.location,
                     level = entry.level,
+                    creatureId = entry.id,
+                    contentDescription = "Foto o dibujo de ${entry.name}",
                     modifier = Modifier.size(58.dp),
                 )
                 Column(Modifier.weight(1f)) {
@@ -433,67 +475,35 @@ private fun DexTab(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(PaperSubtle.copy(alpha = 0.65f))
-                    .border(1.dp, Line.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
-                    .padding(horizontal = 12.dp, vertical = 10.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                    .padding(horizontal = 2.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                // Ubicación
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    Text("📍", fontSize = 13.sp)
+                Text(
+                    "Ubicación: ${entry.location.joinToString().ifBlank { "—" }}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Ink,
+                    softWrap = true,
+                )
+                Text(
+                    "Horario: ${entry.schedule.joinToString { DexSchedule.scheduleLabel(it) }.ifBlank { "—" }}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Ink,
+                    softWrap = true,
+                )
+                Text(
+                    "Clima: ${entry.weather.joinToString { DexSchedule.weatherEs(it) }.ifBlank { "—" }}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Ink,
+                    softWrap = true,
+                    overflow = TextOverflow.Clip,
+                    maxLines = Int.MAX_VALUE,
+                )
+                if (entry.level != null) {
                     Text(
-                        text = "Ubicación:",
-                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                        color = Muted,
+                        "Nivel requerido: ${entry.level}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Ink,
                     )
-                    Text(
-                        text = entry.location.joinToString().ifBlank { "—" },
-                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                        color = GreenDark,
-                        modifier = Modifier.weight(1f),
-                    )
-                }
-
-                // Horario y Clima en fila visual de badges
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    // Horarios
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
-                        Text("⏰", fontSize = 13.sp)
-                        Text(
-                            text = "Horario:",
-                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                            color = Muted,
-                            modifier = Modifier.padding(end = 2.dp),
-                        )
-                        ScheduleBadges(entry.schedule)
-                    }
-
-                    // Clima
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
-                        Text("🌤️", fontSize = 13.sp)
-                        Text(
-                            text = "Clima:",
-                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                            color = Muted,
-                            modifier = Modifier.padding(end = 2.dp),
-                        )
-                        WeatherBadges(entry.weather)
-                    }
                 }
             }
 
@@ -549,6 +559,8 @@ fun DexDetailScreen(entry: DexEntry, zoneId: String, found: Boolean, onToggle: (
                         category = entry.category,
                         locations = entry.location,
                         level = entry.level,
+                        creatureId = entry.id,
+                        contentDescription = "Foto o dibujo de ${entry.name}",
                         modifier = Modifier.size(86.dp),
                         shapeRadius = 20.dp,
                     )

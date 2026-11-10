@@ -12,6 +12,7 @@ import com.guiaheartopia.app.domain.Collectible
 import com.guiaheartopia.app.domain.Greeting
 import com.guiaheartopia.app.domain.GuideSnapshot
 import com.guiaheartopia.app.domain.Hobby
+import com.guiaheartopia.app.domain.HobbyCatalog
 import com.guiaheartopia.app.domain.HobbyProgress
 import com.guiaheartopia.app.domain.PlayerProfile
 import com.guiaheartopia.app.domain.SampleIds
@@ -249,8 +250,7 @@ class GuideViewModel(
         )
     }
 
-    private fun ensureHobbies(snap: GuideSnapshot): List<Hobby> =
-        if (snap.hobbiesInitialized) snap.hobbies else SeedCatalog.hobbies
+    private fun ensureHobbies(snap: GuideSnapshot): List<Hobby> = HobbyCatalog.migrate(snap.hobbies)
 
     private fun splitLines(raw: String): List<String> =
         raw.split('\n', ',').map { it.trim() }.filter { it.isNotEmpty() }

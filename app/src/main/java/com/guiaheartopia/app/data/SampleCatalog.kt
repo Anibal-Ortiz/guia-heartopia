@@ -47,13 +47,7 @@ object SeedCatalog {
 
     val collectibles: List<Collectible> = emptyList()
 
-    val hobbies: List<Hobby> = listOf(
-        Hobby("hob-cocina", "Cocina"),
-        Hobby("hob-jardin", "Jardinería"),
-        Hobby("hob-mascotas", "Mascotas"),
-        Hobby("hob-pesca", "Pesca"),
-        Hobby("hob-manual", "Manualidades"),
-    )
+    val hobbies: List<Hobby> = com.guiaheartopia.app.domain.HobbyCatalog.fixed
 }
 
 object SampleWeather {

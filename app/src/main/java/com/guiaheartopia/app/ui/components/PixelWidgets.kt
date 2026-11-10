@@ -30,9 +30,11 @@ import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.foundation.layout.offset
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -71,17 +73,28 @@ fun PixelCard(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val actualContainer = if (container == Dark) DarkCard else container
-    Column(
-        modifier
-            .fillMaxWidth()
-            .shadow(elevation, shape, ambientColor = Color(0x0F292524), spotColor = Color(0x12292524))
-            .clip(shape)
-            .background(actualContainer)
-            .border(1.dp, borderColor, shape)
-            .padding(18.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-        content = content,
-    )
+    Box(modifier.fillMaxWidth()) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .shadow(elevation, shape, ambientColor = Color(0x144A3B2A), spotColor = Color(0x184A3B2A))
+                .clip(shape)
+                .background(actualContainer)
+                .border(1.dp, borderColor, shape)
+                .padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            content = content,
+        )
+        Box(
+            Modifier
+                .align(Alignment.TopEnd)
+                .offset(x = (-14).dp, y = 8.dp)
+                .rotate(-8f)
+                .size(width = 42.dp, height = 14.dp)
+                .clip(RoundedCornerShape(2.dp))
+                .background(com.guiaheartopia.app.ui.theme.Ochre.copy(alpha = 0.72f)),
+        )
+    }
 }
 
 @Composable

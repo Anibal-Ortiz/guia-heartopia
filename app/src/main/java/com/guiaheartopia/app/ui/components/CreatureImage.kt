@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import com.guiaheartopia.app.data.AndroidContentStore
-import com.guiaheartopia.app.domain.ContentPackage
+import com.guiaheartopia.app.domain.CreatureImagePaths
 import com.guiaheartopia.app.domain.CreatureMark
 import com.guiaheartopia.app.ui.theme.Line
 import java.io.File
@@ -31,11 +31,9 @@ import java.io.File
  * El APK no trae arte de catálogo: si no hay archivo, la ficha usa el ícono de la categoría.
  * Una URL http(s) no se pide al mostrar la ficha.
  */
-fun bundledCreatureModel(imageUrl: String?, downloaded: File? = null): Any? {
-    if (imageUrl.isNullOrBlank()) return null
-    if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) return null
-    val path = imageUrl.removePrefix("asset:").removePrefix("content:").removePrefix("/")
-    if (!ContentPackage.isSafePath(path) || !path.startsWith("catalog/images/")) return null
+fun bundledCreatureModel(imageUrl: String?, downloaded: File? = null, id: String = ""): Any? {
+    val paths = CreatureImagePaths.candidates(imageUrl, id)
+    if (paths.isEmpty()) return null
     if (downloaded != null && downloaded.isFile && downloaded.length() > 0L) return downloaded
     return null
 }
@@ -49,14 +47,16 @@ fun CreatureImage(
     modifier: Modifier = Modifier,
     size: Dp = 54.dp,
     shapeRadius: Dp = 16.dp,
+    contentDescription: String = "Dibujo de la criatura",
+    creatureId: String = "",
 ) {
     val habitat = CreatureMark.habitat(locations, level)
     val tint = habitatColor(habitat, level)
     val shape = RoundedCornerShape(shapeRadius)
     val context = LocalContext.current
-    val path = imageUrl?.removePrefix("asset:")?.removePrefix("content:")?.removePrefix("/")
-    val downloaded = path?.let { AndroidContentStore.overlayFile(context, it) }
-    val model = bundledCreatureModel(imageUrl, downloaded)
+    val downloaded = CreatureImagePaths.candidates(imageUrl, creatureId)
+        .firstNotNullOfOrNull { AndroidContentStore.overlayFile(context, it) }
+    val model = bundledCreatureModel(imageUrl, downloaded, creatureId)
     var failed by remember(model) { mutableStateOf(false) }
 
     Box(
@@ -72,7 +72,7 @@ fun CreatureImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(model)
                     .build(),
-                contentDescription = null,
+                contentDescription = contentDescription,
                 contentScale = ContentScale.Fit,
                 onError = { failed = true },
                 modifier = Modifier
