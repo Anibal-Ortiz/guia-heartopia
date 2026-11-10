@@ -18,22 +18,28 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.BuildConfig
 import com.guiaheartopia.app.R
 import com.guiaheartopia.app.ads.AdsMode
 import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Build
+import androidx.core.content.ContextCompat
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -71,14 +77,22 @@ fun SettingsScreen(
     onExport: ((String) -> Unit) -> Unit,
     onImport: (String, (ImportResult) -> Unit) -> Unit,
     onPhotoCredits: () -> Unit,
+    scrollToReminders: Boolean = false,
 ) {
     var name by rememberSaveable(profile.name) { mutableStateOf(profile.name) }
     var session by rememberSaveable(profile.session) { mutableStateOf(profile.session) }
     val country = Countries.byId(profile.countryId)
+    val scroll = rememberScrollState()
+    var remindersY by remember { mutableIntStateOf(0) }
+    androidx.compose.runtime.LaunchedEffect(scrollToReminders, remindersY) {
+        if (scrollToReminders && remindersY > 0) {
+            scroll.animateScrollTo((remindersY - 24).coerceAtLeast(0))
+        }
+    }
     Column(
         Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(scroll)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
@@ -138,7 +152,11 @@ fun SettingsScreen(
                 PixelButton("Opciones de privacidad de anuncios", onClick = onAdPrivacy)
             }
         }
-        ReminderBlock(profile.reminders, onReminders)
+        androidx.compose.foundation.layout.Box(
+            Modifier.onGloballyPositioned { remindersY = it.positionInParent().y.toInt() },
+        ) {
+            ReminderBlock(profile.reminders, onReminders)
+        }
         BackupBlock(onExport, onImport)
         PixelButton("Política de privacidad", onClick = onPrivacy, outlined = true)
         PixelButton("Términos", onClick = onTerms, outlined = true)
@@ -238,24 +256,38 @@ private fun ReminderBlock(current: ReminderPrefs, onChange: (ReminderPrefs) -> U
         pending = null
         if (granted && next != null) onChange(next)
     }
+    fun enabling(next: ReminderPrefs): Boolean =
+        (next.weatherEnabled && !current.weatherEnabled) ||
+            (next.pescaEnabled && !current.pescaEnabled) ||
+            (next.avesEnabled && !current.avesEnabled) ||
+            (next.insectosEnabled && !current.insectosEnabled) ||
+            (next.temporadaEnabled && !current.temporadaEnabled)
     fun update(next: ReminderPrefs) {
-        val turningOn = (next.weatherEnabled || next.eventsEnabled) &&
-            !(current.weatherEnabled || current.eventsEnabled)
-        if (turningOn && Build.VERSION.SDK_INT >= 33) {
+        val needsPermission = Build.VERSION.SDK_INT >= 33 &&
+            enabling(next) &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
+            PackageManager.PERMISSION_GRANTED
+        if (needsPermission) {
             pending = next
             permission.launch(Manifest.permission.POST_NOTIFICATIONS)
         } else {
             onChange(next)
         }
     }
-    PixelCard {
+    PixelCard(modifier = Modifier.testTag("recordatorios")) {
         Text("Recordatorios", style = MaterialTheme.typography.titleMedium)
         Text(
-            "Avisos locales a la hora de tu zona. El sistema puede retrasarlos unos minutos. No pedimos una alarma exacta.",
+            "El clima avisa 30 min antes de una franja que no sea despejado. " +
+                "Pesca, aves e insectos avisan antes de cada hora del archivo de eventos. " +
+                "La temporada avisa al empezar y un día antes de terminar. " +
+                "El sistema puede retrasar el aviso. No pedimos una alarma exacta.",
             style = MaterialTheme.typography.bodySmall,
         )
-        ToggleRow("Clima y recursos", current.weatherEnabled) { update(current.copy(weatherEnabled = it)) }
-        ToggleRow("Eventos", current.eventsEnabled) { update(current.copy(eventsEnabled = it)) }
+        ToggleRow("Clima", current.weatherEnabled) { update(current.copy(weatherEnabled = it)) }
+        ToggleRow("Pesca", current.pescaEnabled) { update(current.copy(pescaEnabled = it)) }
+        ToggleRow("Aves", current.avesEnabled) { update(current.copy(avesEnabled = it)) }
+        ToggleRow("Insectos", current.insectosEnabled) { update(current.copy(insectosEnabled = it)) }
+        ToggleRow("Eventos de temporada", current.temporadaEnabled) { update(current.copy(temporadaEnabled = it)) }
     }
 }
 

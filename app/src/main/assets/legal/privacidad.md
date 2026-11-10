@@ -1,4 +1,4 @@
-Política de privacidad — Guía para Heartopia (no oficial)
+Política de privacidad — WikiFan para Heartopia
 Versión 0.7.0
 Contacto: primero010102@gmail.com
 

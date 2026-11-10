@@ -43,6 +43,7 @@ import com.guiaheartopia.app.ui.components.CozyHomeIcon
 import com.guiaheartopia.app.ui.components.CozyTreeIcon
 import com.guiaheartopia.app.ui.components.GameTimeCard
 import com.guiaheartopia.app.ui.components.NowBadge
+import com.guiaheartopia.app.ui.components.NotebookCard
 import com.guiaheartopia.app.ui.components.PixelButton
 import com.guiaheartopia.app.ui.components.PixelCard
 import com.guiaheartopia.app.ui.components.PixelProgress
@@ -76,6 +77,7 @@ import java.time.LocalDate
 fun HomeScreen(
     ui: GuideUi,
     onOpen: (String) -> Unit,
+    onDismissReminderPrompt: () -> Unit = {},
 ) {
     val country = Countries.byId(ui.profile.countryId)
     val context = androidx.compose.ui.platform.LocalContext.current
@@ -103,6 +105,48 @@ fun HomeScreen(
             title = "Mi día",
             subtitle = "Horario, clima y lo que toca hoy",
         )
+        val reminders = ui.profile.reminders
+        if (!reminders.anyAlertOn() && !reminders.promptDismissed) {
+            NotebookCard {
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
+                    Text(
+                        "¿Quieres que te avise del clima y los eventos? Activa los recordatorios en Ajustes",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Ink,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Text(
+                        "×",
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .clickable(onClick = onDismissReminderPrompt),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Ink,
+                    )
+                }
+                PixelButton(
+                    "Ir a Ajustes",
+                    onClick = { onOpen("settings/recordatorios") },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        }
+        val seasons = remember(revision, zone) {
+            val raw = com.guiaheartopia.app.data.AndroidContentLibrary(context)
+                .effectiveBytes("calendar/eventos.json")
+                ?.decodeToString()
+            com.guiaheartopia.app.domain.ReminderPlan.activeSeasons(
+                com.guiaheartopia.app.domain.ReminderPlan.parseEvents(raw),
+                zone,
+                java.time.ZonedDateTime.now(zone),
+            )
+        }
+        seasons.forEach { season ->
+            NotebookCard {
+                Text(season.name, style = MaterialTheme.typography.titleMedium, color = Ink)
+                season.remaining?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = Ink) }
+            }
+        }
         PixelCard(container = PaperSubtle, elevation = 1.dp) {
             Row(
                 Modifier.fillMaxWidth(),

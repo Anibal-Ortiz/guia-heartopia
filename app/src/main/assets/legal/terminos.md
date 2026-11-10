@@ -1,4 +1,4 @@
-Términos de uso — Guía para Heartopia (no oficial)
+Términos de uso — WikiFan para Heartopia
 Versión 0.7.0
 
 App no oficial

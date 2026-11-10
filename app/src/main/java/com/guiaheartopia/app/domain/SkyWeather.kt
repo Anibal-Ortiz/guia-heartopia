@@ -47,6 +47,7 @@ data class SkySlot(
     val place: String? = null,
     val special: String? = null,
     val detail: String = "",
+    val rawKind: String = "",
 ) {
     fun title(): String {
         val base = if (kind == SkyKind.METEORO && !place.isNullOrBlank()) {

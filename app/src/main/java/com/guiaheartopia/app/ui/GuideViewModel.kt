@@ -75,6 +75,15 @@ class GuideViewModel(
         }
     }
 
+    fun dismissReminderPrompt() {
+        viewModelScope.launch {
+            repository.update { snap ->
+                val reminders = snap.profile.reminders.copy(promptDismissed = true)
+                snap.copy(profile = snap.profile.copy(reminders = reminders))
+            }
+        }
+    }
+
     fun saveReminders(reminders: ReminderPrefs) {
         val withoutRoutine = reminders.copy(routineEnabled = false)
         viewModelScope.launch {

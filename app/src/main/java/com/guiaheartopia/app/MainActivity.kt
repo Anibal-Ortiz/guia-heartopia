@@ -279,7 +279,9 @@ private fun AppScaffold(
                 .padding(padding)
                 .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         ) {
-            composable("home") { HomeScreen(ui) { dest -> nav.navigate(dest) } }
+            composable("home") {
+                HomeScreen(ui, { dest -> nav.navigate(dest) }, vm::dismissReminderPrompt)
+            }
             composable("guide") {
                 GuideScreen(
                     ui = ui,
@@ -320,6 +322,24 @@ private fun AppScaffold(
                         onBack = { nav.popBackStack() },
                     )
                 }
+            }
+            composable("settings/recordatorios") {
+                SettingsScreen(
+                    profile = ui.profile,
+                    adsMode = adsMode,
+                    adsStatus = adsStatus,
+                    privacyOptions = privacyOptions,
+                    onSave = vm::saveProfile,
+                    onRegion = vm::updateRegion,
+                    onPrivacy = onPrivacy,
+                    onTerms = onTerms,
+                    onAdPrivacy = onAdPrivacy,
+                    onReminders = vm::saveReminders,
+                    onExport = vm::exportBackup,
+                    onImport = vm::importBackup,
+                    onPhotoCredits = { nav.navigate("photo-credits") },
+                    scrollToReminders = true,
+                )
             }
             composable("settings") {
                 SettingsScreen(

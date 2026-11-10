@@ -10,6 +10,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.guiaheartopia.app.domain.ContentSyncResult
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.StateFlow
 
 object ContentSignals {
@@ -55,6 +56,10 @@ class ContentUpdateWorker(
         ContentCheckStore.record(applicationContext, report, now)
         if (report.result == ContentSyncResult.APPLIED) {
             ContentSignals.note(applicationContext)
+        }
+        if (report.result == ContentSyncResult.APPLIED || report.result == ContentSyncResult.UNCHANGED) {
+            val profile = GuideRepository(applicationContext).snapshots.first().profile
+            com.guiaheartopia.app.reminders.ReminderScheduler.sync(applicationContext, profile)
         }
         return Result.success()
     }

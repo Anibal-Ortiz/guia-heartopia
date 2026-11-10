@@ -61,7 +61,7 @@ val releaseSigningReady = storeFilePath.isNotEmpty() && releaseStorePassword.isN
     releaseKeyAlias.isNotEmpty() && releaseKeyPassword.isNotEmpty()
 
 base {
-    archivesName.set("Guia-Heartopia-0.9.1")
+    archivesName.set("Guia-Heartopia-0.9.2")
 }
 
 android {
@@ -72,8 +72,8 @@ android {
         applicationId = "com.guiaheartopia.app"
         minSdk = 26
         targetSdk = 37
-        versionCode = 29
-        versionName = "0.9.1"
+        versionCode = 30
+        versionName = "0.9.2"
         buildConfigField(
             "String",
             "CONTENT_BASE_URL",

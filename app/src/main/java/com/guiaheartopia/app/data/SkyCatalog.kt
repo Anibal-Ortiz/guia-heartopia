@@ -76,6 +76,7 @@ object SkyCatalog {
                         place = slot.place,
                         special = slot.special,
                         detail = slot.label,
+                        rawKind = slot.kind,
                     )
                 },
             )
