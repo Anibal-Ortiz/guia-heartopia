@@ -27,7 +27,8 @@ import com.guiaheartopia.app.ui.theme.Line
 import java.io.File
 
 /**
- * Imagen ya guardada: primero el archivo descargado, si no el del APK.
+ * Solo muestra una imagen si el paquete remoto ya la guardó en el teléfono.
+ * El APK no trae arte de catálogo: si no hay archivo, la ficha usa el ícono de la categoría.
  * Una URL http(s) no se pide al mostrar la ficha.
  */
 fun bundledCreatureModel(imageUrl: String?, downloaded: File? = null): Any? {
@@ -35,8 +36,8 @@ fun bundledCreatureModel(imageUrl: String?, downloaded: File? = null): Any? {
     if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) return null
     val path = imageUrl.removePrefix("asset:").removePrefix("content:").removePrefix("/")
     if (!ContentPackage.isSafePath(path) || !path.startsWith("catalog/images/")) return null
-    if (downloaded != null && downloaded.isFile) return downloaded
-    return "file:///android_asset/$path"
+    if (downloaded != null && downloaded.isFile && downloaded.length() > 0L) return downloaded
+    return null
 }
 
 @Composable

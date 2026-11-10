@@ -44,6 +44,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.guiaheartopia.app.domain.Countries
+import com.guiaheartopia.app.domain.StoreCopy
 import com.guiaheartopia.app.domain.SampleIds
 import com.guiaheartopia.app.domain.ImportResult
 import com.guiaheartopia.app.domain.PlaySession
@@ -79,10 +80,11 @@ fun SettingsScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text("Ajustes", style = MaterialTheme.typography.headlineSmall)
+        Text(StoreCopy.UNOFFICIAL, style = MaterialTheme.typography.bodyMedium)
+        PixelButton("Política de privacidad", onClick = onPrivacy, outlined = true)
         ContentUpdateCard()
         PixelCard {
-            Text("Créditos y fuentes", style = MaterialTheme.typography.titleMedium)
-            Text(VerifiedCatalog.SPOT_SOURCES, style = MaterialTheme.typography.bodyMedium)
+            Text("Horarios", style = MaterialTheme.typography.titleMedium)
             Text(
                 "Tramos de criaturas: servidor UTC fijo; en Chile continental (UTC−3) " +
                     "Noche 02–08, Amanecer 08–14, Día 14–20, Tarde 20–02.",
@@ -134,16 +136,13 @@ fun SettingsScreen(
         PixelButton("Términos", onClick = onTerms, outlined = true)
         PixelCard {
             Text("Créditos y fuentes", style = MaterialTheme.typography.titleMedium)
+            Text(VerifiedCatalog.SPOT_SOURCES, style = MaterialTheme.typography.bodyMedium)
             Text(
-                "Guía Heartopia no está afiliada a quienes crean el juego. No lo controla ni pinta la pantalla por ti.",
+                "Peces, aves, insectos y fauna salen de las páginas índice en español de heartodex, leídas el 7 de noviembre de 2026. El índice no trae precio ni cebo. Nivel y sombra se muestran solo cuando la tarjeta los incluye. El texto breve de cada ficha está escrito para esta app.",
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(
-                "Peces, aves, insectos y fauna salen de las páginas índice en español de heartodex, leídas el 7 de noviembre de 2026. El índice no trae precio ni cebo. Nivel y sombra se muestran solo cuando la tarjeta los incluye.",
-                style = MaterialTheme.typography.bodyMedium,
-            )
-            Text(
-                "Las imágenes de esas fichas se copiaron una vez desde heartodex el 9 de noviembre de 2026 y van dentro de la app. Si el sitio de esta guía publica un paquete nuevo, esas imágenes se guardan en el teléfono y no se piden al mostrar la ficha. No se pudo comprobar permiso de redistribución.",
+                "Esta app no incluye dibujos ni capturas del juego. Cada categoría usa un ícono propio. Si un paquete de contenido trae un archivo de imagen para una ficha, se muestra esa copia guardada en el teléfono y no se pide al abrir la ficha.",
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(

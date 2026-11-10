@@ -157,9 +157,10 @@ class ContentSyncTest {
         assertNotNull(rootManifest)
         assertEquals(rootManifest, appManifest)
         assertEquals(1, appManifest!!.contentVersion)
-        assertEquals(24, appManifest.minAppVersionCode)
+        assertEquals(25, appManifest.minAppVersionCode)
         assertTrue(appManifest.files.any { it.path == "catalog/creatures.json" })
         assertTrue(appManifest.files.any { it.path == "calendar/clima-2026.json" })
+        assertTrue(appManifest.files.none { it.path.startsWith("catalog/images/") })
 
         val served = LinkedHashMap<String, ByteArray>()
         appManifest.files.forEach { file ->
@@ -175,17 +176,14 @@ class ContentSyncTest {
             emptyMap(),
             ContentManifest(contentVersion = 0, minAppVersionCode = 23, publishedOn = "2026-01-01"),
         )
-        assertEquals(ContentSyncResult.APPLIED, sync(library, served, appVersionCode = 24))
+        assertEquals(ContentSyncResult.APPLIED, sync(library, served, appVersionCode = 25))
 
         val creatures = parseCreatures(library.overlayBytes("catalog/creatures.json")!!)
         assertTrue(creatures.size > 100)
         assertTrue(creatures.map { it.id }.distinct().size == creatures.size)
+        assertTrue(creatures.all { it.description.contains("de la guía") })
         val weather = SkyCatalog.fromJson(library.overlayBytes("calendar/clima-2026.json")!!.decodeToString())
         assertNotNull(weather.on(java.time.LocalDate.of(2026, 11, 12)))
-        val image = appManifest.files.first { it.path.endsWith(".webp") }
-        val header = library.overlayBytes(image.path)!!.copyOfRange(0, 12)
-        assertTrue(header.copyOfRange(0, 4).contentEquals("RIFF".toByteArray()))
-        assertTrue(header.copyOfRange(8, 12).contentEquals("WEBP".toByteArray()))
         output.deleteRecursively()
     }
 

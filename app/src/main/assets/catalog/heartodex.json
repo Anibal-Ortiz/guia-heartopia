@@ -2,7 +2,7 @@
   "source": "https://www.heartodex.com/",
   "extractedOn": "2026-11-07",
   "terms": "https://www.heartodex.com/en/terms/",
-  "note": "Páginas índice en español (peces, aves, insectos, animales salvajes), sin abrir cada ficha. El id de la app no cambia: se empareja por data-id o por la imagen. El nombre en inglés queda en nameEn para la búsqueda. Nivel y sombra solo si la tarjeta los trae. Precio y cebo no están en el índice.",
+  "note": "Fichas con datos de aparición. El texto breve que muestra la app está escrito para esta guía. El nombre en inglés queda en nameEn para la búsqueda. Nivel y sombra solo si la tarjeta los trae.",
   "entries": [
     {
       "id": "fish-blue-sea-angel",
@@ -9186,7 +9186,5 @@
       "extractedOn": "2026-11-07",
       "imageUrl": "asset:catalog/images/wildlife-penguin.webp"
     }
-  ],
-  "imageBundledOn": "2026-11-09",
-  "imageNote": "Archivos locales copiados una vez desde heartodex.com durante la preparación. La app no los vuelve a descargar."
+  ]
 }

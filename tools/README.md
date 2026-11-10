@@ -1,8 +1,10 @@
 # Publicar el contenido de Guía Heartopia
 
-Esta guía es para subir peces, aves, insectos, imágenes y clima a internet, sin instalar una app nueva. No hace falta saber programar. Si un paso no sale, para y vuelve a leerlo: no borres nada del teléfono.
+Esta guía es para subir peces, aves, insectos y clima a internet, sin instalar una app nueva. No hace falta saber programar. Si un paso no sale, para y vuelve a leerlo: no borres nada del teléfono.
 
-La app que ya tienes (versión 0.6.0) busca los archivos en una carpeta llamada `content`. Por eso el paquete trae dos copias iguales:
+El paquete 2 no lleva imágenes de fichas. La app dibuja un ícono por categoría. Solo se sube una imagen si más adelante se genera el paquete con `--con-imagenes` y ese archivo es propio, no arte del juego.
+
+La app busca los archivos en una carpeta llamada `content`. Por eso el paquete trae dos copias iguales:
 
 - `manifest.json` en la raíz, para abrirlo en el navegador y comprobar que el sitio responde.
 - la carpeta `content`, con el mismo `manifest.json`, las criaturas, el clima y las imágenes. Esa es la copia que descarga la app.
@@ -12,7 +14,7 @@ La app que ya tienes (versión 0.6.0) busca los archivos en una carpeta llamada 
 - `manifest.json` es la lista. Dice el número de versión del contenido, la fecha y el nombre de cada archivo con su tamaño y una huella SHA-256.
 - `catalog/creatures.json` son los peces, aves, insectos y el resto de criaturas.
 - `calendar/clima-2026.json` es el clima de 2026. Un año nuevo sería `calendar/clima-2027.json`.
-- `catalog/images` son las fotos en formato WebP. La app las guarda en el teléfono. No las muestra desde internet.
+- `catalog/images` no va en el paquete normal. Si existiera, serían archivos propios, no dibujos del juego.
 
 ## 1. Crear el repositorio (solo la primera vez)
 
@@ -39,11 +41,11 @@ https://anibalortizdev.github.io/guia-heartopia-contenido/
 
 ## 3. Subir el paquete desde el navegador
 
-1. Descarga el ZIP del paquete inicial y descomprímelo. Tiene que verse `manifest.json` suelto, más las carpetas `catalog`, `calendar` y `content`.
+1. Descarga el ZIP del paquete y descomprímelo. Tiene que verse `manifest.json` suelto, más las carpetas `catalog`, `calendar` y `content`. No tiene que haber una carpeta `catalog/images`.
 2. Abre https://github.com/anibalortizdev/guia-heartopia-contenido
 3. Pulsa **Add file** y luego **Upload files**.
 4. Arrastra `manifest.json` y las carpetas `catalog`, `calendar` y `content`. No arrastres el ZIP.
-5. Si el navegador no deja subir todas las imágenes de una vez, entra en la carpeta `catalog/images` (y otra vez en `content/catalog/images`) y sube las imágenes en grupos. `manifest.json` tiene que quedar en la raíz del repositorio, no dentro de otra carpeta que hayas creado sin querer.
+5. `manifest.json` tiene que quedar en la raíz del repositorio, no dentro de otra carpeta que hayas creado sin querer.
 6. Abajo, en **Commit changes**, pulsa **Commit changes**.
 
 Cuando termine, en la página principal del repositorio se ve `manifest.json` al mismo nivel que la carpeta `content`.
@@ -58,8 +60,8 @@ Tiene que verse un texto que empieza así:
 
 ```json
 {
-  "contentVersion": 1,
-  "minAppVersionCode": 23,
+  "contentVersion": 2,
+  "minAppVersionCode": 25,
   "publishedOn": "2026-11-10",
   "files": [
 ```
@@ -89,9 +91,9 @@ Sube otra vez los archivos que cambiaron, sobre todo `manifest.json` y `content/
 1. Abre `app/src/main/assets/catalog/heartodex.json`.
 2. Copia una ficha de pez completa (desde una `{` hasta la `}` que cierra esa ficha).
 3. Cámbiale el `id` (no puede repetirse) y el `name`.
-4. Si tienes su imagen, guárdala como WebP en `app/src/main/assets/catalog/images/` y pon en `imageUrl` el texto `asset:catalog/images/nombre-del-archivo.webp`.
+4. Deja `imageUrl` si ya existe, pero no añadas un dibujo del juego. Sin archivo de imagen, la app muestra el ícono de la categoría.
 5. Ejecuta `python3 tools/publicar_contenido.py`.
-6. Sube al repositorio el `manifest.json` nuevo, `catalog/creatures.json`, la imagen nueva, y las mismas tres cosas dentro de la carpeta `content`.
+6. Sube al repositorio el `manifest.json` nuevo, `catalog/creatures.json` y las mismas copias dentro de la carpeta `content`.
 
 La app, con wifi, lo baja sola en un plazo de un día. También puedes abrir Ajustes y pulsar **Buscar actualizaciones**. El pez aparece en la lista, en la búsqueda y en **Ahora** si le toca el horario y el clima.
 
@@ -121,4 +123,4 @@ En el calendario de la app, 2027 muestra ese clima. 2026 se queda como estaba.
 
 ## Si algo sale mal
 
-No pasa nada en el teléfono: la app sigue con el contenido anterior y no muestra un error. Revisa el `manifest.json` del sitio. `contentVersion` tiene que ser mayor que el de la vez anterior, y `minAppVersionCode` no puede ser mayor que 23 mientras uses esta app.
+No pasa nada en el teléfono: la app sigue con el contenido anterior y no muestra un error. Revisa el `manifest.json` del sitio. `contentVersion` tiene que ser mayor que el de la vez anterior, y `minAppVersionCode` no puede ser mayor que el `versionCode` de la app instalada.

@@ -17,6 +17,7 @@ data class DexEntry(
     val level: Int? = null,
     val shadow: String? = null,
     val imageUrl: String = "",
+    val description: String = "",
     val source: String = "heartodex",
     val sourceUrl: String = "",
     val extractedOn: String = "",

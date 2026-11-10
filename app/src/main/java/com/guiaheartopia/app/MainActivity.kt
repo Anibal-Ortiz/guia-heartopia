@@ -196,12 +196,13 @@ private fun AppScaffold(
                     }
                     Column {
                         Text(
-                            "Guía Heartopia",
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold),
+                            "Guía para Heartopia (no oficial)",
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.ExtraBold),
                             color = Ink,
+                            maxLines = 2,
                         )
                         Text(
-                            "Compañero no oficial",
+                            "Hecha por fans",
                             style = MaterialTheme.typography.labelSmall,
                             color = Muted,
                         )
@@ -230,13 +231,21 @@ private fun AppScaffold(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 if (showBanner) {
-                    Box(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .background(Paper)
-                            .padding(vertical = 4.dp),
-                        contentAlignment = Alignment.Center,
+                            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 12.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
+                        Text(
+                            "Publicidad",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Muted,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 4.dp),
+                        )
                         DiscreteBanner(adsMode)
                     }
                 }

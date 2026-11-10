@@ -1,23 +1,20 @@
-Términos de uso — Guía Heartopia
-Versión 0.1.0
+Términos de uso — Guía para Heartopia (no oficial)
+Versión 0.7.0
 
-Guía independiente
-Guía Heartopia no es un producto oficial. No está afiliada, patrocinada ni avalada por los creadores o editores de Heartopia. Los nombres del juego se usan solo para indicar de qué trata la guía.
+App no oficial
+App no oficial creada por fans. No está afiliada, asociada ni respaldada por los creadores de Heartopia. Heartopia y sus marcas pertenecen a sus respectivos dueños. Los nombres del juego se usan solo para indicar de qué trata la guía.
 
-Datos sin verificar
-Los animales, coleccionables, climas, horarios, «flurita», «Liuliu», tamaños de cuadrícula y la paleta de color que vienen de ejemplo están marcados como pendientes de verificar o como paleta aproximada de referencia. Pueden estar vacíos o ser incorrectos. No los tomes como información oficial. Los niveles de hobbies son los que tú anotas.
+Datos
+Los horarios, lugares, climas y nombres son datos reunidos por la comunidad. Pueden estar incompletos o cambiar. No son información oficial. Lo que anotas (fichas, comidas, notas) es tuyo y se queda en el teléfono.
 
-Pixel art
-La conversión se hace en el teléfono y produce una guía para pintar a mano. No controla el juego, no pulsa la pantalla por ti y no promete que el lienzo del juego use exactamente esta cuadrícula o esta paleta.
-
-Tu contenido
-Las fotos que eliges siguen siendo tuyas. La app no las sube a un servidor propio. Al exportar un PNG, el archivo queda donde indique el sistema o donde tú lo compartas.
+Qué no hace
+No controla el juego, no lee la pantalla y no pulsa nada por ti.
 
 Publicidad
-Los anuncios, cuando existen, los sirve Google. La compilación de pruebas usa ID de prueba. La de publicación depende de una configuración que no está en el código. Lee también la política de privacidad.
+Los anuncios, cuando se muestran, los sirve Google AdMob. Antes se pide el consentimiento con el formulario de Google. Lee también la política de privacidad.
 
 Sin garantía
-La app se ofrece tal como está, como herramienta personal de esta primera versión. Puede fallar o quedar desactualizada.
+La app se ofrece tal como está. Puede fallar o quedar desactualizada.
 
 Contacto
-El correo de contacto está pendiente de definir antes de publicar.
+primero010102@gmail.com

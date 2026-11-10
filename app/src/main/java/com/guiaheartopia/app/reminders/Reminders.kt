@@ -73,9 +73,9 @@ private fun show(context: Context, kind: String) {
         )
     }
     val (title, body) = when {
-        kind.contains("rutina") -> "Rutina de hoy" to "Tu lista personal sigue en Guía Heartopia."
+        kind.contains("rutina") -> "Rutina de hoy" to "Tu lista personal sigue en la guía."
         kind.contains("clima") -> "Clima y recursos" to "Revisa el calendario. La hora del servidor sigue pendiente."
-        else -> "Eventos" to "Revisa el calendario en Guía Heartopia para ver las fechas citadas."
+        else -> "Eventos" to "Revisa el calendario de la guía para ver las fechas citadas."
     }
     val notification = NotificationCompat.Builder(context, CHANNEL)
         .setSmallIcon(R.mipmap.ic_launcher)

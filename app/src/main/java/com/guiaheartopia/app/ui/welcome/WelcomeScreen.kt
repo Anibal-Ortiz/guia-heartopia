@@ -63,7 +63,7 @@ fun WelcomeScreen(
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             StepBadge()
             Column(Modifier.weight(1f)) {
-                Text("Guía Heartopia", style = MaterialTheme.typography.titleMedium)
+                Text("Guía para Heartopia (no oficial)", style = MaterialTheme.typography.titleSmall)
                 Text("Paso ${step + 1} de $total", style = MaterialTheme.typography.bodySmall)
             }
         }

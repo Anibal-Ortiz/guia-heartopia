@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Arma la carpeta que se sube a GitHub Pages.
 
-Lee el catálogo, el clima y las imágenes del proyecto y escribe un paquete
+Lee el catálogo y el clima del proyecto y escribe un paquete
 con manifest.json, tamaños y SHA-256. El formato es el que lee la app.
+Por defecto no copia imágenes: la app dibuja un ícono por categoría.
+Con --con-imagenes sí incluye los WebP de catalog/images.
 
 Por defecto suma 1 a la contentVersion ya generada (o a la del APK).
 Con --inicial deja la versión 1, igual al contenido que ya trae la app.
@@ -43,7 +45,30 @@ def read_version(path: Path) -> int | None:
     return value if isinstance(value, int) else None
 
 
-def collect(source: Path) -> list[tuple[str, bytes]]:
+def describe(entry: dict) -> str:
+    locations = [str(item).strip() for item in entry.get("location") or [] if str(item).strip()]
+    where = ", ".join(locations) if locations else "varios puntos del mapa"
+    kind = {
+        "Peces": "Pez de la guía",
+        "Pájaros": "Ave de la guía",
+        "Insectos": "Insecto de la guía",
+        "Fauna": "Animal de la guía",
+    }.get(entry.get("category"), "Criatura de la guía")
+    return f"{kind}. Se anota en {where}. Horario y clima van en los datos, no en este texto."
+
+
+def creatures_payload(raw: bytes) -> bytes:
+    data = json.loads(raw)
+    data.pop("imageNote", None)
+    data.pop("imageBundledOn", None)
+    data.pop("terms", None)
+    data["note"] = "Fichas con datos de aparición. El texto breve de cada una está escrito para esta guía."
+    for entry in data.get("entries", []):
+        entry["description"] = describe(entry)
+    return (json.dumps(data, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+
+
+def collect(source: Path, include_images: bool) -> list[tuple[str, bytes]]:
     creatures = source / "catalog" / "creatures.json"
     heartodex = source / "catalog" / "heartodex.json"
     if creatures.is_file():
@@ -56,13 +81,14 @@ def collect(source: Path) -> list[tuple[str, bytes]]:
     calendar = sorted((source / "calendar").glob("clima-*.json"))
     if not calendar:
         raise SystemExit(f"No hay clima en {source / 'calendar'}")
-    images = sorted((source / "catalog" / "images").glob("*.webp"))
-    if not images:
-        raise SystemExit(f"No hay imágenes WebP en {source / 'catalog' / 'images'}")
 
-    files: list[tuple[str, bytes]] = [("catalog/creatures.json", raw_creatures)]
+    files: list[tuple[str, bytes]] = [("catalog/creatures.json", creatures_payload(raw_creatures))]
     files.extend((f"calendar/{item.name}", item.read_bytes()) for item in calendar)
-    files.extend((f"catalog/images/{item.name}", item.read_bytes()) for item in images)
+    if include_images:
+        images = sorted((source / "catalog" / "images").glob("*.webp"))
+        if not images:
+            raise SystemExit(f"No hay imágenes WebP en {source / 'catalog' / 'images'}")
+        files.extend((f"catalog/images/{item.name}", item.read_bytes()) for item in images)
     return files
 
 
@@ -96,12 +122,17 @@ def main() -> None:
     parser.add_argument("--desde", default=str(ASSETS), help="Carpeta con catalog/ y calendar/")
     parser.add_argument("--version", type=int, default=None, help="contentVersion fija")
     parser.add_argument("--inicial", action="store_true", help="Publica contentVersion 1")
+    parser.add_argument(
+        "--con-imagenes",
+        action="store_true",
+        help="Incluye catalog/images. Por defecto el paquete no lleva arte.",
+    )
     parser.add_argument("--fecha", default=date.today().isoformat())
     args = parser.parse_args()
 
     source = Path(args.desde)
     salida = Path(args.salida)
-    files = collect(source)
+    files = collect(source, args.con_imagenes)
     version = choose_version(salida, source, args.version, args.inicial)
     manifest = {
         "contentVersion": version,

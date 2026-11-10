@@ -8,21 +8,27 @@ import org.junit.Test
 
 class CatalogImagesTest {
     @Test
-    fun everyCatalogImageIsLocalAndPresent() {
+    fun apkSourcesDoNotShipCatalogImages() {
         val root = listOf(File("src/main/assets"), File("app/src/main/assets")).first { it.exists() }
-        val json = File(root, "catalog/heartodex.json").readText()
-        val urls = Regex(""""imageUrl"\s*:\s*"([^"]*)"""").findAll(json).map { it.groupValues[1] }.toList()
-        assertTrue(urls.size >= 361)
-        assertEquals(urls.size, urls.toSet().size)
-        urls.forEach { url ->
-            assertFalse(url.startsWith("http"))
-            assertTrue(url.startsWith("asset:catalog/images/"))
-            val file = File(root, url.removePrefix("asset:"))
-            assertTrue("falta $url", file.exists() && file.length() > 32)
-            val header = file.inputStream().use { it.readNBytes(12) }
-            assertTrue(header.copyOfRange(0, 4).contentEquals("RIFF".toByteArray()))
-            assertTrue(header.copyOfRange(8, 12).contentEquals("WEBP".toByteArray()))
+        val images = File(root, "catalog/images")
+        val shipped = if (images.isDirectory) {
+            images.walkTopDown().filter { it.isFile }.map { it.relativeTo(root).path }.toList()
+        } else {
+            emptyList()
         }
+        assertEquals(emptyList<String>(), shipped)
+
+        val rasters = root.walkTopDown().filter { file ->
+            file.isFile && file.extension.lowercase() in setOf("webp", "png", "jpg", "jpeg", "gif")
+        }.map { it.relativeTo(root).path }.toList()
+        assertEquals(emptyList<String>(), rasters)
+
+        val manifest = File(root, "content/manifest.json").readText()
+        assertFalse(manifest.contains("catalog/images/"))
+
+        val json = File(root, "catalog/heartodex.json").readText()
+        assertFalse(json.contains("imageNote"))
+        assertFalse(json.contains("copiados una vez desde heartodex"))
     }
 
     @Test
@@ -41,5 +47,8 @@ class CatalogImagesTest {
             }
             .toList()
         assertEquals(emptyList<String>(), hits)
+        val model = src.walkTopDown().first { it.name == "CreatureImage.kt" }.readText()
+        assertTrue(model.contains("return null"))
+        assertFalse(model.contains("file:///android_asset/"))
     }
 }

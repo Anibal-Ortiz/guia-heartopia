@@ -43,6 +43,7 @@ import com.guiaheartopia.app.data.DexEntry
 import com.guiaheartopia.app.data.SkyCatalog
 import com.guiaheartopia.app.domain.AnimalAnnotation
 import com.guiaheartopia.app.domain.AnimalRecord
+import com.guiaheartopia.app.domain.CreatureCopy
 import com.guiaheartopia.app.domain.DexSchedule
 import com.guiaheartopia.app.domain.SkyWeather
 import com.guiaheartopia.app.domain.TextMatch
@@ -548,6 +549,11 @@ fun DexDetailScreen(entry: DexEntry, zoneId: String, found: Boolean, onToggle: (
                 Column(Modifier.weight(1f)) {
                     Text(entry.name, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold))
                     Text(entry.nameEn.ifBlank { entry.category }, color = Muted, style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        entry.description.ifBlank { CreatureCopy.line(entry.category, entry.location) },
+                        color = Ink,
+                        style = MaterialTheme.typography.bodySmall,
+                    )
                 }
                 if (now) NowBadge()
             }
