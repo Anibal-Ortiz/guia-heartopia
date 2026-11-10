@@ -89,7 +89,8 @@ fun HomeScreen(
     val available = catalog.count { SkyWeather.availableNow(it.schedule, it.weather, nowInstant, sky, zone) }
     val byCategory = catalog.groupBy { it.category }
     val today = LocalDate.now(zone)
-    val climateSpans = SkyWeatherGameDay.spansForGameDay(sky, today, zone)
+    val climateDay = SkyWeatherGameDay.serverDawnLocalDate(nowInstant, zone)
+    val climateLines = SkyWeatherGameDay.linesForGameDay(sky, climateDay, zone)
     val spot = ResourceCalendar.on(today)
     val event = com.guiaheartopia.app.data.VerifiedCatalog.events.firstOrNull()
 
@@ -153,13 +154,11 @@ fun HomeScreen(
 
         PixelCard(container = Paper) {
             Text("Clima de hoy", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold))
-            if (climateSpans.isEmpty()) {
+            if (climateLines.isEmpty()) {
                 Text("Sin datos de clima para hoy.", style = MaterialTheme.typography.bodyMedium)
             } else {
-                ClimateSkyBar(sky, today, zone, Modifier.fillMaxWidth().height(20.dp))
-                climateSpans.forEach { span ->
-                    Text(SkyWeatherGameDay.formatSpan(span, today), style = MaterialTheme.typography.bodyMedium)
-                }
+                ClimateSkyBar(sky, climateDay, zone, Modifier.fillMaxWidth().height(20.dp))
+                com.guiaheartopia.app.ui.weather.ClimateDetailList(climateLines)
             }
         }
 

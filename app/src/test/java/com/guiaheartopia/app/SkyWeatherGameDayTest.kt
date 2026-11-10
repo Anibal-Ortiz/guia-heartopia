@@ -6,6 +6,7 @@ import java.io.File
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
+import java.time.ZonedDateTime
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -15,40 +16,97 @@ class SkyWeatherGameDayTest {
     private val madrid = ZoneId.of("Europe/Madrid")
 
     @Test
-    fun nov12ChileShowsHourlyChangesInsideTheGameDay() {
+    fun nov12ChileStartsAtDawnAndSplitsInsideEachFrame() {
         val table = SkyCatalog.fromJson(catalogText())
         val day = LocalDate.of(2026, 11, 12)
-        val lines = SkyWeatherGameDay.spansForGameDay(table, day, santiago)
-            .map { SkyWeatherGameDay.formatSpan(it, day) }
+        val lines = texts(table, day, santiago)
         assertEquals(
             listOf(
-                "Despejado 02:00–12:00",
-                "Lluvia 12:00–18:00",
-                "Arcoíris 18:00–00:00 del día siguiente",
+                "Amanecer 08:00–14:00",
+                "Despejado 08:00–12:00",
+                "Lluvia 12:00–14:00",
+                "Día 14:00–20:00",
+                "Lluvia 14:00–18:00",
+                "Arcoíris 18:00–20:00",
+                "Tarde 20:00–02:00 del día siguiente",
+                "Arcoíris 20:00–00:00 del día siguiente",
                 "Despejado 00:00–02:00 del día siguiente",
+                "Noche 02:00–08:00 del día siguiente",
+                "Despejado 02:00–08:00 del día siguiente",
             ),
             lines,
         )
-        assertTrue(lines.none { it.contains("por confirmar") || it.contains("confirmar") })
+        assertTrue(lines.none { it.contains("02:00–12:00") || it.contains("por confirmar") })
+        val segments = SkyWeatherGameDay.barSegmentsForGameDay(table, day, santiago)
+        assertEquals(
+            listOf(240, 120, 240, 120, 240, 120, 360),
+            segments.map { it.weight },
+        )
     }
 
     @Test
-    fun duskUsesTheNextLocalMorningWhenTheZoneDemandsIt() {
+    fun nov10ChileIsClearAcrossTheFourFrames() {
         val table = SkyCatalog.fromJson(catalogText())
-        val day = LocalDate.of(2026, 11, 12)
-        val madridLines = SkyWeatherGameDay.spansForGameDay(table, day, madrid)
-            .map { SkyWeatherGameDay.formatSpan(it, day) }
-        assertEquals("Despejado 06:00–12:00", madridLines.first())
-        assertEquals("Despejado 00:00–06:00 del día siguiente", madridLines.last())
-        assertTrue(madridLines.last().contains("del día siguiente"))
+        val lines = texts(table, LocalDate.of(2026, 11, 10), santiago)
+        assertEquals(
+            listOf(
+                "Amanecer 08:00–14:00",
+                "Despejado 08:00–14:00",
+                "Día 14:00–20:00",
+                "Despejado 14:00–20:00",
+                "Tarde 20:00–02:00 del día siguiente",
+                "Despejado 20:00–02:00 del día siguiente",
+                "Noche 02:00–08:00 del día siguiente",
+                "Despejado 02:00–08:00 del día siguiente",
+            ),
+            lines,
+        )
     }
 
     @Test
-    fun chileWinterDoesNotKeepTheNovemberUtcMinus3Labels() {
+    fun beforeDawnChileTodayIsTheServerDayThatStartedYesterday() {
         val table = SkyCatalog.fromJson(catalogText())
-        val july = LocalDate.of(2026, 7, 15)
-        val first = SkyWeatherGameDay.spansForGameDay(table, july, santiago).first()
-        assertEquals(LocalTime.of(1, 0), first.start.toLocalTime())
+        val marks = listOf(
+            ZonedDateTime.of(2026, 11, 12, 0, 30, 0, 0, santiago),
+            ZonedDateTime.of(2026, 11, 12, 3, 0, 0, 0, santiago),
+            ZonedDateTime.of(2026, 11, 12, 7, 59, 0, 0, santiago),
+        )
+        marks.forEach { mark ->
+            assertEquals(LocalDate.of(2026, 11, 11), SkyWeatherGameDay.serverDawnLocalDate(mark.toInstant(), santiago))
+        }
+        val atDawn = ZonedDateTime.of(2026, 11, 12, 8, 0, 0, 0, santiago)
+        assertEquals(LocalDate.of(2026, 11, 12), SkyWeatherGameDay.serverDawnLocalDate(atDawn.toInstant(), santiago))
+        val shown = texts(table, LocalDate.of(2026, 11, 11), santiago)
+        assertEquals("Amanecer 08:00–14:00", shown.first())
+        assertEquals("Noche 02:00–08:00 del día siguiente", shown[shown.lastIndex - 1])
+        assertEquals("Despejado 02:00–08:00 del día siguiente", shown.last())
+    }
+
+    @Test
+    fun chileAnnualOffsetMovesTheServerDayWithoutHardcodingUtcMinus3() {
+        val table = SkyCatalog.fromJson(catalogText())
+        val july = texts(table, LocalDate.of(2026, 7, 15), santiago)
+        assertEquals("Amanecer 07:00–13:00", july.first())
+        assertEquals(LocalTime.of(7, 0), SkyWeatherGameDay.windowsForLocalDawn(LocalDate.of(2026, 7, 15), santiago).first().start.toLocalTime())
+        assertEquals(LocalTime.of(8, 0), SkyWeatherGameDay.windowsForLocalDawn(LocalDate.of(2026, 11, 12), santiago).first().start.toLocalTime())
+
+        val beforeChange = SkyWeatherGameDay.windowsForLocalDawn(LocalDate.of(2026, 4, 4), santiago)
+        val afterChange = SkyWeatherGameDay.windowsForLocalDawn(LocalDate.of(2026, 4, 5), santiago)
+        assertEquals(LocalTime.of(8, 0), beforeChange.first().start.toLocalTime())
+        assertEquals(LocalTime.of(7, 0), afterChange.first().start.toLocalTime())
+        assertEquals("Tarde 20:00–01:00 del día siguiente", frameTitle(table, LocalDate.of(2026, 4, 4), "Tarde"))
+        assertEquals("Amanecer 08:00–14:00", texts(table, LocalDate.of(2026, 9, 6), santiago).first())
+        assertEquals("Amanecer 07:00–13:00", texts(table, LocalDate.of(2026, 9, 5), santiago).first())
+    }
+
+    @Test
+    fun climateClockStaysLocalWhileFramesConvertFromUtc() {
+        val table = SkyCatalog.fromJson(catalogText())
+        val lines = texts(table, LocalDate.of(2026, 11, 12), santiago)
+        assertTrue(lines.contains("Lluvia 12:00–14:00"))
+        val madridDawn = SkyWeatherGameDay.windowsForLocalDawn(LocalDate.of(2026, 11, 12), madrid).first()
+        assertEquals(LocalTime.of(12, 0), madridDawn.start.toLocalTime())
+        assertEquals("Amanecer 12:00–18:00", texts(table, LocalDate.of(2026, 11, 12), madrid).first())
     }
 
     @Test
@@ -56,11 +114,24 @@ class SkyWeatherGameDayTest {
         val table = SkyCatalog.fromJson(catalogText())
         assertTrue(SkyWeatherGameDay.spansForGameDay(table, LocalDate.of(2025, 11, 12), santiago).isEmpty())
         assertTrue(SkyWeatherGameDay.spansForGameDay(table, LocalDate.of(2027, 11, 12), santiago).isEmpty())
+        assertTrue(SkyWeatherGameDay.linesForGameDay(table, LocalDate.of(2025, 11, 12), santiago).isEmpty())
         val raw = catalogText()
         assertTrue(!raw.contains("por_confirmar"))
         assertTrue(!raw.contains("matchingSlots"))
         assertEquals(365, table.days.size)
     }
+
+    private fun texts(
+        table: com.guiaheartopia.app.data.SkyTable,
+        day: LocalDate,
+        zone: ZoneId,
+    ): List<String> = SkyWeatherGameDay.linesForGameDay(table, day, zone).map { it.text }
+
+    private fun frameTitle(
+        table: com.guiaheartopia.app.data.SkyTable,
+        day: LocalDate,
+        label: String,
+    ): String = texts(table, day, santiago).first { it.startsWith(label) }
 
     private fun catalogText(): String = listOf(
         File("src/main/assets/calendar/clima-2026.json"),

@@ -63,7 +63,7 @@ class SkyWeatherTest {
             java.time.ZoneId.of("America/Santiago"),
         )
         val rain = spans.filter { it.kind == SkyKind.LLUVIA }
-        assertEquals(LocalTime.of(6, 0), rain.first().start.toLocalTime())
+        assertEquals(LocalTime.of(8, 0), rain.first().start.toLocalTime())
         assertEquals(LocalTime.of(18, 0), rain.last().end.toLocalTime())
     }
 

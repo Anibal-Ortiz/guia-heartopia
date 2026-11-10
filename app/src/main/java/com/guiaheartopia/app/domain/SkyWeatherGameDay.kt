@@ -6,17 +6,23 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 /**
- * Clima del día del juego (noche → amanecer → día → tarde).
+ * Clima del día del servidor: Amanecer, Día, Tarde y Noche, hasta el amanecer siguiente.
  *
- * Las horas del JSON son el reloj de la zona elegida, no UTC. Si el cielo
- * cambia dentro de esa ventana, cada tramo conserva su inicio y su fin.
+ * Los tramos salen de [DexSchedule] en UTC y se convierten con la zona IANA (el desfase
+ * de cada límite, horario de verano incluido). No se fija Chile a UTC−3.
+ *
+ * Las horas del JSON son el reloj local de Tidebell (la fecha y la hora del lector),
+ * no UTC ni el desfase de un servidor regional. Se colocan en la zona elegida y después
+ * se recortan a cada franja ya convertida. No se vuelven a desplazar.
  */
 object SkyWeatherGameDay {
-    private val frameOrder = listOf("Night", "Dawn", "Day", "Dusk")
+    private val frameOrder = listOf("Dawn", "Day", "Dusk", "Night")
+    private val clock: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
     data class GameClimateSpan(
         val kind: SkyKind,
@@ -29,36 +35,39 @@ object SkyWeatherGameDay {
         fun label(): String = kind.climateDisplay().label
     }
 
-    fun spansForGameDay(table: SkyTable, localGameDay: LocalDate, zone: ZoneId): List<GameClimateSpan> {
-        val windows = frameOrder.map { DexSchedule.window(it, localGameDay, zone) }
-        val from = windows.first().start.toInstant()
-        val to = windows.last().end.toInstant()
-        val raw = ArrayList<GameClimateSpan>()
-        var date = localGameDay.minusDays(1)
-        val last = localGameDay.plusDays(1)
-        while (!date.isAfter(last)) {
-            val day = table.on(date)
-            if (day != null) {
-                for (slot in day.slots) {
-                    val (start, end) = localRange(date, slot, zone)
-                    val clipStart = maxOf(start.toInstant(), from)
-                    val clipEnd = minOf(end.toInstant(), to)
-                    if (!clipStart.isBefore(clipEnd)) continue
-                    val zonedStart = clipStart.atZone(zone)
-                    raw += GameClimateSpan(
-                        kind = slot.kind.climateDisplay(),
-                        status = slot.status,
-                        start = zonedStart,
-                        end = clipEnd.atZone(zone),
-                        frameKey = frameKeyAt(windows, zonedStart.toInstant()),
-                        detail = "",
-                    )
-                }
-            }
-            date = date.plusDays(1)
+    data class ClimateLine(val text: String, val frame: Boolean)
+
+    /** Fecha local del amanecer que abre el día del servidor que contiene [instant]. */
+    fun serverDawnLocalDate(instant: Instant, zone: ZoneId): LocalDate {
+        val current = DexSchedule.currentWindow(zone, instant)
+        val utcStart = current.start.withZoneSameInstant(ZoneOffset.UTC).toLocalDate()
+        val dawnUtc = if (current.slot.key == "Night") utcStart.minusDays(1) else utcStart
+        return DexSchedule.window("Dawn", dawnUtc, zone).start.toLocalDate()
+    }
+
+    fun windowsForLocalDawn(localDawnDate: LocalDate, zone: ZoneId): List<LocalGameWindow> {
+        val dawnUtc = dawnUtcDate(localDawnDate, zone)
+        return frameOrder.map { key ->
+            val utcDate = if (key == "Night") dawnUtc.plusDays(1) else dawnUtc
+            DexSchedule.window(key, utcDate, zone)
         }
-        raw.sortBy { it.start.toInstant() }
-        return merge(raw)
+    }
+
+    fun spansForGameDay(table: SkyTable, localDawnDate: LocalDate, zone: ZoneId): List<GameClimateSpan> =
+        windowsForLocalDawn(localDawnDate, zone).flatMap { window -> spansInWindow(table, window, zone) }
+
+    fun linesForGameDay(table: SkyTable, localDawnDate: LocalDate, zone: ZoneId): List<ClimateLine> {
+        val windows = windowsForLocalDawn(localDawnDate, zone)
+        val grouped = windows.map { window -> window to spansInWindow(table, window, zone) }
+        if (grouped.all { it.second.isEmpty() }) return emptyList()
+        val lines = ArrayList<ClimateLine>()
+        for ((window, spans) in grouped) {
+            lines += ClimateLine(frameTitle(window, localDawnDate), frame = true)
+            spans.forEach { span ->
+                lines += ClimateLine(formatSpan(span, localDawnDate), frame = false)
+            }
+        }
+        return lines
     }
 
     fun conditionAt(table: SkyTable, instant: Instant, zone: ZoneId): SkySlot? {
@@ -70,34 +79,70 @@ object SkyWeatherGameDay {
         }
     }
 
-    fun barSegmentsForGameDay(table: SkyTable, localGameDay: LocalDate, zone: ZoneId): List<SkyBarSegment> {
-        val merged = ArrayList<SkyBarSegment>()
-        for (span in spansForGameDay(table, localGameDay, zone)) {
+    fun barSegmentsForGameDay(table: SkyTable, localDawnDate: LocalDate, zone: ZoneId): List<SkyBarSegment> =
+        spansForGameDay(table, localDawnDate, zone).map { span ->
             val minutes = Duration.between(span.start.toInstant(), span.end.toInstant()).toMinutes().toInt()
-            val piece = SkyBarSegment(span.kind, minutes.coerceAtLeast(1))
-            val last = merged.lastOrNull()
-            if (last != null && last.kind == piece.kind) {
-                merged[merged.lastIndex] = last.copy(weight = last.weight + piece.weight)
-            } else {
-                merged += piece
-            }
+            SkyBarSegment(span.kind, minutes.coerceAtLeast(1))
         }
-        return merged
-    }
 
-    fun formatSpan(span: GameClimateSpan, focusLocalDate: LocalDate): String {
-        val clock = DateTimeFormatter.ofPattern("HH:mm")
-        val t1 = span.start.toLocalTime().format(clock)
-        val t2 = span.end.toLocalTime().format(clock)
-        val suffix = if (span.end.toLocalDate().isAfter(focusLocalDate)) " del día siguiente" else ""
-        return "${span.label()} $t1–$t2$suffix"
-    }
+    fun formatSpan(span: GameClimateSpan, focusLocalDate: LocalDate): String =
+        "${span.label()} ${rangeLabel(span.start, span.end, focusLocalDate)}"
 
-    fun summaryForGameDay(table: SkyTable, localGameDay: LocalDate, zone: ZoneId): String =
-        spansForGameDay(table, localGameDay, zone)
-            .joinToString(" · ") { formatSpan(it, localGameDay) }
+    fun summaryForGameDay(table: SkyTable, localDawnDate: LocalDate, zone: ZoneId): String =
+        linesForGameDay(table, localDawnDate, zone)
+            .joinToString(" · ") { it.text }
             .ifBlank { "Sin datos de clima" }
 
+    private fun spansInWindow(table: SkyTable, window: LocalGameWindow, zone: ZoneId): List<GameClimateSpan> {
+        val raw = ArrayList<GameClimateSpan>()
+        var date = window.start.toLocalDate().minusDays(1)
+        val last = window.end.toLocalDate()
+        while (!date.isAfter(last)) {
+            val day = table.on(date)
+            if (day != null) {
+                for (slot in day.slots) {
+                    val (start, end) = localRange(date, slot, zone)
+                    val clipStart = maxOf(start.toInstant(), window.start.toInstant())
+                    val clipEnd = minOf(end.toInstant(), window.end.toInstant())
+                    if (!clipStart.isBefore(clipEnd)) continue
+                    raw += GameClimateSpan(
+                        kind = slot.kind.climateDisplay(),
+                        status = slot.status,
+                        start = clipStart.atZone(zone),
+                        end = clipEnd.atZone(zone),
+                        frameKey = window.slot.key,
+                    )
+                }
+            }
+            date = date.plusDays(1)
+        }
+        raw.sortBy { it.start.toInstant() }
+        return mergeInsideFrame(raw)
+    }
+
+    private fun dawnUtcDate(localDawnDate: LocalDate, zone: ZoneId): LocalDate {
+        for (delta in -1L..1L) {
+            val candidate = localDawnDate.plusDays(delta)
+            val start = DexSchedule.window("Dawn", candidate, zone).start
+            if (start.toLocalDate() == localDawnDate) return candidate
+        }
+        return localDawnDate
+    }
+
+    private fun frameTitle(window: LocalGameWindow, focusLocalDate: LocalDate): String =
+        "${window.slot.label} ${rangeLabel(window.start, window.end, focusLocalDate)}"
+
+    private fun rangeLabel(start: ZonedDateTime, end: ZonedDateTime, focusLocalDate: LocalDate): String {
+        val t1 = start.toLocalTime().format(clock)
+        val t2 = end.toLocalTime().format(clock)
+        val nextDay = start.toLocalDate().isAfter(focusLocalDate) || end.toLocalDate().isAfter(focusLocalDate)
+        return if (nextDay) "$t1–$t2 del día siguiente" else "$t1–$t2"
+    }
+
+    /**
+     * Las horas del archivo son hora civil de [date] en [zone]. Un fin a medianoche
+     * o un tramo que no avanza cae en el día siguiente.
+     */
     private fun localRange(date: LocalDate, slot: SkySlot, zone: ZoneId): Pair<ZonedDateTime, ZonedDateTime> {
         val start = ZonedDateTime.of(date, slot.start, zone)
         val end = if (slot.end == LocalTime.MIDNIGHT || !slot.end.isAfter(slot.start)) {
@@ -108,17 +153,14 @@ object SkyWeatherGameDay {
         return start to end
     }
 
-    private fun frameKeyAt(windows: List<LocalGameWindow>, instant: Instant): String =
-        windows.firstOrNull { it.contains(instant) }?.slot?.key ?: windows.first().slot.key
-
-    private fun merge(spans: List<GameClimateSpan>): List<GameClimateSpan> {
+    private fun mergeInsideFrame(spans: List<GameClimateSpan>): List<GameClimateSpan> {
         if (spans.isEmpty()) return spans
         val out = ArrayList<GameClimateSpan>()
         for (span in spans) {
             val prev = out.lastOrNull()
             if (
                 prev != null &&
-                prev.label() == span.label() &&
+                prev.frameKey == span.frameKey &&
                 prev.kind == span.kind &&
                 prev.end.toInstant() == span.start.toInstant()
             ) {

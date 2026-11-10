@@ -22,6 +22,7 @@ class GameTimeCardTest {
         assertEquals("hasta las 20:00", model.untilLabel)
         assertEquals("18:31", model.localClock)
 
+        assertEquals(listOf("Dawn", "Day", "Dusk", "Night"), model.rows.map { it.slotKey })
         val byKey = model.rows.associateBy { it.slotKey }
         assertEquals("Amanecer", byKey.getValue("Dawn").title)
         assertFalse(byKey.getValue("Dawn").title.contains("🌅"))

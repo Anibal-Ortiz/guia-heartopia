@@ -142,7 +142,7 @@ fun WeatherScreen(
         }
         Text("Hora local: $zoneLabel · ${now.format(clock)}", style = MaterialTheme.typography.bodySmall)
         Text(
-            "Cada día sigue las franjas del juego (noche, amanecer, día, tarde), no el día civil 00:00–24:00.",
+            "El día del servidor empieza en el amanecer y sigue Amanecer, Día, Tarde y Noche, hasta el amanecer siguiente.",
             style = MaterialTheme.typography.bodySmall,
         )
         WeekHeader()
@@ -276,22 +276,37 @@ private fun DayDetail(date: LocalDate, zone: ZoneId, sky: com.guiaheartopia.app.
         Text("Liuliu: ${ResourceCalendar.label(data.liuliu)}", color = Green, style = MaterialTheme.typography.titleSmall)
         Text("flurita: ${ResourceCalendar.label(data.flurita)}", color = Orange, style = MaterialTheme.typography.titleSmall)
     }
-    val spans = SkyWeatherGameDay.spansForGameDay(sky, date, zone)
+    val lines = SkyWeatherGameDay.linesForGameDay(sky, date, zone)
     PixelCard {
         Text("Clima por franjas del juego", style = MaterialTheme.typography.titleSmall)
-        if (spans.isEmpty()) {
+        if (lines.isEmpty()) {
             Text("Sin datos de clima para este día.", style = MaterialTheme.typography.bodyMedium)
         } else {
             ClimateSkyBar(sky, date, zone, Modifier.fillMaxWidth().height(22.dp))
-            spans.forEach { span ->
-                Text(SkyWeatherGameDay.formatSpan(span, date), style = MaterialTheme.typography.bodyMedium)
-            }
+            ClimateDetailList(lines)
         }
     }
     if (event != null) {
         PixelCard {
             Text(event.title, style = MaterialTheme.typography.titleSmall)
             Text("${event.start} → ${event.end}", style = MaterialTheme.typography.bodyMedium)
+        }
+    }
+}
+
+@Composable
+fun ClimateDetailList(lines: List<com.guiaheartopia.app.domain.SkyWeatherGameDay.ClimateLine>) {
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        lines.forEach { line ->
+            Text(
+                line.text,
+                modifier = if (line.frame) Modifier else Modifier.padding(start = 8.dp),
+                style = if (line.frame) {
+                    MaterialTheme.typography.titleSmall
+                } else {
+                    MaterialTheme.typography.bodyMedium
+                },
+            )
         }
     }
 }
