@@ -70,6 +70,20 @@ object SkyWeatherGameDay {
         return lines
     }
 
+    /**
+     * Leyenda breve: solo climas distintos de despejado, o «Despejado todo el día» si no hay otros.
+     */
+    fun compactLinesForGameDay(table: SkyTable, localDawnDate: LocalDate, zone: ZoneId): List<ClimateLine> {
+        val spans = spansForGameDay(table, localDawnDate, zone)
+        if (spans.isEmpty()) return emptyList()
+        if (spans.all { it.kind == SkyKind.DESPEJADO }) {
+            return listOf(ClimateLine("Despejado todo el día", frame = false))
+        }
+        return spans
+            .filter { it.kind != SkyKind.DESPEJADO }
+            .map { ClimateLine(formatSpan(it, localDawnDate), frame = false) }
+    }
+
     fun conditionAt(table: SkyTable, instant: Instant, zone: ZoneId): SkySlot? {
         val local = instant.atZone(zone)
         val day = table.on(local.toLocalDate()) ?: return null
@@ -83,6 +97,25 @@ object SkyWeatherGameDay {
         spansForGameDay(table, localDawnDate, zone).map { span ->
             val minutes = Duration.between(span.start.toInstant(), span.end.toInstant()).toMinutes().toInt()
             SkyBarSegment(span.kind, minutes.coerceAtLeast(1))
+        }
+
+    /** Cuatro columnas (Amanecer, Día, Tarde, Noche), cada una con sus tramos de clima. */
+    fun barFrameSegmentsForGameDay(
+        table: SkyTable,
+        localDawnDate: LocalDate,
+        zone: ZoneId,
+    ): List<List<SkyBarSegment>> =
+        windowsForLocalDawn(localDawnDate, zone).map { window ->
+            val spans = spansInWindow(table, window, zone)
+            if (spans.isEmpty()) {
+                val minutes = Duration.between(window.start.toInstant(), window.end.toInstant()).toMinutes().toInt()
+                listOf(SkyBarSegment(SkyKind.SIN_DATOS, minutes.coerceAtLeast(1)))
+            } else {
+                spans.map { span ->
+                    val minutes = Duration.between(span.start.toInstant(), span.end.toInstant()).toMinutes().toInt()
+                    SkyBarSegment(span.kind, minutes.coerceAtLeast(1))
+                }
+            }
         }
 
     fun formatSpan(span: GameClimateSpan, focusLocalDate: LocalDate): String =

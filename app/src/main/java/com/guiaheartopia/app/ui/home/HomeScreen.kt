@@ -90,7 +90,7 @@ fun HomeScreen(
     val byCategory = catalog.groupBy { it.category }
     val today = LocalDate.now(zone)
     val climateDay = SkyWeatherGameDay.serverDawnLocalDate(nowInstant, zone)
-    val climateLines = SkyWeatherGameDay.linesForGameDay(sky, climateDay, zone)
+    val climateLines = SkyWeatherGameDay.compactLinesForGameDay(sky, climateDay, zone)
     val spot = ResourceCalendar.on(today)
     val event = com.guiaheartopia.app.data.VerifiedCatalog.events.firstOrNull()
 

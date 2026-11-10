@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilterChip
@@ -55,6 +56,7 @@ import com.guiaheartopia.app.ui.theme.Green
 import com.guiaheartopia.app.ui.theme.GreenSoft
 import com.guiaheartopia.app.ui.theme.Honey
 import com.guiaheartopia.app.ui.theme.Ink
+import com.guiaheartopia.app.ui.theme.Line
 import com.guiaheartopia.app.ui.theme.Orange
 import com.guiaheartopia.app.ui.theme.Paper
 import com.guiaheartopia.app.ui.theme.Sky
@@ -276,14 +278,14 @@ private fun DayDetail(date: LocalDate, zone: ZoneId, sky: com.guiaheartopia.app.
         Text("Liuliu: ${ResourceCalendar.label(data.liuliu)}", color = Green, style = MaterialTheme.typography.titleSmall)
         Text("flurita: ${ResourceCalendar.label(data.flurita)}", color = Orange, style = MaterialTheme.typography.titleSmall)
     }
-    val lines = SkyWeatherGameDay.linesForGameDay(sky, date, zone)
+    val lines = SkyWeatherGameDay.compactLinesForGameDay(sky, date, zone)
     PixelCard {
         Text("Clima por franjas del juego", style = MaterialTheme.typography.titleSmall)
         if (lines.isEmpty()) {
             Text("Sin datos de clima para este día.", style = MaterialTheme.typography.bodyMedium)
         } else {
             ClimateSkyBar(sky, date, zone, Modifier.fillMaxWidth().height(22.dp))
-            ClimateDetailList(lines)
+            ClimateDetailList(lines, showFrames = false)
         }
     }
     if (event != null) {
@@ -322,21 +324,37 @@ fun ClimateSkyBar(
     zone: ZoneId,
     modifier: Modifier = Modifier,
 ) {
-    val segments = SkyWeatherGameDay.barSegmentsForGameDay(sky, localDate, zone)
+    val frames = SkyWeatherGameDay.barFrameSegmentsForGameDay(sky, localDate, zone)
     Row(modifier.clip(RoundedCornerShape(8.dp)).background(Beige)) {
-        if (segments.isEmpty()) {
+        if (frames.all { it.isEmpty() }) {
             Box(Modifier.weight(1f).fillMaxHeight().background(Beige))
         } else {
-            segments.forEach { segment ->
-                Box(
-                    Modifier.weight(segment.weight.toFloat()).fillMaxHeight().background(skyColor(segment.kind)),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        segment.kind.climateDisplay().emoji,
-                        fontSize = 9.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Clip,
+            frames.forEachIndexed { index, segments ->
+                Row(Modifier.weight(1f).fillMaxHeight()) {
+                    val total = segments.sumOf { it.weight }.coerceAtLeast(1)
+                    segments.forEach { segment ->
+                        Box(
+                            Modifier
+                                .weight(segment.weight.toFloat() / total)
+                                .fillMaxHeight()
+                                .background(skyColor(segment.kind)),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                segment.kind.climateDisplay().emoji,
+                                fontSize = 9.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Clip,
+                            )
+                        }
+                    }
+                }
+                if (index < frames.lastIndex) {
+                    Box(
+                        Modifier
+                            .width(1.dp)
+                            .fillMaxHeight()
+                            .background(Line),
                     )
                 }
             }

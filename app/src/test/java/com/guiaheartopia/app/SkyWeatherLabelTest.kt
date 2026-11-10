@@ -32,26 +32,28 @@ class SkyWeatherLabelTest {
     }
 
     @Test
-    fun barSegmentsMergeSameWeather() {
-        val day = com.guiaheartopia.app.domain.SkyDay(
-            java.time.LocalDate.of(2026, 11, 1),
-            List(4) {
-                SkySlot(
-                    LocalTime.of(it * 6, 0),
-                    LocalTime.of((it + 1) * 6 % 24, 0),
-                    SkyKind.LLUVIA,
-                    SkyStatus.ACUERDO,
-                )
-            },
+    fun barSegmentsUseFourGameFrames() {
+        val slots = List(4) {
+            SkySlot(
+                LocalTime.of(it * 6, 0),
+                LocalTime.of((it + 1) * 6 % 24, 0),
+                SkyKind.LLUVIA,
+                SkyStatus.ACUERDO,
+            )
+        }
+        val dawn = java.time.LocalDate.of(2026, 11, 1)
+        val table = com.guiaheartopia.app.data.SkyTable(
+            "",
+            "",
+            mapOf(dawn to com.guiaheartopia.app.domain.SkyDay(dawn, slots), dawn.plusDays(1) to com.guiaheartopia.app.domain.SkyDay(dawn.plusDays(1), slots)),
         )
-        val table = com.guiaheartopia.app.data.SkyTable("", "", mapOf(day.date to day))
-        val segments = com.guiaheartopia.app.domain.SkyWeatherGameDay.barSegmentsForGameDay(
+        val frames = com.guiaheartopia.app.domain.SkyWeatherGameDay.barFrameSegmentsForGameDay(
             table,
-            day.date,
+            dawn,
             java.time.ZoneId.of("America/Santiago"),
         )
-        assertEquals(listOf(6 * 60, 6 * 60, 4 * 60), segments.map { it.weight })
-        assertTrue(segments.all { it.kind == SkyKind.LLUVIA })
+        assertEquals(4, frames.size)
+        assertTrue(frames.flatten().all { it.kind == SkyKind.LLUVIA })
     }
 
     @Test
