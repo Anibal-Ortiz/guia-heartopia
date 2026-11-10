@@ -20,10 +20,10 @@ class SkyWeatherLabelTest {
     }
 
     @Test
-    fun climateDisplayCollapsesToFourKinds() {
+    fun climateDisplayCollapsesToFiveKinds() {
         assertEquals(SkyKind.DESPEJADO, SkyKind.NUBLADO.climateDisplay())
         assertEquals(SkyKind.DESPEJADO, SkyKind.SOLEADO.climateDisplay())
-        assertEquals(SkyKind.DESPEJADO, SkyKind.METEORO.climateDisplay())
+        assertEquals(SkyKind.METEORO, SkyKind.METEORO.climateDisplay())
         assertEquals(SkyKind.ARCOIRIS, SkyKind.ARCOIRIS_LUNA.climateDisplay())
         assertEquals(SkyKind.LLUVIA, SkyKind.LLUVIA.climateDisplay())
         assertEquals(SkyKind.NIEVE, SkyKind.NIEVE.climateDisplay())

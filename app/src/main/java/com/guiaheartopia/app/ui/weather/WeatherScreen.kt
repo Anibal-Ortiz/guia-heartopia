@@ -329,6 +329,7 @@ private fun skyColor(kind: SkyKind): Color = when (kind.climateDisplay()) {
     SkyKind.LLUVIA -> Color(0xFF7EB6D6)
     SkyKind.ARCOIRIS -> Color(0xFFD7B4E8)
     SkyKind.NIEVE -> Color(0xFFE7F2FA)
+    SkyKind.METEORO -> Color(0xFF2C3A4A)
     SkyKind.SIN_DATOS -> Beige
     else -> Honey
 }
@@ -339,7 +340,7 @@ private fun Legend() {
         Text("Número verde: Liuliu", color = Green, style = MaterialTheme.typography.bodySmall)
         Text("Número naranja: flurita", color = Orange, style = MaterialTheme.typography.bodySmall)
         Text("B bosque · R ruinas", style = MaterialTheme.typography.bodySmall)
-        Text("Barra: despejado ☀️, lluvia 🌧️, arcoíris 🌈 o nieve ❄️", style = MaterialTheme.typography.bodySmall)
+        Text("Barra: despejado ☀️, lluvia 🌧️, arcoíris 🌈, nieve ❄️ o meteoritos ☄️", style = MaterialTheme.typography.bodySmall)
         Text("Fondo verde: día elegido", style = MaterialTheme.typography.bodySmall)
     }
 }
