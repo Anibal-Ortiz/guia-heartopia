@@ -80,7 +80,10 @@ fun SettingsScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text("Ajustes", style = MaterialTheme.typography.headlineSmall)
+        com.guiaheartopia.app.ui.components.NotebookTitle(
+            "Ajustes",
+            com.guiaheartopia.app.ui.components.NotebookMark.SETTINGS,
+        )
         Text(StoreCopy.UNOFFICIAL, style = MaterialTheme.typography.bodyMedium)
         PixelButton("Política de privacidad", onClick = onPrivacy, outlined = true)
         ContentUpdateCard()

@@ -103,7 +103,10 @@ fun WeatherScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Text("Calendario", style = MaterialTheme.typography.headlineSmall)
+        com.guiaheartopia.app.ui.components.NotebookTitle(
+            "Calendario",
+            com.guiaheartopia.app.ui.components.NotebookMark.CALENDAR,
+        )
         val zoneLabel = Countries.zoneLabel(zone.id)
         PickerField(
             label = "País",

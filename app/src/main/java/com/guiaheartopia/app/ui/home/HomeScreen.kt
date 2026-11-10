@@ -98,7 +98,7 @@ fun HomeScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text("Mi día", style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold), color = Ink)
+        com.guiaheartopia.app.ui.components.NotebookTitle("Mi día", com.guiaheartopia.app.ui.components.NotebookMark.HOME)
         PixelCard(container = PaperSubtle, elevation = 1.dp) {
             Row(
                 Modifier.fillMaxWidth(),

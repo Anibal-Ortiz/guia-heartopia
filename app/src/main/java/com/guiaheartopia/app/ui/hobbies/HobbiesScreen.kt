@@ -76,10 +76,9 @@ fun HobbiesScreen(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column {
-                Text(
+                com.guiaheartopia.app.ui.components.NotebookTitle(
                     "Aficiones",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = Ink,
+                    com.guiaheartopia.app.ui.components.NotebookMark.SPROUT,
                 )
                 Text(
                     "Cinco oficios fijos. Cada uno guarda tu nivel y una nota.",

@@ -58,7 +58,10 @@ fun MapScreen(zoneId: String) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text("Mapa", style = MaterialTheme.typography.headlineSmall)
+        com.guiaheartopia.app.ui.components.NotebookTitle(
+            "Mapa",
+            com.guiaheartopia.app.ui.components.NotebookMark.FAUNA,
+        )
         Text(
             "Dibujo original de 12 parcelas, un bosque y unas ruinas. No es el mapa del juego ni usa sus coordenadas.",
             style = MaterialTheme.typography.bodyMedium,

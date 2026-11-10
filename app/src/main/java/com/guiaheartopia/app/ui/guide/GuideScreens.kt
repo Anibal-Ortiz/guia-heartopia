@@ -58,6 +58,8 @@ import com.guiaheartopia.app.data.PhotoCredits
 import com.guiaheartopia.app.ui.components.CreatureImage
 import com.guiaheartopia.app.ui.settings.PhotoCreditCaption
 import com.guiaheartopia.app.ui.components.LabelValue
+import com.guiaheartopia.app.ui.components.NotebookMark
+import com.guiaheartopia.app.ui.components.NotebookTitle
 import com.guiaheartopia.app.ui.components.NowBadge
 import com.guiaheartopia.app.ui.components.PillTabs
 import com.guiaheartopia.app.ui.components.PixelButton
@@ -121,10 +123,19 @@ fun GuideScreen(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column {
-                Text(
-                    "Guía de Campo",
-                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold),
-                    color = Ink,
+                NotebookTitle(
+                    when (GuideSections.dexCategories[tab]) {
+                        "Peces" -> "Peces"
+                        "Pájaros" -> "Aves"
+                        "Insectos" -> "Insectos"
+                        else -> "Fauna"
+                    },
+                    when (GuideSections.dexCategories[tab]) {
+                        "Peces" -> NotebookMark.FISH
+                        "Pájaros" -> NotebookMark.BIRD
+                        "Insectos" -> NotebookMark.INSECT
+                        else -> NotebookMark.FAUNA
+                    },
                 )
                 Text(
                     "Catálogo y animales silvestres",
