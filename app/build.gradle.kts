@@ -93,20 +93,36 @@ val releaseSigningReady = storeFilePath.isNotEmpty() && releaseStorePassword.isN
 val distroKeystore = File(System.getProperty("user.home"), ".wikifan-heartopia/release.jks")
 val distroSigningReady = distroKeystore.isFile
 
+val uploadDir = File(System.getProperty("user.home"), ".wikifan-heartopia")
+val uploadProps = Properties().apply {
+    val file = File(uploadDir, "upload.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
+}
+fun uploadSecret(name: String): String = uploadProps.getProperty(name)?.trim().orEmpty()
+val uploadKeystore = File(uploadDir, uploadSecret("storeFile").ifEmpty { "upload-key.jks" })
+val uploadStorePassword = uploadSecret("storePassword")
+val uploadKeyAlias = uploadSecret("keyAlias")
+val uploadKeyPassword = uploadSecret("keyPassword")
+val uploadSigningReady = uploadKeystore.isFile &&
+    uploadStorePassword.isNotEmpty() &&
+    uploadKeyAlias.isNotEmpty() &&
+    uploadKeyPassword.isNotEmpty()
+
 base {
-    archivesName.set("Guia-Heartopia-0.9.4")
+    archivesName.set("Guia-Heartopia-1.0.0")
 }
 
 android {
     namespace = "com.guiaheartopia.app"
+    // Play exige targetSdk 36. Estas AndroidX piden compileSdk 37; no sube el target.
     compileSdk = 37
 
     defaultConfig {
         applicationId = "com.guiaheartopia.app"
         minSdk = 26
-        targetSdk = 37
-        versionCode = 32
-        versionName = "0.9.4"
+        targetSdk = 36
+        versionCode = 33
+        versionName = "1.0.0"
         buildConfigField(
             "String",
             "CONTENT_BASE_URL",
@@ -132,6 +148,14 @@ android {
                 keyPassword = "wikifan-dist"
             }
         }
+        if (uploadSigningReady) {
+            create("upload") {
+                storeFile = uploadKeystore
+                storePassword = uploadStorePassword
+                keyAlias = uploadKeyAlias
+                keyPassword = uploadKeyPassword
+            }
+        }
     }
 
     buildTypes {
@@ -150,7 +174,8 @@ android {
             buildConfigField("String", "UMP_TEST_DEVICE_ID", "\"${device.replace("\"", "")}\"")
         }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -186,6 +211,7 @@ android {
             buildConfigField("String", "UMP_TEST_DEVICE_ID", "\"\"")
             signingConfig = when {
                 releaseSigningReady -> signingConfigs.getByName("release")
+                uploadSigningReady -> signingConfigs.getByName("upload")
                 distroSigningReady -> signingConfigs.getByName("distro")
                 else -> signingConfigs.getByName("debug")
             }
@@ -209,6 +235,9 @@ android {
     }
 
     packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
