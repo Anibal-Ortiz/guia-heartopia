@@ -18,6 +18,7 @@ data class PlayerProfile(
     val session: PlaySession = PlaySession.VARIABLE,
     val countryId: String = "CL",
     val zoneId: String = "America/Santiago",
+    val regionKey: String = "",
     val weatherOriginId: String = SampleIds.WEATHER_ORIGIN,
     val pixelCols: Int = 32,
     val pixelRows: Int = 32,

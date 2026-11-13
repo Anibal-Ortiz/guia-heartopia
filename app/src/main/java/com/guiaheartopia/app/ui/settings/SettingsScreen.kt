@@ -71,7 +71,7 @@ fun SettingsScreen(
     adsStatus: String,
     privacyOptions: Boolean,
     onSave: (PlayerProfile) -> Unit,
-    onRegion: (String, String, String) -> Unit,
+    onRegion: (String, String, String, String) -> Unit,
     onPrivacy: () -> Unit,
     onTerms: () -> Unit,
     onAdPrivacy: () -> Unit,
@@ -135,14 +135,18 @@ fun SettingsScreen(
                 Countries.all.map { it.id to it.name },
                 onPick = { id ->
                     val next = Countries.byId(id)
-                    onRegion(id, next.zones.first().zoneId, SampleIds.WEATHER_ORIGIN)
+                    val zone = next.zones.first()
+                    onRegion(id, zone.zoneId, SampleIds.WEATHER_ORIGIN, zone.key)
                 },
             )
             PickerField(
-                "Zona",
-                country.zones.firstOrNull { it.zoneId == profile.zoneId }?.label ?: country.zones.first().label,
-                country.zones.map { it.zoneId to it.label },
-                onPick = { onRegion(country.id, it, SampleIds.WEATHER_ORIGIN) },
+                if (country.zones.size > 1) "Estado o región" else "Zona",
+                Countries.label(country.id, profile.zoneId, profile.regionKey),
+                country.zones.map { it.key to it.label },
+                onPick = { key ->
+                    val zone = country.zones.first { it.key == key }
+                    onRegion(country.id, zone.zoneId, SampleIds.WEATHER_ORIGIN, zone.key)
+                },
             )
         }
         PixelCard {
@@ -169,7 +173,7 @@ fun SettingsScreen(
                 )
             } else {
                 Text(
-                    "El video no desbloquea el Calendario. Solo oculta banners e intersticiales.",
+                    "El video quita banners, intersticiales y el video del Calendario durante 24 h.",
                     style = MaterialTheme.typography.bodySmall,
                 )
                 PixelButton(

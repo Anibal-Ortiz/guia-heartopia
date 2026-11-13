@@ -35,8 +35,6 @@ import com.guiaheartopia.app.domain.DexSchedule
 import com.guiaheartopia.app.domain.ResourceCalendar
 import com.guiaheartopia.app.domain.SkyWeather
 import com.guiaheartopia.app.domain.SkyWeatherGameDay
-import com.guiaheartopia.app.ads.AdsMode
-import com.guiaheartopia.app.ads.DiscreteBanner
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.ui.components.CozyCrystalIcon
 import com.guiaheartopia.app.ui.components.CozyGuideIcon
@@ -80,8 +78,6 @@ fun HomeScreen(
     ui: GuideUi,
     onOpen: (String) -> Unit,
     onDismissReminderPrompt: () -> Unit = {},
-    showHomeBanner: Boolean = false,
-    adsMode: AdsMode = AdsMode.IDLE,
     adFreeActive: Boolean = false,
     onWatchAdFree: () -> Unit = {},
 ) {
@@ -164,7 +160,7 @@ fun HomeScreen(
             ) {
                 Text("📍", fontSize = 12.sp)
                 Text(
-                    "${country.name} · ${Countries.zoneLabel(ui.profile.zoneId)}",
+                    "${country.name} · ${Countries.label(ui.profile.countryId, ui.profile.zoneId, ui.profile.regionKey)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = Muted,
                 )
@@ -394,20 +390,6 @@ fun HomeScreen(
             NotebookCard {
                 Text(season.name, style = MaterialTheme.typography.titleMedium, color = Ink)
                 season.remaining?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = Ink) }
-            }
-        }
-
-        if (showHomeBanner) {
-            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(
-                    "Publicidad",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Muted,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 4.dp),
-                )
-                DiscreteBanner(adsMode, Modifier.fillMaxWidth())
             }
         }
 

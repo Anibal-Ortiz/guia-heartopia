@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -74,8 +75,14 @@ import com.guiaheartopia.app.data.AdRewardStore
 import com.guiaheartopia.app.data.AdRewardState
 import kotlinx.coroutines.launch
 import com.guiaheartopia.app.data.GuideRepository
+import com.guiaheartopia.app.data.AndroidContentStore
+import com.guiaheartopia.app.data.ContentCheckStore
 import com.guiaheartopia.app.data.ContentSignals
 import com.guiaheartopia.app.data.ContentUpdateScheduler
+import com.guiaheartopia.app.domain.ContentSyncResult
+import com.guiaheartopia.app.domain.ContentUpdatePolicy
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import com.guiaheartopia.app.reminders.ReminderScheduler
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.ui.GuideViewModel
@@ -119,6 +126,27 @@ class MainActivity : ComponentActivity() {
                 val observer = LifecycleEventObserver { _, event ->
                     if (event == Lifecycle.Event.ON_RESUME) {
                         vm.refreshDay()
+                        val now = System.currentTimeMillis()
+                        val due = ContentUpdatePolicy.isDue(
+                            AndroidContentStore.lastAttemptMillis(this@MainActivity),
+                            now,
+                        )
+                        if (due) {
+                            lifecycleScope.launch {
+                                ContentSignals.setBusy(true)
+                                try {
+                                    val report = withContext(Dispatchers.IO) {
+                                        AndroidContentStore.syncNow(this@MainActivity)
+                                    }
+                                    ContentCheckStore.record(this@MainActivity, report, System.currentTimeMillis())
+                                    if (report.result == ContentSyncResult.APPLIED) {
+                                        ContentSignals.note(this@MainActivity)
+                                    }
+                                } finally {
+                                    ContentSignals.setBusy(false)
+                                }
+                            }
+                        }
                         ContentUpdateScheduler.enqueueIfDue(this@MainActivity)
                         ContentSignals.note(this@MainActivity)
                     }
@@ -127,9 +155,10 @@ class MainActivity : ComponentActivity() {
                 onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
             }
             val ads = rememberAdsState(this, ui.ready && ui.profile.onboarded)
+            val contentBusy by ContentSignals.busy().collectAsStateWithLifecycle()
             val adRewards by AdRewardStore.observe(this).collectAsStateWithLifecycle(AdRewardState())
-            LaunchedEffect(adRewards.adFreeActive) {
-                ads.setAdFree(adRewards.adFreeActive)
+            LaunchedEffect(adRewards.suppressAds) {
+                ads.setAdFree(adRewards.suppressAds)
             }
             LaunchedEffect(ui.profile) {
                 if (ui.ready && ui.profile.onboarded) ReminderScheduler.sync(this@MainActivity, ui.profile)
@@ -176,6 +205,17 @@ class MainActivity : ComponentActivity() {
                         onAdPrivacy = ads::showPrivacyOptions,
                     )
                 }
+                if (contentBusy) {
+                    Text(
+                        "Actualizando contenido…",
+                        color = Ink,
+                        style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .windowInsetsPadding(WindowInsets.statusBars)
+                            .padding(top = 4.dp),
+                    )
+                }
             }
         }
     }
@@ -198,7 +238,7 @@ private fun AppScaffold(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val nav = rememberNavController()
-    val showBanner = ads.state.canShowBanner(adRewards.adFreeActive)
+    val showBanner = ads.state.canShowBanner(adRewards.suppressAds)
     fun toast(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
@@ -222,11 +262,15 @@ private fun AppScaffold(
                 restoreState = policy.restoreState
             }
         }
+        if (adRewards.suppressAds) {
+            go()
+            return
+        }
         if (dest == "calendar" && !adRewards.calendarUnlocked && AdConfig.hasRewardedCalendar) {
             ads.showRewardedCalendar(
                 onReward = {
                     scope.launch {
-                        AdRewardStore.grantCalendarHours(context)
+                        AdRewardStore.grantCalendarUntilServerDay(context, ui.profile.zoneId)
                         go()
                     }
                 },
@@ -316,7 +360,7 @@ private fun AppScaffold(
                     ),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                if (showBanner && route != "home") {
+                if (showBanner && tab != null) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -350,8 +394,6 @@ private fun AppScaffold(
                     ui = ui,
                     onOpen = { dest -> nav.navigate(dest) },
                     onDismissReminderPrompt = vm::dismissReminderPrompt,
-                    showHomeBanner = showBanner,
-                    adsMode = adsMode,
                     adFreeActive = adRewards.adFreeActive,
                     onWatchAdFree = watchAdFree,
                 )
@@ -367,8 +409,8 @@ private fun AppScaffold(
                 )
             }
             composable("calendar") {
-                WeatherScreen(ui.profile.countryId, ui.profile.zoneId) { country, zone ->
-                    vm.updateRegion(country, zone)
+                WeatherScreen(ui.profile.countryId, ui.profile.zoneId, ui.profile.regionKey) { country, zone, region ->
+                    vm.updateRegion(country, zone, regionKey = region)
                 }
             }
             composable("hobbies") {
@@ -404,7 +446,9 @@ private fun AppScaffold(
                     adsStatus = adsStatus,
                     privacyOptions = privacyOptions,
                     onSave = vm::saveProfile,
-                    onRegion = vm::updateRegion,
+                    onRegion = { country, zone, origin, region ->
+                        vm.updateRegion(country, zone, origin, region)
+                    },
                     onPrivacy = onPrivacy,
                     onTerms = onTerms,
                     onAdPrivacy = onAdPrivacy,
@@ -424,7 +468,9 @@ private fun AppScaffold(
                     adsStatus = adsStatus,
                     privacyOptions = privacyOptions,
                     onSave = vm::saveProfile,
-                    onRegion = vm::updateRegion,
+                    onRegion = { country, zone, origin, region ->
+                        vm.updateRegion(country, zone, origin, region)
+                    },
                     onPrivacy = onPrivacy,
                     onTerms = onTerms,
                     onAdPrivacy = onAdPrivacy,

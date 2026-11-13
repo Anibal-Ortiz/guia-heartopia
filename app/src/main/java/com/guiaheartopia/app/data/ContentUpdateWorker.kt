@@ -9,15 +9,23 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.guiaheartopia.app.domain.ContentSyncResult
+import com.guiaheartopia.app.domain.ContentUpdatePolicy
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.StateFlow
 
 object ContentSignals {
     private val ticks = MutableStateFlow(0)
+    private val downloading = MutableStateFlow(false)
     private var seenVersion = -1
 
     fun flow(): StateFlow<Int> = ticks
+
+    fun busy(): StateFlow<Boolean> = downloading
+
+    fun setBusy(value: Boolean) {
+        downloading.value = value
+    }
 
     fun note(context: Context) {
         val version = AndroidContentStore.installedVersion(context)
@@ -30,11 +38,10 @@ object ContentSignals {
 
 object ContentUpdateScheduler {
     private const val WORK = "content-update"
-    private const val DAY_MS = 24L * 60L * 60L * 1000L
 
     fun enqueueIfDue(context: Context, nowMillis: Long = System.currentTimeMillis()) {
         val last = AndroidContentStore.lastAttemptMillis(context)
-        if (last != 0L && nowMillis - last < DAY_MS) return
+        if (!ContentUpdatePolicy.isDue(last, nowMillis)) return
         val request = OneTimeWorkRequestBuilder<ContentUpdateWorker>()
             .setConstraints(
                 Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build(),
@@ -51,7 +58,7 @@ class ContentUpdateWorker(
     override suspend fun doWork(): Result {
         val now = System.currentTimeMillis()
         val last = AndroidContentStore.lastAttemptMillis(applicationContext)
-        if (last != 0L && now - last < 24L * 60L * 60L * 1000L) return Result.success()
+        if (!ContentUpdatePolicy.isDue(last, now)) return Result.success()
         val report = AndroidContentStore.syncNow(applicationContext)
         ContentCheckStore.record(applicationContext, report, now)
         if (report.result == ContentSyncResult.APPLIED) {

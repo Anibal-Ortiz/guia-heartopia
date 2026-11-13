@@ -37,6 +37,14 @@ object SkyWeatherGameDay {
 
     data class ClimateLine(val text: String, val frame: Boolean)
 
+    /** Inicio del próximo amanecer del servidor, cuando se reinicia el día. */
+    fun nextServerDawn(instant: Instant, zone: ZoneId): Instant {
+        val dawnDate = serverDawnLocalDate(instant, zone)
+        val opening = windowsForLocalDawn(dawnDate, zone).first { it.slot.key == "Dawn" }.start.toInstant()
+        val following = windowsForLocalDawn(dawnDate.plusDays(1), zone).first { it.slot.key == "Dawn" }.start.toInstant()
+        return if (instant.isBefore(opening)) opening else following
+    }
+
     /** Fecha local del amanecer que abre el día del servidor que contiene [instant]. */
     fun serverDawnLocalDate(instant: Instant, zone: ZoneId): LocalDate {
         val current = DexSchedule.currentWindow(zone, instant)

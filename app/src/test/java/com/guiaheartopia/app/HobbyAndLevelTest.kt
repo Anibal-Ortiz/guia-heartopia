@@ -97,4 +97,16 @@ class HobbyAndLevelTest {
         val plain = HobbyCatalog.migrate(emptyList(), HobbyCatalog.parseOverrides(null))
         assertEquals(14, plain.first { it.id == "hob-pesca" }.maxLevel)
     }
+
+    @Test
+    fun guideFilterReachesTheRealHobbyCap() {
+        assertEquals(14, HobbyCatalog.guideCap("Peces"))
+        assertEquals(14, HobbyCatalog.guideCap("Pájaros"))
+        assertEquals(14, HobbyCatalog.guideCap("Insectos"))
+        assertNull(HobbyCatalog.guideCap("Fauna"))
+        val raw = java.io.File("src/main/assets/catalog/heartodex.json").readText()
+        val snail = Regex(""""name": "Caracol verde"[\s\S]*?"level": (\d+)""").find(raw)
+        assertEquals("14", snail?.groupValues?.get(1))
+        assertTrue(raw.contains(""""category": "Insectos""""))
+    }
 }

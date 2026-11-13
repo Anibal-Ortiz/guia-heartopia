@@ -128,7 +128,12 @@ class GuideViewModel(
         }
     }
 
-    fun updateRegion(countryId: String, zoneId: String, originId: String = SampleIds.WEATHER_ORIGIN) {
+    fun updateRegion(
+        countryId: String,
+        zoneId: String,
+        originId: String = SampleIds.WEATHER_ORIGIN,
+        regionKey: String = "",
+    ) {
         val resolved = when (originId) {
             SampleIds.LEGACY_WEATHER_ORIGIN, "" -> SampleIds.WEATHER_ORIGIN
             else -> originId
@@ -139,6 +144,7 @@ class GuideViewModel(
                     profile = current.profile.copy(
                         countryId = countryId,
                         zoneId = zoneId,
+                        regionKey = regionKey,
                         weatherOriginId = resolved,
                     ),
                 )

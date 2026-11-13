@@ -8,6 +8,7 @@ import com.guiaheartopia.app.domain.ContentLibrary
 import com.guiaheartopia.app.domain.ContentManifest
 import com.guiaheartopia.app.domain.ContentPackage
 import com.guiaheartopia.app.domain.ContentSyncResult
+import com.guiaheartopia.app.domain.ContentUpdatePolicy
 import java.io.File
 import java.nio.file.Files
 import kotlinx.serialization.json.Json
@@ -157,7 +158,7 @@ class ContentSyncTest {
         assertNotNull(rootManifest)
         assertEquals(rootManifest, appManifest)
         assertEquals(1, appManifest!!.contentVersion)
-        assertEquals(34, appManifest.minAppVersionCode)
+        assertEquals(35, appManifest.minAppVersionCode)
         assertTrue(appManifest.files.any { it.path == "catalog/creatures.json" })
         assertTrue(appManifest.files.any { it.path == "calendar/clima-2026.json" })
         assertTrue(appManifest.files.none { it.path.startsWith("catalog/images/") })
@@ -176,7 +177,7 @@ class ContentSyncTest {
             emptyMap(),
             ContentManifest(contentVersion = 0, minAppVersionCode = 23, publishedOn = "2026-01-01"),
         )
-        assertEquals(ContentSyncResult.APPLIED, sync(library, served, appVersionCode = 34))
+        assertEquals(ContentSyncResult.APPLIED, sync(library, served, appVersionCode = 35))
 
         val creatures = parseCreatures(library.overlayBytes("catalog/creatures.json")!!)
         assertTrue(creatures.size > 100)
@@ -187,10 +188,44 @@ class ContentSyncTest {
         output.deleteRecursively()
     }
 
+    @Test
+    fun cleanInstallDownloadsLatestAndALaterUpdateRespectsTwelveHours() {
+        val bundled = mapOf("catalog/creatures.json" to creatures("trucha", "Incluida"))
+        val library = memory(bundled, version = 1)
+        assertEquals(1, ContentPackage.currentVersion(library))
+        val installed = System.currentTimeMillis()
+        assertTrue(ContentUpdatePolicy.isDue(0L, installed))
+
+        val latest = mapOf("catalog/creatures.json" to creatures("trucha", "Remota"))
+        val remote = remoteFiles(manifest(5, 35, "2026-11-12", latest), keep = latest)
+        assertEquals(ContentSyncResult.APPLIED, sync(library, remote, appVersionCode = 35))
+        assertEquals(5, ContentPackage.currentVersion(library))
+        assertEquals("Remota", creatureName(library.overlayBytes("catalog/creatures.json")!!, "trucha"))
+
+        val tooSoon = installed + ContentUpdatePolicy.INTERVAL_MS - 1
+        assertTrue(!ContentUpdatePolicy.isDue(installed, tooSoon))
+        val offline = emptyMap<String, ByteArray>()
+        assertEquals(ContentSyncResult.NETWORK_ERROR, sync(library, offline, appVersionCode = 35))
+        assertEquals(5, ContentPackage.currentVersion(library))
+
+        val later = installed + ContentUpdatePolicy.INTERVAL_MS
+        assertTrue(ContentUpdatePolicy.isDue(installed, later))
+        val newer = mapOf("catalog/creatures.json" to creatures("trucha", "Siguiente"))
+        val next = remoteFiles(manifest(6, 35, "2026-11-13", newer), keep = newer)
+        assertEquals(ContentSyncResult.APPLIED, sync(library, next, appVersionCode = 35))
+        assertEquals(6, ContentPackage.currentVersion(library))
+        assertEquals("Siguiente", creatureName(library.overlayBytes("catalog/creatures.json")!!, "trucha"))
+
+        val tooNew = mapOf("catalog/creatures.json" to creatures("trucha", "Bloqueada"))
+        val blocked = remoteFiles(manifest(7, 99, "2026-11-14", tooNew), keep = tooNew)
+        assertEquals(ContentSyncResult.NEEDS_NEWER_APP, sync(library, blocked, appVersionCode = 35))
+        assertEquals(6, ContentPackage.currentVersion(library))
+    }
+
     private fun sync(
         library: MemoryContentLibrary,
         remote: Map<String, ByteArray>,
-        appVersionCode: Int = 34,
+        appVersionCode: Int = 35,
     ): ContentSyncResult = ContentPackage.sync(library, { remote[it] }, appVersionCode, baseUrl).result
 
     private fun remoteFiles(manifest: ContentManifest, keep: Map<String, ByteArray> = emptyMap()): Map<String, ByteArray> {

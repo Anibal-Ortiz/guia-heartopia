@@ -79,10 +79,12 @@ private enum class WeatherFilter(val label: String) {
 fun WeatherScreen(
     countryId: String,
     zoneId: String,
-    onRegion: (String, String) -> Unit,
+    regionKey: String = "",
+    onRegion: (String, String, String) -> Unit,
 ) {
     val country = Countries.byId(countryId)
-    val safeZone = country.zones.firstOrNull { it.zoneId == zoneId }?.zoneId ?: country.zones.first().zoneId
+    val chosenZone = Countries.zone(country.id, zoneId, regionKey)
+    val safeZone = chosenZone.zoneId
     val zone = runCatching { ZoneId.of(safeZone) }.getOrElse { ZoneId.of("America/Santiago") }
     var monthToken by rememberSaveable { mutableStateOf(YearMonth.now(zone).toString()) }
     var selectedToken by rememberSaveable { mutableStateOf<String?>(null) }
@@ -114,16 +116,18 @@ fun WeatherScreen(
             value = country.name,
             options = Countries.all.map { it.id to it.name },
             onPick = { id ->
-                val next = Countries.byId(id)
-                val nextZone = next.zones.firstOrNull { it.zoneId == safeZone }?.zoneId ?: next.zones.first().zoneId
-                onRegion(id, nextZone)
+                val next = Countries.byId(id).zones.first()
+                onRegion(id, next.zoneId, next.key)
             },
         )
         PickerField(
-            label = "Zona horaria",
-            value = country.zones.first { it.zoneId == safeZone }.label,
-            options = country.zones.map { it.zoneId to it.label },
-            onPick = { onRegion(country.id, it) },
+            label = if (country.zones.size > 1) "Estado o región" else "Zona horaria",
+            value = chosenZone.label,
+            options = country.zones.map { it.key to it.label },
+            onPick = { key ->
+                val zone = country.zones.first { it.key == key }
+                onRegion(country.id, zone.zoneId, zone.key)
+            },
         )
         FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             WeatherFilter.entries.forEach { item ->

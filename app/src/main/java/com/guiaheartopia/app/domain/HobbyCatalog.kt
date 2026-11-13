@@ -52,6 +52,13 @@ object HobbyCatalog {
         }
     }
 
+    fun guideCap(category: String): Int? = when (category) {
+        "Peces" -> CAP_PESCA
+        "Pájaros", "Aves" -> CAP_AVES
+        "Insectos" -> CAP_INSECTOS
+        else -> null
+    }
+
     fun forCategory(category: String): String? = when (category) {
         "Peces" -> PESCA
         "Pájaros", "Aves" -> AVES

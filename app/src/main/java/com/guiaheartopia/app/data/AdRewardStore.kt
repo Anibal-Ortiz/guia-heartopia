@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.guiaheartopia.app.domain.DexSchedule
+import com.guiaheartopia.app.domain.SkyWeatherGameDay
 import java.time.Duration
 import java.time.Instant
 import kotlinx.coroutines.flow.Flow
@@ -14,9 +16,13 @@ private val Context.adRewardStore by preferencesDataStore(name = "ad_rewards")
 data class AdRewardState(
     val adFreeUntilMillis: Long = 0L,
     val calendarUntilMillis: Long = 0L,
+    val loaded: Boolean = false,
 ) {
-    val adFreeActive: Boolean get() = adFreeUntilMillis > System.currentTimeMillis()
-    val calendarUnlocked: Boolean get() = calendarUntilMillis > System.currentTimeMillis()
+    val adFreeActive: Boolean get() = loaded && adFreeUntilMillis > System.currentTimeMillis()
+    val calendarUnlocked: Boolean get() = loaded && calendarUntilMillis > System.currentTimeMillis()
+
+    /** Hasta leer DataStore no se muestra nada: el valor inicial no es «sin beneficio». */
+    val suppressAds: Boolean get() = !loaded || adFreeUntilMillis > System.currentTimeMillis()
 }
 
 object AdRewardStore {
@@ -28,6 +34,7 @@ object AdRewardStore {
             AdRewardState(
                 adFreeUntilMillis = prefs[KEY_AD_FREE] ?: 0L,
                 calendarUntilMillis = prefs[KEY_CALENDAR] ?: 0L,
+                loaded = true,
             )
         }
 
@@ -36,8 +43,8 @@ object AdRewardStore {
         context.applicationContext.adRewardStore.edit { it[KEY_AD_FREE] = until }
     }
 
-    suspend fun grantCalendarHours(context: Context, hours: Long = 24) {
-        val until = Instant.now().plus(Duration.ofHours(hours)).toEpochMilli()
+    suspend fun grantCalendarUntilServerDay(context: Context, zoneId: String, now: Instant = Instant.now()) {
+        val until = SkyWeatherGameDay.nextServerDawn(now, DexSchedule.zoneOf(zoneId)).toEpochMilli()
         context.applicationContext.adRewardStore.edit { it[KEY_CALENDAR] = until }
     }
 

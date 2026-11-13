@@ -72,7 +72,8 @@ data class AdsUiState(
     val adFreeActive: Boolean = false,
 ) {
     fun canShowBanner(adFree: Boolean): Boolean =
-        !adFree && initialized && (mode == AdsMode.PERSONALIZED || mode == AdsMode.NON_PERSONALIZED)
+        !adFree && !adFreeActive && initialized &&
+            (mode == AdsMode.PERSONALIZED || mode == AdsMode.NON_PERSONALIZED)
 }
 
 enum class ConsentOutcome {
@@ -131,7 +132,10 @@ class AdsController(
     private var initStarted = false
 
     fun setAdFree(active: Boolean) {
+        val was = state.adFreeActive
         state = state.copy(adFreeActive = active)
+        fullscreen.setAdFree(active)
+        if (was && !active && state.initialized) fullscreen.preload(state.mode)
     }
 
     fun start() {
@@ -201,6 +205,7 @@ class AdsController(
                         },
                         adFreeActive = state.adFreeActive,
                     )
+                    fullscreen.setAdFree(state.adFreeActive)
                     fullscreen.preload(mode)
                 }
             }

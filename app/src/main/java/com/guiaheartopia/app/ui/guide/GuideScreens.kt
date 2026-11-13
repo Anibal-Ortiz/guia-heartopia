@@ -48,6 +48,7 @@ import com.guiaheartopia.app.domain.CreatureAvailability
 import com.guiaheartopia.app.domain.CreatureCopy
 import com.guiaheartopia.app.domain.GuideSections
 import com.guiaheartopia.app.domain.Hobby
+import com.guiaheartopia.app.domain.HobbyCatalog
 import com.guiaheartopia.app.domain.DexSchedule
 import com.guiaheartopia.app.domain.SkyWeather
 import com.guiaheartopia.app.domain.TextMatch
@@ -400,7 +401,8 @@ private fun DexTab(
                 color = Muted,
             )
             FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                (0..10).forEach { level ->
+                val ceiling = HobbyCatalog.guideCap(category) ?: hobbyLevel
+                (0..ceiling).forEach { level ->
                     FilterChip(
                         selected = (levelCap ?: hobbyLevel) == level,
                         onClick = { chosenLevel = level },

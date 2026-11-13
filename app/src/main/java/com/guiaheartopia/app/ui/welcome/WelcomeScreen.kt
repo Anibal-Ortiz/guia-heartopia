@@ -48,9 +48,13 @@ fun WelcomeScreen(
     var name by rememberSaveable { mutableStateOf(initial.name) }
     var countryId by rememberSaveable { mutableStateOf(initial.countryId) }
     var zoneId by rememberSaveable { mutableStateOf(initial.zoneId) }
+    var regionKey by rememberSaveable { mutableStateOf(initial.regionKey) }
     var session by rememberSaveable { mutableStateOf(initial.session.name) }
     val country = Countries.byId(countryId)
-    if (country.zones.none { it.zoneId == zoneId }) zoneId = country.zones.first().zoneId
+    if (country.zones.none { it.key == regionKey || it.zoneId == zoneId }) {
+        zoneId = country.zones.first().zoneId
+        regionKey = country.zones.first().key
+    }
     val total = 4
 
     Column(
@@ -69,11 +73,20 @@ fun WelcomeScreen(
         }
         when (step) {
             0 -> StepName(name, { name = it }, onPrivacy, onTerms)
-            1 -> StepCountry(countryId) { countryId = it }
-            2 -> StepZone(country, zoneId) { zoneId = it }
+            1 -> StepCountry(countryId) {
+                countryId = it
+                val first = Countries.byId(it).zones.first()
+                zoneId = first.zoneId
+                regionKey = first.key
+            }
+            2 -> StepZone(country, regionKey) { key ->
+                val zone = country.zones.first { it.key == key }
+                regionKey = zone.key
+                zoneId = zone.zoneId
+            }
             else -> {
                 StepPlay(session) { session = it }
-                StepSummary(name, country.name, country.zones.first { it.zoneId == zoneId }.label, session)
+                StepSummary(name, country.name, Countries.label(country.id, zoneId, regionKey), session)
             }
         }
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -94,6 +107,7 @@ fun WelcomeScreen(
                                 session = PlaySession.valueOf(session),
                                 countryId = countryId,
                                 zoneId = zoneId,
+                                regionKey = regionKey,
                                 onboarded = true,
                             ),
                         )
@@ -134,8 +148,11 @@ private fun StepCountry(selected: String, onPick: (String) -> Unit) {
 }
 
 @Composable
-private fun StepZone(country: com.guiaheartopia.app.domain.Country, zoneId: String, onPick: (String) -> Unit) {
-    Text("Zona horaria", style = MaterialTheme.typography.headlineSmall)
+private fun StepZone(country: com.guiaheartopia.app.domain.Country, regionKey: String, onPick: (String) -> Unit) {
+    Text(
+        if (country.zones.size > 1) "Estado o región" else "Zona horaria",
+        style = MaterialTheme.typography.headlineSmall,
+    )
     PixelCard(container = Cream) {
         Text(
             "Las horas del juego se muestran en la zona que elijas.",
@@ -143,7 +160,7 @@ private fun StepZone(country: com.guiaheartopia.app.domain.Country, zoneId: Stri
         )
     }
     country.zones.forEach { zone ->
-        OptionCard(zone.label, selected = zone.zoneId == zoneId, onClick = { onPick(zone.zoneId) })
+        OptionCard(zone.label, selected = zone.key == regionKey, onClick = { onPick(zone.key) })
     }
 }
 

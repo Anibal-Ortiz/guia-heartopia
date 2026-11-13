@@ -21,16 +21,27 @@ class FullscreenAds(private val activity: Activity) {
     private var rewardedCalendar: RewardedAd? = null
     private var rewardedCalendarLoading = false
 
+    private var adFree = false
+
+    fun setAdFree(active: Boolean) {
+        adFree = active
+        if (active) {
+            interstitial = null
+            rewardedCalendar = null
+        }
+    }
+
     fun preload(mode: AdsMode) {
         if (!AdConfig.adsEnabled) return
         if (mode != AdsMode.PERSONALIZED && mode != AdsMode.NON_PERSONALIZED) return
-        loadInterstitial(mode)
         loadRewardedAdFree(mode)
+        if (adFree) return
+        loadInterstitial(mode)
         loadRewardedCalendar(mode)
     }
 
     fun showInterstitial(adFree: Boolean, onDismiss: () -> Unit = {}) {
-        if (adFree || !AdConfig.hasInterstitial) {
+        if (adFree || this.adFree || !AdConfig.hasInterstitial) {
             onDismiss()
             return
         }
@@ -58,6 +69,10 @@ class FullscreenAds(private val activity: Activity) {
         onReward: () -> Unit,
         onUnavailable: () -> Unit,
     ) {
+        if (adFree) {
+            onUnavailable()
+            return
+        }
         showRewarded(rewardedCalendar, AdConfig.rewardedCalendarUnitId, onReward, onUnavailable) {
             rewardedCalendar = null
             loadRewardedCalendar(lastMode)

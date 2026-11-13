@@ -53,7 +53,9 @@ object ContentCheckStore {
             prefs[KEY_LOCAL_VERSION] = report.localVersion
             prefs[KEY_REMOTE_VERSION] = report.remoteVersion ?: -1
         }
-        AndroidContentStore.markAttempt(context, checkedAtMillis)
+        if (report.result != ContentSyncResult.NETWORK_ERROR) {
+            AndroidContentStore.markAttempt(context, checkedAtMillis)
+        }
     }
 
     fun lastCheckedLabel(epochMillis: Long): String {
