@@ -158,7 +158,7 @@ class ContentSyncTest {
         assertNotNull(rootManifest)
         assertEquals(rootManifest, appManifest)
         assertEquals(1, appManifest!!.contentVersion)
-        assertEquals(35, appManifest.minAppVersionCode)
+        assertEquals(36, appManifest.minAppVersionCode)
         assertTrue(appManifest.files.any { it.path == "catalog/creatures.json" })
         assertTrue(appManifest.files.any { it.path == "calendar/clima-2026.json" })
         assertTrue(appManifest.files.none { it.path.startsWith("catalog/images/") })
@@ -177,12 +177,12 @@ class ContentSyncTest {
             emptyMap(),
             ContentManifest(contentVersion = 0, minAppVersionCode = 23, publishedOn = "2026-01-01"),
         )
-        assertEquals(ContentSyncResult.APPLIED, sync(library, served, appVersionCode = 35))
+        assertEquals(ContentSyncResult.APPLIED, sync(library, served, appVersionCode = 36))
 
         val creatures = parseCreatures(library.overlayBytes("catalog/creatures.json")!!)
         assertTrue(creatures.size > 100)
         assertTrue(creatures.map { it.id }.distinct().size == creatures.size)
-        assertTrue(creatures.all { it.description.contains("de la guía") })
+        assertTrue(creatures.all { it.description.isBlank() })
         val weather = SkyCatalog.fromJson(library.overlayBytes("calendar/clima-2026.json")!!.decodeToString())
         assertNotNull(weather.on(java.time.LocalDate.of(2026, 11, 12)))
         output.deleteRecursively()

@@ -45,16 +45,9 @@ def read_version(path: Path) -> int | None:
     return value if isinstance(value, int) else None
 
 
-def describe(entry: dict) -> str:
-    locations = [str(item).strip() for item in entry.get("location") or [] if str(item).strip()]
-    where = ", ".join(locations) if locations else "varios puntos del mapa"
-    kind = {
-        "Peces": "Pez de la guía",
-        "Pájaros": "Ave de la guía",
-        "Insectos": "Insecto de la guía",
-        "Fauna": "Animal de la guía",
-    }.get(entry.get("category"), "Criatura de la guía")
-    return f"{kind}. Se anota en {where}. Horario y clima van en los datos, no en este texto."
+def is_filler(text: str) -> bool:
+    value = text.strip()
+    return "de la guía" in value and "Horario y clima van en los datos" in value
 
 
 def creatures_payload(raw: bytes) -> bytes:
@@ -62,9 +55,15 @@ def creatures_payload(raw: bytes) -> bytes:
     data.pop("imageNote", None)
     data.pop("imageBundledOn", None)
     data.pop("terms", None)
-    data["note"] = "Fichas con datos de aparición. El texto breve de cada una está escrito para esta guía."
+    data["note"] = (
+        "Fichas con datos de aparición. Ubicación, horario, clima y nivel van en los datos de cada ficha."
+    )
     for entry in data.get("entries", []):
-        entry["description"] = describe(entry)
+        description = str(entry.get("description") or "").strip()
+        if not description or is_filler(description):
+            entry.pop("description", None)
+        else:
+            entry["description"] = description
     return (json.dumps(data, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
 
 

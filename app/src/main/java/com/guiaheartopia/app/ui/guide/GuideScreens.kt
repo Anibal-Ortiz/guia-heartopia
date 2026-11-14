@@ -1,5 +1,6 @@
 package com.guiaheartopia.app.ui.guide
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -35,7 +36,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -44,6 +50,7 @@ import com.guiaheartopia.app.data.DexEntry
 import com.guiaheartopia.app.data.SkyCatalog
 import com.guiaheartopia.app.domain.AnimalAnnotation
 import com.guiaheartopia.app.domain.AnimalRecord
+import com.guiaheartopia.app.domain.CatalogMarks
 import com.guiaheartopia.app.domain.CreatureAvailability
 import com.guiaheartopia.app.domain.CreatureCopy
 import com.guiaheartopia.app.domain.GuideSections
@@ -77,6 +84,7 @@ import com.guiaheartopia.app.ui.theme.Ink
 import com.guiaheartopia.app.ui.theme.Lilac
 import com.guiaheartopia.app.ui.theme.Line
 import com.guiaheartopia.app.ui.theme.Muted
+import com.guiaheartopia.app.ui.theme.Ochre
 import com.guiaheartopia.app.ui.theme.Orange
 import com.guiaheartopia.app.ui.theme.Paper
 import com.guiaheartopia.app.ui.theme.PaperSubtle
@@ -272,6 +280,8 @@ private fun DexTab(
     var place by rememberSaveable(category) { mutableStateOf("") }
     var onlyNow by rememberSaveable(category) { mutableStateOf(false) }
     var registered by rememberSaveable(category) { mutableStateOf("todos") }
+    var certified by rememberSaveable(category) { mutableStateOf("todos") }
+    val canCertify = CatalogMarks.certifiable(category)
     var weather by rememberSaveable(category) { mutableStateOf("Todos") }
     var allLevels by rememberSaveable(category) { mutableStateOf(false) }
     var chosenLevel by rememberSaveable(category) { mutableStateOf(-1) }
@@ -294,6 +304,11 @@ private fun DexTab(
                 "si" -> entry.id in ui.found
                 "no" -> entry.id !in ui.found
                 else -> true
+            } &&
+            when {
+                !canCertify || certified == "todos" -> true
+                certified == "si" -> entry.id in ui.certified
+                else -> entry.id !in ui.certified
             }
     }
 
@@ -373,6 +388,27 @@ private fun DexTab(
                     selectedLabelColor = Ink,
                 ),
             )
+
+            if (canCertify) {
+                FilterChip(
+                    selected = certified == "si",
+                    onClick = { certified = if (certified == "si") "todos" else "si" },
+                    label = { Text("Certificados") },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = HoneySoft,
+                        selectedLabelColor = Ink,
+                    ),
+                )
+                FilterChip(
+                    selected = certified == "no",
+                    onClick = { certified = if (certified == "no") "todos" else "no" },
+                    label = { Text("No certificados") },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = PaperSubtle,
+                        selectedLabelColor = Ink,
+                    ),
+                )
+            }
         }
 
         Row(
@@ -439,10 +475,17 @@ private fun DexTab(
                     modifier = Modifier.size(58.dp),
                 )
                 Column(Modifier.weight(1f)) {
-                    Text(
-                        entry.name,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                        Text(
+                            entry.name,
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                            modifier = Modifier.weight(1f, fill = false),
+                        )
+                        if (entry.id in ui.certified) CertifiedSeal()
+                    }
                     Text(
                         entry.event ?: entry.category,
                         color = Muted,
@@ -500,7 +543,15 @@ private fun DexTab(
 }
 
 @Composable
-fun DexDetailScreen(entry: DexEntry, zoneId: String, found: Boolean, onToggle: () -> Unit, onBack: () -> Unit) {
+fun DexDetailScreen(
+    entry: DexEntry,
+    zoneId: String,
+    found: Boolean,
+    certified: Boolean = false,
+    onToggle: () -> Unit,
+    onToggleCertified: () -> Unit = {},
+    onBack: () -> Unit,
+) {
     val zone = DexSchedule.zoneOf(zoneId)
     val instant = Instant.now()
     val detailContext = androidx.compose.ui.platform.LocalContext.current
@@ -554,11 +605,14 @@ fun DexDetailScreen(entry: DexEntry, zoneId: String, found: Boolean, onToggle: (
                 Column(Modifier.weight(1f)) {
                     Text(entry.name, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold))
                     Text(entry.nameEn.ifBlank { entry.category }, color = Muted, style = MaterialTheme.typography.bodyMedium)
-                    Text(
-                        entry.description.ifBlank { CreatureCopy.line(entry.category, entry.location) },
-                        color = Ink,
-                        style = MaterialTheme.typography.bodySmall,
-                    )
+                    val blurb = CreatureCopy.visible(entry.description)
+                    if (blurb.isNotEmpty()) {
+                        Text(
+                            blurb,
+                            color = Ink,
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
                 }
                 if (now) NowBadge()
             }
@@ -630,6 +684,16 @@ fun DexDetailScreen(entry: DexEntry, zoneId: String, found: Boolean, onToggle: (
             container = Green,
             modifier = Modifier.fillMaxWidth(),
         )
+
+        if (CatalogMarks.certifiable(entry.category)) {
+            PixelButton(
+                text = if (certified) "✓ Certificado" else "Marcar como Certificado",
+                onClick = onToggleCertified,
+                outlined = !certified,
+                container = Green,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
 
         PixelButton(
             text = "← Volver al catálogo",
@@ -792,6 +856,29 @@ private fun ScheduleWeatherLegend() {
             LegendItem("🌧️", "Lluvia")
             LegendItem("🌈", "Arcoíris")
         }
+    }
+}
+
+@Composable
+private fun CertifiedSeal() {
+    Canvas(
+        Modifier
+            .size(16.dp)
+            .semantics { contentDescription = "Certificado" },
+    ) {
+        val radius = size.minDimension / 2f
+        drawCircle(color = Ochre, radius = radius)
+        drawCircle(
+            color = Color(0xFF8C6A2F),
+            radius = radius * 0.72f,
+            style = Stroke(width = radius * 0.14f),
+        )
+        val arm = radius * 0.34f
+        val stroke = radius * 0.16f
+        drawLine(Paper, center + Offset(0f, -arm), center + Offset(arm, 0f), stroke, StrokeCap.Round)
+        drawLine(Paper, center + Offset(arm, 0f), center + Offset(0f, arm), stroke, StrokeCap.Round)
+        drawLine(Paper, center + Offset(0f, arm), center + Offset(-arm, 0f), stroke, StrokeCap.Round)
+        drawLine(Paper, center + Offset(-arm, 0f), center + Offset(0f, -arm), stroke, StrokeCap.Round)
     }
 }
 

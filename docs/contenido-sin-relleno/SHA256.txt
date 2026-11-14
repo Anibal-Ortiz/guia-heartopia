@@ -1,0 +1,5 @@
+Archivos corregidos respecto al paquete que publicaba tools/publicar_contenido.py.
+Se quitó el texto de relleno del campo description. No se inventaron descripciones.
+No está publicado en el sitio de contenido.
+
+catalog/creatures.json  cb971db9b738322ef9b7929940dda13043d139f45cc568e9633c216036541872

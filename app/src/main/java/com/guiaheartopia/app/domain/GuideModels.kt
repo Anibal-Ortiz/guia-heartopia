@@ -99,6 +99,7 @@ data class GuideSnapshot(
     val hiddenSeedAnimalIds: List<String> = emptyList(),
     val customCollectibles: List<Collectible> = emptyList(),
     val foundIds: List<String> = emptyList(),
+    val certifiedIds: List<String> = emptyList(),
     val hiddenSeedCollectibleIds: List<String> = emptyList(),
     val hobbies: List<Hobby> = emptyList(),
     val hobbiesInitialized: Boolean = false,
@@ -108,6 +109,9 @@ data class CategoryProgress(
     val category: String,
     val found: Int,
     val total: Int,
+    val certified: Int = 0,
 ) {
     val fraction: Float get() = if (total == 0) 0f else found.toFloat() / total
+
+    fun summary(): String = "$category: $found/$total capturados · $certified certificados"
 }

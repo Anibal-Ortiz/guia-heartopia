@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.guiaheartopia.app.data.GuideRepository
 import com.guiaheartopia.app.data.SeedCatalog
 import com.guiaheartopia.app.domain.AnimalAnnotation
+import com.guiaheartopia.app.domain.CatalogMarks
 import com.guiaheartopia.app.domain.AnimalRecord
 import com.guiaheartopia.app.domain.CollectionProgress
 import com.guiaheartopia.app.domain.Collectible
@@ -42,6 +43,7 @@ data class GuideUi(
     val sighted: Set<String> = emptySet(),
     val collectibles: List<Collectible> = emptyList(),
     val found: Set<String> = emptySet(),
+    val certified: Set<String> = emptySet(),
     val categoryProgress: List<com.guiaheartopia.app.domain.CategoryProgress> = emptyList(),
     val collectionFraction: Float = 0f,
     val hobbies: List<Hobby> = emptyList(),
@@ -194,9 +196,17 @@ class GuideViewModel(
     fun toggleFound(id: String) {
         viewModelScope.launch {
             repository.update { snap ->
-                val set = snap.foundIds.toMutableSet()
-                if (!set.add(id)) set.remove(id)
-                snap.copy(foundIds = set.toList())
+                val next = CatalogMarks.toggleFound(marks(snap), id)
+                snap.copy(foundIds = next.found.toList(), certifiedIds = next.certified.toList())
+            }
+        }
+    }
+
+    fun toggleCertified(id: String, category: String) {
+        viewModelScope.launch {
+            repository.update { snap ->
+                val next = CatalogMarks.toggleCertified(marks(snap), id, category)
+                snap.copy(foundIds = next.found.toList(), certifiedIds = next.certified.toList())
             }
         }
     }
@@ -268,6 +278,7 @@ class GuideViewModel(
             sighted = snap.sightedIds.toSet(),
             collectibles = collectibles,
             found = found,
+            certified = snap.certifiedIds.toSet(),
             categoryProgress = CollectionProgress.byCategory(collectibles, found),
             collectionFraction = CollectionProgress.overall(collectibles, found),
             hobbies = hobbies,
@@ -285,6 +296,9 @@ class GuideViewModel(
             ?: return emptyMap()
         return HobbyCatalog.parseOverrides(bytes.decodeToString())
     }
+
+    private fun marks(snap: GuideSnapshot): CatalogMarks.Marks =
+        CatalogMarks.Marks(snap.foundIds.toSet(), snap.certifiedIds.toSet())
 
     private fun splitLines(raw: String): List<String> =
         raw.split('\n', ',').map { it.trim() }.filter { it.isNotEmpty() }

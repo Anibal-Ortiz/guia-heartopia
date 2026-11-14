@@ -27,9 +27,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.guiaheartopia.app.domain.CatalogMarks
 import com.guiaheartopia.app.domain.Countries
 import com.guiaheartopia.app.domain.DexSchedule
 import com.guiaheartopia.app.domain.ResourceCalendar
@@ -211,6 +213,9 @@ fun HomeScreen(
         val totalFound = ui.found.size
         val totalItems = catalog.size
         val collectionPercent = if (totalItems > 0) (totalFound.toFloat() / totalItems * 100).toInt() else 0
+        val certifiedTotal = listOf("Peces", "Pájaros", "Insectos").sumOf { cat ->
+            byCategory[cat].orEmpty().count { it.id in ui.certified }
+        }
 
         PixelCard(container = Paper) {
             Row(
@@ -240,7 +245,7 @@ fun HomeScreen(
             }
 
             Text(
-                "$totalFound de $totalItems criaturas registradas ($collectionPercent%)",
+                "$totalFound de $totalItems criaturas registradas ($collectionPercent%) · $certifiedTotal certificados",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Muted,
             )
@@ -263,7 +268,7 @@ fun HomeScreen(
                 )
                 listOf("Peces", "Pájaros", "Insectos").forEach { cat ->
                     val items = byCategory[cat].orEmpty()
-                    val foundCount = items.count { it.id in ui.found }
+                    val tally = CatalogMarks.tally(cat, items.map { it.id }, ui.found, ui.certified)
                     val icon = catIcons[cat] ?: "🐾"
                     Column(
                         Modifier
@@ -283,9 +288,14 @@ fun HomeScreen(
                             maxLines = 1,
                         )
                         Text(
-                            "$foundCount/${items.size}",
-                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                            tally.summary(),
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 9.sp,
+                                lineHeight = 11.sp,
+                            ),
                             color = GreenDark,
+                            textAlign = TextAlign.Center,
                         )
                     }
                 }

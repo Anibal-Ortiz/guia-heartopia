@@ -434,7 +434,9 @@ private fun AppScaffold(
                         entry = item,
                         zoneId = ui.profile.zoneId,
                         found = item.id in ui.found,
+                        certified = item.id in ui.certified,
                         onToggle = { vm.toggleFound(item.id) },
+                        onToggleCertified = { vm.toggleCertified(item.id, item.category) },
                         onBack = { nav.popBackStack() },
                     )
                 }
