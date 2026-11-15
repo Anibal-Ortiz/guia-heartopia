@@ -113,6 +113,7 @@ fun HomeScreen(
     val context = androidx.compose.ui.platform.LocalContext.current
     val revision = com.guiaheartopia.app.ui.contentRevision()
     val catalog = remember(revision) { com.guiaheartopia.app.data.HeartodexCatalog.load(context) }
+    val aficiones = remember(revision) { com.guiaheartopia.app.data.AficionesCatalog.load(context) }
     val sky = remember(revision) { com.guiaheartopia.app.data.SkyCatalog.load(context) }
     val zone = DexSchedule.zoneOf(ui.profile.zoneId)
     val nowInstant = Instant.now()
@@ -403,35 +404,63 @@ fun HomeScreen(
                 track = GreenSoft,
             )
 
-            // Category summary pills
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Max),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            val siembraIds = remember(aficiones) { aficiones.siembras.map { it.id }.toSet() }
+            val florIds = remember(aficiones) { aficiones.flores.map { it.id }.toSet() }
+            val recetaIds = remember(aficiones) { aficiones.recetas.map { it.id }.toSet() }
+            Column(
+                Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                listOf(
-                    Triple("Peces", "🐟", true),
-                    Triple("Pájaros", "🐦", true),
-                    Triple("Insectos", "🐛", true),
-                ).forEach { (cat, icon, cert) ->
-                    val items = byCategory[cat].orEmpty()
-                    val tally = CatalogMarks.tally(cat, items.map { it.id }, ui.found, ui.certified)
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Max),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    listOf(
+                        Triple("Peces", "🐟", true),
+                        Triple("Pájaros", "🐦", true),
+                        Triple("Insectos", "🐛", true),
+                    ).forEach { (cat, icon, cert) ->
+                        val items = byCategory[cat].orEmpty()
+                        val tally = CatalogMarks.tally(cat, items.map { it.id }, ui.found, ui.certified)
+                        CollectionColumn(
+                            emoji = icon,
+                            name = CatalogLabels.category(cat),
+                            captured = tally.found,
+                            total = tally.total,
+                            certified = if (cert) tally.certified else null,
+                        )
+                    }
+                }
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Max),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
                     CollectionColumn(
-                        emoji = icon,
-                        name = CatalogLabels.category(cat),
-                        captured = tally.found,
-                        total = tally.total,
-                        certified = if (cert) tally.certified else null,
+                        emoji = "🌱",
+                        name = "Siembra",
+                        captured = ui.huertoFound.count { it in siembraIds },
+                        total = aficiones.siembras.size,
+                        certified = null,
+                    )
+                    CollectionColumn(
+                        emoji = "🌸",
+                        name = "Flores",
+                        captured = ui.florFound.count { it in florIds },
+                        total = aficiones.flores.size,
+                        certified = null,
+                    )
+                    CollectionColumn(
+                        emoji = "🍳",
+                        name = "Cocina",
+                        captured = ui.recetaFound.count { it in recetaIds },
+                        total = aficiones.recetas.size,
+                        certified = null,
                     )
                 }
-                CollectionColumn(
-                    emoji = "🐾",
-                    name = "Animales",
-                    captured = ui.animals.count { it.id in ui.sighted },
-                    total = ui.animals.size,
-                    certified = null,
-                )
             }
 
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
