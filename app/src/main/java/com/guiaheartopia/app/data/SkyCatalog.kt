@@ -5,6 +5,7 @@ import com.guiaheartopia.app.domain.SkyDay
 import com.guiaheartopia.app.domain.SkyKind
 import com.guiaheartopia.app.domain.SkySlot
 import com.guiaheartopia.app.domain.SkyStatus
+import java.io.File
 import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.serialization.Serializable
@@ -32,15 +33,30 @@ data class SkySlotFile(
     val status: String,
     val place: String? = null,
     val special: String? = null,
+    val label: String = "",
 )
 
 object SkyCatalog {
     private val json = Json { ignoreUnknownKeys = true }
 
-    fun load(context: Context): SkyTable =
-        context.assets.open("calendar/clima-2026.json").bufferedReader().use { reader ->
-            fromJson(reader.readText())
+    fun load(context: Context): SkyTable {
+        val tables = ArrayList<SkyTable>()
+        val bundled = context.assets.list("calendar").orEmpty()
+            .filter { it.startsWith("clima-") && it.endsWith(".json") }
+            .sorted()
+        bundled.forEach { name ->
+            context.assets.open("calendar/$name").bufferedReader().use { reader ->
+                tables += fromJson(reader.readText())
+            }
         }
+        val overlayDir = File(AndroidContentStore.liveDir(context), "files/calendar")
+        overlayDir.listFiles()
+            ?.filter { it.isFile && it.name.startsWith("clima-") && it.name.endsWith(".json") }
+            ?.sortedBy { it.name }
+            ?.forEach { file -> tables += fromJson(file.readText()) }
+        if (tables.isEmpty()) return SkyTable("", "", emptyMap())
+        return mergeSkyTables(tables)
+    }
 
     fun fromJson(raw: String): SkyTable {
         val file = json.decodeFromString(SkyFile.serializer(), raw)
@@ -54,12 +70,13 @@ object SkyCatalog {
                         kind = SkyKind.entries.firstOrNull { it.name.equals(slot.kind, ignoreCase = true) }
                             ?: kindOf(slot.kind),
                         status = when (slot.status) {
-                            "acuerdo" -> SkyStatus.ACUERDO
-                            "por_confirmar" -> SkyStatus.POR_CONFIRMAR
+                            "acuerdo", "incluido" -> SkyStatus.ACUERDO
                             else -> SkyStatus.SIN_DATOS
                         },
                         place = slot.place,
                         special = slot.special,
+                        detail = slot.label,
+                        rawKind = slot.kind,
                     )
                 },
             )

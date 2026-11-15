@@ -1,34 +1,27 @@
-Política de privacidad — Guía Heartopia
-Versión 0.1.0
+Política de privacidad — WikiFan para Heartopia
+Versión 1.0.0
+Contacto: primero010102@gmail.com
+Texto público: https://anibalortizdev.github.io/guia-heartopia-contenido/
 
-Este texto describe lo que hace ESTA versión de la aplicación. Antes de publicarla en Google Play hay que completar el nombre de quien responde, un correo de contacto y el dominio del sitio. Esos datos todavía no existen: no los inventes ni los des por publicados.
+App no oficial, no afiliada ni respaldada por los creadores de Heartopia.
 
 Qué es
-Guía Heartopia es una guía independiente para anotar tu propia partida y preparar referencias de pixel art. No está afiliada a los creadores de Heartopia ni a sus editores.
+Es una guía para consultar criaturas, horarios, clima y anotaciones propias. No controla el juego ni lee su pantalla.
 
-Qué se guarda en el dispositivo
-El nombre que escribes, el país y la zona horaria que eliges, la rutina, las fichas, los coleccionables, los hobbies y la última cuadrícula de pixel art se guardan solo en el teléfono, con DataStore y archivos de la app. La app no tiene cuenta, no tiene servidor propio y no envía esa información a un servicio de Guía Heartopia.
+Datos que se quedan en el dispositivo
+El nombre que escribes, el país y la zona horaria que eliges, las fichas, la colección, las aficiones, los recordatorios y la última comprobación de contenido se guardan solo en el teléfono. No hay cuenta ni un servidor propio que reciba esos datos. No pedimos ubicación del teléfono, contactos, micrófono ni almacenamiento externo. Si eliges una foto para el avatar, el selector de fotos del sistema no pide permiso de almacenamiento: la imagen se recorta en el teléfono y se guarda solo en el almacenamiento interno de la app. No se sube a ningún servidor. Los recordatorios, si los activas, son avisos locales. Borrar los datos de la app o desinstalarla elimina esa información del teléfono.
 
-Recordatorios
-Si los activas en Ajustes, la app programa avisos locales con WorkManager. Pueden retrasarse unos minutos. No pide alarma exacta. En Android 13 o superior pide el permiso de notificaciones solo cuando enciendes un aviso. Esos avisos no salen del teléfono.
+Contenido público
+La app puede descargar un paquete público de fichas y clima desde el sitio de esta guía. Esa descarga no envía tu nombre ni tu colección.
 
-Qué no pedimos
-No pedimos ubicación, contactos, fotos de forma permanente, micrófono ni notificaciones. La imagen para pixel art se abre con el selector del sistema y se procesa en el dispositivo. Exportar un PNG usa el almacenamiento que ofrece el sistema (MediaStore en Android 10 o superior) sin un permiso amplio de archivos.
+Anuncios, AdMob, UMP y el identificador de publicidad
+La app contiene anuncios de Google AdMob: un banner con la etiqueta Publicidad y, a veces, un video opcional.
 
-Anuncios, identificador de publicidad y consentimiento
-Esta versión puede mostrar un banner de Google AdMob.
+Antes de pedir anuncios se usa el User Messaging Platform (UMP) de Google. La app no marca el consentimiento como aceptado. Si no das consentimiento y no se pueden pedir anuncios, el banner no se muestra. Si la consulta falla, la solicitud se hace como no personalizada.
 
-- La compilación de depuración usa únicamente los ID oficiales de prueba de Google. No son anuncios de un editor real.
-- La compilación de publicación solo solicita anuncios si quien publica configura un App ID y un bloque fuera del repositorio. Si no están, no se inicializa el SDK y no se pide publicidad.
-- Antes de MobileAds.initialize, la app consulta el User Messaging Platform (UMP) de Google. No marca el consentimiento como otorgado. Si rechazas el consentimiento y UMP indica que no se pueden pedir anuncios, el banner no se muestra.
-- Si la consulta de consentimiento falla, y los anuncios están configurados, la solicitud se hace como no personalizada (señal npa).
-- El SDK de anuncios declara el permiso AD_ID (identificador de publicidad). Cuando un anuncio se solicita, Google puede tratar datos del dispositivo, incluido ese identificador, según su propia política. Guía Heartopia no añade otro SDK de analítica ni de atribución.
-- Para usuarios del EEE y otros territorios regulados, el mensaje de consentimiento tiene que estar creado y publicado en la consola de AdMob (Privacidad y mensajes). Sin ese mensaje publicado, el formulario de producción no puede mostrarse. Esta app no sustituye ese paso.
+El manifiesto declara el permiso del identificador de publicidad (AD_ID). Cuando se pide un anuncio, Google puede tratar ese identificador, la dirección IP y datos técnicos del teléfono, según su política y el consentimiento. Esta app no vende esos datos ni añade otro SDK de analítica. Puedes cambiar el consentimiento desde Ajustes cuando Google lo ofrece, y limitar el identificador en los ajustes de Android.
 
-Encargado y contacto
-Responsable: pendiente de definir antes de publicar.
-Correo: pendiente de definir antes de publicar.
-Dominio: pendiente de definir antes de publicar.
+Política de Google: https://policies.google.com/privacy
 
-Cambios
-Si esta política cambia, la versión de la app y este texto se actualizarán juntos.
+Contacto
+primero010102@gmail.com

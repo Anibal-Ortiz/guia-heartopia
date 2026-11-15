@@ -34,7 +34,7 @@ object BackupCodec {
         } catch (_: Exception) {
             return ImportResult.Invalid("El archivo no es un JSON de esta guía.")
         }
-        if (envelope.app != APP) return ImportResult.Invalid("Este archivo no pertenece a Guía Heartopia.")
+        if (envelope.app != APP) return ImportResult.Invalid("Este archivo no pertenece a esta guía.")
         if (envelope.format != FORMAT) {
             return ImportResult.Invalid("Versión de respaldo ${envelope.format}. Esta app lee la versión $FORMAT.")
         }

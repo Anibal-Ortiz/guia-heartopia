@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
@@ -17,25 +18,48 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.BuildConfig
+import com.guiaheartopia.app.R
 import com.guiaheartopia.app.ads.AdsMode
 import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Build
+import androidx.core.content.ContextCompat
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.guiaheartopia.app.data.AndroidContentStore
+import com.guiaheartopia.app.data.ContentCheckStore
+import com.guiaheartopia.app.data.ContentSignals
+import com.guiaheartopia.app.domain.ContentSyncResult
+import com.guiaheartopia.app.data.VerifiedCatalog
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.guiaheartopia.app.domain.Countries
+import com.guiaheartopia.app.domain.StoreCopy
+import com.guiaheartopia.app.domain.SampleIds
 import com.guiaheartopia.app.domain.ImportResult
 import com.guiaheartopia.app.domain.PlaySession
 import com.guiaheartopia.app.domain.PlayerProfile
 import com.guiaheartopia.app.domain.ReminderPrefs
+import com.guiaheartopia.app.data.AdRewardStore
+import com.guiaheartopia.app.ui.components.NotebookCard
 import com.guiaheartopia.app.ui.components.PickerField
 import com.guiaheartopia.app.ui.components.PixelButton
 import com.guiaheartopia.app.ui.components.PixelCard
@@ -47,28 +71,53 @@ fun SettingsScreen(
     adsStatus: String,
     privacyOptions: Boolean,
     onSave: (PlayerProfile) -> Unit,
-    onRegion: (String, String, String) -> Unit,
+    onRegion: (String, String, String, String) -> Unit,
     onPrivacy: () -> Unit,
     onTerms: () -> Unit,
     onAdPrivacy: () -> Unit,
     onReminders: (ReminderPrefs) -> Unit,
     onExport: ((String) -> Unit) -> Unit,
     onImport: (String, (ImportResult) -> Unit) -> Unit,
+    onPhotoCredits: () -> Unit,
+    scrollToReminders: Boolean = false,
+    adFreeUntilMillis: Long = 0L,
+    onWatchAdFree: () -> Unit = {},
 ) {
     var name by rememberSaveable(profile.name) { mutableStateOf(profile.name) }
-    var place by rememberSaveable(profile.placeName) { mutableStateOf(profile.placeName) }
     var session by rememberSaveable(profile.session) { mutableStateOf(profile.session) }
     val country = Countries.byId(profile.countryId)
+    val scroll = rememberScrollState()
+    var remindersY by remember { mutableIntStateOf(0) }
+    androidx.compose.runtime.LaunchedEffect(scrollToReminders, remindersY) {
+        if (scrollToReminders && remindersY > 0) {
+            scroll.animateScrollTo((remindersY - 24).coerceAtLeast(0))
+        }
+    }
     Column(
         Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(scroll)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text("Ajustes", style = MaterialTheme.typography.headlineSmall)
+        com.guiaheartopia.app.ui.components.SectionBanner(
+            image = com.guiaheartopia.app.R.drawable.header_aficiones,
+            title = "Ajustes",
+            subtitle = "Contenido, anuncios y créditos",
+        )
+        Text(stringResource(R.string.app_full_name), style = MaterialTheme.typography.titleMedium)
+        Text(StoreCopy.UNOFFICIAL, style = MaterialTheme.typography.bodyMedium)
+        PixelButton("Política de privacidad", onClick = onPrivacy, outlined = true)
+        ContentUpdateCard()
+        PixelCard {
+            Text("Horarios", style = MaterialTheme.typography.titleMedium)
+            Text(
+                "Tramos de criaturas: servidor UTC fijo; en Chile continental (UTC−3) " +
+                    "Noche 02–08, Amanecer 08–14, Día 14–20, Tarde 20–02.",
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
         OutlinedTextField(name, { name = it }, label = { Text("Nombre") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(place, { place = it }, label = { Text("Tu lugar") }, modifier = Modifier.fillMaxWidth())
         Text("Cuándo sueles jugar", style = MaterialTheme.typography.bodyMedium)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             PlaySession.entries.forEach { option ->
@@ -76,7 +125,7 @@ fun SettingsScreen(
             }
         }
         PixelButton("Guardar perfil", onClick = {
-            if (name.isNotBlank()) onSave(profile.copy(name = name.trim(), placeName = place.trim(), session = session))
+            if (name.isNotBlank()) onSave(profile.copy(name = name.trim(), session = session))
         })
         PixelCard {
             Text("Calendario", style = MaterialTheme.typography.titleMedium)
@@ -86,14 +135,18 @@ fun SettingsScreen(
                 Countries.all.map { it.id to it.name },
                 onPick = { id ->
                     val next = Countries.byId(id)
-                    onRegion(id, next.zones.first().zoneId, profile.weatherOriginId)
+                    val zone = next.zones.first()
+                    onRegion(id, zone.zoneId, SampleIds.WEATHER_ORIGIN, zone.key)
                 },
             )
             PickerField(
-                "Zona",
-                country.zones.firstOrNull { it.zoneId == profile.zoneId }?.label ?: country.zones.first().label,
-                country.zones.map { it.zoneId to it.label },
-                onPick = { onRegion(country.id, it, profile.weatherOriginId) },
+                if (country.zones.size > 1) "Estado o región" else "Zona",
+                Countries.label(country.id, profile.zoneId, profile.regionKey),
+                country.zones.map { it.key to it.label },
+                onPick = { key ->
+                    val zone = country.zones.first { it.key == key }
+                    onRegion(country.id, zone.zoneId, SampleIds.WEATHER_ORIGIN, zone.key)
+                },
             )
         }
         PixelCard {
@@ -107,31 +160,123 @@ fun SettingsScreen(
                 PixelButton("Opciones de privacidad de anuncios", onClick = onAdPrivacy)
             }
         }
-        ReminderBlock(profile.reminders, onReminders)
+        NotebookCard {
+            Text(
+                "Ver un video y quitar anuncios por 24 horas",
+                style = MaterialTheme.typography.titleMedium,
+            )
+            val remaining = AdRewardStore.remainingLabel(adFreeUntilMillis)
+            if (remaining.isNotBlank()) {
+                Text(
+                    "Sin banners ni intersticiales. Quedan $remaining.",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            } else {
+                Text(
+                    "El video quita banners, intersticiales y el video del Calendario durante 24 h.",
+                    style = MaterialTheme.typography.bodySmall,
+                )
+                PixelButton(
+                    "Ver video",
+                    onClick = onWatchAdFree,
+                    outlined = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        }
+        androidx.compose.foundation.layout.Box(
+            Modifier.onGloballyPositioned { remindersY = it.positionInParent().y.toInt() },
+        ) {
+            ReminderBlock(profile.reminders, onReminders)
+        }
         BackupBlock(onExport, onImport)
         PixelButton("Política de privacidad", onClick = onPrivacy, outlined = true)
         PixelButton("Términos", onClick = onTerms, outlined = true)
+        com.guiaheartopia.app.ui.components.TwigDivider(1)
         PixelCard {
             Text("Créditos y fuentes", style = MaterialTheme.typography.titleMedium)
+            Text(VerifiedCatalog.SPOT_SOURCES, style = MaterialTheme.typography.bodyMedium)
             Text(
-                "Guía Heartopia no está afiliada a quienes crean el juego. No lo controla ni pinta la pantalla por ti.",
+                "Peces, aves, insectos y fauna salen de las páginas índice en español de heartodex, leídas el 7 de noviembre de 2026. El índice no trae precio ni cebo. Nivel y sombra se muestran solo cuando la tarjeta los incluye. El texto breve de cada ficha está escrito para esta app.",
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(
-                "Peces, aves, insectos y fauna salen de las páginas índice en español de heartodex, leídas el 7 de noviembre de 2026. No se abrió cada ficha ni se copiaron imágenes. El índice no trae precio ni cebo. Nivel y sombra se muestran solo cuando la tarjeta los incluye.",
+                "Las fotos son de especies reales, con licencias libres (CC BY, CC0 o dominio público), tomadas de Wikimedia Commons e iNaturalist. Las criaturas inventadas del juego usan la foto de su especie base.",
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            PixelButton(text = "Créditos de las fotos", onClick = onPhotoCredits, outlined = true)
+            Text(
+                "Liuliu y la fluorita de noviembre 2026 salen de heartodex (ubicación diaria). Diciembre no está día a día en esa página: se muestra Sin datos.",
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(
-                "En noviembre de 2026, Liuliu y la flurita coinciden en Tidebell y heartodex. Diciembre sigue el ciclo de 50 días y se marca como estimado. El clima de noviembre y diciembre sale de Tidebell y heartopia.th.gl, revisado el 7 de noviembre de 2026 junto al parche del 24 de septiembre de 2026.",
+                "Clima de 2026, hora a hora, leído el 10 de noviembre de 2026 en tidebell.com/calendar. " +
+                    "heartopia.lol/en/weather repite las mismas 366 series. heartopia.th.gl/forecast llama a esas horas «hora de servidor» " +
+                    "(América UTC−5, Global UTC+1, SEA UTC+7, TW/HK/MO UTC+8, Asia UTC+9); el 1 de enero de 2026 coincide con Tidebell. " +
+                    "Tidebell no las documenta como UTC: las aplica a la fecha y hora locales. La app las muestra en tu zona IANA. " +
+                    "Solo entra 2026. El sitio dice que el ciclo se repite; eso no se usa para otros años. Son datos de la comunidad, no oficiales.",
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(
-                "Las comidas de la fauna coinciden en tres guías y aquí están en español. La letra de la interfaz es Plus Jakarta Sans, licencia OFL. La paleta y los tamaños de la cuadrícula son una referencia aproximada, no el lienzo del juego.",
+                "Las comidas de la fauna coinciden en tres guías y aquí están en español. La letra de la interfaz es Plus Jakarta Sans, licencia OFL.",
                 style = MaterialTheme.typography.bodyMedium,
             )
         }
         Text("Versión ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})", style = MaterialTheme.typography.bodySmall)
     }
+}
+
+@Composable
+private fun ContentUpdateCard() {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var status by remember { mutableStateOf(AndroidContentStore.status(context)) }
+    var busy by remember { mutableStateOf(false) }
+    val checkState by ContentCheckStore.observe(context).collectAsStateWithLifecycle(
+        com.guiaheartopia.app.data.ContentCheckState(),
+    )
+    PixelCard {
+        Text("Contenido", style = MaterialTheme.typography.titleMedium)
+        Text("Versión de contenido: ${status.contentVersion}", style = MaterialTheme.typography.bodyMedium)
+        Text(
+            "Última actualización: ${publishedLabel(status.publishedOn)}",
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        Text(
+            ContentCheckStore.lastCheckedLabel(checkState.lastCheckedMillis),
+            style = MaterialTheme.typography.bodySmall,
+        )
+        if (busy) {
+            CircularProgressIndicator(modifier = Modifier.padding(vertical = 4.dp))
+        }
+        PixelButton(
+            text = "Buscar actualizaciones",
+            modifier = Modifier.alpha(if (busy) 0.45f else 1f),
+            onClick = {
+                if (!busy) {
+                    busy = true
+                    scope.launch {
+                        val report = withContext(Dispatchers.IO) { AndroidContentStore.syncNow(context) }
+                        val now = System.currentTimeMillis()
+                        ContentCheckStore.record(context, report, now)
+                        if (report.result == ContentSyncResult.APPLIED) {
+                            ContentSignals.note(context)
+                        }
+                        status = AndroidContentStore.status(context)
+                        busy = false
+                    }
+                }
+            },
+        )
+        if (checkState.lastMessage.isNotBlank()) {
+            Text(checkState.lastMessage, style = MaterialTheme.typography.bodyMedium)
+        }
+    }
+}
+
+private fun publishedLabel(iso: String): String {
+    val parts = iso.split("-")
+    return if (parts.size == 3) "${parts[2]}/${parts[1]}/${parts[0]}" else iso
 }
 
 @Composable
@@ -143,25 +288,38 @@ private fun ReminderBlock(current: ReminderPrefs, onChange: (ReminderPrefs) -> U
         pending = null
         if (granted && next != null) onChange(next)
     }
+    fun enabling(next: ReminderPrefs): Boolean =
+        (next.weatherEnabled && !current.weatherEnabled) ||
+            (next.pescaEnabled && !current.pescaEnabled) ||
+            (next.avesEnabled && !current.avesEnabled) ||
+            (next.insectosEnabled && !current.insectosEnabled) ||
+            (next.temporadaEnabled && !current.temporadaEnabled)
     fun update(next: ReminderPrefs) {
-        val turningOn = (next.routineEnabled || next.weatherEnabled || next.eventsEnabled) &&
-            !(current.routineEnabled || current.weatherEnabled || current.eventsEnabled)
-        if (turningOn && Build.VERSION.SDK_INT >= 33) {
+        val needsPermission = Build.VERSION.SDK_INT >= 33 &&
+            enabling(next) &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
+            PackageManager.PERMISSION_GRANTED
+        if (needsPermission) {
             pending = next
             permission.launch(Manifest.permission.POST_NOTIFICATIONS)
         } else {
             onChange(next)
         }
     }
-    PixelCard {
+    PixelCard(modifier = Modifier.testTag("recordatorios")) {
         Text("Recordatorios", style = MaterialTheme.typography.titleMedium)
         Text(
-            "Avisos locales a la hora de tu zona. El sistema puede retrasarlos unos minutos. No pedimos una alarma exacta.",
+            "El clima avisa 30 min antes de una franja que no sea despejado. " +
+                "Pesca, aves e insectos avisan antes de cada hora del archivo de eventos. " +
+                "La temporada avisa al empezar y un día antes de terminar. " +
+                "El sistema puede retrasar el aviso. No pedimos una alarma exacta.",
             style = MaterialTheme.typography.bodySmall,
         )
-        ToggleRow("Rutina", current.routineEnabled) { update(current.copy(routineEnabled = it)) }
-        ToggleRow("Clima y recursos", current.weatherEnabled) { update(current.copy(weatherEnabled = it)) }
-        ToggleRow("Eventos", current.eventsEnabled) { update(current.copy(eventsEnabled = it)) }
+        ToggleRow("Clima", current.weatherEnabled) { update(current.copy(weatherEnabled = it)) }
+        ToggleRow("Pesca", current.pescaEnabled) { update(current.copy(pescaEnabled = it)) }
+        ToggleRow("Aves", current.avesEnabled) { update(current.copy(avesEnabled = it)) }
+        ToggleRow("Insectos", current.insectosEnabled) { update(current.copy(insectosEnabled = it)) }
+        ToggleRow("Eventos de temporada", current.temporadaEnabled) { update(current.copy(temporadaEnabled = it)) }
     }
 }
 
@@ -206,7 +364,7 @@ private fun BackupBlock(
     }
     PixelCard {
         Text("Respaldo", style = MaterialTheme.typography.titleMedium)
-        Text("Exporta o recupera perfil, rutina, colección, aficiones y ajustes. El archivo es un respaldo de la versión 1.", style = MaterialTheme.typography.bodySmall)
+        Text("Exporta o recupera perfil, colección, aficiones y ajustes. El archivo es un respaldo de la versión 1.", style = MaterialTheme.typography.bodySmall)
         PixelButton("Exportar respaldo", onClick = { create.launch("guia-heartopia-respaldo.json") }, outlined = true)
         PixelButton("Importar respaldo", onClick = { open.launch(arrayOf("application/json", "text/*")) }, outlined = true)
         message?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
@@ -236,7 +394,7 @@ private fun BackupBlock(
 private fun adsCopy(mode: AdsMode, status: String): String {
     val base = when {
         BuildConfig.ADS_USE_GOOGLE_TEST_IDS ->
-            "Compilación de prueba: los anuncios usan identificadores de demostración. No son de un editor real."
+            "Los anuncios usan identificadores de demostración de Google (prueba o release sin IDs reales)."
         !BuildConfig.ADS_ENABLED ->
             "Esta compilación no pide anuncios."
         else ->

@@ -2,12 +2,10 @@ package com.guiaheartopia.app
 
 import com.guiaheartopia.app.data.SkyCatalog
 import com.guiaheartopia.app.domain.SkyKind
-import com.guiaheartopia.app.domain.SkyStatus
 import com.guiaheartopia.app.domain.SkyWeather
 import java.io.File
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.ZoneId
 import java.time.ZoneOffset
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -15,27 +13,12 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SkyWeatherTest {
-    private val santiago = ZoneId.of("America/Santiago")
-
     @Test
-    fun sourcesAgreeOnMostSlotsAndNovemberFirstFollowsThePatch() {
+    fun shippedClimateCovers2026Only() {
         val table = SkyCatalog.fromJson(catalogText())
-        val slots = table.days.values.flatMap { it.slots }
-        val agreed = slots.count { it.status == SkyStatus.ACUERDO }
-        assertEquals(244, slots.size)
-        assertEquals(226, agreed)
-        val first = table.on(LocalDate.of(2026, 11, 1))!!
-        assertTrue(first.slots.all { it.kind == SkyKind.NUBLADO && it.status == SkyStatus.POR_CONFIRMAR })
-    }
-
-    @Test
-    fun consecutiveRainMergesInChileLocalTime() {
-        val day = SkyCatalog.fromJson(catalogText()).on(LocalDate.of(2026, 11, 7))!!
-        val spans = SkyWeather.merged(day, santiago)
-        val rain = spans.first { it.kind == SkyKind.LLUVIA }
-        assertEquals(LocalTime.of(3, 0), rain.start.toLocalTime())
-        assertEquals(LocalTime.of(15, 0), rain.end.toLocalTime())
-        assertTrue(SkyWeather.summary(day, santiago).contains("Lluvia 03:00–15:00"))
+        assertEquals(365, table.days.size)
+        assertTrue(table.on(LocalDate.of(2026, 11, 12)) != null)
+        assertEquals(null, table.on(LocalDate.of(2027, 1, 1)))
     }
 
     @Test
@@ -46,11 +29,42 @@ class SkyWeatherTest {
         assertFalse(SkyWeather.allows(listOf("Rainbow"), SkyKind.LLUVIA))
         assertFalse(SkyWeather.allows(listOf("Sunny"), SkyKind.LLUVIA))
         assertTrue(SkyWeather.allows(listOf("Sunny", "Rainy", "Rainbow"), SkyKind.METEORO))
-        val noon = LocalDate.of(2026, 11, 6).atTime(12, 0).atZone(ZoneOffset.UTC).toInstant()
-        val day = SkyCatalog.fromJson(catalogText()).on(LocalDate.of(2026, 11, 6))
-        assertTrue(SkyWeather.availableNow(listOf("Day"), listOf("Rainy"), noon, day).not())
-        assertTrue(SkyWeather.availableNow(listOf("Day"), listOf("Sunny"), noon, day))
-        assertFalse(SkyWeather.availableNow(listOf("Night"), listOf("Sunny"), noon, day))
+        val duringDay = LocalDate.of(2026, 11, 6).atTime(18, 0).atZone(ZoneOffset.UTC).toInstant()
+        val day = SkyCatalog.fromJson(
+            """
+            {"days":[{"date":"2026-11-06","slots":[
+              {"start":"00:00","end":"06:00","kind":"lluvia","status":"acuerdo"},
+              {"start":"06:00","end":"12:00","kind":"lluvia","status":"acuerdo"},
+              {"start":"12:00","end":"18:00","kind":"lluvia","status":"acuerdo"},
+              {"start":"18:00","end":"24:00","kind":"soleado","status":"acuerdo"}
+            ]}]}
+            """.trimIndent(),
+        ).on(LocalDate.of(2026, 11, 6))
+        assertTrue(SkyWeather.availableNow(listOf("Day"), listOf("Rainy"), duringDay, day).not())
+        assertTrue(SkyWeather.availableNow(listOf("Day"), listOf("Sunny"), duringDay, day))
+        assertFalse(SkyWeather.availableNow(listOf("Night"), listOf("Sunny"), duringDay, day))
+    }
+
+    @Test
+    fun gameDayRainUsesDawnFrameNotCivilMidnight() {
+        val table = SkyCatalog.fromJson(
+            """
+            {"days":[{"date":"2026-11-07","slots":[
+              {"start":"00:00","end":"06:00","kind":"despejado","status":"acuerdo"},
+              {"start":"06:00","end":"12:00","kind":"lluvia","status":"acuerdo"},
+              {"start":"12:00","end":"18:00","kind":"lluvia","status":"acuerdo"},
+              {"start":"18:00","end":"24:00","kind":"despejado","status":"acuerdo"}
+            ]}]}
+            """.trimIndent(),
+        )
+        val spans = com.guiaheartopia.app.domain.SkyWeatherGameDay.spansForGameDay(
+            table,
+            LocalDate.of(2026, 11, 7),
+            java.time.ZoneId.of("America/Santiago"),
+        )
+        val rain = spans.filter { it.kind == SkyKind.LLUVIA }
+        assertEquals(LocalTime.of(8, 0), rain.first().start.toLocalTime())
+        assertEquals(LocalTime.of(18, 0), rain.last().end.toLocalTime())
     }
 
     private fun catalogText(): String = listOf(

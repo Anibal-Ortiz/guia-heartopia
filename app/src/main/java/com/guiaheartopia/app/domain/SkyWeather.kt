@@ -13,18 +13,28 @@ enum class SkyKind(
     val emoji: String,
     val creature: String,
 ) {
-    DESPEJADO("Despejado", "🌕", "SUN"),
+    DESPEJADO("Despejado", "☀️", "SUN"),
     NUBLADO("Nublado", "☁️", "SUN"),
     SOLEADO("Sol", "☀️", "SUN"),
     LLUVIA("Lluvia", "🌧️", "RAIN"),
     ARCOIRIS("Arcoíris", "🌈", "RAINBOW"),
     ARCOIRIS_LUNA("Arcoíris de luna", "🌙", "RAINBOW"),
-    METEORO("Meteoros", "☄️", "OTHER"),
+    METEORO("Meteoritos", "☄️", "OTHER"),
     NIEVE("Nieve", "❄️", "OTHER"),
     AURORA("Aurora", "🌌", "OTHER"),
     CALOR("Calor", "🔥", "OTHER"),
     PETALOS("Lluvia de pétalos", "🌸", "OTHER"),
     SIN_DATOS("Sin datos", "·", "NONE"),
+}
+
+/** Clima en la app: despejado, lluvia, arcoíris, nieve o meteoritos (el JSON conserva el kind original). */
+fun SkyKind.climateDisplay(): SkyKind = when (this) {
+    SkyKind.LLUVIA -> SkyKind.LLUVIA
+    SkyKind.ARCOIRIS, SkyKind.ARCOIRIS_LUNA -> SkyKind.ARCOIRIS
+    SkyKind.NIEVE -> SkyKind.NIEVE
+    SkyKind.METEORO -> SkyKind.METEORO
+    SkyKind.SIN_DATOS -> SkyKind.SIN_DATOS
+    else -> SkyKind.DESPEJADO
 }
 
 enum class SkyStatus { ACUERDO, POR_CONFIRMAR, SIN_DATOS }
@@ -36,6 +46,8 @@ data class SkySlot(
     val status: SkyStatus,
     val place: String? = null,
     val special: String? = null,
+    val detail: String = "",
+    val rawKind: String = "",
 ) {
     fun title(): String {
         val base = if (kind == SkyKind.METEORO && !place.isNullOrBlank()) {
@@ -44,8 +56,12 @@ data class SkySlot(
             "${kind.emoji} ${kind.label}"
         }
         val extra = if (special == "luna_carmesi") " · Luna carmesí" else ""
-        val mark = if (status == SkyStatus.POR_CONFIRMAR) " (por confirmar)" else ""
-        return base + extra + mark
+        return base + extra
+    }
+
+    /** Etiqueta sin emoji para la UI de clima (cinco tipos visibles). */
+    fun plainTitle(): String {
+        return kind.climateDisplay().label
     }
 }
 
@@ -59,14 +75,12 @@ data class SkySpan(
 ) {
     fun text(): String {
         val clock = DateTimeFormatter.ofPattern("HH:mm")
-        val label = if (kind == SkyKind.METEORO && !place.isNullOrBlank()) {
-            "${kind.emoji} ${kind.label} en $place"
-        } else {
-            "${kind.emoji} ${kind.label}"
-        }
+        val label = kind.climateDisplay().label
         return "$label ${start.toLocalTime().format(clock)}–${end.toLocalTime().format(clock)}"
     }
 }
+
+data class SkyBarSegment(val kind: SkyKind, val weight: Int)
 
 data class SkyDay(
     val date: LocalDate,
@@ -74,12 +88,20 @@ data class SkyDay(
 )
 
 /**
- * El reloj del calendario de Tidebell coincidía con UTC el 2026-11-07.
- * Los tramos 00–06, 06–12, 12–18 y 18–24 se guardan en esa hora de servidor
- * y se convierten a la zona del país, con horario de verano.
+ * Las horas del calendario son el reloj local de la zona elegida, no UTC.
+ * La UI usa [SkyWeatherGameDay]. El horario de las criaturas sigue en [DexSchedule].
  */
 object SkyWeather {
     private val allCreatureWeather = setOf("Sunny", "Rainy", "Rainbow")
+
+    private fun containsClock(slot: SkySlot, time: LocalTime): Boolean {
+        val end = slot.end
+        return if (end == LocalTime.MIDNIGHT || !end.isAfter(slot.start)) {
+            !time.isBefore(slot.start)
+        } else {
+            !time.isBefore(slot.start) && time.isBefore(end)
+        }
+    }
 
     fun slotIndex(instant: Instant): Int {
         val hour = instant.atZone(ZoneOffset.UTC).hour
@@ -87,44 +109,41 @@ object SkyWeather {
     }
 
     fun localWindow(date: LocalDate, slot: SkySlot, zone: ZoneId): Pair<ZonedDateTime, ZonedDateTime> {
-        val start = ZonedDateTime.of(date, slot.start, ZoneOffset.UTC).withZoneSameInstant(zone)
-        val endDate = if (!slot.end.isAfter(slot.start) || slot.end == LocalTime.MIDNIGHT) date.plusDays(1) else date
-        val endTime = if (slot.end == LocalTime.MIDNIGHT && slot.end.hour == 0 && slot.start.hour >= 18) {
-            LocalTime.MIDNIGHT
-        } else slot.end
-        val end = if (slot.end.hour == 0 && slot.start.hour == 18) {
-            ZonedDateTime.of(date.plusDays(1), LocalTime.MIDNIGHT, ZoneOffset.UTC).withZoneSameInstant(zone)
-        } else {
-            ZonedDateTime.of(endDate, endTime, ZoneOffset.UTC).withZoneSameInstant(zone)
-        }
-        return start to end
+        val (start, end) = SkyWeatherLocal.utcSlotRange(date, slot)
+        return ZonedDateTime.ofInstant(start, zone) to ZonedDateTime.ofInstant(end, zone)
     }
 
     fun slotAt(day: SkyDay?, instant: Instant): SkySlot? {
         if (day == null) return null
-        val utcDate = instant.atZone(ZoneOffset.UTC).toLocalDate()
-        if (day.date != utcDate) return null
-        return day.slots.getOrNull(slotIndex(instant))
+        val utc = instant.atZone(ZoneOffset.UTC)
+        if (day.date != utc.toLocalDate()) return null
+        return day.slots.firstOrNull { slot -> containsClock(slot, utc.toLocalTime()) }
     }
 
-    /** Tramos seguidos con el mismo cielo se juntan en la hora local. */
+    fun availableNow(
+        schedule: List<String>,
+        neededWeather: List<String>,
+        instant: Instant,
+        table: com.guiaheartopia.app.data.SkyTable,
+        zone: ZoneId,
+    ): Boolean {
+        if (!DexSchedule.availableNow(schedule, instant)) return false
+        val slot = SkyWeatherGameDay.conditionAt(table, instant, zone) ?: return true
+        if (slot.status == SkyStatus.SIN_DATOS || slot.kind == SkyKind.SIN_DATOS) return true
+        return allows(neededWeather, slot.kind)
+    }
+
     fun merged(day: SkyDay, zone: ZoneId): List<SkySpan> {
-        val spans = ArrayList<SkySpan>()
-        for (slot in day.slots) {
-            if (slot.kind == SkyKind.SIN_DATOS) continue
-            val (start, end) = localWindow(day.date, slot, zone)
-            val previous = spans.lastOrNull()
-            if (previous != null && previous.kind == slot.kind && previous.place == slot.place && previous.status == slot.status) {
-                spans[spans.lastIndex] = previous.copy(end = end, special = previous.special ?: slot.special)
-            } else {
-                spans += SkySpan(slot.kind, slot.status, slot.place, slot.special, start, end)
-            }
+        val table = com.guiaheartopia.app.data.SkyTable("", "", mapOf(day.date to day))
+        return SkyWeatherGameDay.spansForGameDay(table, day.date, zone).map { span ->
+            SkySpan(span.kind, span.status, null, null, span.start, span.end)
         }
-        return spans
     }
 
-    fun summary(day: SkyDay, zone: ZoneId): String =
-        merged(day, zone).joinToString(" · ") { it.text() }.ifBlank { "Sin datos de clima" }
+    fun summary(day: SkyDay, zone: ZoneId): String {
+        val table = com.guiaheartopia.app.data.SkyTable("", "", mapOf(day.date to day))
+        return SkyWeatherGameDay.summaryForGameDay(table, day.date, zone)
+    }
 
     /**
      * El arcoíris cubre sol, lluvia y arcoíris. La lluvia no cubre el arcoíris.

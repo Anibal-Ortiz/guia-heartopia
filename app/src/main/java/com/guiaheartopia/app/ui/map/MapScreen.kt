@@ -58,7 +58,11 @@ fun MapScreen(zoneId: String) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text("Mapa", style = MaterialTheme.typography.headlineSmall)
+        com.guiaheartopia.app.ui.components.SectionBanner(
+            image = com.guiaheartopia.app.R.drawable.header_mapa,
+            title = "Mapa",
+            subtitle = "Parcelas, bosque y ruinas",
+        )
         Text(
             "Dibujo original de 12 parcelas, un bosque y unas ruinas. No es el mapa del juego ni usa sus coordenadas.",
             style = MaterialTheme.typography.bodyMedium,
@@ -121,7 +125,6 @@ fun MapScreen(zoneId: String) {
                 Text("Hoy", style = MaterialTheme.typography.titleMedium)
                 if (filter != MapFilter.FLURITA) Text("Liuliu: ${com.guiaheartopia.app.domain.ResourceCalendar.label(spot.liuliu)}", color = Green)
                 if (filter != MapFilter.LIULIU) Text("flurita: ${com.guiaheartopia.app.domain.ResourceCalendar.label(spot.flurita)}", color = Orange)
-                Text(spot.certainty.label, style = MaterialTheme.typography.bodySmall)
             }
         }
     }

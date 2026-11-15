@@ -2,7 +2,7 @@
   "source": "https://www.heartodex.com/",
   "extractedOn": "2026-11-07",
   "terms": "https://www.heartodex.com/en/terms/",
-  "note": "Páginas índice en español (peces, aves, insectos, animales salvajes), sin abrir cada ficha. El id de la app no cambia: se empareja por data-id o por la imagen. El nombre en inglés queda en nameEn para la búsqueda. Nivel y sombra solo si la tarjeta los trae. Precio y cebo no están en el índice.",
+  "note": "Fichas con datos de aparición. El texto breve que muestra la app está escrito para esta guía. El nombre en inglés queda en nameEn para la búsqueda. Nivel y sombra solo si la tarjeta los trae.",
   "entries": [
     {
       "id": "fish-blue-sea-angel",
@@ -28,7 +28,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-blue-sea-angel.webp"
     },
     {
       "id": "fish-green-sea-angel",
@@ -55,7 +56,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-green-sea-angel.webp"
     },
     {
       "id": "fish-golden-cuttlefish",
@@ -81,7 +83,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-golden-cuttlefish.webp"
     },
     {
       "id": "fish-purple-sea-angel",
@@ -108,7 +111,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-purple-sea-angel.webp"
     },
     {
       "id": "fish-pharaoh-cuttlefish",
@@ -134,7 +138,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-pharaoh-cuttlefish.webp"
     },
     {
       "id": "fish-spineless-cuttlefish",
@@ -160,7 +165,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-spineless-cuttlefish.webp"
     },
     {
       "id": "fish-schneider",
@@ -186,7 +192,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-schneider.webp"
     },
     {
       "id": "fish-common-bleak",
@@ -212,7 +219,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-common-bleak.webp"
     },
     {
       "id": "fish-barbel",
@@ -238,7 +246,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-barbel.webp"
     },
     {
       "id": "fish-common-chub",
@@ -264,7 +273,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-common-chub.webp"
     },
     {
       "id": "fish-oriental-shrimp",
@@ -290,7 +300,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-oriental-shrimp.webp"
     },
     {
       "id": "fish-common-prawn",
@@ -316,7 +327,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-common-prawn.webp"
     },
     {
       "id": "fish-crucian-carp",
@@ -342,7 +354,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-crucian-carp.webp"
     },
     {
       "id": "fish-common-whitefish",
@@ -368,7 +381,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-common-whitefish.webp"
     },
     {
       "id": "fish-sea-stickleback",
@@ -394,7 +408,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-sea-stickleback.webp"
     },
     {
       "id": "fish-scad",
@@ -420,7 +435,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-scad.webp"
     },
     {
       "id": "fish-skipjack-tuna",
@@ -446,7 +462,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Grande"
+      "shadow": "Grande",
+      "imageUrl": "asset:catalog/images/fish-skipjack-tuna.webp"
     },
     {
       "id": "fish-spined-loach",
@@ -472,7 +489,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-spined-loach.webp"
     },
     {
       "id": "fish-sea-bass",
@@ -498,7 +516,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-sea-bass.webp"
     },
     {
       "id": "fish-european-perch",
@@ -524,7 +543,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-european-perch.webp"
     },
     {
       "id": "fish-streber",
@@ -550,7 +570,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-streber.webp"
     },
     {
       "id": "fish-minnow",
@@ -576,7 +597,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-minnow.webp"
     },
     {
       "id": "fish-beltfish",
@@ -602,7 +624,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Grande"
+      "shadow": "Grande",
+      "imageUrl": "asset:catalog/images/fish-beltfish.webp"
     },
     {
       "id": "fish-striped-red-mullet",
@@ -628,7 +651,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Dorado"
+      "shadow": "Dorado",
+      "imageUrl": "asset:catalog/images/fish-striped-red-mullet.webp"
     },
     {
       "id": "fish-sardine",
@@ -654,7 +678,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-sardine.webp"
     },
     {
       "id": "fish-tench",
@@ -680,7 +705,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-tench.webp"
     },
     {
       "id": "fish-seahorse",
@@ -705,7 +731,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 2,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-seahorse.webp"
     },
     {
       "id": "fish-european-smelt",
@@ -731,7 +758,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 2,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-european-smelt.webp"
     },
     {
       "id": "fish-false-scad",
@@ -757,7 +785,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 2,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-false-scad.webp"
     },
     {
       "id": "fish-largemouth-bass",
@@ -782,7 +811,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 2,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-largemouth-bass.webp"
     },
     {
       "id": "fish-stone-loach",
@@ -808,7 +838,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 2,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-stone-loach.webp"
     },
     {
       "id": "fish-anglerfish",
@@ -834,7 +865,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 2,
-      "shadow": "Dorado"
+      "shadow": "Dorado",
+      "imageUrl": "asset:catalog/images/fish-anglerfish.webp"
     },
     {
       "id": "fish-common-octopus",
@@ -860,7 +892,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 2,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-common-octopus.webp"
     },
     {
       "id": "fish-atlantic-pygmy-octopus",
@@ -886,7 +919,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 2,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-atlantic-pygmy-octopus.webp"
     },
     {
       "id": "fish-turbot",
@@ -912,7 +946,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 2,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-turbot.webp"
     },
     {
       "id": "fish-hermit-crab",
@@ -938,7 +973,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 3,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-hermit-crab.webp"
     },
     {
       "id": "fish-european-crayfish",
@@ -963,7 +999,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 3,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-european-crayfish.webp"
     },
     {
       "id": "fish-zander",
@@ -988,7 +1025,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 3,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-zander.webp"
     },
     {
       "id": "fish-ruffe",
@@ -1012,7 +1050,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 3,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-ruffe.webp"
     },
     {
       "id": "fish-mud-sunfish",
@@ -1037,7 +1076,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 3,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-mud-sunfish.webp"
     },
     {
       "id": "fish-clownfish",
@@ -1063,7 +1103,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 3,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-clownfish.webp"
     },
     {
       "id": "fish-edible-frog",
@@ -1089,7 +1130,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 3,
-      "shadow": "Azul"
+      "shadow": "Azul",
+      "imageUrl": "asset:catalog/images/fish-edible-frog.webp"
     },
     {
       "id": "fish-atlantic-salmon",
@@ -1114,7 +1156,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 3,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-atlantic-salmon.webp"
     },
     {
       "id": "fish-tilapia",
@@ -1140,7 +1183,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 3,
-      "shadow": "Azul"
+      "shadow": "Azul",
+      "imageUrl": "asset:catalog/images/fish-tilapia.webp"
     },
     {
       "id": "fish-river-crab",
@@ -1166,7 +1210,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 4,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-river-crab.webp"
     },
     {
       "id": "fish-common-carp",
@@ -1189,7 +1234,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 4,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-common-carp.webp"
     },
     {
       "id": "fish-butterfly-koi",
@@ -1214,7 +1260,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 4,
-      "shadow": "Grande"
+      "shadow": "Grande",
+      "imageUrl": "asset:catalog/images/fish-butterfly-koi.webp"
     },
     {
       "id": "fish-burbot",
@@ -1238,7 +1285,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 4,
-      "shadow": "Grande"
+      "shadow": "Grande",
+      "imageUrl": "asset:catalog/images/fish-burbot.webp"
     },
     {
       "id": "fish-mussel",
@@ -1263,7 +1311,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 4,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-mussel.webp"
     },
     {
       "id": "fish-goby",
@@ -1287,7 +1336,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 4,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-goby.webp"
     },
     {
       "id": "fish-red-bellied-piranha",
@@ -1313,7 +1363,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 4,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-red-bellied-piranha.webp"
     },
     {
       "id": "fish-european-plaice",
@@ -1337,7 +1388,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 4,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-european-plaice.webp"
     },
     {
       "id": "fish-rabbit-fish",
@@ -1363,7 +1415,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 4,
-      "shadow": "Azul"
+      "shadow": "Azul",
+      "imageUrl": "asset:catalog/images/fish-rabbit-fish.webp"
     },
     {
       "id": "fish-tadpole",
@@ -1388,7 +1441,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 4,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-tadpole.webp"
     },
     {
       "id": "fish-freshwater-blenny",
@@ -1414,7 +1468,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 5,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-freshwater-blenny.webp"
     },
     {
       "id": "fish-atlantic-mackerel",
@@ -1437,7 +1492,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 5,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-atlantic-mackerel.webp"
     },
     {
       "id": "fish-european-flying-squid",
@@ -1463,7 +1519,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 5,
-      "shadow": "Dorado"
+      "shadow": "Dorado",
+      "imageUrl": "asset:catalog/images/fish-european-flying-squid.webp"
     },
     {
       "id": "fish-european-lobster",
@@ -1487,7 +1544,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 5,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-european-lobster.webp"
     },
     {
       "id": "fish-common-rudd",
@@ -1513,7 +1571,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 5,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-common-rudd.webp"
     },
     {
       "id": "fish-trout",
@@ -1536,7 +1595,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 5,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-trout.webp"
     },
     {
       "id": "fish-large-pearl-mussel",
@@ -1560,7 +1620,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 6,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-large-pearl-mussel.webp"
     },
     {
       "id": "fish-puffer-fish",
@@ -1584,7 +1645,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 6,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-puffer-fish.webp"
     },
     {
       "id": "fish-tub-gurnard",
@@ -1608,7 +1670,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 6,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-tub-gurnard.webp"
     },
     {
       "id": "fish-chum-salmon",
@@ -1632,7 +1695,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 6,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-chum-salmon.webp"
     },
     {
       "id": "fish-nursehound",
@@ -1658,7 +1722,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 6,
-      "shadow": "Grande"
+      "shadow": "Grande",
+      "imageUrl": "asset:catalog/images/fish-nursehound.webp"
     },
     {
       "id": "fish-grayling",
@@ -1684,7 +1749,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 6,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-grayling.webp"
     },
     {
       "id": "fish-european-eel",
@@ -1707,7 +1773,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 7,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-european-eel.webp"
     },
     {
       "id": "fish-blackspot-seabream",
@@ -1730,7 +1797,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 7,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-blackspot-seabream.webp"
     },
     {
       "id": "fish-mediterranean-killifish",
@@ -1754,7 +1822,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 7,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-mediterranean-killifish.webp"
     },
     {
       "id": "fish-three-spined-stickleback",
@@ -1779,7 +1848,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 7,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-three-spined-stickleback.webp"
     },
     {
       "id": "fish-giant-oarfish",
@@ -1803,7 +1873,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 7,
-      "shadow": "Dorado"
+      "shadow": "Dorado",
+      "imageUrl": "asset:catalog/images/fish-giant-oarfish.webp"
     },
     {
       "id": "fish-mottled-sculpin",
@@ -1827,7 +1898,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 7,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-mottled-sculpin.webp"
     },
     {
       "id": "fish-king-crab",
@@ -1850,7 +1922,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 8,
-      "shadow": "Grande"
+      "shadow": "Grande",
+      "imageUrl": "asset:catalog/images/fish-king-crab.webp"
     },
     {
       "id": "fish-golden-king-crab",
@@ -1874,7 +1947,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 8,
-      "shadow": "Dorado"
+      "shadow": "Dorado",
+      "imageUrl": "asset:catalog/images/fish-golden-king-crab.webp"
     },
     {
       "id": "fish-blue-european-crayfish",
@@ -1898,7 +1972,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 8,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-blue-european-crayfish.webp"
     },
     {
       "id": "fish-haddock",
@@ -1922,7 +1997,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 8,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-haddock.webp"
     },
     {
       "id": "fish-goldfish",
@@ -1946,7 +2022,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 8,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-goldfish.webp"
     },
     {
       "id": "fish-european-mudminnow",
@@ -1969,7 +2046,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 8,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-european-mudminnow.webp"
     },
     {
       "id": "fish-bluefin-tuna",
@@ -1991,7 +2069,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 9,
-      "shadow": "Grande"
+      "shadow": "Grande",
+      "imageUrl": "asset:catalog/images/fish-bluefin-tuna.webp"
     },
     {
       "id": "fish-northern-pike",
@@ -2014,7 +2093,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 9,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-northern-pike.webp"
     },
     {
       "id": "fish-moonfish",
@@ -2038,7 +2118,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 9,
-      "shadow": "Dorado"
+      "shadow": "Dorado",
+      "imageUrl": "asset:catalog/images/fish-moonfish.webp"
     },
     {
       "id": "fish-ocean-sunfish",
@@ -2062,7 +2143,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 9,
-      "shadow": "Grande"
+      "shadow": "Grande",
+      "imageUrl": "asset:catalog/images/fish-ocean-sunfish.webp"
     },
     {
       "id": "fish-pumpkinseed",
@@ -2086,7 +2168,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 9,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-pumpkinseed.webp"
     },
     {
       "id": "fish-huchen",
@@ -2109,7 +2192,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 9,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-huchen.webp"
     },
     {
       "id": "fish-swordfish",
@@ -2131,7 +2215,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 10,
-      "shadow": "Grande"
+      "shadow": "Grande",
+      "imageUrl": "asset:catalog/images/fish-swordfish.webp"
     },
     {
       "id": "fish-wels-catfish",
@@ -2154,7 +2239,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 10,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-wels-catfish.webp"
     },
     {
       "id": "fish-bluegill",
@@ -2177,7 +2263,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 10,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-bluegill.webp"
     },
     {
       "id": "fish-shortfin-mako-shark",
@@ -2199,7 +2286,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 10,
-      "shadow": "Dorado"
+      "shadow": "Dorado",
+      "imageUrl": "asset:catalog/images/fish-shortfin-mako-shark.webp"
     },
     {
       "id": "fish-smooth-hammerhead",
@@ -2221,7 +2309,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 10,
-      "shadow": "Grande"
+      "shadow": "Grande",
+      "imageUrl": "asset:catalog/images/fish-smooth-hammerhead.webp"
     },
     {
       "id": "fish-arctic-char",
@@ -2244,7 +2333,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 10,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-arctic-char.webp"
     },
     {
       "id": "fish-asian-arowana",
@@ -2267,7 +2357,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 11,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-asian-arowana.webp"
     },
     {
       "id": "fish-blackspot-sergeant",
@@ -2290,7 +2381,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 11,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-blackspot-sergeant.webp"
     },
     {
       "id": "fish-lionhead",
@@ -2314,7 +2406,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 11,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-lionhead.webp"
     },
     {
       "id": "fish-whale-shark",
@@ -2338,7 +2431,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 11,
-      "shadow": "Dorado"
+      "shadow": "Dorado",
+      "imageUrl": "asset:catalog/images/fish-whale-shark.webp"
     },
     {
       "id": "fish-mahi-mahi",
@@ -2360,7 +2454,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 12,
-      "shadow": "Grande"
+      "shadow": "Grande",
+      "imageUrl": "asset:catalog/images/fish-mahi-mahi.webp"
     },
     {
       "id": "fish-moon-jelly",
@@ -2384,7 +2479,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 12,
-      "shadow": "Dorado"
+      "shadow": "Dorado",
+      "imageUrl": "asset:catalog/images/fish-moon-jelly.webp"
     },
     {
       "id": "fish-angelfish",
@@ -2406,7 +2502,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 12,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-angelfish.webp"
     },
     {
       "id": "fish-pink-betta",
@@ -2429,7 +2526,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 12,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-pink-betta.webp"
     },
     {
       "id": "fish-green-sea-turtle",
@@ -2451,7 +2549,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 12,
-      "shadow": "Grande"
+      "shadow": "Grande",
+      "imageUrl": "asset:catalog/images/fish-green-sea-turtle.webp"
     },
     {
       "id": "fish-white-faced-surgeonfish",
@@ -2475,7 +2574,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 13,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-white-faced-surgeonfish.webp"
     },
     {
       "id": "fish-lionfish",
@@ -2498,7 +2598,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 13,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-lionfish.webp"
     },
     {
       "id": "fish-blue-and-yellow-wrasse",
@@ -2522,7 +2623,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 14,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-blue-and-yellow-wrasse.webp"
     },
     {
       "id": "fish-azure-demoiselle",
@@ -2545,7 +2647,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 14,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-azure-demoiselle.webp"
     },
     {
       "id": "fish-japanese-flying-squid",
@@ -2571,7 +2674,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-japanese-flying-squid.webp"
     },
     {
       "id": "fish-firefly-squid",
@@ -2597,7 +2701,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-firefly-squid.webp"
     },
     {
       "id": "fish-sea-slug",
@@ -2623,7 +2728,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-sea-slug.webp"
     },
     {
       "id": "fish-mandarin-fish",
@@ -2649,7 +2755,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-mandarin-fish.webp"
     },
     {
       "id": "fish-oliver-ridley-turtle",
@@ -2675,7 +2782,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-oliver-ridley-turtle.webp"
     },
     {
       "id": "fish-flatback-turtle",
@@ -2701,7 +2809,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-flatback-turtle.webp"
     },
     {
       "id": "fish-scallop",
@@ -2727,7 +2836,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-scallop.webp"
     },
     {
       "id": "fish-golden-garfish",
@@ -2753,7 +2863,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Grande"
+      "shadow": "Grande",
+      "imageUrl": "asset:catalog/images/fish-golden-garfish.webp"
     },
     {
       "id": "fish-pale-gold-garfish",
@@ -2779,7 +2890,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Grande"
+      "shadow": "Grande",
+      "imageUrl": "asset:catalog/images/fish-pale-gold-garfish.webp"
     },
     {
       "id": "fish-brown-garfish",
@@ -2805,7 +2917,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Grande"
+      "shadow": "Grande",
+      "imageUrl": "asset:catalog/images/fish-brown-garfish.webp"
     },
     {
       "id": "fish-black-garfish",
@@ -2831,7 +2944,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Grande"
+      "shadow": "Grande",
+      "imageUrl": "asset:catalog/images/fish-black-garfish.webp"
     },
     {
       "id": "fish-silver-garfish",
@@ -2857,7 +2971,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Grande"
+      "shadow": "Grande",
+      "imageUrl": "asset:catalog/images/fish-silver-garfish.webp"
     },
     {
       "id": "fish-blue-brick-clownfish",
@@ -2883,7 +2998,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-blue-brick-clownfish.webp"
     },
     {
       "id": "fish-colorful-brick-clownfish",
@@ -2909,7 +3025,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-colorful-brick-clownfish.webp"
     },
     {
       "id": "fish-purple-brick-clownfish",
@@ -2935,7 +3052,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-purple-brick-clownfish.webp"
     },
     {
       "id": "fish-red-brick-clownfish",
@@ -2961,7 +3079,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-red-brick-clownfish.webp"
     },
     {
       "id": "fish-green-brick-clownfish",
@@ -2987,7 +3106,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-green-brick-clownfish.webp"
     },
     {
       "id": "fish-director-common-octopus-w-cinnamon-hat",
@@ -3013,7 +3133,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Grande"
+      "shadow": "Grande",
+      "imageUrl": "asset:catalog/images/fish-director-common-octopus-w-cinnamon-hat.webp"
     },
     {
       "id": "fish-director-common-octopus-w-patterned-hat",
@@ -3039,7 +3160,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Grande"
+      "shadow": "Grande",
+      "imageUrl": "asset:catalog/images/fish-director-common-octopus-w-patterned-hat.webp"
     },
     {
       "id": "fish-director-pygmy-octopus-w-cyan-hat",
@@ -3065,7 +3187,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-director-pygmy-octopus-w-cyan-hat.webp"
     },
     {
       "id": "fish-director-pygmy-octopus-w-navy-hat",
@@ -3091,7 +3214,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-director-pygmy-octopus-w-navy-hat.webp"
     },
     {
       "id": "fish-director-pygmy-octopus-w-brown-hat",
@@ -3117,7 +3241,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-director-pygmy-octopus-w-brown-hat.webp"
     },
     {
       "id": "fish-frostspore-seahorse",
@@ -3144,7 +3269,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Pequeño"
+      "shadow": "Pequeño",
+      "imageUrl": "asset:catalog/images/fish-frostspore-seahorse.webp"
     },
     {
       "id": "fish-frostspore-king-crab",
@@ -3171,7 +3297,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Grande"
+      "shadow": "Grande",
+      "imageUrl": "asset:catalog/images/fish-frostspore-king-crab.webp"
     },
     {
       "id": "fish-frostspore-puffer-fish",
@@ -3198,7 +3325,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Mediano"
+      "shadow": "Mediano",
+      "imageUrl": "asset:catalog/images/fish-frostspore-puffer-fish.webp"
     },
     {
       "id": "fish-frostspore-ocean-sunfish",
@@ -3225,7 +3353,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Grande"
+      "shadow": "Grande",
+      "imageUrl": "asset:catalog/images/fish-frostspore-ocean-sunfish.webp"
     },
     {
       "id": "fish-frostspore-whale-shark",
@@ -3251,7 +3380,8 @@
       "sourceUrl": "https://www.heartodex.com/peces/",
       "extractedOn": "2026-11-07",
       "level": 1,
-      "shadow": "Grande"
+      "shadow": "Grande",
+      "imageUrl": "asset:catalog/images/fish-frostspore-whale-shark.webp"
     },
     {
       "id": "bird-long-toothed-fruit-bat",
@@ -3274,7 +3404,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-long-toothed-fruit-bat.webp"
     },
     {
       "id": "bird-northern-white-faced-owl",
@@ -3297,7 +3428,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-northern-white-faced-owl.webp"
     },
     {
       "id": "bird-palau-scops-owl",
@@ -3320,7 +3452,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-palau-scops-owl.webp"
     },
     {
       "id": "bird-eastern-screech-owl",
@@ -3343,7 +3476,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-eastern-screech-owl.webp"
     },
     {
       "id": "bird-pumpkin-raven",
@@ -3368,7 +3502,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-pumpkin-raven.webp"
     },
     {
       "id": "bird-strawberry-raven",
@@ -3393,7 +3528,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-strawberry-raven.webp"
     },
     {
       "id": "bird-mandarin-raven",
@@ -3418,7 +3554,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-mandarin-raven.webp"
     },
     {
       "id": "bird-apple-raven",
@@ -3443,7 +3580,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-apple-raven.webp"
     },
     {
       "id": "bird-truffle-raven",
@@ -3468,7 +3606,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-truffle-raven.webp"
     },
     {
       "id": "bird-honduran-white-bat",
@@ -3491,7 +3630,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-honduran-white-bat.webp"
     },
     {
       "id": "bird-tanzanian-woolly-bat",
@@ -3514,7 +3654,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-tanzanian-woolly-bat.webp"
     },
     {
       "id": "bird-mallard",
@@ -3539,7 +3680,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-mallard.webp"
     },
     {
       "id": "bird-bearded-reedling",
@@ -3567,7 +3709,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-bearded-reedling.webp"
     },
     {
       "id": "bird-eurasian-bullfinch",
@@ -3592,7 +3735,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-eurasian-bullfinch.webp"
     },
     {
       "id": "bird-eurasian-wren",
@@ -3618,7 +3762,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-eurasian-wren.webp"
     },
     {
       "id": "bird-pied-imperial-pigeon",
@@ -3645,7 +3790,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-pied-imperial-pigeon.webp"
     },
     {
       "id": "bird-greater-flamingo",
@@ -3670,7 +3816,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-greater-flamingo.webp"
     },
     {
       "id": "bird-blue-and-yellow-macaw",
@@ -3695,7 +3842,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-blue-and-yellow-macaw.webp"
     },
     {
       "id": "bird-long-tailed-tit",
@@ -3720,7 +3868,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-long-tailed-tit.webp"
     },
     {
       "id": "bird-wonga-pigeon",
@@ -3747,7 +3896,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-wonga-pigeon.webp"
     },
     {
       "id": "bird-blue-peafowl",
@@ -3772,7 +3922,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-blue-peafowl.webp"
     },
     {
       "id": "bird-european-robin",
@@ -3797,7 +3948,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-european-robin.webp"
     },
     {
       "id": "bird-eurasian-collared-dove",
@@ -3822,7 +3974,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-eurasian-collared-dove.webp"
     },
     {
       "id": "bird-pink-necked-green-pigeon",
@@ -3847,7 +4000,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-pink-necked-green-pigeon.webp"
     },
     {
       "id": "bird-woodchat-shrike",
@@ -3872,7 +4026,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 2
+      "level": 2,
+      "imageUrl": "asset:catalog/images/bird-woodchat-shrike.webp"
     },
     {
       "id": "bird-great-tit",
@@ -3898,7 +4053,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 2
+      "level": 2,
+      "imageUrl": "asset:catalog/images/bird-great-tit.webp"
     },
     {
       "id": "bird-seagull",
@@ -3923,7 +4079,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 2
+      "level": 2,
+      "imageUrl": "asset:catalog/images/bird-seagull.webp"
     },
     {
       "id": "bird-eurasian-nuthatch",
@@ -3949,7 +4106,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 2
+      "level": 2,
+      "imageUrl": "asset:catalog/images/bird-eurasian-nuthatch.webp"
     },
     {
       "id": "bird-stock-dove",
@@ -3974,7 +4132,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 2
+      "level": 2,
+      "imageUrl": "asset:catalog/images/bird-stock-dove.webp"
     },
     {
       "id": "bird-eurasian-chaffinch",
@@ -3999,7 +4158,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 2
+      "level": 2,
+      "imageUrl": "asset:catalog/images/bird-eurasian-chaffinch.webp"
     },
     {
       "id": "bird-eurasian-wigeon",
@@ -4024,7 +4184,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 2
+      "level": 2,
+      "imageUrl": "asset:catalog/images/bird-eurasian-wigeon.webp"
     },
     {
       "id": "bird-european-shag",
@@ -4049,7 +4210,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 3
+      "level": 3,
+      "imageUrl": "asset:catalog/images/bird-european-shag.webp"
     },
     {
       "id": "bird-double-barred-finch",
@@ -4074,7 +4236,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 3
+      "level": 3,
+      "imageUrl": "asset:catalog/images/bird-double-barred-finch.webp"
     },
     {
       "id": "bird-king-eider",
@@ -4099,7 +4262,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 3
+      "level": 3,
+      "imageUrl": "asset:catalog/images/bird-king-eider.webp"
     },
     {
       "id": "bird-audouins-gull",
@@ -4124,7 +4288,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 3
+      "level": 3,
+      "imageUrl": "asset:catalog/images/bird-audouins-gull.webp"
     },
     {
       "id": "bird-red-and-green-macaw",
@@ -4149,7 +4314,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 3
+      "level": 3,
+      "imageUrl": "asset:catalog/images/bird-red-and-green-macaw.webp"
     },
     {
       "id": "bird-silver-throated-tit",
@@ -4174,7 +4340,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 3
+      "level": 3,
+      "imageUrl": "asset:catalog/images/bird-silver-throated-tit.webp"
     },
     {
       "id": "bird-eurasian-golden-oriole",
@@ -4199,7 +4366,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 3
+      "level": 3,
+      "imageUrl": "asset:catalog/images/bird-eurasian-golden-oriole.webp"
     },
     {
       "id": "bird-ruddy-shelduck",
@@ -4224,7 +4392,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 3
+      "level": 3,
+      "imageUrl": "asset:catalog/images/bird-ruddy-shelduck.webp"
     },
     {
       "id": "bird-pine-grosbeak",
@@ -4249,7 +4418,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 4
+      "level": 4,
+      "imageUrl": "asset:catalog/images/bird-pine-grosbeak.webp"
     },
     {
       "id": "bird-lady-amherst-pheasant",
@@ -4274,7 +4444,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 4
+      "level": 4,
+      "imageUrl": "asset:catalog/images/bird-lady-amherst-pheasant.webp"
     },
     {
       "id": "bird-white-wagtail",
@@ -4299,7 +4470,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 4
+      "level": 4,
+      "imageUrl": "asset:catalog/images/bird-white-wagtail.webp"
     },
     {
       "id": "bird-regent-bowerbird",
@@ -4324,7 +4496,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 4
+      "level": 4,
+      "imageUrl": "asset:catalog/images/bird-regent-bowerbird.webp"
     },
     {
       "id": "bird-przevalskis-parrotbill",
@@ -4349,7 +4522,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 4
+      "level": 4,
+      "imageUrl": "asset:catalog/images/bird-przevalskis-parrotbill.webp"
     },
     {
       "id": "bird-smew",
@@ -4374,7 +4548,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 4
+      "level": 4,
+      "imageUrl": "asset:catalog/images/bird-smew.webp"
     },
     {
       "id": "bird-wallaces-fruit-dove",
@@ -4399,7 +4574,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 4
+      "level": 4,
+      "imageUrl": "asset:catalog/images/bird-wallaces-fruit-dove.webp"
     },
     {
       "id": "bird-european-bee-eater",
@@ -4423,7 +4599,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 5
+      "level": 5,
+      "imageUrl": "asset:catalog/images/bird-european-bee-eater.webp"
     },
     {
       "id": "bird-brown-noddy",
@@ -4448,7 +4625,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 5
+      "level": 5,
+      "imageUrl": "asset:catalog/images/bird-brown-noddy.webp"
     },
     {
       "id": "bird-lesser-flamingo",
@@ -4472,7 +4650,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 5
+      "level": 5,
+      "imageUrl": "asset:catalog/images/bird-lesser-flamingo.webp"
     },
     {
       "id": "bird-great-green-macaw",
@@ -4496,7 +4675,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 5
+      "level": 5,
+      "imageUrl": "asset:catalog/images/bird-great-green-macaw.webp"
     },
     {
       "id": "bird-african-olive-pigeon",
@@ -4522,7 +4702,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 5
+      "level": 5,
+      "imageUrl": "asset:catalog/images/bird-african-olive-pigeon.webp"
     },
     {
       "id": "bird-yellow-bellied-flycatcher",
@@ -4548,7 +4729,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 5
+      "level": 5,
+      "imageUrl": "asset:catalog/images/bird-yellow-bellied-flycatcher.webp"
     },
     {
       "id": "bird-long-eared-owl",
@@ -4573,7 +4755,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 6
+      "level": 6,
+      "imageUrl": "asset:catalog/images/bird-long-eared-owl.webp"
     },
     {
       "id": "bird-red-faced-cormorant",
@@ -4599,7 +4782,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 6
+      "level": 6,
+      "imageUrl": "asset:catalog/images/bird-red-faced-cormorant.webp"
     },
     {
       "id": "bird-cinnamon-ground-dove",
@@ -4625,7 +4809,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 6
+      "level": 6,
+      "imageUrl": "asset:catalog/images/bird-cinnamon-ground-dove.webp"
     },
     {
       "id": "bird-hawfinch",
@@ -4651,7 +4836,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 6
+      "level": 6,
+      "imageUrl": "asset:catalog/images/bird-hawfinch.webp"
     },
     {
       "id": "bird-common-kestrel",
@@ -4675,7 +4861,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 7
+      "level": 7,
+      "imageUrl": "asset:catalog/images/bird-common-kestrel.webp"
     },
     {
       "id": "bird-tern",
@@ -4699,7 +4886,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 7
+      "level": 7,
+      "imageUrl": "asset:catalog/images/bird-tern.webp"
     },
     {
       "id": "bird-lears-macaw",
@@ -4723,7 +4911,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 7
+      "level": 7,
+      "imageUrl": "asset:catalog/images/bird-lears-macaw.webp"
     },
     {
       "id": "bird-azure-tit",
@@ -4749,7 +4938,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 7
+      "level": 7,
+      "imageUrl": "asset:catalog/images/bird-azure-tit.webp"
     },
     {
       "id": "bird-jambu-fruit-dove",
@@ -4774,7 +4964,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 7
+      "level": 7,
+      "imageUrl": "asset:catalog/images/bird-jambu-fruit-dove.webp"
     },
     {
       "id": "bird-peregrine-falcon",
@@ -4799,7 +4990,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 8
+      "level": 8,
+      "imageUrl": "asset:catalog/images/bird-peregrine-falcon.webp"
     },
     {
       "id": "bird-eastern-bluebird",
@@ -4823,7 +5015,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 8
+      "level": 8,
+      "imageUrl": "asset:catalog/images/bird-eastern-bluebird.webp"
     },
     {
       "id": "bird-pink-pigeon",
@@ -4849,7 +5042,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 8
+      "level": 8,
+      "imageUrl": "asset:catalog/images/bird-pink-pigeon.webp"
     },
     {
       "id": "bird-redpoll",
@@ -4874,7 +5068,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 8
+      "level": 8,
+      "imageUrl": "asset:catalog/images/bird-redpoll.webp"
     },
     {
       "id": "bird-imperial-shag",
@@ -4900,7 +5095,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 9
+      "level": 9,
+      "imageUrl": "asset:catalog/images/bird-imperial-shag.webp"
     },
     {
       "id": "bird-american-flamingo",
@@ -4923,7 +5119,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 9
+      "level": 9,
+      "imageUrl": "asset:catalog/images/bird-american-flamingo.webp"
     },
     {
       "id": "bird-white-headed-duck",
@@ -4947,7 +5144,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 9
+      "level": 9,
+      "imageUrl": "asset:catalog/images/bird-white-headed-duck.webp"
     },
     {
       "id": "bird-green-peafowl",
@@ -4972,7 +5170,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 9
+      "level": 9,
+      "imageUrl": "asset:catalog/images/bird-green-peafowl.webp"
     },
     {
       "id": "bird-paradise-tanager",
@@ -4995,7 +5194,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 9
+      "level": 9,
+      "imageUrl": "asset:catalog/images/bird-paradise-tanager.webp"
     },
     {
       "id": "bird-eagle-owl",
@@ -5019,7 +5219,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 10
+      "level": 10,
+      "imageUrl": "asset:catalog/images/bird-eagle-owl.webp"
     },
     {
       "id": "bird-azores-bullfinch",
@@ -5042,7 +5243,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 10
+      "level": 10,
+      "imageUrl": "asset:catalog/images/bird-azores-bullfinch.webp"
     },
     {
       "id": "bird-amur-falcon",
@@ -5068,7 +5270,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 10
+      "level": 10,
+      "imageUrl": "asset:catalog/images/bird-amur-falcon.webp"
     },
     {
       "id": "bird-verditer-flycatcher",
@@ -5091,7 +5294,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 10
+      "level": 10,
+      "imageUrl": "asset:catalog/images/bird-verditer-flycatcher.webp"
     },
     {
       "id": "bird-baikal-teal",
@@ -5114,7 +5318,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 11
+      "level": 11,
+      "imageUrl": "asset:catalog/images/bird-baikal-teal.webp"
     },
     {
       "id": "bird-inca-tern",
@@ -5137,7 +5342,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 11
+      "level": 11,
+      "imageUrl": "asset:catalog/images/bird-inca-tern.webp"
     },
     {
       "id": "bird-violet-backed-starling",
@@ -5162,7 +5368,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 11
+      "level": 11,
+      "imageUrl": "asset:catalog/images/bird-violet-backed-starling.webp"
     },
     {
       "id": "bird-blue-headed-quail-dove",
@@ -5185,7 +5392,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 11
+      "level": 11,
+      "imageUrl": "asset:catalog/images/bird-blue-headed-quail-dove.webp"
     },
     {
       "id": "bird-white-peafowl",
@@ -5210,7 +5418,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 11
+      "level": 11,
+      "imageUrl": "asset:catalog/images/bird-white-peafowl.webp"
     },
     {
       "id": "bird-snowy-owl",
@@ -5233,7 +5442,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 12
+      "level": 12,
+      "imageUrl": "asset:catalog/images/bird-snowy-owl.webp"
     },
     {
       "id": "bird-red-browed-finch",
@@ -5256,7 +5466,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 12
+      "level": 12,
+      "imageUrl": "asset:catalog/images/bird-red-browed-finch.webp"
     },
     {
       "id": "bird-atlantic-puffin",
@@ -5279,7 +5490,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 12
+      "level": 12,
+      "imageUrl": "asset:catalog/images/bird-atlantic-puffin.webp"
     },
     {
       "id": "bird-blue-footed-booby",
@@ -5303,7 +5515,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 12
+      "level": 12,
+      "imageUrl": "asset:catalog/images/bird-blue-footed-booby.webp"
     },
     {
       "id": "bird-whooper-swan",
@@ -5327,7 +5540,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 13
+      "level": 13,
+      "imageUrl": "asset:catalog/images/bird-whooper-swan.webp"
     },
     {
       "id": "bird-black-swan",
@@ -5351,7 +5565,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 13
+      "level": 13,
+      "imageUrl": "asset:catalog/images/bird-black-swan.webp"
     },
     {
       "id": "bird-black-peafowl",
@@ -5376,7 +5591,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 13
+      "level": 13,
+      "imageUrl": "asset:catalog/images/bird-black-peafowl.webp"
     },
     {
       "id": "bird-black-stork",
@@ -5400,7 +5616,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 14
+      "level": 14,
+      "imageUrl": "asset:catalog/images/bird-black-stork.webp"
     },
     {
       "id": "bird-spectacled-owl",
@@ -5423,7 +5640,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 14
+      "level": 14,
+      "imageUrl": "asset:catalog/images/bird-spectacled-owl.webp"
     },
     {
       "id": "bird-wandering-albatross",
@@ -5448,7 +5666,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-wandering-albatross.webp"
     },
     {
       "id": "bird-grey-mantled-albatross",
@@ -5473,7 +5692,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-grey-mantled-albatross.webp"
     },
     {
       "id": "bird-white-spoonbill",
@@ -5498,7 +5718,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-white-spoonbill.webp"
     },
     {
       "id": "bird-roseate-spoonbill",
@@ -5523,7 +5744,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-roseate-spoonbill.webp"
     },
     {
       "id": "bird-white-winged-tern",
@@ -5548,7 +5770,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-white-winged-tern.webp"
     },
     {
       "id": "bird-pomarine-skua",
@@ -5575,7 +5798,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-pomarine-skua.webp"
     },
     {
       "id": "bird-blue-hoopoe",
@@ -5600,7 +5824,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-blue-hoopoe.webp"
     },
     {
       "id": "bird-colorful-hoopoe",
@@ -5625,7 +5850,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-colorful-hoopoe.webp"
     },
     {
       "id": "bird-orange-hoopoe",
@@ -5650,7 +5876,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-orange-hoopoe.webp"
     },
     {
       "id": "bird-red-hoopoe",
@@ -5675,7 +5902,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-red-hoopoe.webp"
     },
     {
       "id": "bird-green-hoopoe",
@@ -5700,7 +5928,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-green-hoopoe.webp"
     },
     {
       "id": "bird-blue-brick-sparrow",
@@ -5725,7 +5954,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-blue-brick-sparrow.webp"
     },
     {
       "id": "bird-purple-brick-sparrow",
@@ -5750,7 +5980,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-purple-brick-sparrow.webp"
     },
     {
       "id": "bird-colorful-brick-sparrow",
@@ -5775,7 +6006,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-colorful-brick-sparrow.webp"
     },
     {
       "id": "bird-pink-brick-sparrow",
@@ -5800,7 +6032,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-pink-brick-sparrow.webp"
     },
     {
       "id": "bird-green-brick-sparrow",
@@ -5825,7 +6058,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-green-brick-sparrow.webp"
     },
     {
       "id": "bird-blue-suit-dove",
@@ -5851,7 +6085,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-blue-suit-dove.webp"
     },
     {
       "id": "bird-gray-suit-dove",
@@ -5877,7 +6112,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-gray-suit-dove.webp"
     },
     {
       "id": "bird-striped-suit-dove",
@@ -5902,7 +6138,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-striped-suit-dove.webp"
     },
     {
       "id": "bird-red-suit-dove",
@@ -5928,7 +6165,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-red-suit-dove.webp"
     },
     {
       "id": "bird-green-suit-dove",
@@ -5954,7 +6192,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-green-suit-dove.webp"
     },
     {
       "id": "bird-winter-mallard",
@@ -5980,7 +6219,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-winter-mallard.webp"
     },
     {
       "id": "bird-winter-greater-flamingo",
@@ -6006,7 +6246,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-winter-greater-flamingo.webp"
     },
     {
       "id": "bird-winter-mandarin-duck",
@@ -6031,7 +6272,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-winter-mandarin-duck.webp"
     },
     {
       "id": "bird-winter-smew",
@@ -6057,7 +6299,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-winter-smew.webp"
     },
     {
       "id": "bird-winter-eurasian-wigeon",
@@ -6083,7 +6326,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/aves/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/bird-winter-eurasian-wigeon.webp"
     },
     {
       "id": "insect-pumpkin-dung-beetle",
@@ -6108,7 +6352,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-pumpkin-dung-beetle.webp"
     },
     {
       "id": "insect-strawberry-dung-beetle",
@@ -6133,7 +6378,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-strawberry-dung-beetle.webp"
     },
     {
       "id": "insect-mandarin-dung-beetle",
@@ -6158,7 +6404,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-mandarin-dung-beetle.webp"
     },
     {
       "id": "insect-shiitake-dung-beetle",
@@ -6183,7 +6430,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-shiitake-dung-beetle.webp"
     },
     {
       "id": "insect-truffle-dung-beetle",
@@ -6208,7 +6456,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-truffle-dung-beetle.webp"
     },
     {
       "id": "insect-cabbage-white",
@@ -6234,7 +6483,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-cabbage-white.webp"
     },
     {
       "id": "insect-large-red-damselfly",
@@ -6260,7 +6510,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-large-red-damselfly.webp"
     },
     {
       "id": "insect-european-firebug",
@@ -6285,7 +6536,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-european-firebug.webp"
     },
     {
       "id": "insect-asparagus-beetle",
@@ -6310,7 +6562,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-asparagus-beetle.webp"
     },
     {
       "id": "insect-gold-grasshopper",
@@ -6335,7 +6588,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-gold-grasshopper.webp"
     },
     {
       "id": "insect-apollo",
@@ -6360,7 +6614,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-apollo.webp"
     },
     {
       "id": "insect-orange-tip",
@@ -6385,7 +6640,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-orange-tip.webp"
     },
     {
       "id": "insect-common-brimstone",
@@ -6410,7 +6666,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-common-brimstone.webp"
     },
     {
       "id": "insect-old-world-swallowtail",
@@ -6437,7 +6694,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-old-world-swallowtail.webp"
     },
     {
       "id": "insect-postman-butterfly",
@@ -6462,7 +6720,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-postman-butterfly.webp"
     },
     {
       "id": "insect-sulkowskys-morpho",
@@ -6487,7 +6746,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-sulkowskys-morpho.webp"
     },
     {
       "id": "insect-bumblebee",
@@ -6512,7 +6772,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 2
+      "level": 2,
+      "imageUrl": "asset:catalog/images/insect-bumblebee.webp"
     },
     {
       "id": "insect-green-tiger-beetle",
@@ -6540,7 +6801,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 2
+      "level": 2,
+      "imageUrl": "asset:catalog/images/insect-green-tiger-beetle.webp"
     },
     {
       "id": "insect-wasp-beetle",
@@ -6566,7 +6828,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 2
+      "level": 2,
+      "imageUrl": "asset:catalog/images/insect-wasp-beetle.webp"
     },
     {
       "id": "insect-amethyst-flower-beetle",
@@ -6590,7 +6853,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 2
+      "level": 2,
+      "imageUrl": "asset:catalog/images/insect-amethyst-flower-beetle.webp"
     },
     {
       "id": "insect-siberian-grasshopper",
@@ -6616,7 +6880,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 2
+      "level": 2,
+      "imageUrl": "asset:catalog/images/insect-siberian-grasshopper.webp"
     },
     {
       "id": "insect-four-spotted-skimmer",
@@ -6640,7 +6905,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 2
+      "level": 2,
+      "imageUrl": "asset:catalog/images/insect-four-spotted-skimmer.webp"
     },
     {
       "id": "insect-common-blue-butterfly",
@@ -6668,7 +6934,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 2
+      "level": 2,
+      "imageUrl": "asset:catalog/images/insect-common-blue-butterfly.webp"
     },
     {
       "id": "insect-seven-spotted-ladybug",
@@ -6692,7 +6959,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 2
+      "level": 2,
+      "imageUrl": "asset:catalog/images/insect-seven-spotted-ladybug.webp"
     },
     {
       "id": "insect-waroona-cuckoo-bee",
@@ -6716,7 +6984,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 3
+      "level": 3,
+      "imageUrl": "asset:catalog/images/insect-waroona-cuckoo-bee.webp"
     },
     {
       "id": "insect-fire-colored-beetle",
@@ -6744,7 +7013,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 3
+      "level": 3,
+      "imageUrl": "asset:catalog/images/insect-fire-colored-beetle.webp"
     },
     {
       "id": "insect-ant",
@@ -6769,7 +7039,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 3
+      "level": 3,
+      "imageUrl": "asset:catalog/images/insect-ant.webp"
     },
     {
       "id": "insect-rajah-brookes-birdwing",
@@ -6793,7 +7064,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 3
+      "level": 3,
+      "imageUrl": "asset:catalog/images/insect-rajah-brookes-birdwing.webp"
     },
     {
       "id": "insect-purple-emperor",
@@ -6816,7 +7088,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 3
+      "level": 3,
+      "imageUrl": "asset:catalog/images/insect-purple-emperor.webp"
     },
     {
       "id": "insect-mini-moon-moth",
@@ -6839,7 +7112,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 3
+      "level": 3,
+      "imageUrl": "asset:catalog/images/insect-mini-moon-moth.webp"
     },
     {
       "id": "insect-katydid",
@@ -6864,7 +7138,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 3
+      "level": 3,
+      "imageUrl": "asset:catalog/images/insect-katydid.webp"
     },
     {
       "id": "insect-pink-katydid",
@@ -6889,7 +7164,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 3
+      "level": 3,
+      "imageUrl": "asset:catalog/images/insect-pink-katydid.webp"
     },
     {
       "id": "insect-cicada",
@@ -6913,7 +7189,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 4
+      "level": 4,
+      "imageUrl": "asset:catalog/images/insect-cicada.webp"
     },
     {
       "id": "insect-large-banded-grasshopper",
@@ -6936,7 +7213,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 4
+      "level": 4,
+      "imageUrl": "asset:catalog/images/insect-large-banded-grasshopper.webp"
     },
     {
       "id": "insect-common-whitetail",
@@ -6960,7 +7238,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 4
+      "level": 4,
+      "imageUrl": "asset:catalog/images/insect-common-whitetail.webp"
     },
     {
       "id": "insect-mediterranean-mantis",
@@ -6983,7 +7262,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 4
+      "level": 4,
+      "imageUrl": "asset:catalog/images/insect-mediterranean-mantis.webp"
     },
     {
       "id": "insect-beautiful-leopard",
@@ -7006,7 +7286,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 4
+      "level": 4,
+      "imageUrl": "asset:catalog/images/insect-beautiful-leopard.webp"
     },
     {
       "id": "insect-four-spotted-ladybug",
@@ -7030,7 +7311,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 4
+      "level": 4,
+      "imageUrl": "asset:catalog/images/insect-four-spotted-ladybug.webp"
     },
     {
       "id": "insect-splay-footed-carpenter",
@@ -7054,7 +7336,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 5
+      "level": 5,
+      "imageUrl": "asset:catalog/images/insect-splay-footed-carpenter.webp"
     },
     {
       "id": "insect-alpine-longhorn-beetle",
@@ -7077,7 +7360,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 5
+      "level": 5,
+      "imageUrl": "asset:catalog/images/insect-alpine-longhorn-beetle.webp"
     },
     {
       "id": "insect-giant-asian-mantis",
@@ -7101,7 +7385,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 5
+      "level": 5,
+      "imageUrl": "asset:catalog/images/insect-giant-asian-mantis.webp"
     },
     {
       "id": "insect-mourning-cloak",
@@ -7124,7 +7409,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 5
+      "level": 5,
+      "imageUrl": "asset:catalog/images/insect-mourning-cloak.webp"
     },
     {
       "id": "insect-white-witch",
@@ -7148,7 +7434,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 5
+      "level": 5,
+      "imageUrl": "asset:catalog/images/insect-white-witch.webp"
     },
     {
       "id": "insect-peacock-butterfly",
@@ -7173,7 +7460,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 5
+      "level": 5,
+      "imageUrl": "asset:catalog/images/insect-peacock-butterfly.webp"
     },
     {
       "id": "insect-asian-lady-beetle",
@@ -7197,7 +7485,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 5
+      "level": 5,
+      "imageUrl": "asset:catalog/images/insect-asian-lady-beetle.webp"
     },
     {
       "id": "insect-beautiful-demoiselle",
@@ -7221,7 +7510,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 6
+      "level": 6,
+      "imageUrl": "asset:catalog/images/insect-beautiful-demoiselle.webp"
     },
     {
       "id": "insect-blue-shieldbug",
@@ -7244,7 +7534,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 6
+      "level": 6,
+      "imageUrl": "asset:catalog/images/insect-blue-shieldbug.webp"
     },
     {
       "id": "insect-silver-jewel-scarab",
@@ -7267,7 +7558,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 6
+      "level": 6,
+      "imageUrl": "asset:catalog/images/insect-silver-jewel-scarab.webp"
     },
     {
       "id": "insect-stag-beetle",
@@ -7290,7 +7582,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 6
+      "level": 6,
+      "imageUrl": "asset:catalog/images/insect-stag-beetle.webp"
     },
     {
       "id": "insect-green-birdwing",
@@ -7313,7 +7606,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 6
+      "level": 6,
+      "imageUrl": "asset:catalog/images/insect-green-birdwing.webp"
     },
     {
       "id": "insect-golden-jewel-scarab",
@@ -7335,7 +7629,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 7
+      "level": 7,
+      "imageUrl": "asset:catalog/images/insect-golden-jewel-scarab.webp"
     },
     {
       "id": "insect-elegant-flower-beetle",
@@ -7357,7 +7652,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 7
+      "level": 7,
+      "imageUrl": "asset:catalog/images/insect-elegant-flower-beetle.webp"
     },
     {
       "id": "insect-minotaur-beetle",
@@ -7381,7 +7677,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 7
+      "level": 7,
+      "imageUrl": "asset:catalog/images/insect-minotaur-beetle.webp"
     },
     {
       "id": "insect-crimson-marsh-glider",
@@ -7403,7 +7700,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 7
+      "level": 7,
+      "imageUrl": "asset:catalog/images/insect-crimson-marsh-glider.webp"
     },
     {
       "id": "insect-blue-morpho",
@@ -7426,7 +7724,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 7
+      "level": 7,
+      "imageUrl": "asset:catalog/images/insect-blue-morpho.webp"
     },
     {
       "id": "insect-chestnut-tiger",
@@ -7450,7 +7749,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 7
+      "level": 7,
+      "imageUrl": "asset:catalog/images/insect-chestnut-tiger.webp"
     },
     {
       "id": "insect-picasso-bug",
@@ -7472,7 +7772,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 8
+      "level": 8,
+      "imageUrl": "asset:catalog/images/insect-picasso-bug.webp"
     },
     {
       "id": "insect-horned-beetle",
@@ -7494,7 +7795,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 8
+      "level": 8,
+      "imageUrl": "asset:catalog/images/insect-horned-beetle.webp"
     },
     {
       "id": "insect-spanish-moon-moth",
@@ -7516,7 +7818,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 8
+      "level": 8,
+      "imageUrl": "asset:catalog/images/insect-spanish-moon-moth.webp"
     },
     {
       "id": "insect-comet-moth",
@@ -7538,7 +7841,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 8
+      "level": 8,
+      "imageUrl": "asset:catalog/images/insect-comet-moth.webp"
     },
     {
       "id": "insect-cerulean-carpenter",
@@ -7559,7 +7863,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 9
+      "level": 9,
+      "imageUrl": "asset:catalog/images/insect-cerulean-carpenter.webp"
     },
     {
       "id": "insect-rainbow-stag-beetle",
@@ -7585,7 +7890,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 9
+      "level": 9,
+      "imageUrl": "asset:catalog/images/insect-rainbow-stag-beetle.webp"
     },
     {
       "id": "insect-golden-stag-beetle",
@@ -7607,7 +7913,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 9
+      "level": 9,
+      "imageUrl": "asset:catalog/images/insect-golden-stag-beetle.webp"
     },
     {
       "id": "insect-conehead-mantis",
@@ -7629,7 +7936,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 9
+      "level": 9,
+      "imageUrl": "asset:catalog/images/insect-conehead-mantis.webp"
     },
     {
       "id": "insect-mother-of-pearl",
@@ -7651,7 +7959,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 9
+      "level": 9,
+      "imageUrl": "asset:catalog/images/insect-mother-of-pearl.webp"
     },
     {
       "id": "insect-hercules-beetle",
@@ -7674,7 +7983,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 10
+      "level": 10,
+      "imageUrl": "asset:catalog/images/insect-hercules-beetle.webp"
     },
     {
       "id": "insect-sunset-morpho",
@@ -7695,7 +8005,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 10
+      "level": 10,
+      "imageUrl": "asset:catalog/images/insect-sunset-morpho.webp"
     },
     {
       "id": "insect-morpho-helena",
@@ -7716,7 +8027,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 10
+      "level": 10,
+      "imageUrl": "asset:catalog/images/insect-morpho-helena.webp"
     },
     {
       "id": "insect-bagworm-moth",
@@ -7738,7 +8050,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 10
+      "level": 10,
+      "imageUrl": "asset:catalog/images/insect-bagworm-moth.webp"
     },
     {
       "id": "insect-atlas-beetle",
@@ -7760,7 +8073,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 11
+      "level": 11,
+      "imageUrl": "asset:catalog/images/insect-atlas-beetle.webp"
     },
     {
       "id": "insect-orchid-mantis",
@@ -7782,7 +8096,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 11
+      "level": 11,
+      "imageUrl": "asset:catalog/images/insect-orchid-mantis.webp"
     },
     {
       "id": "insect-queen-alexandras-birdwing",
@@ -7804,7 +8119,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 11
+      "level": 11,
+      "imageUrl": "asset:catalog/images/insect-queen-alexandras-birdwing.webp"
     },
     {
       "id": "insect-greater-asian-lady-beetle",
@@ -7825,7 +8141,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 11
+      "level": 11,
+      "imageUrl": "asset:catalog/images/insect-greater-asian-lady-beetle.webp"
     },
     {
       "id": "insect-goliath-beetle",
@@ -7846,7 +8163,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 12
+      "level": 12,
+      "imageUrl": "asset:catalog/images/insect-goliath-beetle.webp"
     },
     {
       "id": "insect-red-milkweed-locust",
@@ -7868,7 +8186,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 12
+      "level": 12,
+      "imageUrl": "asset:catalog/images/insect-red-milkweed-locust.webp"
     },
     {
       "id": "insect-flamer-skimmer",
@@ -7889,7 +8208,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 12
+      "level": 12,
+      "imageUrl": "asset:catalog/images/insect-flamer-skimmer.webp"
     },
     {
       "id": "insect-purple-spotted-swallowtail",
@@ -7912,7 +8232,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 12
+      "level": 12,
+      "imageUrl": "asset:catalog/images/insect-purple-spotted-swallowtail.webp"
     },
     {
       "id": "insect-scarce-morpho",
@@ -7933,7 +8254,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 13
+      "level": 13,
+      "imageUrl": "asset:catalog/images/insect-scarce-morpho.webp"
     },
     {
       "id": "insect-green-metalwing",
@@ -7955,7 +8277,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 13
+      "level": 13,
+      "imageUrl": "asset:catalog/images/insect-green-metalwing.webp"
     },
     {
       "id": "insect-green-snail",
@@ -7979,7 +8302,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 14
+      "level": 14,
+      "imageUrl": "asset:catalog/images/insect-green-snail.webp"
     },
     {
       "id": "insect-glasswing-butterfly",
@@ -8000,7 +8324,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 14
+      "level": 14,
+      "imageUrl": "asset:catalog/images/insect-glasswing-butterfly.webp"
     },
     {
       "id": "insect-white-banded-erebus-moth",
@@ -8025,7 +8350,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-white-banded-erebus-moth.webp"
     },
     {
       "id": "insect-blue-milkweed-beetle",
@@ -8050,7 +8376,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-blue-milkweed-beetle.webp"
     },
     {
       "id": "insect-agrias-butterfly",
@@ -8075,7 +8402,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-agrias-butterfly.webp"
     },
     {
       "id": "insect-morpho-luna",
@@ -8100,7 +8428,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-morpho-luna.webp"
     },
     {
       "id": "insect-green-flower-chafer",
@@ -8125,7 +8454,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-green-flower-chafer.webp"
     },
     {
       "id": "insect-brown-rhinoceros-beetle",
@@ -8150,7 +8480,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-brown-rhinoceros-beetle.webp"
     },
     {
       "id": "insect-iridescent-rhinoceros-beetle",
@@ -8175,7 +8506,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-iridescent-rhinoceros-beetle.webp"
     },
     {
       "id": "insect-grey-horned-firefly",
@@ -8200,7 +8532,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-grey-horned-firefly.webp"
     },
     {
       "id": "insect-purple-horned-firefly",
@@ -8225,7 +8558,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-purple-horned-firefly.webp"
     },
     {
       "id": "insect-pink-horned-firefly",
@@ -8250,7 +8584,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-pink-horned-firefly.webp"
     },
     {
       "id": "insect-yellow-brick-large-red-damselfly",
@@ -8275,7 +8610,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-yellow-brick-large-red-damselfly.webp"
     },
     {
       "id": "insect-blue-brick-large-red-damselfly",
@@ -8300,7 +8636,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-blue-brick-large-red-damselfly.webp"
     },
     {
       "id": "insect-purple-brick-large-red-damselfly",
@@ -8325,7 +8662,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-purple-brick-large-red-damselfly.webp"
     },
     {
       "id": "insect-colorful-brick-large-red-damselfly",
@@ -8350,7 +8688,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-colorful-brick-large-red-damselfly.webp"
     },
     {
       "id": "insect-pink-brick-large-red-damselfly",
@@ -8375,7 +8714,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-pink-brick-large-red-damselfly.webp"
     },
     {
       "id": "insect-golden-script-supervisor-bumblebee",
@@ -8400,7 +8740,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-golden-script-supervisor-bumblebee.webp"
     },
     {
       "id": "insect-purple-script-supervisor-bumblebee",
@@ -8425,7 +8766,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-purple-script-supervisor-bumblebee.webp"
     },
     {
       "id": "insect-red-script-supervisor-bumblebee",
@@ -8450,7 +8792,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-red-script-supervisor-bumblebee.webp"
     },
     {
       "id": "insect-pink-script-supervisor-bumblebee",
@@ -8475,7 +8818,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-pink-script-supervisor-bumblebee.webp"
     },
     {
       "id": "insect-green-script-supervisor-bumblebee",
@@ -8500,7 +8844,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-green-script-supervisor-bumblebee.webp"
     },
     {
       "id": "insect-frostspore-queen-alexandras-birdwing",
@@ -8526,7 +8871,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-frostspore-queen-alexandras-birdwing.webp"
     },
     {
       "id": "insect-frostspore-postman-butterfly",
@@ -8551,7 +8897,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-frostspore-postman-butterfly.webp"
     },
     {
       "id": "insect-frostspore-purple-spotted-swallowtail",
@@ -8577,7 +8924,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-frostspore-purple-spotted-swallowtail.webp"
     },
     {
       "id": "insect-frostspore-mother-of-pearl",
@@ -8604,7 +8952,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-frostspore-mother-of-pearl.webp"
     },
     {
       "id": "insect-frostspore-sulkowskys-morpho",
@@ -8632,7 +8981,8 @@
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/insectos/",
       "extractedOn": "2026-11-07",
-      "level": 1
+      "level": 1,
+      "imageUrl": "asset:catalog/images/insect-frostspore-sulkowskys-morpho.webp"
     },
     {
       "id": "wildlife-alpaca",
@@ -8649,7 +8999,8 @@
       "event": null,
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/animales-salvajes/",
-      "extractedOn": "2026-11-07"
+      "extractedOn": "2026-11-07",
+      "imageUrl": "asset:catalog/images/wildlife-alpaca.webp"
     },
     {
       "id": "wildlife-capybara",
@@ -8668,7 +9019,8 @@
       "event": null,
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/animales-salvajes/",
-      "extractedOn": "2026-11-07"
+      "extractedOn": "2026-11-07",
+      "imageUrl": "asset:catalog/images/wildlife-capybara.webp"
     },
     {
       "id": "wildlife-sika-deer",
@@ -8685,7 +9037,8 @@
       "event": null,
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/animales-salvajes/",
-      "extractedOn": "2026-11-07"
+      "extractedOn": "2026-11-07",
+      "imageUrl": "asset:catalog/images/wildlife-sika-deer.webp"
     },
     {
       "id": "wildlife-bunny",
@@ -8702,7 +9055,8 @@
       "event": null,
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/animales-salvajes/",
-      "extractedOn": "2026-11-07"
+      "extractedOn": "2026-11-07",
+      "imageUrl": "asset:catalog/images/wildlife-bunny.webp"
     },
     {
       "id": "wildlife-ferret",
@@ -8719,7 +9073,8 @@
       "event": null,
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/animales-salvajes/",
-      "extractedOn": "2026-11-07"
+      "extractedOn": "2026-11-07",
+      "imageUrl": "asset:catalog/images/wildlife-ferret.webp"
     },
     {
       "id": "wildlife-sea-otter",
@@ -8736,7 +9091,8 @@
       "event": null,
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/animales-salvajes/",
-      "extractedOn": "2026-11-07"
+      "extractedOn": "2026-11-07",
+      "imageUrl": "asset:catalog/images/wildlife-sea-otter.webp"
     },
     {
       "id": "wildlife-panda",
@@ -8753,7 +9109,8 @@
       "event": null,
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/animales-salvajes/",
-      "extractedOn": "2026-11-07"
+      "extractedOn": "2026-11-07",
+      "imageUrl": "asset:catalog/images/wildlife-panda.webp"
     },
     {
       "id": "wildlife-fox",
@@ -8772,7 +9129,8 @@
       "event": null,
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/animales-salvajes/",
-      "extractedOn": "2026-11-07"
+      "extractedOn": "2026-11-07",
+      "imageUrl": "asset:catalog/images/wildlife-fox.webp"
     },
     {
       "id": "wildlife-dolphin",
@@ -8789,7 +9147,8 @@
       "event": "Búsqueda de ballenas",
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/animales-salvajes/",
-      "extractedOn": "2026-11-07"
+      "extractedOn": "2026-11-07",
+      "imageUrl": "asset:catalog/images/wildlife-dolphin.webp"
     },
     {
       "id": "wildlife-maltese",
@@ -8806,7 +9165,8 @@
       "event": "Maltese",
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/animales-salvajes/",
-      "extractedOn": "2026-11-07"
+      "extractedOn": "2026-11-07",
+      "imageUrl": "asset:catalog/images/wildlife-maltese.webp"
     },
     {
       "id": "wildlife-penguin",
@@ -8823,7 +9183,8 @@
       "event": "Temporada de hielo y nieve",
       "source": "heartodex",
       "sourceUrl": "https://www.heartodex.com/animales-salvajes/",
-      "extractedOn": "2026-11-07"
+      "extractedOn": "2026-11-07",
+      "imageUrl": "asset:catalog/images/wildlife-penguin.webp"
     }
   ]
 }

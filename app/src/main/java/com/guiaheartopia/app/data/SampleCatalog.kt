@@ -3,7 +3,6 @@ package com.guiaheartopia.app.data
 import com.guiaheartopia.app.domain.AnimalRecord
 import com.guiaheartopia.app.domain.Collectible
 import com.guiaheartopia.app.domain.Hobby
-import com.guiaheartopia.app.domain.RoutineTask
 import com.guiaheartopia.app.domain.SampleIds
 import com.guiaheartopia.app.domain.WeatherOrigin
 import com.guiaheartopia.app.domain.WeatherSlot
@@ -14,25 +13,25 @@ import com.guiaheartopia.app.domain.WeatherSlot
  * hasta tener una fuente que se pueda citar.
  */
 object SeedCatalog {
-    val routine: List<RoutineTask> = listOf(
-        RoutineTask("sug-recordar", "Anotar lo que quieras recordar hoy"),
-        RoutineTask("sug-animal", "Revisar una ficha de animal o de comedero"),
-        RoutineTask("sug-hobby", "Actualizar el nivel de un hobby"),
-        RoutineTask("sug-pixel", "Dejar lista una referencia de pixel art"),
-    )
-
     val animals: List<AnimalRecord> = listOf(
-        animal("panda", "Panda", listOf("Bambú", "Manzana", "Maíz"), listOf("Plataformas"), "Lluvioso"),
-        animal("capibara", "Capibara", listOf("Frambuesa", "Tomate", "Uva"), listOf("Lago volcánico", "Ruinas"), "Arcoíris, Lluvioso"),
-        animal("conejo", "Conejo", listOf("Hierba", "Zanahoria", "Fresa"), listOf("Suburbio"), "Soleado"),
-        animal("zorro", "Zorro", listOf("Carne", "Perca americana", "Perca de río"), listOf("Florimolino", "Costa purpura", "Lago de la pradera"), "Arcoíris"),
-        animal("nutria", "Nutria marina", listOf("Camarón azul", "Camarón marino", "Mejillón"), listOf("Plaza del pueblo pesquero"), "Lluvioso"),
-        animal("huron", "Hurón", listOf("Huevo", "Lubina marina", "Gobio"), listOf("Rio de crepusculo"), "Arcoíris"),
-        animal("ciervo", "Ciervo sika", listOf("Rama", "Lechuga", "Ensalada de la casa"), listOf("Lago del bosque"), "Soleado"),
-        animal("alpaca", "Alpaca", listOf("Trigo", "Piña", "Arándano"), listOf("Costa purpura"), "Soleado"),
+        animal("panda", "Panda", listOf("Bambú", "Manzana", "Maíz"), listOf("Plataformas"), "Lluvioso", "asset:catalog/images/sample-panda.webp"),
+        animal("capibara", "Capibara", listOf("Frambuesa", "Tomate", "Uva"), listOf("Lago volcánico", "Ruinas"), "Arcoíris, Lluvioso", "asset:catalog/images/sample-capibara.webp"),
+        animal("conejo", "Conejo", listOf("Hierba", "Zanahoria", "Fresa"), listOf("Suburbio"), "Soleado", "asset:catalog/images/sample-conejo.webp"),
+        animal("zorro", "Zorro", listOf("Carne", "Perca americana", "Perca de río"), listOf("Florimolino", "Costa purpura", "Lago de la pradera"), "Arcoíris", "asset:catalog/images/sample-zorro.webp"),
+        animal("nutria", "Nutria marina", listOf("Camarón azul", "Camarón marino", "Mejillón"), listOf("Plaza del pueblo pesquero"), "Lluvioso", "asset:catalog/images/sample-nutria.webp"),
+        animal("huron", "Hurón", listOf("Huevo", "Lubina marina", "Gobio"), listOf("Rio de crepusculo"), "Arcoíris", "asset:catalog/images/sample-huron.webp"),
+        animal("ciervo", "Ciervo sika", listOf("Rama", "Lechuga", "Ensalada de la casa"), listOf("Lago del bosque"), "Soleado", "asset:catalog/images/sample-ciervo.webp"),
+        animal("alpaca", "Alpaca", listOf("Trigo", "Piña", "Arándano"), listOf("Costa purpura"), "Soleado", "asset:catalog/images/sample-alpaca.webp"),
     )
 
-    private fun animal(id: String, name: String, foods: List<String>, places: List<String>, weather: String) = AnimalRecord(
+    private fun animal(
+        id: String,
+        name: String,
+        foods: List<String>,
+        places: List<String>,
+        weather: String,
+        imageUrl: String = "",
+    ) = AnimalRecord(
         id = id,
         name = name,
         group = "Fauna",
@@ -43,29 +42,25 @@ object SeedCatalog {
         verified = false,
         foodsVerified = true,
         locationVerified = true,
+        imageUrl = imageUrl,
     )
 
     val collectibles: List<Collectible> = emptyList()
 
-    val hobbies: List<Hobby> = listOf(
-        Hobby("hob-cocina", "Cocina"),
-        Hobby("hob-jardin", "Jardinería"),
-        Hobby("hob-mascotas", "Mascotas"),
-        Hobby("hob-pesca", "Pesca"),
-        Hobby("hob-manual", "Manualidades"),
-    )
+    val hobbies: List<Hobby> = com.guiaheartopia.app.domain.HobbyCatalog.fixed
 }
 
 object SampleWeather {
     val origins: List<WeatherOrigin> = listOf(
         WeatherOrigin(
             id = SampleIds.WEATHER_ORIGIN,
-            name = "Origen de ejemplo",
+            name = "Hora del servidor (UTC)",
             zoneId = "UTC",
-            note = "Pendiente de verificar. No es un servidor confirmado de Heartopia.",
+            note = "Si el calendario trae tramos, están en UTC y se convierten a la zona IANA elegida. " +
+                "Heartodex no publica el clima por fecha: el archivo actual no trae días.",
         ),
     )
 
-    /** El estado horario del clima no está contrastado. Las ubicaciones de noviembre viven en VerifiedCatalog. */
+    /** Reservado: no hay slots de muestra; el calendario real está en assets. */
     val slots: List<WeatherSlot> = emptyList()
 }

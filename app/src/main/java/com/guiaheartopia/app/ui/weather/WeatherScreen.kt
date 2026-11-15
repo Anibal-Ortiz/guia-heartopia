@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilterChip
@@ -40,17 +41,13 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.dp
-import com.guiaheartopia.app.data.SampleWeather
+import com.guiaheartopia.app.domain.SkyWeatherGameDay
 import com.guiaheartopia.app.data.SkyCatalog
-import com.guiaheartopia.app.data.VerifiedCatalog
 import com.guiaheartopia.app.domain.Countries
-import com.guiaheartopia.app.domain.DayCertainty
 import com.guiaheartopia.app.domain.ResourceCalendar
-import com.guiaheartopia.app.domain.SkyDay
 import com.guiaheartopia.app.domain.SkyKind
-import com.guiaheartopia.app.domain.SkyWeather
+import com.guiaheartopia.app.domain.climateDisplay
 import com.guiaheartopia.app.domain.WeatherKind
-import com.guiaheartopia.app.ui.components.GameTimeCard
 import com.guiaheartopia.app.ui.components.PickerField
 import com.guiaheartopia.app.ui.components.PixelCard
 import com.guiaheartopia.app.ui.theme.Beige
@@ -58,6 +55,7 @@ import com.guiaheartopia.app.ui.theme.Green
 import com.guiaheartopia.app.ui.theme.GreenSoft
 import com.guiaheartopia.app.ui.theme.Honey
 import com.guiaheartopia.app.ui.theme.Ink
+import com.guiaheartopia.app.ui.theme.Line
 import com.guiaheartopia.app.ui.theme.Orange
 import com.guiaheartopia.app.ui.theme.Paper
 import com.guiaheartopia.app.ui.theme.Sky
@@ -75,34 +73,29 @@ private enum class WeatherFilter(val label: String) {
     WEATHER("Con clima"),
 }
 
-private enum class CalendarView(val label: String) {
-    MONTH("Mes"),
-    WEEK("Semana"),
-    LIST("Lista"),
-}
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun WeatherScreen(
     countryId: String,
     zoneId: String,
-    originId: String,
+    regionKey: String = "",
     onRegion: (String, String, String) -> Unit,
 ) {
     val country = Countries.byId(countryId)
-    val safeZone = country.zones.firstOrNull { it.zoneId == zoneId }?.zoneId ?: country.zones.first().zoneId
+    val chosenZone = Countries.zone(country.id, zoneId, regionKey)
+    val safeZone = chosenZone.zoneId
     val zone = runCatching { ZoneId.of(safeZone) }.getOrElse { ZoneId.of("America/Santiago") }
-    val origin = SampleWeather.origins.firstOrNull { it.id == originId } ?: SampleWeather.origins.first()
     var monthToken by rememberSaveable { mutableStateOf(YearMonth.now(zone).toString()) }
     var selectedToken by rememberSaveable { mutableStateOf<String?>(null) }
     var filterName by rememberSaveable { mutableStateOf(WeatherFilter.ALL.name) }
-    var viewName by rememberSaveable { mutableStateOf(CalendarView.MONTH.name) }
     val skyContext = androidx.compose.ui.platform.LocalContext.current
-    val sky = androidx.compose.runtime.remember { SkyCatalog.load(skyContext) }
+    val revision = com.guiaheartopia.app.ui.contentRevision()
+    val sky = androidx.compose.runtime.remember(revision) { SkyCatalog.load(skyContext) }
     val month = YearMonth.parse(monthToken)
     val filter = WeatherFilter.valueOf(filterName)
     val now = ZonedDateTime.now(zone)
-    val clock = DateTimeFormatter.ofPattern("d MMM yyyy HH:mm", Locale("es"))
+    val clock = DateTimeFormatter.ofPattern("d MMM yyyy HH:mm", Locale.forLanguageTag("es"))
     val selected = selectedToken?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
 
     Column(
@@ -112,33 +105,29 @@ fun WeatherScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        Text("Clima por país", style = MaterialTheme.typography.headlineSmall)
-        GameTimeCard(zone.id)
+        com.guiaheartopia.app.ui.components.SectionBanner(
+            image = com.guiaheartopia.app.R.drawable.header_clima,
+            title = "Calendario",
+            subtitle = "El clima del mes, arriba del detalle",
+        )
         val zoneLabel = Countries.zoneLabel(zone.id)
-        Text("Reloj: ${now.format(clock)} · desfase ${now.offset.id}", style = MaterialTheme.typography.bodySmall)
-        val today = LocalDate.now(zone)
-        TodayResources(today)
         PickerField(
             label = "País",
             value = country.name,
             options = Countries.all.map { it.id to it.name },
             onPick = { id ->
-                val next = Countries.byId(id)
-                val nextZone = next.zones.firstOrNull { it.zoneId == safeZone }?.zoneId ?: next.zones.first().zoneId
-                onRegion(id, nextZone, origin.id)
+                val next = Countries.byId(id).zones.first()
+                onRegion(id, next.zoneId, next.key)
             },
         )
         PickerField(
-            label = "Zona horaria",
-            value = country.zones.first { it.zoneId == safeZone }.label,
-            options = country.zones.map { it.zoneId to it.label },
-            onPick = { onRegion(country.id, it, origin.id) },
-        )
-        PickerField(
-            label = "Origen horario",
-            value = origin.name,
-            options = SampleWeather.origins.map { it.id to it.name },
-            onPick = { onRegion(country.id, safeZone, it) },
+            label = if (country.zones.size > 1) "Estado o región" else "Zona horaria",
+            value = chosenZone.label,
+            options = country.zones.map { it.key to it.label },
+            onPick = { key ->
+                val zone = country.zones.first { it.key == key }
+                onRegion(country.id, zone.zoneId, zone.key)
+            },
         )
         FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             WeatherFilter.entries.forEach { item ->
@@ -152,7 +141,7 @@ fun WeatherScreen(
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
             TextButton(onClick = { monthToken = month.minusMonths(1).toString() }) { Text("Mes anterior") }
             Text(
-                month.format(DateTimeFormatter.ofPattern("LLLL yyyy", Locale("es"))).replaceFirstChar { it.titlecase() },
+                month.format(DateTimeFormatter.ofPattern("LLLL yyyy", Locale.forLanguageTag("es"))).replaceFirstChar { it.titlecase() },
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.titleMedium,
             )
@@ -161,19 +150,11 @@ fun WeatherScreen(
         if (month != YearMonth.from(now)) {
             TextButton(onClick = { monthToken = YearMonth.from(now).toString() }) { Text("Volver a este mes") }
         }
-        Text("Zona de esta vista: $zoneLabel", style = MaterialTheme.typography.bodySmall)
-        Text(sky.reviewLabel(), style = MaterialTheme.typography.bodySmall)
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            CalendarView.entries.forEach { item ->
-                FilterChip(
-                    selected = viewName == item.name,
-                    onClick = { viewName = item.name },
-                    label = { Text(item.label) },
-                )
-            }
-        }
-        val view = CalendarView.valueOf(viewName)
-        if (view == CalendarView.MONTH) {
+        Text("Hora local: $zoneLabel · ${now.format(clock)}", style = MaterialTheme.typography.bodySmall)
+        Text(
+            "El día del servidor empieza en el amanecer y sigue Amanecer, Día, Tarde y Noche, hasta el amanecer siguiente.",
+            style = MaterialTheme.typography.bodySmall,
+        )
         WeekHeader()
         MonthGrid(
             month = month,
@@ -181,35 +162,59 @@ fun WeatherScreen(
             selected = selected,
             filter = filter,
             sky = sky,
+            zone = zone,
             onSelect = { selectedToken = it.toString() },
         )
-        } else if (view == CalendarView.WEEK) {
-            WeekList(month, selected ?: now.toLocalDate(), zone, sky) { selectedToken = it.toString() }
-        } else {
-            MonthList(month, selected, zone, sky) { selectedToken = it.toString() }
-        }
         Legend()
         val day = selected ?: now.toLocalDate()
         DayDetail(day, zone, sky)
+        CalendarEvents(zone)
     }
 }
 
 @Composable
-private fun TodayResources(today: LocalDate) {
-    val day = ResourceCalendar.on(today)
-    PixelCard {
-        Text("Hoy", style = MaterialTheme.typography.titleSmall)
-        Text("Liuliu: ${ResourceCalendar.label(day.liuliu)}", color = Green)
-        Text("flurita: ${ResourceCalendar.label(day.flurita)}", color = Orange)
-        Text(certaintyCopy(day.certainty), style = MaterialTheme.typography.bodySmall)
+private fun CalendarEvents(zone: ZoneId) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val revision = com.guiaheartopia.app.ui.contentRevision()
+    val rows = androidx.compose.runtime.remember(revision, zone) {
+        val raw = com.guiaheartopia.app.data.AndroidContentLibrary(context)
+            .effectiveBytes("calendar/eventos.json")
+            ?.decodeToString()
+        com.guiaheartopia.app.domain.ReminderPlan.calendarRows(
+            com.guiaheartopia.app.domain.ReminderPlan.parseEvents(raw),
+            zone,
+            java.time.ZonedDateTime.now(zone),
+        )
+    }
+    if (rows.isEmpty()) return
+    Text("Eventos", style = MaterialTheme.typography.titleMedium)
+    rows.forEach { row ->
+        PixelCard {
+            Text(row.title, style = MaterialTheme.typography.titleMedium, color = Ink)
+            row.detail?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = Ink) }
+        }
     }
 }
 
 @Composable
 private fun WeekHeader() {
-    Row(Modifier.fillMaxWidth()) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(10.dp))
+            .background(com.guiaheartopia.app.ui.theme.PaperSubtle)
+            .padding(vertical = 6.dp),
+    ) {
         listOf("L", "M", "X", "J", "V", "S", "D").forEach { label ->
-            Text(label, modifier = Modifier.weight(1f), style = MaterialTheme.typography.labelMedium)
+            Text(
+                label,
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                ),
+                color = Ink,
+            )
         }
     }
 }
@@ -221,6 +226,7 @@ private fun MonthGrid(
     selected: LocalDate?,
     filter: WeatherFilter,
     sky: com.guiaheartopia.app.data.SkyTable,
+    zone: ZoneId,
     onSelect: (LocalDate) -> Unit,
 ) {
     val first = month.atDay(1)
@@ -238,28 +244,44 @@ private fun MonthGrid(
                     } else {
                         val date = month.atDay(dayNumber)
                         val data = ResourceCalendar.on(date)
+                        val isToday = date == today
+                        val isSelected = selected == date
                         val bg = when {
-                            selected == date -> GreenSoft
-                            date == today -> Sky
+                            isSelected -> GreenSoft
+                            isToday -> Sky
                             else -> Paper
                         }
+                        val borderStroke = if (isSelected) 2.dp else 1.dp
+                        val borderColor = when {
+                            isSelected -> Green
+                            isToday -> com.guiaheartopia.app.ui.theme.SkyTint
+                            else -> com.guiaheartopia.app.ui.theme.Line
+                        }
+
                         Box(
                             Modifier
                                 .weight(1f)
-                                .aspectRatio(0.62f)
-                                .border(if (selected == date) 2.dp else 1.dp, if (selected == date) Green else Ink.copy(alpha = 0.35f), RoundedCornerShape(10.dp))
-                                .background(bg, RoundedCornerShape(10.dp))
+                                .aspectRatio(0.64f)
+                                .clip(RoundedCornerShape(10.dp))
+                                .border(borderStroke, borderColor, RoundedCornerShape(10.dp))
+                                .background(bg)
                                 .clickable { onSelect(date) }
-                                .padding(2.dp),
+                                .padding(3.dp),
                         ) {
-                            Text("$dayNumber", style = MaterialTheme.typography.labelMedium)
-                            SkyBar(sky.on(date), Modifier.align(Alignment.Center).fillMaxWidth().height(16.dp))
+                            Text(
+                                "$dayNumber",
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontWeight = if (isToday || isSelected) androidx.compose.ui.text.font.FontWeight.Bold else androidx.compose.ui.text.font.FontWeight.Medium,
+                                ),
+                                color = if (isSelected) Green else Ink,
+                            )
+                            ClimateSkyBar(sky, date, zone, Modifier.align(Alignment.Center).fillMaxWidth().height(16.dp))
                             Column(Modifier.align(Alignment.BottomCenter)) {
                                 if (filter != WeatherFilter.FLURITA && data.liuliu != null) {
-                                    Text(shortSpot(data.liuliu), color = Green, style = MaterialTheme.typography.labelMedium, fontSize = 9.sp)
+                                    Text(shortSpot(data.liuliu), color = Green, style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
                                 }
                                 if (filter != WeatherFilter.LIULIU && data.flurita != null) {
-                                    Text(shortSpot(data.flurita), color = Orange, style = MaterialTheme.typography.labelMedium, fontSize = 9.sp)
+                                    Text(shortSpot(data.flurita), color = Orange, style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
                                 }
                             }
                         }
@@ -276,142 +298,101 @@ private fun shortSpot(raw: String): String = when (raw) {
     else -> raw
 }
 
-private fun certaintyCopy(certainty: DayCertainty): String = when (certainty) {
-    DayCertainty.CONSENSO -> "Dos listas coinciden en este día."
-    DayCertainty.ESTIMADO -> "Estimado con el ciclo de 50 días. La otra lista no publica este mes día a día."
-    DayCertainty.SIN_DATOS -> "Sin datos para este día. No hay una lista que lo confirme."
-}
-
 @Composable
 private fun DayDetail(date: LocalDate, zone: ZoneId, sky: com.guiaheartopia.app.data.SkyTable) {
-    val title = date.format(DateTimeFormatter.ofPattern("EEEE d 'de' MMMM", Locale("es")))
+    val title = date.format(DateTimeFormatter.ofPattern("EEEE d 'de' MMMM", Locale.forLanguageTag("es")))
     val data = ResourceCalendar.on(date)
-    val event = VerifiedCatalog.events.firstOrNull { event ->
-        event.start != null && event.end != null && !date.isBefore(event.start) && !date.isAfter(event.end)
-    }
     Text(title.replaceFirstChar { it.titlecase() }, style = MaterialTheme.typography.titleMedium)
     Text("Hora local de ${Countries.zoneLabel(zone.id)}", style = MaterialTheme.typography.bodySmall)
     PixelCard {
         Text("Liuliu: ${ResourceCalendar.label(data.liuliu)}", color = Green, style = MaterialTheme.typography.titleSmall)
         Text("flurita: ${ResourceCalendar.label(data.flurita)}", color = Orange, style = MaterialTheme.typography.titleSmall)
-        Text(certaintyCopy(data.certainty), style = MaterialTheme.typography.bodyMedium)
-        if (data.sources > 0) {
-            Text(
-                if (data.certainty == DayCertainty.CONSENSO) "Fuentes de acuerdo: ${data.sources}." else "Listas que publican el día: ${data.sources}.",
-                style = MaterialTheme.typography.bodySmall,
-            )
-        }
     }
-    val weatherDay = sky.on(date)
+    val lines = SkyWeatherGameDay.compactLinesForGameDay(sky, date, zone)
     PixelCard {
-        Text("Clima en tu hora", style = MaterialTheme.typography.titleSmall)
-        if (weatherDay == null) {
+        Text("Clima por franjas del juego", style = MaterialTheme.typography.titleSmall)
+        if (lines.isEmpty()) {
             Text("Sin datos de clima para este día.", style = MaterialTheme.typography.bodyMedium)
         } else {
-            SkyBar(weatherDay, Modifier.fillMaxWidth().height(22.dp))
-            Text(SkyWeather.summary(weatherDay, zone), style = MaterialTheme.typography.bodyLarge)
-            weatherDay.slots.forEach { slot ->
-                val (start, end) = SkyWeather.localWindow(date, slot, zone)
-                val clock = DateTimeFormatter.ofPattern("HH:mm")
-                Text(
-                    "${slot.title()}  ${start.toLocalTime().format(clock)}–${end.toLocalTime().format(clock)}",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-        }
-    }
-    if (event != null) {
-        PixelCard {
-            Text(event.title, style = MaterialTheme.typography.titleSmall)
-            Text(event.summary, style = MaterialTheme.typography.bodyMedium)
+            ClimateSkyBar(sky, date, zone, Modifier.fillMaxWidth().height(22.dp))
+            ClimateDetailList(lines, showFrames = false)
         }
     }
 }
 
 @Composable
-private fun SkyBar(day: SkyDay?, modifier: Modifier = Modifier) {
-    val slots = day?.slots
+fun ClimateDetailList(
+    lines: List<com.guiaheartopia.app.domain.SkyWeatherGameDay.ClimateLine>,
+    showFrames: Boolean = true,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        lines.forEach { line ->
+            if (line.frame && !showFrames) return@forEach
+            Text(
+                line.text,
+                modifier = if (line.frame || !showFrames) Modifier else Modifier.padding(start = 8.dp),
+                style = if (line.frame) {
+                    MaterialTheme.typography.titleSmall
+                } else {
+                    MaterialTheme.typography.bodyMedium
+                },
+            )
+        }
+    }
+}
+
+@Composable
+fun ClimateSkyBar(
+    sky: com.guiaheartopia.app.data.SkyTable,
+    localDate: LocalDate,
+    zone: ZoneId,
+    modifier: Modifier = Modifier,
+) {
+    val frames = SkyWeatherGameDay.barFrameSegmentsForGameDay(sky, localDate, zone)
     Row(modifier.clip(RoundedCornerShape(8.dp)).background(Beige)) {
-        if (slots.isNullOrEmpty()) {
+        if (frames.all { it.isEmpty() }) {
             Box(Modifier.weight(1f).fillMaxHeight().background(Beige))
         } else {
-            slots.forEach { slot ->
-                Box(
-                    Modifier.weight(1f).fillMaxHeight().background(skyColor(slot.kind)),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(slot.kind.emoji, fontSize = 9.sp, maxLines = 1, overflow = TextOverflow.Clip)
+            frames.forEachIndexed { index, segments ->
+                Row(Modifier.weight(1f).fillMaxHeight()) {
+                    val total = segments.sumOf { it.weight }.coerceAtLeast(1)
+                    segments.forEach { segment ->
+                        Box(
+                            Modifier
+                                .weight(segment.weight.toFloat() / total)
+                                .fillMaxHeight()
+                                .background(skyColor(segment.kind)),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                segment.kind.climateDisplay().emoji,
+                                fontSize = 9.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Clip,
+                            )
+                        }
+                    }
+                }
+                if (index < frames.lastIndex) {
+                    Box(
+                        Modifier
+                            .width(1.dp)
+                            .fillMaxHeight()
+                            .background(Line),
+                    )
                 }
             }
         }
     }
 }
 
-private fun skyColor(kind: SkyKind): Color = when (kind) {
-    SkyKind.SOLEADO -> Honey
-    SkyKind.DESPEJADO -> Color(0xFFD9E4F2)
-    SkyKind.NUBLADO -> Color(0xFFC5CED6)
+private fun skyColor(kind: SkyKind): Color = when (kind.climateDisplay()) {
     SkyKind.LLUVIA -> Color(0xFF7EB6D6)
     SkyKind.ARCOIRIS -> Color(0xFFD7B4E8)
-    SkyKind.ARCOIRIS_LUNA -> Color(0xFFB9A6D6)
-    SkyKind.METEORO -> Color(0xFFE7B15A)
-    SkyKind.NIEVE -> Color(0xFFF4F7FB)
-    SkyKind.AURORA -> Color(0xFF9AD7C4)
-    SkyKind.CALOR -> Color(0xFFF0A07A)
-    SkyKind.PETALOS -> Color(0xFFF3C1D4)
+    SkyKind.NIEVE -> Color(0xFFE7F2FA)
+    SkyKind.METEORO -> Color(0xFF2C3A4A)
     SkyKind.SIN_DATOS -> Beige
-}
-
-@Composable
-private fun WeekList(
-    month: YearMonth,
-    anchor: LocalDate,
-    zone: ZoneId,
-    sky: com.guiaheartopia.app.data.SkyTable,
-    onSelect: (LocalDate) -> Unit,
-) {
-    val start = anchor.minusDays((anchor.dayOfWeek.value - 1).toLong())
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        for (offset in 0 until 7) {
-            val date = start.plusDays(offset.toLong())
-            if (date.month != month.month) continue
-            DayHoursRow(date, zone, sky, onSelect)
-        }
-    }
-}
-
-@Composable
-private fun MonthList(
-    month: YearMonth,
-    selected: LocalDate?,
-    zone: ZoneId,
-    sky: com.guiaheartopia.app.data.SkyTable,
-    onSelect: (LocalDate) -> Unit,
-) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        for (day in 1..month.lengthOfMonth()) {
-            DayHoursRow(month.atDay(day), zone, sky, onSelect, selected)
-        }
-    }
-}
-
-@Composable
-private fun DayHoursRow(
-    date: LocalDate,
-    zone: ZoneId,
-    sky: com.guiaheartopia.app.data.SkyTable,
-    onSelect: (LocalDate) -> Unit,
-    selected: LocalDate? = null,
-) {
-    val weatherDay = sky.on(date)
-    PixelCard(Modifier.clickable { onSelect(date) }.then(if (selected == date) Modifier.border(2.dp, Green, RoundedCornerShape(22.dp)) else Modifier)) {
-        Text("${date.dayOfMonth}", style = MaterialTheme.typography.titleSmall)
-        SkyBar(weatherDay, Modifier.fillMaxWidth().height(18.dp))
-        Text(
-            weatherDay?.let { SkyWeather.summary(it, zone) } ?: "Sin datos",
-            style = MaterialTheme.typography.bodySmall,
-        )
-    }
+    else -> Honey
 }
 
 @Composable
@@ -420,14 +401,19 @@ private fun Legend() {
         Text("Número verde: Liuliu", color = Green, style = MaterialTheme.typography.bodySmall)
         Text("Número naranja: flurita", color = Orange, style = MaterialTheme.typography.bodySmall)
         Text("B bosque · R ruinas", style = MaterialTheme.typography.bodySmall)
-        Text("Barra: sol, lluvia, arcoíris y el resto, en tu hora", style = MaterialTheme.typography.bodySmall)
+        Text("Barra: despejado ☀️, lluvia 🌧️, arcoíris 🌈, nieve ❄️ o meteoritos ☄️", style = MaterialTheme.typography.bodySmall)
         Text("Fondo verde: día elegido", style = MaterialTheme.typography.bodySmall)
     }
 }
 
 @Composable
 fun WeatherGlyph(kind: WeatherKind, modifier: Modifier = Modifier) {
-    Canvas(modifier.border(1.dp, Ink).background(Paper)) {
+    Canvas(
+        modifier
+            .clip(RoundedCornerShape(8.dp))
+            .border(1.dp, com.guiaheartopia.app.ui.theme.Line, RoundedCornerShape(8.dp))
+            .background(Paper),
+    ) {
         val ink = Ink
         val w = size.minDimension
         when (kind) {

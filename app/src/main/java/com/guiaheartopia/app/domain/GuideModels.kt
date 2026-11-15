@@ -18,14 +18,19 @@ data class PlayerProfile(
     val session: PlaySession = PlaySession.VARIABLE,
     val countryId: String = "CL",
     val zoneId: String = "America/Santiago",
+    val regionKey: String = "",
     val weatherOriginId: String = SampleIds.WEATHER_ORIGIN,
     val pixelCols: Int = 32,
     val pixelRows: Int = 32,
     val reminders: ReminderPrefs = ReminderPrefs(),
+    val avatarJpegBase64: String? = null,
+    val seenCodes: List<String> = emptyList(),
 )
 
 object SampleIds {
-    const val WEATHER_ORIGIN = "origen-ejemplo"
+    /** Hora civil en el JSON (`calendar/clima-2026.json`) guardada en UTC. */
+    const val WEATHER_ORIGIN = "utc-servidor"
+    const val LEGACY_WEATHER_ORIGIN = "origen-ejemplo"
 }
 
 @Serializable
@@ -56,6 +61,7 @@ data class AnimalRecord(
     val locationVerified: Boolean = false,
     val sourceNote: String = "",
     val playerOwned: Boolean = false,
+    val imageUrl: String = "",
 )
 
 @Serializable
@@ -95,6 +101,7 @@ data class GuideSnapshot(
     val hiddenSeedAnimalIds: List<String> = emptyList(),
     val customCollectibles: List<Collectible> = emptyList(),
     val foundIds: List<String> = emptyList(),
+    val certifiedIds: List<String> = emptyList(),
     val hiddenSeedCollectibleIds: List<String> = emptyList(),
     val hobbies: List<Hobby> = emptyList(),
     val hobbiesInitialized: Boolean = false,
@@ -104,6 +111,10 @@ data class CategoryProgress(
     val category: String,
     val found: Int,
     val total: Int,
+    val certified: Int = 0,
 ) {
     val fraction: Float get() = if (total == 0) 0f else found.toFloat() / total
+
+    fun summary(): String =
+        "${CatalogLabels.category(category)}: $found/$total capturados · $certified certificados"
 }

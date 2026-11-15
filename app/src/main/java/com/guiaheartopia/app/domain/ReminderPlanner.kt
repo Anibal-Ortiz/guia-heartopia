@@ -11,7 +11,15 @@ data class ReminderPrefs(
     val weatherMinutes: Int = 8 * 60,
     val eventsEnabled: Boolean = false,
     val eventsMinutes: Int = 18 * 60,
-)
+    val pescaEnabled: Boolean = false,
+    val avesEnabled: Boolean = false,
+    val insectosEnabled: Boolean = false,
+    val temporadaEnabled: Boolean = false,
+    val promptDismissed: Boolean = false,
+) {
+    fun anyAlertOn(): Boolean =
+        weatherEnabled || pescaEnabled || avesEnabled || insectosEnabled || temporadaEnabled
+}
 
 /** Próximo aviso en la zona del reloj que se pasa. No usa alarma exacta. */
 object ReminderPlanner {

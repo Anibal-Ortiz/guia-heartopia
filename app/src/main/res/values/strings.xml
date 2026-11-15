@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Guía Heartopia</string>
-    <string name="cd_ajustes">Ajustes</string>
-    <string name="cd_volver">Volver</string>
+    <string name="app_name">WikiFan Heartopia</string>
+    <string name="app_full_name">WikiFan para Heartopia</string>
 </resources>
