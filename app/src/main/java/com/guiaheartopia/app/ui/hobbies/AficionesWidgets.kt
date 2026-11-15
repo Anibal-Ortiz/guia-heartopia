@@ -38,7 +38,6 @@ import com.guiaheartopia.app.ui.theme.HoneySoft
 import com.guiaheartopia.app.ui.theme.Ink
 import com.guiaheartopia.app.ui.theme.Line
 import com.guiaheartopia.app.ui.theme.Muted
-import com.guiaheartopia.app.ui.theme.Ochre
 import com.guiaheartopia.app.ui.theme.Paper
 
 @Composable
@@ -173,13 +172,3 @@ fun AficionCertifyRow(
     }
 }
 
-@Composable
-fun FavoritaToggle(on: Boolean, onToggle: () -> Unit) {
-    MarkIconButton(
-        on = on,
-        description = if (on) "Quitar favorita" else "Marcar como favorita",
-        onClick = onToggle,
-    ) {
-        Text(if (on) "♥" else "♡", fontSize = 20.sp, color = if (on) Ochre else Ink)
-    }
-}

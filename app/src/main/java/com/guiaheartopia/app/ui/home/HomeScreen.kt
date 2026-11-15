@@ -9,6 +9,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +47,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -574,22 +577,54 @@ private fun GreetingHeroBanner(greeting: String, todayLabel: String) {
         Column(
             Modifier
                 .align(Alignment.TopStart)
-                .padding(16.dp),
+                .padding(16.dp)
+                .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            Text(
-                greeting,
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold),
-                color = Ink,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+            SingleLineShrinkingGreeting(greeting)
             Text(
                 todayLabel,
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                 color = Ink,
             )
         }
+    }
+}
+
+@Composable
+private fun SingleLineShrinkingGreeting(
+    greeting: String,
+    minFontSize: TextUnit = 13.sp,
+) {
+    val baseSize = MaterialTheme.typography.titleLarge.fontSize
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val maxW = maxWidth
+        var fontSize by remember(greeting, maxW) { mutableStateOf(baseSize) }
+        var settled by remember(greeting, maxW) { mutableStateOf(false) }
+        LaunchedEffect(greeting, maxW) {
+            fontSize = baseSize
+            settled = false
+        }
+        Text(
+            greeting,
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = fontSize,
+            ),
+            color = Ink,
+            maxLines = 1,
+            softWrap = false,
+            overflow = TextOverflow.Clip,
+            onTextLayout = { layout ->
+                if (!settled) {
+                    if (layout.didOverflowWidth && fontSize > minFontSize) {
+                        fontSize = (fontSize.value - 0.5f).sp
+                    } else {
+                        settled = true
+                    }
+                }
+            },
+        )
     }
 }
 

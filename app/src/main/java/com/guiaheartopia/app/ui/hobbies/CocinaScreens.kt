@@ -403,10 +403,10 @@ fun RecetaDetailScreen(
             if (!certifiable) {
                 Text("No certificable", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold), color = Muted)
             }
-            val origen = entry.origen?.takeIf { it.isNotBlank() }
-            if (origen != null) {
+            entry.origen?.takeIf { it.isNotBlank() }?.let { origen ->
                 LabelValue("Origen", origen, false)
-            } else if (entry.ingredientes.isNotEmpty()) {
+            }
+            if (entry.ingredientes.isNotEmpty()) {
                 Spacer(Modifier.height(6.dp))
                 Text("Ingredientes", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold))
                 entry.ingredientes.forEach { ing ->

@@ -66,7 +66,6 @@ data class GuideUi(
     val florCertified: Set<String> = emptySet(),
     val recetaFound: Set<String> = emptySet(),
     val recetaCertified: Set<String> = emptySet(),
-    val recetaFavorites: Set<String> = emptySet(),
     val activeCrops: List<ActiveCrop> = emptyList(),
     val redeemedCodes: Set<String> = emptySet(),
     val dexFilters: Map<String, DexCategoryFilters> = emptyMap(),
@@ -387,14 +386,6 @@ class GuideViewModel(
         }
     }
 
-    fun toggleRecetaFavorite(id: String) {
-        viewModelScope.launch {
-            repository.update { snap ->
-                snap.copy(recetaFavoriteIds = AficionesMarks.toggle(snap.recetaFavoriteIds.toSet(), id).toList())
-            }
-        }
-    }
-
     fun plantSiembra(siembraId: String, nombre: String, growthMinutes: Int) {
         val context = appContext ?: return
         if (growthMinutes <= 0) return
@@ -499,7 +490,6 @@ class GuideViewModel(
             florCertified = snap.florCertifiedIds.toSet(),
             recetaFound = snap.recetaFoundIds.toSet(),
             recetaCertified = snap.recetaCertifiedIds.toSet(),
-            recetaFavorites = snap.recetaFavoriteIds.toSet(),
             activeCrops = snap.activeCrops,
             redeemedCodes = snap.redeemedCodeIds.toSet(),
             dexFilters = snap.dexFilters,

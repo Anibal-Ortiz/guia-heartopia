@@ -279,7 +279,6 @@ class ScreenGrabTest {
             huertoFound = setOf("tomate"),
             florFound = setOf("rosa"),
             recetaFound = emptySet(),
-            recetaFavorites = setOf("ensalada"),
             activeCrops = listOf(
                 ActiveCrop("c1", "tomate", "Tomate", planted, planted + 90 * 60_000L),
             ),
