@@ -8,8 +8,21 @@ object AppNavigation {
 
     val BottomNavTabs: List<NavItem> = listOf(
         NavItem(HOME_ROUTE, "Inicio", NavIcon.HOME),
-        NavItem("guide", "Guía", NavIcon.GUIDE),
+        NavItem("aficiones", "Aficiones", NavIcon.HOBBIES),
+        NavItem("codigos", "Códigos", NavIcon.CODES),
         NavItem("calendar", "Calendario", NavIcon.CALENDAR),
-        NavItem("hobbies", "Aficiones", NavIcon.HOBBIES),
     )
+
+    fun tabForRoute(route: String?): String? = when {
+        route == null || route == "settings" || route.startsWith("settings/") ||
+            route == "map" || route == "photo-credits" -> null
+        route == HOME_ROUTE || route.startsWith("home") -> HOME_ROUTE
+        route == "codigos" || route.startsWith("codigos/") -> "codigos"
+        route == "calendar" || route.startsWith("calendar") || route == "weather" -> "calendar"
+        route == "aficiones" || route.startsWith("guide") || route.startsWith("dex/") ||
+            route.startsWith("animal/") || route.startsWith("huerto") ||
+            route.startsWith("cocina") || route.startsWith("hobbies") ||
+            route.startsWith("niveles") -> "aficiones"
+        else -> null
+    }
 }

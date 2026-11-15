@@ -168,6 +168,31 @@ fun WeatherScreen(
         Legend()
         val day = selected ?: now.toLocalDate()
         DayDetail(day, zone, sky)
+        CalendarEvents(zone)
+    }
+}
+
+@Composable
+private fun CalendarEvents(zone: ZoneId) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val revision = com.guiaheartopia.app.ui.contentRevision()
+    val rows = androidx.compose.runtime.remember(revision, zone) {
+        val raw = com.guiaheartopia.app.data.AndroidContentLibrary(context)
+            .effectiveBytes("calendar/eventos.json")
+            ?.decodeToString()
+        com.guiaheartopia.app.domain.ReminderPlan.calendarRows(
+            com.guiaheartopia.app.domain.ReminderPlan.parseEvents(raw),
+            zone,
+            java.time.ZonedDateTime.now(zone),
+        )
+    }
+    if (rows.isEmpty()) return
+    Text("Eventos", style = MaterialTheme.typography.titleMedium)
+    rows.forEach { row ->
+        PixelCard {
+            Text(row.title, style = MaterialTheme.typography.titleMedium, color = Ink)
+            row.detail?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = Ink) }
+        }
     }
 }
 

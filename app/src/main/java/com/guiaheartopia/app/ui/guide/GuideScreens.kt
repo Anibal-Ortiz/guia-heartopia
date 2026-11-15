@@ -21,6 +21,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
@@ -38,10 +42,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -54,14 +63,22 @@ import com.guiaheartopia.app.domain.CatalogMarks
 import com.guiaheartopia.app.domain.CreatureAvailability
 import com.guiaheartopia.app.domain.CreatureCopy
 import com.guiaheartopia.app.domain.GuideSections
+import com.guiaheartopia.app.domain.CatalogLabels
+import com.guiaheartopia.app.domain.ImageZoom
 import com.guiaheartopia.app.domain.Hobby
 import com.guiaheartopia.app.domain.HobbyCatalog
+import com.guiaheartopia.app.domain.LevelFilter
 import com.guiaheartopia.app.domain.DexSchedule
 import com.guiaheartopia.app.domain.SkyWeather
 import com.guiaheartopia.app.domain.TextMatch
 import com.guiaheartopia.app.ui.GuideUi
+import com.guiaheartopia.app.ui.components.CaptureNetIcon
+import com.guiaheartopia.app.ui.components.CertificateMedalIcon
+import com.guiaheartopia.app.ui.components.ClearSkyIcon
 import com.guiaheartopia.app.ui.components.CozyGuideIcon
 import com.guiaheartopia.app.ui.components.CreatureGlyph
+import com.guiaheartopia.app.ui.components.CreatureZoomDialog
+import com.guiaheartopia.app.ui.components.rememberCreatureModel
 import com.guiaheartopia.app.data.PhotoCredits
 import com.guiaheartopia.app.ui.components.CreatureImage
 import com.guiaheartopia.app.ui.settings.PhotoCreditCaption
@@ -96,14 +113,7 @@ import com.guiaheartopia.app.ui.theme.SkyBlue
 import com.guiaheartopia.app.ui.theme.SkyTint
 import java.time.Instant
 
-private val Tabs = GuideSections.dexCategories.map { section ->
-    when (section) {
-        "Peces" -> "Peces"
-        "Pájaros" -> "Aves"
-        "Insectos" -> "Insectos"
-        else -> "Fauna"
-    }
-}
+private val Tabs = GuideSections.dexCategories.map { CatalogLabels.category(it) }
 
 @Composable
 fun GuideScreen(
@@ -112,7 +122,9 @@ fun GuideScreen(
     onOpenMap: () -> Unit,
     onOpenDex: (String) -> Unit,
     onToggleFound: (String) -> Unit,
+    onToggleCertified: (String, String) -> Unit,
     onAddAnimal: (String, String, String, String) -> Unit,
+    onBack: (() -> Unit)? = null,
     initialTab: Int = 0,
 ) {
     var tab by rememberSaveable { mutableIntStateOf(initialTab) }
@@ -125,16 +137,19 @@ fun GuideScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         // Header
+        if (onBack != null) {
+            androidx.compose.material3.TextButton(onClick = onBack) { Text("Atrás") }
+        }
         SectionBanner(
             image = com.guiaheartopia.app.R.drawable.header_guia,
-            title = "Guía",
+            title = "Naturaleza",
             subtitle = "Peces, aves, insectos y fauna",
         )
 
         // Pill Tabs with Icons
         PillTabs(Tabs, tab) { tab = it }
 
-        DexTab(GuideSections.dexCategories[tab], ui, onOpenDex, onToggleFound)
+        DexTab(GuideSections.dexCategories[tab], ui, onOpenDex, onToggleFound, onToggleCertified)
 
         Spacer(Modifier.height(8.dp))
     }
@@ -267,6 +282,7 @@ private fun DexTab(
     ui: GuideUi,
     onOpen: (String) -> Unit,
     onToggleFound: (String) -> Unit,
+    onToggleCertified: (String, String) -> Unit,
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val revision = com.guiaheartopia.app.ui.contentRevision()
@@ -283,14 +299,12 @@ private fun DexTab(
     var certified by rememberSaveable(category) { mutableStateOf("todos") }
     val canCertify = CatalogMarks.certifiable(category)
     var weather by rememberSaveable(category) { mutableStateOf("Todos") }
-    var allLevels by rememberSaveable(category) { mutableStateOf(false) }
-    var chosenLevel by rememberSaveable(category) { mutableStateOf(-1) }
     val hobbyLevel = CreatureAvailability.hobbyLevel(category, ui.hobbies)
-    val levelCap = when {
-        hobbyLevel == null || allLevels -> null
-        chosenLevel >= 0 -> chosenLevel
-        else -> hobbyLevel
+    val catalogMax = remember(all, category) {
+        LevelFilter.maximum(all.filter { it.category == category }.map { it.level })
     }
+    var chosenLevel by rememberSaveable(category) { mutableIntStateOf(hobbyLevel ?: -1) }
+    val levelCap = if (catalogMax == null || chosenLevel < 0) null else chosenLevel.coerceAtMost(catalogMax)
 
     val items = all.filter { entry ->
         val timeOk = SkyWeather.availableNow(entry.schedule, entry.weather, instant, sky, zone)
@@ -352,13 +366,6 @@ private fun DexTab(
                 )
             }
 
-            if (hobbyLevel != null) {
-                FilterChip(
-                    selected = allLevels,
-                    onClick = { allLevels = !allLevels },
-                    label = { Text("Todos los niveles") },
-                )
-            }
             FilterChip(
                 selected = onlyNow,
                 onClick = { onlyNow = !onlyNow },
@@ -429,23 +436,17 @@ private fun DexTab(
         }
 
         // Guía / Leyenda visual de horarios y climas
-        ScheduleWeatherLegend()
-        if (hobbyLevel != null && !allLevels) {
-            Text(
-                "Nivel máximo: ${levelCap ?: hobbyLevel}. Se ven las criaturas con nivel requerido igual o menor.",
-                style = MaterialTheme.typography.bodySmall,
-                color = Muted,
+        val weatherKeys = remember(all, category) {
+            val present = all.filter { it.category == category }.flatMap { it.weather }.distinct()
+            if (present.isEmpty()) listOf("Sunny", "Rainy", "Rainbow") else present
+        }
+        ScheduleWeatherLegend(weatherKeys)
+        if (catalogMax != null) {
+            LevelDropdown(
+                selected = levelCap,
+                maximum = catalogMax,
+                onSelect = { chosenLevel = it ?: -1 },
             )
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                val ceiling = HobbyCatalog.guideCap(category) ?: hobbyLevel
-                (0..ceiling).forEach { level ->
-                    FilterChip(
-                        selected = (levelCap ?: hobbyLevel) == level,
-                        onClick = { chosenLevel = level },
-                        label = { Text(level.toString()) },
-                    )
-                }
-            }
         }
     }
 
@@ -456,89 +457,17 @@ private fun DexTab(
     }
 
     items.forEach { entry ->
-        val isFound = entry.id in ui.found
         val now = SkyWeather.availableNow(entry.schedule, entry.weather, instant, sky, zone)
-
-        PixelCard(Modifier.clickable { onOpen(entry.id) }, category = entry.category) {
-            Row(
-                Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                CreatureImage(
-                    imageUrl = entry.imageUrl,
-                    category = entry.category,
-                    locations = entry.location,
-                    level = entry.level,
-                    creatureId = entry.id,
-                    contentDescription = "Foto o dibujo de ${entry.name}",
-                    modifier = Modifier.size(58.dp),
-                )
-                Column(Modifier.weight(1f)) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    ) {
-                        Text(
-                            entry.name,
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                            modifier = Modifier.weight(1f, fill = false),
-                        )
-                        if (entry.id in ui.certified) CertifiedSeal()
-                    }
-                    Text(
-                        entry.event ?: entry.category,
-                        color = Muted,
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                }
-                if (now) NowBadge()
-            }
-
-            // Info visual clara y alineada
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 2.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                Text(
-                    "Ubicación: ${entry.location.joinToString().ifBlank { "—" }}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Ink,
-                    softWrap = true,
-                )
-                Text(
-                    "Horario: ${entry.schedule.joinToString { DexSchedule.scheduleLabel(it) }.ifBlank { "—" }}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Ink,
-                    softWrap = true,
-                )
-                Text(
-                    "Clima: ${entry.weather.joinToString { DexSchedule.weatherEs(it) }.ifBlank { "—" }}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Ink,
-                    softWrap = true,
-                    overflow = TextOverflow.Clip,
-                    maxLines = Int.MAX_VALUE,
-                )
-                if (entry.level != null) {
-                    Text(
-                        "Nivel requerido: ${entry.level}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Ink,
-                    )
-                }
-            }
-
-            PixelButton(
-                text = if (isFound) "✓ Registrado en Catálogo" else "+ Añadir a Catálogo",
-                onClick = { onToggleFound(entry.id) },
-                outlined = !isFound,
-                container = Green,
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
+        DexCreatureCard(
+            entry = entry,
+            now = now,
+            found = entry.id in ui.found,
+            certified = entry.id in ui.certified,
+            canCertify = canCertify,
+            onOpen = { onOpen(entry.id) },
+            onToggleFound = { onToggleFound(entry.id) },
+            onToggleCertified = { onToggleCertified(entry.id, entry.category) },
+        )
     }
 }
 
@@ -570,6 +499,19 @@ fun DexDetailScreen(
     val photoCredit = remember(revision, entry.id) {
         PhotoCredits.byId(detailContext)[entry.id]
     }
+    val imageModel = rememberCreatureModel(entry.imageUrl, entry.id)
+    var zoom by remember { mutableStateOf(false) }
+
+    if (zoom) {
+        CreatureZoomDialog(
+            name = entry.name,
+            model = imageModel,
+            category = entry.category,
+            locations = entry.location,
+            level = entry.level,
+            onDismiss = { zoom = false },
+        )
+    }
 
     Column(
         Modifier
@@ -591,9 +533,10 @@ fun DexDetailScreen(
                         locations = entry.location,
                         level = entry.level,
                         creatureId = entry.id,
-                        contentDescription = "Foto o dibujo de ${entry.name}",
-                        modifier = Modifier.size(86.dp),
+                        contentDescription = ImageZoom.enlargedDescription(entry.name),
+                        modifier = Modifier.size(116.dp),
                         shapeRadius = 20.dp,
+                        onClick = { zoom = true },
                     )
                     photoCredit?.let { credit ->
                         PhotoCreditCaption(
@@ -635,40 +578,21 @@ fun DexDetailScreen(
                 )
             }
 
-            // Horario con símbolos e indicador
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Text("⏰ Horario:", style = MaterialTheme.typography.bodyMedium, color = Muted)
-                    ScheduleBadges(entry.schedule)
-                }
-                Text(
-                    entry.schedule.joinToString { DexSchedule.scheduleLabel(it) }.ifBlank { "—" },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Ink,
-                    modifier = Modifier.padding(start = 24.dp),
-                )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text("Horario:", style = MaterialTheme.typography.bodyMedium, color = Muted)
+                ScheduleIcons(entry.schedule)
             }
-
-            // Clima con símbolos
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Text("🌤️ Clima:", style = MaterialTheme.typography.bodyMedium, color = Muted)
-                    WeatherBadges(entry.weather)
-                }
-                Text(
-                    entry.weather.joinToString { DexSchedule.weatherEs(it) }.ifBlank { "—" },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Ink,
-                    modifier = Modifier.padding(start = 24.dp),
-                )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text("Clima:", style = MaterialTheme.typography.bodyMedium, color = Muted)
+                WeatherIcons(entry.weather)
             }
 
             LabelValue("🌐 En tu hora local", localHours.ifBlank { "—" }, false)
@@ -677,22 +601,19 @@ fun DexDetailScreen(
             if (!entry.event.isNullOrBlank()) LabelValue("🎉 Evento", entry.event, false)
         }
 
-        PixelButton(
-            text = if (found) "✓ Registrado en tu Catálogo" else "+ Marcar como Capturado",
-            onClick = onToggle,
-            outlined = !found,
-            container = Green,
-            modifier = Modifier.fillMaxWidth(),
-        )
-
-        if (CatalogMarks.certifiable(entry.category)) {
-            PixelButton(
-                text = if (certified) "✓ Certificado" else "Marcar como Certificado",
-                onClick = onToggleCertified,
-                outlined = !certified,
-                container = Green,
-                modifier = Modifier.fillMaxWidth(),
-            )
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            MarkIconButton(
+                on = found,
+                description = if (found) "Quitar capturado" else "Marcar como capturado",
+                onClick = onToggle,
+            ) { CaptureNetIcon(on = found) }
+            if (CatalogMarks.certifiable(entry.category)) {
+                MarkIconButton(
+                    on = certified,
+                    description = if (certified) "Quitar certificado" else "Marcar como certificado",
+                    onClick = onToggleCertified,
+                ) { CertificateMedalIcon(on = certified) }
+            }
         }
 
         PixelButton(
@@ -822,7 +743,7 @@ fun AnimalDetailScreen(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun ScheduleWeatherLegend() {
+private fun ScheduleWeatherLegend(weatherKeys: List<String>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -849,13 +770,189 @@ private fun ScheduleWeatherLegend() {
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            LegendItem("🌅", "Amanecer (08-14h)")
-            LegendItem("☀️", "Día (14-20h)")
-            LegendItem("🌤️", "Tarde (20-02h)")
-            LegendItem("🌆", "Noche (02-08h)")
-            LegendItem("🌧️", "Lluvia")
-            LegendItem("🌈", "Arcoíris")
+            LegendItem("🌅", "Amanecer")
+            LegendItem("☀️", "Día")
+            LegendItem("🌤️", "Tarde")
+            LegendItem("🌆", "Noche")
+            weatherKeys.distinct().forEach { key ->
+                LegendWeather(key)
+            }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun LevelDropdown(
+    selected: Int?,
+    maximum: Int,
+    onSelect: (Int?) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val label = if (selected == null) "Todos" else selected.toString()
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = it },
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        OutlinedTextField(
+            value = label,
+            onValueChange = {},
+            readOnly = true,
+            singleLine = true,
+            label = { Text("Nivel") },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(14.dp),
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            LevelFilter.options(maximum).forEach { level ->
+                DropdownMenuItem(
+                    text = { Text(if (level == null) "Todos" else level.toString()) },
+                    onClick = {
+                        onSelect(level)
+                        expanded = false
+                    },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DexCreatureCard(
+    entry: DexEntry,
+    now: Boolean,
+    found: Boolean,
+    certified: Boolean,
+    canCertify: Boolean,
+    onOpen: () -> Unit,
+    onToggleFound: () -> Unit,
+    onToggleCertified: () -> Unit,
+) {
+    val model = rememberCreatureModel(entry.imageUrl, entry.id)
+    var zoom by remember { mutableStateOf(false) }
+    if (zoom) {
+        CreatureZoomDialog(
+            name = entry.name,
+            model = model,
+            category = entry.category,
+            locations = entry.location,
+            level = entry.level,
+            onDismiss = { zoom = false },
+        )
+    }
+    PixelCard(Modifier.clickable { onOpen() }, category = entry.category) {
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            CreatureImage(
+                imageUrl = entry.imageUrl,
+                category = entry.category,
+                locations = entry.location,
+                level = entry.level,
+                creatureId = entry.id,
+                contentDescription = ImageZoom.enlargedDescription(entry.name),
+                modifier = Modifier.size(80.dp),
+                onClick = { zoom = true },
+            )
+            Column(Modifier.weight(1f)) {
+                Text(
+                    entry.name,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = Ink,
+                    softWrap = true,
+                )
+                Text(
+                    entry.event ?: CatalogLabels.category(entry.category),
+                    color = Muted,
+                    style = MaterialTheme.typography.bodySmall,
+                    softWrap = true,
+                )
+            }
+            if (now) NowBadge()
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 2.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text(
+                "Ubicación: ${entry.location.joinToString().ifBlank { "—" }}",
+                style = MaterialTheme.typography.bodySmall,
+                color = Ink,
+                softWrap = true,
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Text("Horario:", style = MaterialTheme.typography.bodySmall, color = Ink)
+                ScheduleIcons(entry.schedule)
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Text("Clima:", style = MaterialTheme.typography.bodySmall, color = Ink)
+                WeatherIcons(entry.weather)
+            }
+            if (entry.level != null) {
+                Text(
+                    "Nivel requerido: ${entry.level}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Ink,
+                )
+            }
+        }
+
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            MarkIconButton(
+                on = found,
+                description = if (found) "Quitar capturado" else "Marcar como capturado",
+                onClick = onToggleFound,
+            ) { CaptureNetIcon(on = found) }
+            if (canCertify) {
+                MarkIconButton(
+                    on = certified,
+                    description = if (certified) "Quitar certificado" else "Marcar como certificado",
+                    onClick = onToggleCertified,
+                ) { CertificateMedalIcon(on = certified) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun MarkIconButton(
+    on: Boolean,
+    description: String,
+    onClick: () -> Unit,
+    icon: @Composable () -> Unit,
+) {
+    Box(
+        Modifier
+            .size(48.dp)
+            .clip(CircleShape)
+            .background(if (on) HoneySoft else Paper)
+            .border(width = if (on) 2.dp else 1.dp, color = if (on) Ochre else Line, shape = CircleShape)
+            .clickable(onClick = onClick)
+            .clearAndSetSemantics {
+                contentDescription = description
+                role = Role.Button
+            },
+        contentAlignment = Alignment.Center,
+    ) {
+        icon()
     }
 }
 
@@ -897,75 +994,87 @@ private fun LegendItem(icon: String, text: String) {
     }
 }
 
+private val ScheduleGlyphs = listOf(
+    "Dawn" to "🌅",
+    "Day" to "☀️",
+    "Dusk" to "🌤️",
+    "Night" to "🌆",
+)
+
 @Composable
-private fun ScheduleBadges(schedule: List<String>) {
-    val allSlots = listOf(
-        "Dawn" to "🌅",
-        "Day" to "☀️",
-        "Dusk" to "🌤️",
-        "Night" to "🌆",
-    )
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        allSlots.forEach { (slotKey, icon) ->
-            val active = slotKey in schedule
+private fun ScheduleIcons(schedule: List<String>) {
+    val active = ScheduleGlyphs.filter { (key, _) -> key in schedule }
+    if (active.isEmpty()) {
+        Text("—", style = MaterialTheme.typography.bodySmall, color = Muted)
+        return
+    }
+    Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+        active.forEach { (key, icon) ->
+            val label = DexSchedule.scheduleEs(key)
             Box(
-                modifier = Modifier
+                Modifier
                     .size(24.dp)
-                    .clip(CircleShape)
-                    .background(if (active) HoneySoft else Color.Transparent)
-                    .border(
-                        width = 1.dp,
-                        color = if (active) Honey else Line.copy(alpha = 0.4f),
-                        shape = CircleShape,
-                    ),
+                    .clearAndSetSemantics { contentDescription = label },
                 contentAlignment = Alignment.Center,
             ) {
-                Text(
-                    text = icon,
-                    fontSize = 11.sp,
-                    modifier = Modifier.clip(CircleShape),
-                    color = if (active) Color.Unspecified else Color.Gray.copy(alpha = 0.35f),
-                )
+                Text(icon, fontSize = 16.sp)
             }
         }
     }
 }
 
 @Composable
-private fun WeatherBadges(weather: List<String>) {
-    val allWeathers = listOf(
-        "Sunny" to "☀️",
-        "Rainy" to "🌧️",
-        "Rainbow" to "🌈",
-    )
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
-        verticalAlignment = Alignment.CenterVertically,
+private fun WeatherIcons(weather: List<String>) {
+    if (weather.isEmpty()) {
+        Text("—", style = MaterialTheme.typography.bodySmall, color = Muted)
+        return
+    }
+    Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+        weather.distinct().forEach { key ->
+            WeatherGlyph(key)
+        }
+    }
+}
+
+@Composable
+private fun WeatherGlyph(key: String) {
+    val label = DexSchedule.weatherEs(key)
+    Box(
+        Modifier
+            .size(24.dp)
+            .clearAndSetSemantics { contentDescription = label },
+        contentAlignment = Alignment.Center,
     ) {
-        allWeathers.forEach { (wKey, icon) ->
-            val active = wKey in weather
-            Box(
-                modifier = Modifier
-                    .size(24.dp)
-                    .clip(CircleShape)
-                    .background(if (active) Sky else Color.Transparent)
-                    .border(
-                        width = 1.dp,
-                        color = if (active) SkyBlue else Line.copy(alpha = 0.4f),
-                        shape = CircleShape,
-                    ),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = icon,
-                    fontSize = 11.sp,
-                    color = if (active) Color.Unspecified else Color.Gray.copy(alpha = 0.35f),
-                )
+        when (key) {
+            "Sunny" -> ClearSkyIcon(size = 18.dp)
+            "Rainy" -> Text("🌧️", fontSize = 16.sp)
+            "Rainbow" -> Text("🌈", fontSize = 16.sp)
+            else -> Canvas(Modifier.size(16.dp)) {
+                val path = Path().apply {
+                    moveTo(size.width / 2f, 0f)
+                    lineTo(size.width, size.height / 2f)
+                    lineTo(size.width / 2f, size.height)
+                    lineTo(0f, size.height / 2f)
+                    close()
+                }
+                drawPath(path, Ochre)
             }
         }
+    }
+}
+
+@Composable
+private fun LegendWeather(key: String) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(3.dp),
+    ) {
+        WeatherGlyph(key)
+        Text(
+            DexSchedule.weatherEs(key),
+            style = MaterialTheme.typography.labelSmall,
+            color = Muted,
+        )
     }
 }
 

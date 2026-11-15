@@ -418,3 +418,180 @@ fun CozyMoonIcon(
         drawPath(moon, tint, style = Stroke(1.8.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round))
     }
 }
+
+@Composable
+fun CaptureNetIcon(
+    on: Boolean,
+    modifier: Modifier = Modifier,
+    size: Dp = 26.dp,
+) {
+    val ink = if (on) Color(0xFF2C554F) else Color(0xFFB7A48C)
+    val fill = if (on) Color(0xFFD7E6E3) else Color.Transparent
+    Canvas(modifier.size(size)) {
+        val w = this.size.width
+        val h = this.size.height
+        val stroke = 1.8.dp.toPx()
+        val center = Offset(w * 0.40f, h * 0.38f)
+        val radius = w * 0.24f
+        drawCircle(fill, radius, center)
+        drawCircle(ink, radius, center, style = Stroke(stroke))
+        val mesh = radius * 0.55f
+        drawLine(ink, Offset(center.x - mesh, center.y), Offset(center.x + mesh, center.y), stroke * 0.7f)
+        drawLine(ink, Offset(center.x, center.y - mesh), Offset(center.x, center.y + mesh), stroke * 0.7f)
+        drawLine(
+            ink,
+            Offset(center.x + radius * 0.7f, center.y + radius * 0.7f),
+            Offset(w * 0.82f, h * 0.86f),
+            stroke,
+            cap = StrokeCap.Round,
+        )
+    }
+}
+
+@Composable
+fun CertificateMedalIcon(
+    on: Boolean,
+    modifier: Modifier = Modifier,
+    size: Dp = 26.dp,
+) {
+    val ink = if (on) Color(0xFF8C6A2F) else Color(0xFFB7A48C)
+    val fill = if (on) Color(0xFFE7C56A) else Color.Transparent
+    Canvas(modifier.size(size)) {
+        val w = this.size.width
+        val h = this.size.height
+        val stroke = 1.8.dp.toPx()
+        val ribbon = Path().apply {
+            moveTo(w * 0.36f, h * 0.46f)
+            lineTo(w * 0.30f, h * 0.92f)
+            lineTo(w * 0.50f, h * 0.76f)
+            lineTo(w * 0.70f, h * 0.92f)
+            lineTo(w * 0.64f, h * 0.46f)
+            close()
+        }
+        drawPath(ribbon, if (on) Color(0xFFC4A15A) else Color.Transparent, style = Fill)
+        drawPath(ribbon, ink, style = Stroke(stroke * 0.8f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+        val center = Offset(w * 0.50f, h * 0.36f)
+        val radius = w * 0.24f
+        drawCircle(fill, radius, center)
+        drawCircle(ink, radius, center, style = Stroke(stroke))
+        drawCircle(ink, radius * 0.45f, center, style = Stroke(stroke * 0.7f))
+    }
+}
+
+/** Sol de cuaderno para el clima despejado. No es el sol de la franja Día. */
+@Composable
+fun ClearSkyIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = Color(0xFFE39B2B),
+    size: Dp = 16.dp,
+) {
+    Canvas(modifier.size(size)) {
+        val w = this.size.width
+        val center = Offset(w * 0.5f, w * 0.5f)
+        val radius = w * 0.22f
+        drawCircle(tint.copy(alpha = 0.35f), radius, center)
+        drawCircle(tint, radius, center, style = Stroke(1.4.dp.toPx()))
+        val inner = radius + 1.5.dp.toPx()
+        val outer = radius + w * 0.16f
+        for (i in 0 until 8) {
+            val angle = i * Math.PI / 4.0
+            drawLine(
+                tint,
+                Offset((center.x + inner * Math.cos(angle)).toFloat(), (center.y + inner * Math.sin(angle)).toFloat()),
+                Offset((center.x + outer * Math.cos(angle)).toFloat(), (center.y + outer * Math.sin(angle)).toFloat()),
+                strokeWidth = 1.3.dp.toPx(),
+                cap = StrokeCap.Round,
+            )
+        }
+    }
+}
+
+@Composable
+fun SproutIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = Color(0xFF2C554F),
+    size: Dp = 36.dp,
+) {
+    Canvas(modifier.size(size)) {
+        val w = this.size.width
+        val h = this.size.height
+        val stroke = 2.dp.toPx()
+        drawLine(tint, Offset(w * 0.50f, h * 0.88f), Offset(w * 0.50f, h * 0.42f), stroke, cap = StrokeCap.Round)
+        val leaf = Path().apply {
+            moveTo(w * 0.50f, h * 0.48f)
+            cubicTo(w * 0.78f, h * 0.28f, w * 0.86f, h * 0.18f, w * 0.70f, h * 0.14f)
+            cubicTo(w * 0.52f, h * 0.18f, w * 0.48f, h * 0.32f, w * 0.50f, h * 0.48f)
+            close()
+        }
+        drawPath(leaf, tint.copy(alpha = 0.25f), style = Fill)
+        drawPath(leaf, tint, style = Stroke(stroke * 0.8f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+        val left = Path().apply {
+            moveTo(w * 0.50f, h * 0.58f)
+            cubicTo(w * 0.22f, h * 0.42f, w * 0.14f, h * 0.30f, w * 0.30f, h * 0.26f)
+            cubicTo(w * 0.48f, h * 0.30f, w * 0.52f, h * 0.44f, w * 0.50f, h * 0.58f)
+            close()
+        }
+        drawPath(left, tint.copy(alpha = 0.25f), style = Fill)
+        drawPath(left, tint, style = Stroke(stroke * 0.8f, cap = StrokeCap.Round, join = StrokeJoin.Round))
+    }
+}
+
+@Composable
+fun CookingPotIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = Color(0xFF8C6A2F),
+    size: Dp = 36.dp,
+) {
+    Canvas(modifier.size(size)) {
+        val w = this.size.width
+        val h = this.size.height
+        val stroke = 2.dp.toPx()
+        drawRoundRect(
+            color = tint.copy(alpha = 0.2f),
+            topLeft = Offset(w * 0.22f, h * 0.42f),
+            size = Size(w * 0.56f, h * 0.40f),
+            cornerRadius = CornerRadius(w * 0.08f),
+            style = Fill,
+        )
+        drawRoundRect(
+            color = tint,
+            topLeft = Offset(w * 0.22f, h * 0.42f),
+            size = Size(w * 0.56f, h * 0.40f),
+            cornerRadius = CornerRadius(w * 0.08f),
+            style = Stroke(stroke),
+        )
+        drawLine(tint, Offset(w * 0.12f, h * 0.48f), Offset(w * 0.22f, h * 0.48f), stroke, cap = StrokeCap.Round)
+        drawLine(tint, Offset(w * 0.78f, h * 0.48f), Offset(w * 0.88f, h * 0.48f), stroke, cap = StrokeCap.Round)
+        drawLine(tint, Offset(w * 0.38f, h * 0.42f), Offset(w * 0.34f, h * 0.22f), stroke, cap = StrokeCap.Round)
+        drawLine(tint, Offset(w * 0.62f, h * 0.42f), Offset(w * 0.66f, h * 0.22f), stroke, cap = StrokeCap.Round)
+    }
+}
+
+@Composable
+fun CozyTicketIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = Color.Unspecified,
+    size: Dp = 24.dp,
+    filled: Boolean = false,
+) {
+    Canvas(modifier.size(size)) {
+        val w = this.size.width
+        val h = this.size.height
+        val stroke = 2.dp.toPx()
+        val ticket = Path().apply {
+            moveTo(w * 0.16f, h * 0.28f)
+            lineTo(w * 0.84f, h * 0.28f)
+            lineTo(w * 0.84f, h * 0.46f)
+            cubicTo(w * 0.72f, h * 0.46f, w * 0.72f, h * 0.54f, w * 0.84f, h * 0.54f)
+            lineTo(w * 0.84f, h * 0.74f)
+            lineTo(w * 0.16f, h * 0.74f)
+            lineTo(w * 0.16f, h * 0.54f)
+            cubicTo(w * 0.28f, h * 0.54f, w * 0.28f, h * 0.46f, w * 0.16f, h * 0.46f)
+            close()
+        }
+        if (filled) drawPath(ticket, tint, style = Fill)
+        drawPath(ticket, tint, style = Stroke(stroke, cap = StrokeCap.Round, join = StrokeJoin.Round))
+        drawLine(tint, Offset(w * 0.32f, h * 0.40f), Offset(w * 0.68f, h * 0.40f), stroke * 0.7f, cap = StrokeCap.Round)
+        drawLine(tint, Offset(w * 0.32f, h * 0.52f), Offset(w * 0.56f, h * 0.52f), stroke * 0.7f, cap = StrokeCap.Round)
+    }
+}

@@ -18,7 +18,8 @@ El nombre que escribes, el país y la zona horaria que eliges, las fichas, la co
 
 - No hay cuenta de usuario.
 - No hay un servidor propio de esta guía que reciba esos datos.
-- No pedimos ubicación del teléfono, contactos, fotos, micrófono ni almacenamiento externo.
+- No pedimos ubicación del teléfono, contactos, micrófono ni almacenamiento externo.
+- La foto del avatar, si la eliges, entra por el selector de fotos de Android. Se queda solo en el teléfono, en el almacenamiento interno de la app, y no se envía a un servidor.
 - Los recordatorios, si los activas, son avisos locales. En Android 13 o superior se pide el permiso de notificaciones solo al encenderlos.
 
 Borrar los datos de la app o desinstalarla elimina esa información del teléfono.

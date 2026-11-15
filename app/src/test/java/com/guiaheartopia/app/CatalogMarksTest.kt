@@ -74,7 +74,7 @@ class CatalogMarksTest {
         val birds = CatalogMarks.tally("Pájaros", listOf("d"), emptySet(), emptySet())
         val insects = CatalogMarks.tally("Insectos", listOf("e", "f"), setOf("e", "f"), setOf("e", "f"))
         assertEquals("Peces: 2/3 capturados · 1 certificados", fish.summary())
-        assertEquals("Pájaros: 0/1 capturados · 0 certificados", birds.summary())
+        assertEquals("Aves: 0/1 capturados · 0 certificados", birds.summary())
         assertEquals("Insectos: 2/2 capturados · 2 certificados", insects.summary())
     }
 

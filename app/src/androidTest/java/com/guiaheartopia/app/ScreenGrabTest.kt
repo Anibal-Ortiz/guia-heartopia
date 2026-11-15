@@ -8,9 +8,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import com.guiaheartopia.app.data.AvatarStore
+import com.guiaheartopia.app.domain.HobbyContent
+import com.guiaheartopia.app.domain.ImageZoom
+import com.guiaheartopia.app.ui.codes.CodesScreen
+import com.guiaheartopia.app.ui.hobbies.ComingHobbyScreen
+import com.guiaheartopia.app.ui.hobbies.HobbyHubScreen
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.guiaheartopia.app.domain.PlayerProfile
@@ -40,7 +58,7 @@ class ScreenGrabTest {
             ready = true,
             profile = PlayerProfile(onboarded = true, name = "Nico", countryId = "CL", zoneId = "America/Santiago"),
             hobbies = com.guiaheartopia.app.domain.HobbyCatalog.fixed.map { hobby ->
-                if (hobby.id == "hob-cocina") hobby.copy(level = 2) else hobby
+                hobby.copy(level = hobby.maxLevel)
             },
             greeting = "Buenas noches, Nico",
             todayLabel = "viernes 6 de noviembre",
@@ -68,24 +86,161 @@ class ScreenGrabTest {
         }
     }
 
+    @Test
+    fun captureRequestedLayouts() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val ui = sampleUi()
+        val photo = android.graphics.Bitmap.createBitmap(80, 60, android.graphics.Bitmap.Config.ARGB_8888)
+        photo.eraseColor(android.graphics.Color.parseColor("#C4A15A"))
+        val encoded = android.util.Base64.encodeToString(AvatarStore.centerCropJpeg(photo), android.util.Base64.NO_WRAP)
+        photo.recycle()
+        writeOverlay(context, "codes/codigos.json", "[]\n")
+        val step = mutableIntStateOf(0)
+        val guideTab = mutableIntStateOf(0)
+        rule.setContent {
+            GuiaTheme {
+                val base = LocalDensity.current
+                val font = if (step.intValue == 11) 1.3f else base.fontScale
+                CompositionLocalProvider(LocalDensity provides Density(base.density, fontScale = font)) {
+                    Box(Modifier.fillMaxSize().background(Cream)) {
+                        androidx.compose.runtime.key(step.intValue) {
+                            when (step.intValue) {
+                                0, 1 -> HomeScreen(ui, onOpen = {})
+                                2 -> HomeScreen(ui.copy(profile = ui.profile.copy(avatarJpegBase64 = encoded)), onOpen = {})
+                                3 -> HomeScreen(ui, onOpen = {})
+                                4 -> HobbyHubScreen {}
+                                5 -> ComingHobbyScreen("Huerto", "Siembras y flores", HobbyContent.huertoPaths) {}
+                                6 -> ComingHobbyScreen("Cocina", "Platos y recetas", HobbyContent.cocinaPaths) {}
+                                7, 8 -> CodesScreen(seen = emptyList()) {}
+                                9 -> WeatherScreen("CL", "America/Santiago") { _, _, _ -> }
+                                10 -> androidx.compose.runtime.key(guideTab.intValue) {
+                                    GuideScreen(ui, {}, {}, {}, {}, { _, _ -> }, { _, _, _, _ -> }, initialTab = guideTab.intValue)
+                                }
+                                else -> HomeScreen(ui, onOpen = {})
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        rule.waitForIdle()
+        save("inicio-banner")
+        rule.onNodeWithTag("coleccion").performScrollTo()
+        rule.waitForIdle()
+        save("tu-coleccion")
+
+        go(step, 2)
+        save("avatar-con-foto")
+        go(step, 3)
+        save("avatar-sin-foto")
+        go(step, 4)
+        save("aficiones")
+        go(step, 5)
+        save("huerto")
+        go(step, 6)
+        save("cocina")
+        go(step, 7)
+        save("codigos-vacios")
+        writeOverlay(
+            context,
+            "codes/codigos.json",
+            """[{"code":"MUESTRA","recompensa":"Ejemplo de recompensa","fechaVencimiento":"2026-12-31"}]""",
+        )
+        go(step, 8)
+        save("codigos-con-datos")
+        writeOverlay(
+            context,
+            "calendar/eventos.json",
+            """
+            {"zonaFuente":"Etc/GMT+5","servidor":"America","eventos":[
+              {"id":"halloween-noche-grimkin","tipo":"temporada","nombre":"Noche grimkin",
+               "inicio":"2026-10-30T06:00","fin":"2026-12-31T05:59"}
+            ]}
+            """.trimIndent(),
+        )
+        go(step, 9)
+        rule.onNodeWithText("Noche grimkin").performScrollTo()
+        rule.waitForIdle()
+        save("calendario-eventos")
+        go(step, 10)
+        openFirstCreature("tarjeta-pez")
+        rule.onAllNodes(hasContentDescription(ImageZoom.enlargedDescription(""), substring = true))[0].performClick()
+        rule.waitForIdle()
+        writeBitmap("dialogo-imagen", rule.onNodeWithTag("zoom-dialog").captureToImage().asAndroidBitmap())
+        rule.onNodeWithText("Cerrar").performClick()
+        rule.waitForIdle()
+        go(guideTab, 1)
+        openFirstCreature("tarjeta-ave")
+        go(guideTab, 2)
+        openFirstCreature("tarjeta-insecto")
+        go(step, 11)
+        save("inicio-360-fuente-grande")
+    }
+
+    private fun go(step: androidx.compose.runtime.MutableIntState, value: Int) {
+        rule.runOnIdle { step.intValue = value }
+        rule.waitForIdle()
+    }
+
+    private fun sampleUi() = GuideUi(
+        ready = true,
+        profile = PlayerProfile(onboarded = true, name = "Nico", countryId = "CL", zoneId = "America/Santiago"),
+        hobbies = com.guiaheartopia.app.domain.HobbyCatalog.fixed.map { hobby ->
+            hobby.copy(level = hobby.maxLevel)
+        },
+        greeting = "Buenas noches, Nico",
+        todayLabel = "viernes 6 de noviembre",
+        animals = com.guiaheartopia.app.data.SeedCatalog.animals,
+    )
+
+    private fun openFirstCreature(name: String) {
+        val marks = rule.onAllNodes(hasContentDescription("Marcar como capturado"))
+        if (marks.fetchSemanticsNodes().isNotEmpty()) {
+            marks[0].performScrollTo()
+            rule.waitForIdle()
+        }
+        save(name)
+    }
+
+    private fun writeOverlay(context: android.content.Context, relative: String, body: String) {
+        val file = java.io.File(context.filesDir, "content/live/files/$relative")
+        file.parentFile?.mkdirs()
+        file.writeText(body)
+    }
+
+    private fun saveRoot(name: String, index: Int) {
+        val roots = rule.onAllNodes(isRoot())
+        val node = if (roots.fetchSemanticsNodes().size > index) roots[index] else rule.onRoot()
+        val bitmap = node.captureToImage().asAndroidBitmap()
+        writeBitmap(name, bitmap)
+    }
+
     @Composable
     private fun ScreenAt(index: Int, ui: GuideUi) {
         androidx.compose.runtime.key(index) {
             when (index) {
                 0 -> WelcomeScreen(PlayerProfile(countryId = "CL", zoneId = "America/Santiago"), {}, {}, {})
-                1 -> HomeScreen(ui) {}
-                2 -> GuideScreen(ui, {}, {}, {}, {}, { _, _, _, _ -> }, initialTab = 0)
-                3 -> WeatherScreen("CL", "America/Santiago") { _, _ -> }
+                1 -> HomeScreen(ui, onOpen = {})
+                2 -> GuideScreen(ui, {}, {}, {}, {}, { _, _ -> }, { _, _, _, _ -> }, initialTab = 0)
+                3 -> WeatherScreen("CL", "America/Santiago") { _, _, _ -> }
                 else -> HobbiesScreen(ui.hobbies, { _, _, _, _ -> })
             }
         }
     }
 
     private fun save(name: String) {
-        val bitmap = rule.onRoot().captureToImage().asAndroidBitmap()
+        writeBitmap(name, rule.onRoot().captureToImage().asAndroidBitmap())
+    }
+
+    private fun writeBitmap(name: String, bitmap: android.graphics.Bitmap) {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        val dir = File(context.filesDir, "screens")
-        dir.mkdirs()
-        File(dir, "$name.png").outputStream().use { bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it) }
+        listOf(File(context.filesDir, "screens"), context.externalCacheDir?.let { File(it, "screens") })
+            .filterNotNull()
+            .forEach { dir ->
+                dir.mkdirs()
+                File(dir, "$name.png").outputStream().use {
+                    bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it)
+                }
+            }
     }
 }

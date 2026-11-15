@@ -10,7 +10,7 @@ class AppNavigationTest {
     @Test
     fun bottomBarHasFourTabsWithoutRoutineOrPixel() {
         val routes = AppNavigation.BottomNavTabs.map { it.route }
-        assertEquals(listOf("home", "guide", "calendar", "hobbies"), routes)
+        assertEquals(listOf("home", "aficiones", "codigos", "calendar"), routes)
         assertFalse(routes.any { it == "routine" || it == "pixel" })
         assertEquals(4, AppNavigation.BottomNavTabs.size)
         assertTrue(routes.contains("calendar"))

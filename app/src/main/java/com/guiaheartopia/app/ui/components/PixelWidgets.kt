@@ -276,7 +276,7 @@ fun PixelProgress(
     }
 }
 
-enum class NavIcon { HOME, GUIDE, CALENDAR, HOBBIES }
+enum class NavIcon { HOME, GUIDE, CALENDAR, HOBBIES, CODES }
 
 data class NavItem(val route: String, val label: String, val icon: NavIcon)
 
@@ -349,6 +349,7 @@ fun LineNavIcon(icon: NavIcon, tint: Color, filled: Boolean = false) {
         NavIcon.GUIDE -> CozyGuideIcon(tint = tint, size = 22.dp, filled = filled)
         NavIcon.CALENDAR -> CozyCalendarIcon(tint = tint, size = 22.dp, filled = filled)
         NavIcon.HOBBIES -> CozyHobbiesIcon(tint = tint, size = 22.dp, filled = filled)
+        NavIcon.CODES -> CozyTicketIcon(tint = tint, size = 22.dp, filled = filled)
     }
 }
 

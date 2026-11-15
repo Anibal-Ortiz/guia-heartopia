@@ -43,6 +43,9 @@ class GameTimeCardDeviceTest {
             "No se escribió la captura en ${file.absolutePath} (tamaño ${file.length()})"
         }
         val export = File("/sdcard/Download/gametime-chile-2026-11-09-1831.png")
-        file.copyTo(export, overwrite = true)
+        runCatching {
+            if (export.exists() && !export.delete()) return@runCatching
+            file.copyTo(export, overwrite = true)
+        }
     }
 }

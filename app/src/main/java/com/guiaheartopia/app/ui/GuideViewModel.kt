@@ -1,6 +1,8 @@
 package com.guiaheartopia.app.ui
 
 import android.content.Context
+import android.graphics.BitmapFactory
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -28,7 +30,10 @@ import com.guiaheartopia.app.domain.BackupCodec
 import com.guiaheartopia.app.domain.ImportResult
 import com.guiaheartopia.app.domain.ReminderPrefs
 import com.guiaheartopia.app.reminders.ReminderScheduler
+import com.guiaheartopia.app.data.AvatarStore
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
@@ -110,13 +115,11 @@ class GuideViewModel(
         if (parsed is ImportResult.Ok) {
             viewModelScope.launch {
                 val snap = parsed.snapshot
-                repository.replace(
-                    snap.copy(
-                        profile = snap.profile.copy(
-                            reminders = snap.profile.reminders.copy(routineEnabled = false),
-                        ),
-                    ),
+                val profile = snap.profile.copy(
+                    reminders = snap.profile.reminders.copy(routineEnabled = false),
                 )
+                appContext?.let { AvatarStore.restore(it, profile.avatarJpegBase64) }
+                repository.replace(snap.copy(profile = profile))
             }
         }
         onResult(parsed)
@@ -198,6 +201,41 @@ class GuideViewModel(
             repository.update { snap ->
                 val next = CatalogMarks.toggleFound(marks(snap), id)
                 snap.copy(foundIds = next.found.toList(), certifiedIds = next.certified.toList())
+            }
+        }
+    }
+
+    fun markCodesSeen(codes: List<String>) {
+        viewModelScope.launch {
+            repository.update { snap ->
+                snap.copy(profile = snap.profile.copy(seenCodes = codes.distinct()))
+            }
+        }
+    }
+
+    fun saveAvatar(uri: Uri) {
+        val context = appContext ?: return
+        viewModelScope.launch {
+            val encoded = withContext(Dispatchers.IO) {
+                context.contentResolver.openInputStream(uri)?.use { input ->
+                    val bitmap = BitmapFactory.decodeStream(input) ?: return@withContext null
+                    val jpeg = AvatarStore.centerCropJpeg(bitmap)
+                    bitmap.recycle()
+                    AvatarStore.save(context, jpeg)
+                }
+            } ?: return@launch
+            repository.update { snap ->
+                snap.copy(profile = snap.profile.copy(avatarJpegBase64 = encoded))
+            }
+        }
+    }
+
+    fun clearAvatar() {
+        val context = appContext ?: return
+        AvatarStore.clear(context)
+        viewModelScope.launch {
+            repository.update { snap ->
+                snap.copy(profile = snap.profile.copy(avatarJpegBase64 = null))
             }
         }
     }

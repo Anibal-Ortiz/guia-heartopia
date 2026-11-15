@@ -40,18 +40,20 @@ class FullscreenAds(private val activity: Activity) {
         loadRewardedCalendar(mode)
     }
 
-    fun showInterstitial(adFree: Boolean, onDismiss: () -> Unit = {}) {
+    fun showInterstitial(adFree: Boolean, onDismiss: () -> Unit = {}, onShown: () -> Unit = {}) {
         if (adFree || this.adFree || !AdConfig.hasInterstitial) {
             onDismiss()
             return
         }
         val ad = interstitial
         if (ad == null) {
+            loadInterstitial(lastMode)
             onDismiss()
             return
         }
         interstitial = null
         ad.fullScreenContentCallback = simpleCallback(onDismiss) { loadInterstitial(lastMode) }
+        onShown()
         ad.show(activity)
     }
 

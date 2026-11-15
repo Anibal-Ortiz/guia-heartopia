@@ -126,7 +126,7 @@ class ContentSyncTest {
         val parsed = ContentPackage.parseManifest(File(root, "content/manifest.json").readText())
         assertNotNull(parsed)
         assertTrue(parsed!!.contentVersion >= 1)
-        listOf("catalog/heartodex.json", "catalog/creditos.json", "calendar/clima-2026.json").forEach { path ->
+        listOf("catalog/heartodex.json", "catalog/creditos.json", "calendar/clima-2026.json", "codes/codigos.json").forEach { path ->
             val entry = parsed.files.first { it.path == path }
             val bytes = File(root, path).readBytes()
             assertEquals(bytes.size.toLong(), entry.size)
@@ -158,7 +158,7 @@ class ContentSyncTest {
         assertNotNull(rootManifest)
         assertEquals(rootManifest, appManifest)
         assertEquals(1, appManifest!!.contentVersion)
-        assertEquals(36, appManifest.minAppVersionCode)
+        assertEquals(37, appManifest.minAppVersionCode)
         assertTrue(appManifest.files.any { it.path == "catalog/creatures.json" })
         assertTrue(appManifest.files.any { it.path == "calendar/clima-2026.json" })
         assertTrue(appManifest.files.none { it.path.startsWith("catalog/images/") })
@@ -177,7 +177,7 @@ class ContentSyncTest {
             emptyMap(),
             ContentManifest(contentVersion = 0, minAppVersionCode = 23, publishedOn = "2026-01-01"),
         )
-        assertEquals(ContentSyncResult.APPLIED, sync(library, served, appVersionCode = 36))
+        assertEquals(ContentSyncResult.APPLIED, sync(library, served, appVersionCode = 37))
 
         val creatures = parseCreatures(library.overlayBytes("catalog/creatures.json")!!)
         assertTrue(creatures.size > 100)

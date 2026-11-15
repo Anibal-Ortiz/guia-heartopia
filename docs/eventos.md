@@ -44,6 +44,6 @@ Las horas son hora del servidor del juego. `zonaFuente` no cambia con el horario
 Opcionales: `temporadaId`, `dias`, `inicio`, `fin`, `duracionMin`, `avisoMinAntes` (si falta, 15). `inicio` y `fin` son `YYYY-MM-DDTHH:mm` en hora de servidor. Si existen, la hora de una afición solo avisa dentro de ese intervalo.
 
 - `tipo` `aficion`: un aviso `avisoMinAntes` minutos antes de cada hora. El texto es «En 15 min: <nombre>» (con los minutos reales). En Ajustes hay un interruptor por categoría.
-- `tipo` `temporada`: un aviso al llegar `inicio` y otro «Queda 1 día» 24 h antes de `fin`. El interruptor es «Eventos de temporada». En Mi día, cada temporada en curso muestra su nombre y el tiempo que falta hasta `fin`.
+- `tipo` `temporada`: un aviso al llegar `inicio` y otro «Queda 1 día» 24 h antes de `fin`. El interruptor es «Eventos de temporada». En Calendario, al final, cada evento del archivo muestra su nombre y, si es una temporada en curso, el tiempo que falta hasta `fin`.
 
 Los avisos de las próximas 48 h se programan con WorkManager, sin alarma exacta: al sincronizar, al abrir la app, después de cada aviso y al reiniciar el teléfono.

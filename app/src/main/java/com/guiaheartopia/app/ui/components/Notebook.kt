@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -19,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
@@ -97,23 +99,46 @@ fun SectionBanner(
     Box(
         modifier
             .bleed(bleed)
-            .aspectRatio(2.2f),
+            .heightIn(min = 132.dp)
+            .background(Color(0xFFF7EFDB)),
     ) {
         Image(
             painter = painterResource(image),
             contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop,
-            alignment = Alignment.CenterEnd,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .fillMaxWidth(0.42f)
+                .heightIn(max = 96.dp),
+            contentScale = ContentScale.Fit,
+            alignment = Alignment.BottomEnd,
         )
         Column(
             Modifier
-                .align(Alignment.CenterStart)
-                .padding(start = 20.dp)
-                .fillMaxWidth(0.48f),
+                .align(Alignment.TopStart)
+                .fillMaxWidth(0.78f)
+                .background(
+                    Brush.horizontalGradient(
+                        listOf(
+                            Color(0xFFF7EFDB),
+                            Color(0xF2F7EFDB),
+                            Color(0x00F7EFDB),
+                        ),
+                    ),
+                )
+                .padding(start = 16.dp, top = 14.dp, end = 12.dp, bottom = 16.dp),
         ) {
-            Text(title, style = MaterialTheme.typography.headlineSmall, color = Ink)
-            Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = Ink)
+            Text(
+                title,
+                style = MaterialTheme.typography.headlineSmall,
+                color = Ink,
+                softWrap = true,
+            )
+            Text(
+                subtitle,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFF2A2118),
+                softWrap = true,
+            )
         }
     }
 }

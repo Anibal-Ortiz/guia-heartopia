@@ -1,5 +1,9 @@
 package com.guiaheartopia.app.ui.home
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -8,6 +12,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,21 +24,37 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import com.guiaheartopia.app.data.AvatarStore
+import com.guiaheartopia.app.domain.CatalogLabels
 import com.guiaheartopia.app.domain.CatalogMarks
 import com.guiaheartopia.app.domain.Countries
+import com.guiaheartopia.app.domain.RedeemCodes
+import com.guiaheartopia.app.ui.components.CaptureNetIcon
+import com.guiaheartopia.app.ui.components.CertificateMedalIcon
 import com.guiaheartopia.app.domain.DexSchedule
 import com.guiaheartopia.app.domain.ResourceCalendar
 import com.guiaheartopia.app.domain.SkyWeather
@@ -82,6 +104,8 @@ fun HomeScreen(
     onDismissReminderPrompt: () -> Unit = {},
     adFreeActive: Boolean = false,
     onWatchAdFree: () -> Unit = {},
+    onPickAvatar: (Uri) -> Unit = {},
+    onClearAvatar: () -> Unit = {},
 ) {
     val country = Countries.byId(ui.profile.countryId)
     val context = androidx.compose.ui.platform.LocalContext.current
@@ -96,15 +120,19 @@ fun HomeScreen(
     val climateDay = SkyWeatherGameDay.serverDawnLocalDate(nowInstant, zone)
     val climateLines = SkyWeatherGameDay.compactLinesForGameDay(sky, climateDay, zone)
     val spot = ResourceCalendar.on(today)
-    val seasons = remember(revision, zone) {
+    val unseenCodes = remember(revision, ui.profile.seenCodes, today) {
         val raw = com.guiaheartopia.app.data.AndroidContentLibrary(context)
-            .effectiveBytes("calendar/eventos.json")
+            .effectiveBytes(RedeemCodes.PATH)
             ?.decodeToString()
-        com.guiaheartopia.app.domain.ReminderPlan.activeSeasons(
-            com.guiaheartopia.app.domain.ReminderPlan.parseEvents(raw),
-            zone,
-            java.time.ZonedDateTime.now(zone),
-        )
+        RedeemCodes.unseen(RedeemCodes.active(RedeemCodes.parse(raw), today), ui.profile.seenCodes.toSet())
+    }
+    val avatarFile = remember(ui.profile.avatarJpegBase64) {
+        AvatarStore.restore(context, ui.profile.avatarJpegBase64)
+        AvatarStore.file(context).takeIf { ui.profile.avatarJpegBase64 != null && it.isFile }
+    }
+    var avatarMenu by remember { mutableStateOf(false) }
+    val pickAvatar = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
+        if (uri != null) onPickAvatar(uri)
     }
 
     Column(
@@ -146,13 +174,24 @@ fun HomeScreen(
                 }
                 Box(
                     Modifier
-                        .size(48.dp)
+                        .size(56.dp)
                         .clip(CircleShape)
                         .background(GreenSoft)
-                        .border(1.5.dp, GreenTint, CircleShape),
+                        .border(1.5.dp, GreenTint, CircleShape)
+                        .semantics { contentDescription = if (avatarFile == null) "Elegir foto de perfil" else "Cambiar foto de perfil" }
+                        .clickable { avatarMenu = true },
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text("🏡", fontSize = 24.sp)
+                    if (avatarFile != null) {
+                        AsyncImage(
+                            model = ImageRequest.Builder(context).data(avatarFile).build(),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    } else {
+                        CozyHomeIcon(tint = GreenDark, size = 30.dp, filled = true)
+                    }
                 }
             }
 
@@ -165,6 +204,40 @@ fun HomeScreen(
                     "${country.name} · ${Countries.label(ui.profile.countryId, ui.profile.zoneId, ui.profile.regionKey)}",
                     style = MaterialTheme.typography.bodySmall,
                     color = Muted,
+                )
+            }
+        }
+
+        if (avatarMenu) {
+            AlertDialog(
+                onDismissRequest = { avatarMenu = false },
+                title = { Text("Foto de perfil") },
+                text = { Text("Se guarda solo en el teléfono. Puedes cambiarla o quitarla.") },
+                confirmButton = {
+                    TextButton(onClick = {
+                        avatarMenu = false
+                        pickAvatar.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
+                    }) { Text(if (avatarFile == null) "Elegir foto" else "Cambiar foto") }
+                },
+                dismissButton = {
+                    Row {
+                        if (avatarFile != null) {
+                            TextButton(onClick = {
+                                avatarMenu = false
+                                onClearAvatar()
+                            }) { Text("Quitar foto") }
+                        }
+                        TextButton(onClick = { avatarMenu = false }) { Text("Cancelar") }
+                    }
+                },
+            )
+        }
+        if (unseenCodes.isNotEmpty()) {
+            NotebookCard(modifier = Modifier.clickable { onOpen("codigos") }) {
+                Text(
+                    if (unseenCodes.size == 1) "Hay un código nuevo" else "Hay ${unseenCodes.size} códigos nuevos",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Ink,
                 )
             }
         }
@@ -209,15 +282,12 @@ fun HomeScreen(
         // Live Game Time Widget
         GameTimeCard(zone.id)
 
-        // Colección Heartodex
-        val totalFound = ui.found.size
         val totalItems = catalog.size
-        val collectionPercent = if (totalItems > 0) (totalFound.toFloat() / totalItems * 100).toInt() else 0
-        val certifiedTotal = listOf("Peces", "Pájaros", "Insectos").sumOf { cat ->
-            byCategory[cat].orEmpty().count { it.id in ui.certified }
-        }
+        val totalFound = catalog.count { it.id in ui.found }
+        val collectionPercent = if (totalItems > 0) (totalFound * 100 / totalItems) else 0
+        val certifiedTotal = catalog.count { it.id in ui.certified }
 
-        PixelCard(container = Paper) {
+        PixelCard(modifier = Modifier.testTag("coleccion"), container = Paper) {
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -244,11 +314,43 @@ fun HomeScreen(
                 NowBadge("$available ahora")
             }
 
-            Text(
-                "$totalFound de $totalItems criaturas registradas ($collectionPercent%) · $certifiedTotal certificados",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Muted,
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.semantics { contentDescription = "Capturados $totalFound de $totalItems" },
+                ) {
+                    CaptureNetIcon(
+                        on = totalFound > 0,
+                        size = 22.dp,
+                        modifier = Modifier.semantics { contentDescription = "Capturados" },
+                    )
+                    Text(
+                        "$totalFound/$totalItems ($collectionPercent%)",
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                        color = Ink,
+                    )
+                }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.semantics { contentDescription = "Certificados $certifiedTotal" },
+                ) {
+                    CertificateMedalIcon(
+                        on = certifiedTotal > 0,
+                        size = 22.dp,
+                        modifier = Modifier.semantics { contentDescription = "Certificados" },
+                    )
+                    Text(
+                        certifiedTotal.toString(),
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                        color = Ink,
+                    )
+                }
+            }
 
             PixelProgress(
                 if (totalItems == 0) 0f else totalFound.toFloat() / totalItems,
@@ -258,64 +360,33 @@ fun HomeScreen(
 
             // Category summary pills
             Row(
-                Modifier.fillMaxWidth(),
+                Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Max),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                val catIcons = mapOf(
-                    "Peces" to "🐟",
-                    "Pájaros" to "🐦",
-                    "Insectos" to "🐛",
-                )
-                listOf("Peces", "Pájaros", "Insectos").forEach { cat ->
+                listOf(
+                    Triple("Peces", "🐟", true),
+                    Triple("Pájaros", "🐦", true),
+                    Triple("Insectos", "🐛", true),
+                ).forEach { (cat, icon, cert) ->
                     val items = byCategory[cat].orEmpty()
                     val tally = CatalogMarks.tally(cat, items.map { it.id }, ui.found, ui.certified)
-                    val icon = catIcons[cat] ?: "🐾"
-                    Column(
-                        Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(PaperSubtle)
-                            .border(1.dp, Line, RoundedCornerShape(12.dp))
-                            .padding(vertical = 8.dp, horizontal = 4.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Text(icon, fontSize = 16.sp)
-                        Spacer(Modifier.height(2.dp))
-                        Text(
-                            cat,
-                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
-                            color = Muted,
-                            maxLines = 1,
-                        )
-                        Text(
-                            tally.summary(),
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 9.sp,
-                                lineHeight = 11.sp,
-                            ),
-                            color = GreenDark,
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                }
-                Column(
-                    Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(PaperSubtle)
-                        .border(1.dp, Line, RoundedCornerShape(12.dp))
-                        .padding(vertical = 8.dp, horizontal = 4.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text("🐾", fontSize = 16.sp)
-                    Text("Animales", style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp), color = Muted, maxLines = 1)
-                    Text(
-                        "${ui.sighted.size}/${ui.animals.size}",
-                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                        color = GreenDark,
+                    CollectionColumn(
+                        emoji = icon,
+                        name = CatalogLabels.category(cat),
+                        captured = tally.found,
+                        total = tally.total,
+                        certified = if (cert) tally.certified else null,
                     )
                 }
+                CollectionColumn(
+                    emoji = "🐾",
+                    name = "Animales",
+                    captured = ui.animals.count { it.id in ui.sighted },
+                    total = ui.animals.size,
+                    certified = null,
+                )
             }
 
             PixelButton(
@@ -396,13 +467,6 @@ fun HomeScreen(
 
         }
 
-        seasons.forEach { season ->
-            NotebookCard {
-                Text(season.name, style = MaterialTheme.typography.titleMedium, color = Ink)
-                season.remaining?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = Ink) }
-            }
-        }
-
         if (!adFreeActive) {
             NotebookCard {
                 PixelButton(
@@ -423,5 +487,69 @@ fun HomeScreen(
         }
 
         Spacer(Modifier.height(8.dp))
+    }
+}
+
+@Composable
+private fun androidx.compose.foundation.layout.RowScope.CollectionColumn(
+    emoji: String,
+    name: String,
+    captured: Int,
+    total: Int,
+    certified: Int?,
+) {
+    Column(
+        Modifier
+            .weight(1f)
+            .fillMaxHeight()
+            .clip(RoundedCornerShape(12.dp))
+            .background(PaperSubtle)
+            .border(1.dp, Line, RoundedCornerShape(12.dp))
+            .padding(vertical = 8.dp, horizontal = 4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Text(emoji, fontSize = 16.sp)
+        Text(
+            name,
+            style = MaterialTheme.typography.labelSmall,
+            color = Muted,
+            textAlign = TextAlign.Center,
+            softWrap = true,
+        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
+            modifier = Modifier.semantics { contentDescription = "Capturados $captured de $total" },
+        ) {
+            CaptureNetIcon(
+                on = captured > 0,
+                size = 16.dp,
+                modifier = Modifier.semantics { contentDescription = "Capturados" },
+            )
+            Text(
+                "$captured/$total",
+                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                color = GreenDark,
+            )
+        }
+        if (certified != null) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(2.dp),
+                modifier = Modifier.semantics { contentDescription = "Certificados $certified" },
+            ) {
+                CertificateMedalIcon(
+                    on = certified > 0,
+                    size = 16.dp,
+                    modifier = Modifier.semantics { contentDescription = "Certificados" },
+                )
+                Text(
+                    certified.toString(),
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    color = GreenDark,
+                )
+            }
+        }
     }
 }

@@ -17,6 +17,11 @@
       "path": "calendar/clima-2026.json",
       "size": 756553,
       "sha256": "f80829197cd37974ff6b5c1fb7afa266263b18b402fd1109e728d97003c9a6bf"
+    },
+    {
+      "path": "codes/codigos.json",
+      "size": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
     }
   ]
 }

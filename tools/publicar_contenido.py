@@ -86,6 +86,8 @@ def collect(source: Path, include_images: bool) -> list[tuple[str, bytes]]:
     if creditos.is_file():
         files.append(("catalog/creditos.json", creditos.read_bytes()))
     files.extend((f"calendar/{item.name}", item.read_bytes()) for item in calendar)
+    codes = source / "codes" / "codigos.json"
+    files.append(("codes/codigos.json", codes.read_bytes() if codes.is_file() else b"[]\n"))
     if include_images:
         images = sorted((source / "catalog" / "images").glob("*.webp"))
         if not images:

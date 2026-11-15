@@ -60,6 +60,7 @@ import com.guiaheartopia.app.ui.theme.Yellow
 fun HobbiesScreen(
     hobbies: List<Hobby>,
     onChange: (id: String, level: Int?, max: Int?, note: String?) -> Unit,
+    onBack: (() -> Unit)? = null,
 ) {
     Column(
         Modifier
@@ -68,10 +69,13 @@ fun HobbiesScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
+        if (onBack != null) {
+            TextButton(onClick = onBack) { Text("Atrás") }
+        }
         com.guiaheartopia.app.ui.components.SectionBanner(
             image = com.guiaheartopia.app.R.drawable.header_aficiones,
-            title = "Aficiones",
-            subtitle = "Cinco oficios, con su tope",
+            title = "Niveles",
+            subtitle = "Tus oficios, con su tope",
         )
         Text(
             "Cinco oficios fijos. Cada uno guarda tu nivel y una nota.",

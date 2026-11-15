@@ -124,6 +124,9 @@ class MainActivity : ComponentActivity() {
             val lifecycleOwner = LocalLifecycleOwner.current
             DisposableEffect(lifecycleOwner) {
                 val observer = LifecycleEventObserver { _, event ->
+                    if (event == Lifecycle.Event.ON_STOP) {
+                        com.guiaheartopia.app.ads.NavAdStore.completeSession(this@MainActivity)
+                    }
                     if (event == Lifecycle.Event.ON_RESUME) {
                         vm.refreshDay()
                         val now = System.currentTimeMillis()
@@ -250,6 +253,10 @@ private fun AppScaffold(
             },
         )
     }
+    val backStack by nav.currentBackStackEntryAsState()
+    val route = backStack?.destination?.route
+    val tabs = AppNavigation.BottomNavTabs
+    val tab = AppNavigation.tabForRoute(route)
     fun navigateBottomTab(dest: String) {
         val policy = NavigationPolicy.onBottomTabSelected(dest)
         fun go() {
@@ -262,7 +269,8 @@ private fun AppScaffold(
                 restoreState = policy.restoreState
             }
         }
-        if (adRewards.suppressAds) {
+        val sameTab = tab == dest
+        if (adRewards.suppressAds || sameTab) {
             go()
             return
         }
@@ -280,22 +288,22 @@ private fun AppScaffold(
             )
             return
         }
-        if (dest != "home" && AdConfig.hasInterstitial) {
-            ads.showInterstitial(adRewards.adFreeActive, onDone = { go() })
-        } else {
+        val allow = com.guiaheartopia.app.domain.NavInterstitial.allow(
+            adFree = adRewards.adFreeActive,
+            sameTab = sameTab,
+            firstLaunch = com.guiaheartopia.app.ads.NavAdStore.isFirstSession(context),
+            nowMillis = System.currentTimeMillis(),
+            lastShownMillis = com.guiaheartopia.app.ads.NavAdStore.lastShownMillis(context),
+        )
+        if (!allow) {
             go()
+            return
         }
-    }
-    val backStack by nav.currentBackStackEntryAsState()
-    val route = backStack?.destination?.route
-    val tabs = AppNavigation.BottomNavTabs
-    val tab = when (route) {
-        "settings", "map", "weather", "photo-credits", null -> null
-        else -> tabs.firstOrNull { route.startsWith(it.route) }?.route
-            ?: when {
-                route.startsWith("animal/") || route.startsWith("dex/") -> "guide"
-                else -> null
-            }
+        ads.showInterstitial(
+            adFree = adRewards.adFreeActive,
+            onDone = { go() },
+            onShown = { com.guiaheartopia.app.ads.NavAdStore.markShown(context) },
+        )
     }
 
     Scaffold(
@@ -396,6 +404,33 @@ private fun AppScaffold(
                     onDismissReminderPrompt = vm::dismissReminderPrompt,
                     adFreeActive = adRewards.adFreeActive,
                     onWatchAdFree = watchAdFree,
+                    onPickAvatar = vm::saveAvatar,
+                    onClearAvatar = vm::clearAvatar,
+                )
+            }
+            composable("aficiones") {
+                com.guiaheartopia.app.ui.hobbies.HobbyHubScreen { dest -> nav.navigate(dest) }
+            }
+            composable("codigos") {
+                com.guiaheartopia.app.ui.codes.CodesScreen(
+                    seen = ui.profile.seenCodes,
+                    onSeen = vm::markCodesSeen,
+                )
+            }
+            composable("huerto") {
+                com.guiaheartopia.app.ui.hobbies.ComingHobbyScreen(
+                    title = "Huerto",
+                    subtitle = "Siembras y flores",
+                    paths = com.guiaheartopia.app.domain.HobbyContent.huertoPaths,
+                    onBack = { nav.popBackStack() },
+                )
+            }
+            composable("cocina") {
+                com.guiaheartopia.app.ui.hobbies.ComingHobbyScreen(
+                    title = "Cocina",
+                    subtitle = "Platos y recetas",
+                    paths = com.guiaheartopia.app.domain.HobbyContent.cocinaPaths,
+                    onBack = { nav.popBackStack() },
                 )
             }
             composable("guide") {
@@ -405,7 +440,9 @@ private fun AppScaffold(
                     onOpenMap = { nav.navigate("map") },
                     onOpenDex = { nav.navigate("dex/$it") },
                     onToggleFound = vm::toggleFound,
+                    onToggleCertified = vm::toggleCertified,
                     onAddAnimal = vm::addAnimal,
+                    onBack = { nav.popBackStack() },
                 )
             }
             composable("calendar") {
@@ -414,7 +451,7 @@ private fun AppScaffold(
                 }
             }
             composable("hobbies") {
-                HobbiesScreen(ui.hobbies, vm::setHobby)
+                HobbiesScreen(ui.hobbies, vm::setHobby, onBack = { nav.popBackStack() })
             }
             composable("map") { MapScreen(ui.profile.zoneId) }
             composable(

@@ -23,6 +23,8 @@ data class PlayerProfile(
     val pixelCols: Int = 32,
     val pixelRows: Int = 32,
     val reminders: ReminderPrefs = ReminderPrefs(),
+    val avatarJpegBase64: String? = null,
+    val seenCodes: List<String> = emptyList(),
 )
 
 object SampleIds {
@@ -113,5 +115,6 @@ data class CategoryProgress(
 ) {
     val fraction: Float get() = if (total == 0) 0f else found.toFloat() / total
 
-    fun summary(): String = "$category: $found/$total capturados · $certified certificados"
+    fun summary(): String =
+        "${CatalogLabels.category(category)}: $found/$total capturados · $certified certificados"
 }

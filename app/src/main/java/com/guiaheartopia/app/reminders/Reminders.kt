@@ -18,7 +18,9 @@ import com.guiaheartopia.app.data.AndroidContentLibrary
 import com.guiaheartopia.app.data.GuideRepository
 import com.guiaheartopia.app.data.SkyCatalog
 import com.guiaheartopia.app.domain.PlayerProfile
+import com.guiaheartopia.app.domain.ReminderIds
 import com.guiaheartopia.app.domain.ReminderPlan
+import com.guiaheartopia.app.domain.ReminderSync
 import java.time.Duration
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -27,7 +29,8 @@ import kotlinx.coroutines.flow.first
 
 private const val CHANNEL = "guia-recordatorios"
 private const val PREFS = "guia-avisos"
-private const val IDS = "ids"
+private const val ENQUEUED = "enqueued"
+private const val POSTED = "posted"
 
 object ReminderScheduler {
     fun sync(context: Context, profile: PlayerProfile) {
@@ -37,7 +40,8 @@ object ReminderScheduler {
         manager.cancelUniqueWork("recordatorio-clima")
         manager.cancelUniqueWork("recordatorio-eventos")
         val store = app.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
-        val previous = store.getStringSet(IDS, emptySet()).orEmpty()
+        val previous = store.getStringSet(ENQUEUED, emptySet()).orEmpty()
+        val posted = store.getStringSet(POSTED, emptySet()).orEmpty()
         val zone = runCatching { ZoneId.of(profile.zoneId) }.getOrElse { ZoneId.systemDefault() }
         val now = ZonedDateTime.now(zone)
         val prefs = profile.reminders
@@ -53,9 +57,9 @@ object ReminderScheduler {
             val events = ReminderPlan.eventNotices(ReminderPlan.parseEvents(raw), prefs, zone, now)
             weather + events
         }
-        val nextIds = notices.map { it.id }.toSet()
-        (previous - nextIds).forEach { manager.cancelUniqueWork(it) }
-        notices.forEach { notice ->
+        val diff = ReminderSync.plan(previous, posted, notices)
+        diff.cancel.forEach { manager.cancelUniqueWork(it) }
+        diff.enqueue.forEach { notice ->
             val delay = Duration.between(now.toInstant(), notice.fireAt.toInstant()).toMillis().coerceAtLeast(0)
             val request = OneTimeWorkRequestBuilder<ReminderWorker>()
                 .setInitialDelay(delay, TimeUnit.MILLISECONDS)
@@ -68,9 +72,25 @@ object ReminderScheduler {
                 )
                 .addTag("guia-avisos")
                 .build()
-            manager.enqueueUniqueWork(notice.id, ExistingWorkPolicy.REPLACE, request)
+            // KEEP: un aviso ya encolado no se reemplaza ni se borra al reprogramar otro.
+            manager.enqueueUniqueWork(notice.id, ExistingWorkPolicy.KEEP, request)
         }
-        store.edit().putStringSet(IDS, nextIds).apply()
+        val stillWanted = notices.map { it.id }.toSet()
+        store.edit()
+            .putStringSet(ENQUEUED, diff.keep + diff.enqueue.map { it.id })
+            .putStringSet(POSTED, posted.intersect(stillWanted))
+            .apply()
+    }
+
+    fun markPosted(context: Context, id: String) {
+        if (id.isBlank()) return
+        val store = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        val posted = store.getStringSet(POSTED, emptySet()).orEmpty() + id
+        val enqueued = store.getStringSet(ENQUEUED, emptySet()).orEmpty() - id
+        store.edit()
+            .putStringSet(POSTED, posted)
+            .putStringSet(ENQUEUED, enqueued)
+            .apply()
     }
 }
 
@@ -78,7 +98,11 @@ class ReminderWorker(context: Context, params: WorkerParameters) : CoroutineWork
     override suspend fun doWork(): Result {
         val title = inputData.getString(TITLE).orEmpty()
         val body = inputData.getString(BODY).orEmpty()
-        if (title.isNotBlank() && body.isNotBlank()) show(applicationContext, title, body)
+        val id = inputData.getString(ID).orEmpty()
+        if (title.isNotBlank() && body.isNotBlank()) {
+            show(applicationContext, title, body, id)
+            ReminderScheduler.markPosted(applicationContext, id)
+        }
         val profile = GuideRepository(applicationContext).snapshots.first().profile
         ReminderScheduler.sync(applicationContext, profile)
         return Result.success()
@@ -111,7 +135,7 @@ class BootReminderReceiver : BroadcastReceiver() {
     }
 }
 
-private fun show(context: Context, title: String, body: String) {
+private fun show(context: Context, title: String, body: String, id: String) {
     val manager = context.getSystemService(NotificationManager::class.java)
     if (Build.VERSION.SDK_INT >= 26 && manager.getNotificationChannel(CHANNEL) == null) {
         manager.createNotificationChannel(
@@ -124,6 +148,8 @@ private fun show(context: Context, title: String, body: String) {
         .setContentText(body)
         .setStyle(NotificationCompat.BigTextStyle().bigText(body))
         .setAutoCancel(true)
+        .setGroup("guia-avisos")
         .build()
-    manager.notify((title + body).hashCode(), notification)
+    val notificationId = if (id.isBlank()) ReminderIds.notificationId("$title|$body") else ReminderIds.notificationId(id)
+    manager.notify(notificationId, notification)
 }

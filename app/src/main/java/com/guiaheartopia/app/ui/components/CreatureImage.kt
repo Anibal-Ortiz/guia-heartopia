@@ -3,11 +3,14 @@ package com.guiaheartopia.app.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.contentDescription as semanticsDescription
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +38,14 @@ import java.io.File
  * El APK no trae arte de catálogo: si no hay archivo, la ficha usa el ícono de la categoría.
  * Una URL http(s) no se pide al mostrar la ficha.
  */
+@Composable
+fun rememberCreatureModel(imageUrl: String?, creatureId: String): Any? {
+    val context = LocalContext.current
+    val downloaded = CreatureImagePaths.candidates(imageUrl, creatureId)
+        .firstNotNullOfOrNull { AndroidContentStore.overlayFile(context, it) }
+    return bundledCreatureModel(imageUrl, downloaded, creatureId)
+}
+
 fun bundledCreatureModel(imageUrl: String?, downloaded: File? = null, id: String = ""): Any? {
     val paths = CreatureImagePaths.candidates(imageUrl, id)
     if (paths.isEmpty()) return null
@@ -53,6 +64,7 @@ fun CreatureImage(
     shapeRadius: Dp = 16.dp,
     contentDescription: String = "Dibujo de la criatura",
     creatureId: String = "",
+    onClick: (() -> Unit)? = null,
 ) {
     val shape = RoundedCornerShape(shapeRadius)
     val context = LocalContext.current
@@ -62,7 +74,17 @@ fun CreatureImage(
     var failed by remember(model) { mutableStateOf(false) }
     val stain = watercolorFor(category)
 
-    Box(modifier.wrapContentSize(unbounded = true), contentAlignment = Alignment.Center) {
+    val clickable = if (onClick == null) {
+        Modifier
+    } else {
+        Modifier
+            .semantics { semanticsDescription = contentDescription }
+            .clickable(onClick = onClick)
+    }
+    Box(
+        modifier.wrapContentSize(unbounded = true).then(clickable),
+        contentAlignment = Alignment.Center,
+    ) {
         if (stain != null) {
             Image(
                 painter = painterResource(stain),
@@ -85,7 +107,7 @@ fun CreatureImage(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(model)
                         .build(),
-                    contentDescription = contentDescription,
+                    contentDescription = if (onClick == null) contentDescription else null,
                     contentScale = ContentScale.Fit,
                     onError = { failed = true },
                     modifier = Modifier

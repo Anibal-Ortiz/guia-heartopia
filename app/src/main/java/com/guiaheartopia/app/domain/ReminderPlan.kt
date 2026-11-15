@@ -25,6 +25,12 @@ data class ActiveSeason(
     val remaining: String?,
 )
 
+data class CalendarEventRow(
+    val id: String,
+    val title: String,
+    val detail: String?,
+)
+
 @Serializable
 data class EventosDocument(
     val zonaFuente: String = "Etc/GMT+5",
@@ -94,11 +100,15 @@ object ReminderPlan {
         }
         return merge(spans).mapNotNull { span ->
             val fire = span.start.minusMinutes(30)
-            if (!fire.toInstant().isAfter(now.toInstant())) return@mapNotNull null
+            // Mientras el tramo no haya empezado, el aviso sigue en el plan.
+            // Si ya pasó la hora de avisar y WorkManager aún no lo entregó,
+            // reprogramar no debe cancelarlo.
+            if (!span.start.toInstant().isAfter(now.toInstant())) return@mapNotNull null
             if (fire.toInstant().isAfter(until.toInstant())) return@mapNotNull null
             val localStart = span.start.toLocalTime().format(clock)
+            val startEpoch = span.start.toInstant().toEpochMilli()
             PlannedNotice(
-                id = "clima-${span.start.toInstant().toEpochMilli()}",
+                id = ReminderIds.weather(span.label, startEpoch),
                 fireAt = fire.withZoneSameInstant(viewerZone),
                 title = "Clima",
                 body = "En 30 min: ${span.label} ($localStart)",
@@ -165,6 +175,30 @@ object ReminderPlan {
         }
     }
 
+    /**
+     * Lo que Inicio mostraba de eventos.json: temporadas en curso con el tiempo
+     * que falta, y el resto de eventos solo con los campos que trae el archivo.
+     */
+    fun calendarRows(document: EventosDocument?, user: ZoneId, now: ZonedDateTime): List<CalendarEventRow> {
+        val events = document?.eventos.orEmpty()
+        if (events.isEmpty()) return emptyList()
+        val active = activeSeasons(document, user, now).associateBy { it.id }
+        return events.mapNotNull { event ->
+            if (event.nombre.isBlank()) return@mapNotNull null
+            val key = event.id.ifBlank { event.nombre }
+            val season = active[key]
+            val detail = when {
+                season != null -> season.remaining
+                event.tipo == "aficion" && event.horas.isNotEmpty() -> event.horas.joinToString(", ")
+                !event.inicio.isNullOrBlank() && !event.fin.isNullOrBlank() -> "${event.inicio} – ${event.fin}"
+                !event.inicio.isNullOrBlank() -> event.inicio
+                !event.fin.isNullOrBlank() -> event.fin
+                else -> null
+            }
+            CalendarEventRow(id = key, title = event.nombre, detail = detail)
+        }
+    }
+
     fun remaining(now: ZonedDateTime, end: ZonedDateTime): String {
         val minutes = Duration.between(now.toInstant(), end.toInstant()).toMinutes()
         if (minutes <= 0) return "Termina ahora"
@@ -205,10 +239,10 @@ object ReminderPlan {
                     if (windowEnd != null && at.toInstant().isAfter(windowEnd.toInstant())) continue
                     val local = at.withZoneSameInstant(user)
                     val fire = local.minusMinutes(lead.toLong())
-                    if (!fire.toInstant().isAfter(now.toInstant())) continue
+                    if (!local.toInstant().isAfter(now.toInstant())) continue
                     if (fire.toInstant().isAfter(until.toInstant())) continue
                     out += PlannedNotice(
-                        id = "aficion-${event.id}-${at.toInstant().toEpochMilli()}",
+                        id = ReminderIds.hobby(event.id, at.toInstant().toEpochMilli()),
                         fireAt = fire,
                         title = event.nombre,
                         body = "En $lead min: ${event.nombre}",
@@ -232,7 +266,7 @@ object ReminderPlan {
         val end = parseStamp(event.fin)?.atZone(source)?.withZoneSameInstant(user)
         if (start != null && inWindow(start, now, until)) {
             out += PlannedNotice(
-                id = "temporada-inicio-${event.id}",
+                id = ReminderIds.seasonStart(event.id),
                 fireAt = start,
                 title = event.nombre,
                 body = "Empieza: ${event.nombre}",
@@ -242,7 +276,7 @@ object ReminderPlan {
             val warn = end.minusHours(24)
             if (inWindow(warn, now, until)) {
                 out += PlannedNotice(
-                    id = "temporada-dia-${event.id}",
+                    id = ReminderIds.seasonDay(event.id),
                     fireAt = warn,
                     title = event.nombre,
                     body = "Queda 1 día",

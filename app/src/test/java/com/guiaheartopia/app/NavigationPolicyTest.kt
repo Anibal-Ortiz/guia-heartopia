@@ -18,7 +18,7 @@ class NavigationPolicyTest {
 
     @Test
     fun everyOtherTabOpensItsRootWithoutRestoringAnInnerScreen() {
-        listOf("guide", "calendar", "hobbies").forEach { route ->
+        listOf("aficiones", "codigos", "calendar").forEach { route ->
             val policy = NavigationPolicy.onBottomTabSelected(route)
             assertEquals(AppNavigation.HOME_ROUTE, policy.popUpToRoute)
             assertFalse(policy.inclusive)

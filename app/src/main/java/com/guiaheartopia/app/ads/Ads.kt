@@ -175,8 +175,8 @@ class AdsController(
 
     fun onAdsReady() = fullscreen.preload(state.mode)
 
-    fun showInterstitial(adFree: Boolean, onDone: () -> Unit = {}) {
-        fullscreen.showInterstitial(adFree, onDone)
+    fun showInterstitial(adFree: Boolean, onDone: () -> Unit = {}, onShown: () -> Unit = {}) {
+        fullscreen.showInterstitial(adFree, onDone, onShown)
     }
 
     fun showRewardedAdFree(onReward: () -> Unit, onUnavailable: () -> Unit) {
