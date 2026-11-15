@@ -30,8 +30,9 @@ import com.guiaheartopia.app.ui.codes.CodesScreen
 import com.guiaheartopia.app.ui.hobbies.CocinaScreen
 import com.guiaheartopia.app.ui.hobbies.HuertoScreen
 import com.guiaheartopia.app.ui.hobbies.HobbyHubScreen
-import com.guiaheartopia.app.ui.hobbies.SiembraDetailScreen
+import com.guiaheartopia.app.ui.hobbies.FlorDetailScreen
 import com.guiaheartopia.app.ui.hobbies.RecetaDetailScreen
+import com.guiaheartopia.app.ui.hobbies.SiembraDetailScreen
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.guiaheartopia.app.domain.PlayerProfile
@@ -46,6 +47,8 @@ import com.guiaheartopia.app.ui.theme.GuiaTheme
 import com.guiaheartopia.app.ui.weather.WeatherScreen
 import com.guiaheartopia.app.ui.welcome.WelcomeScreen
 import java.io.File
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.onNodeWithText
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -261,54 +264,109 @@ class ScreenGrabTest {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         writeAficionesOverlay(context)
         val planted = System.currentTimeMillis() - 30_000L
-        val ui = sampleUi().copy(
+        val plantedUi = sampleUi().copy(
             huertoFound = setOf("tomate"),
+            florFound = setOf("rosa"),
+            recetaFound = emptySet(),
+            recetaFavorites = setOf("ensalada"),
             activeCrops = listOf(
                 ActiveCrop("c1", "tomate", "Tomate", planted, planted + 90 * 60_000L),
             ),
         )
+        val lowLevelUi = sampleUi().copy(
+            hobbies = com.guiaheartopia.app.domain.HobbyCatalog.fixed.map { hobby ->
+                when (hobby.id) {
+                    "hob-siembra", "hob-cocina" -> hobby.copy(level = 0)
+                    else -> hobby
+                }
+            },
+            huertoFound = setOf("tomate"),
+            activeCrops = plantedUi.activeCrops,
+        )
         val siembra = com.guiaheartopia.app.domain.AficionesContent.parseSiembras(
             java.io.File(context.filesDir, "content/live/files/huerto/siembras.json").readText(),
         ).single()
+        val flores = com.guiaheartopia.app.domain.AficionesContent.parseFlores(
+            java.io.File(context.filesDir, "content/live/files/huerto/flores.json").readText(),
+        )
         val recetas = com.guiaheartopia.app.domain.AficionesContent.parseRecetas(
             java.io.File(context.filesDir, "content/live/files/cocina/recetas.json").readText(),
         )
+        val step = mutableIntStateOf(0)
         rule.setContent {
             GuiaTheme {
                 Box(Modifier.fillMaxSize().background(Cream)) {
-                    SiembraDetailScreen(
-                        entry = siembra,
-                        recetas = recetas,
-                        found = true,
-                        activeCrop = ui.activeCrops.single(),
-                        onBack = {},
-                        onToggleFound = {},
-                        onPlant = {},
-                        onOpenReceta = {},
-                    )
+                    androidx.compose.runtime.key(step.intValue) {
+                        when (step.intValue) {
+                            0 -> HobbyHubScreen(lowLevelUi) {}
+                            1 -> HuertoScreen(
+                                plantedUi,
+                                onBack = {},
+                                onOpenSiembra = {},
+                                onOpenFlor = {},
+                                onToggleSiembraFound = {},
+                                onToggleFlorFound = {},
+                                onCancelCrop = {},
+                                onOpenAboveLevel = {},
+                            )
+                            2 -> HuertoScreen(
+                                plantedUi,
+                                onBack = {},
+                                onOpenSiembra = {},
+                                onOpenFlor = {},
+                                onToggleSiembraFound = {},
+                                onToggleFlorFound = {},
+                                onCancelCrop = {},
+                                onOpenAboveLevel = {},
+                                initialTab = 1,
+                            )
+                            3 -> CocinaScreen(
+                                plantedUi,
+                                onBack = {},
+                                onOpenReceta = {},
+                                onToggleFound = {},
+                                onToggleFavorite = {},
+                                onOpenAboveLevel = {},
+                            )
+                            4 -> SiembraDetailScreen(
+                                siembra, recetas, true, plantedUi.activeCrops.single(),
+                                {}, {}, {}, {},
+                            )
+                            5 -> FlorDetailScreen(flores.single(), true, {}, {})
+                            6 -> RecetaDetailScreen(
+                                recetas.single(), listOf(siembra), false, true,
+                                {}, {}, {}, {},
+                            )
+                            else -> HuertoScreen(
+                                lowLevelUi,
+                                onBack = {},
+                                onOpenSiembra = {},
+                                onOpenFlor = {},
+                                onToggleSiembraFound = {},
+                                onToggleFlorFound = {},
+                                onCancelCrop = {},
+                                onOpenAboveLevel = {},
+                                onlyAboveLevel = true,
+                            )
+                        }
+                    }
                 }
             }
         }
-        rule.waitForIdle()
-        save("ficha-siembra-temporizador")
-        rule.setContent {
-            GuiaTheme {
-                Box(Modifier.fillMaxSize().background(Cream)) {
-                    RecetaDetailScreen(
-                        entry = recetas.single(),
-                        siembras = listOf(siembra),
-                        found = false,
-                        favorite = true,
-                        onBack = {},
-                        onToggleFound = {},
-                        onToggleFavorite = {},
-                        onOpenSiembra = {},
-                    )
-                }
-            }
+        val shots = listOf(
+            0 to ("105-aficiones-nivel-pendiente" to "Aficiones"),
+            1 to ("105-huerto-siembras-temporizador" to "Cultivos en curso"),
+            2 to ("105-huerto-flores" to "Rosa"),
+            3 to ("105-cocina" to "Ensalada"),
+            4 to ("105-ficha-siembra" to "Tomate"),
+            5 to ("105-ficha-flor" to "Rosa"),
+            6 to ("105-ficha-receta" to "Ensalada"),
+            7 to ("105-huerto-filtro-nivel" to "más nivel"),
+        )
+        shots.forEach { (value, shot) ->
+            go(step, value)
+            saveWhenVisible(shot.first, shot.second)
         }
-        rule.waitForIdle()
-        save("ficha-receta")
     }
 
     private fun saveRoot(name: String, index: Int) {
@@ -332,12 +390,25 @@ class ScreenGrabTest {
     }
 
     private fun save(name: String) {
+        rule.waitForIdle()
+        Thread.sleep(800)
         writeBitmap(name, rule.onRoot().captureToImage().asAndroidBitmap())
+    }
+
+    private fun saveWhenVisible(name: String, label: String) {
+        rule.waitUntil(timeoutMillis = 15_000) {
+            rule.onAllNodes(hasText(label, substring = true)).fetchSemanticsNodes().isNotEmpty()
+        }
+        save(name)
     }
 
     private fun writeBitmap(name: String, bitmap: android.graphics.Bitmap) {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        listOf(File(context.filesDir, "screens"), context.externalCacheDir?.let { File(it, "screens") })
+        listOf(
+            File(context.filesDir, "screens"),
+            context.externalCacheDir?.let { File(it, "screens") },
+            context.getExternalFilesDir(null)?.let { File(it, "screens") },
+        )
             .filterNotNull()
             .forEach { dir ->
                 dir.mkdirs()
