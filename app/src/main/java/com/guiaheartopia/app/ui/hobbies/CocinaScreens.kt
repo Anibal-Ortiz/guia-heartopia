@@ -1,7 +1,9 @@
 package com.guiaheartopia.app.ui.hobbies
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilterChip
@@ -28,11 +31,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.data.AficionesCatalog
 import com.guiaheartopia.app.domain.AficionesContent
 import com.guiaheartopia.app.domain.AficionesMarks
-import com.guiaheartopia.app.domain.AficionesLevelSummary
+import com.guiaheartopia.app.domain.CocinaIngredienteLine
+import com.guiaheartopia.app.domain.CocinaIngredienteRef
+import com.guiaheartopia.app.domain.CocinaIngredients
 import com.guiaheartopia.app.domain.CreatureAvailability
 import com.guiaheartopia.app.domain.ImageZoom
 import com.guiaheartopia.app.domain.LevelFilter
@@ -43,17 +49,21 @@ import com.guiaheartopia.app.domain.TextMatch
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.ui.components.AficionesImage
 import com.guiaheartopia.app.ui.components.CreatureZoomDialog
+import com.guiaheartopia.app.ui.components.IngredientImage
 import com.guiaheartopia.app.ui.components.LabelValue
-import com.guiaheartopia.app.ui.components.rememberAficionesModel
-import com.guiaheartopia.app.ui.guide.LevelDropdown
+import com.guiaheartopia.app.ui.components.PillTabs
 import com.guiaheartopia.app.ui.components.PixelCard
 import com.guiaheartopia.app.ui.components.SectionBanner
+import com.guiaheartopia.app.ui.components.rememberAficionesModel
 import com.guiaheartopia.app.ui.contentRevision
+import com.guiaheartopia.app.ui.guide.LevelDropdown
 import com.guiaheartopia.app.ui.theme.GreenDark
+import com.guiaheartopia.app.ui.theme.GreenSoft
 import com.guiaheartopia.app.ui.theme.HoneySoft
 import com.guiaheartopia.app.ui.theme.Ink
 import com.guiaheartopia.app.ui.theme.Muted
-import com.guiaheartopia.app.ui.theme.PaperSubtle
+
+private val CocinaTabs = listOf("Platos", "Ingredientes")
 
 @Composable
 fun CocinaScreen(
@@ -62,8 +72,6 @@ fun CocinaScreen(
     onOpenReceta: (String) -> Unit,
     onToggleFound: (String) -> Unit,
     onToggleCertified: (String, Boolean) -> Unit,
-    onToggleFavorite: (String) -> Unit,
-    onOpenAboveLevel: () -> Unit,
     onlyAboveLevel: Boolean = false,
 ) {
     val context = LocalContext.current
@@ -74,9 +82,8 @@ fun CocinaScreen(
         return
     }
     val cocinaLevel = ui.hobbies.firstOrNull { it.id == "hob-cocina" }?.level ?: 0
-    val locked = remember(bundle, cocinaLevel) {
-        AficionesLevelSummary.lockedCount(bundle.recetas.map { it.nivelCocina }, cocinaLevel)
-    }
+    var tab by rememberSaveable { mutableIntStateOf(0) }
+    var selectedIngredient by rememberSaveable { mutableStateOf<String?>(null) }
     var query by rememberSaveable { mutableStateOf("") }
     var filtro by rememberSaveable { mutableStateOf("Todas") }
     val filtros = remember(bundle) {
@@ -85,12 +92,15 @@ fun CocinaScreen(
     }
     var sortByLevel by rememberSaveable { mutableStateOf(false) }
     var onlyConseguidas by rememberSaveable { mutableStateOf<Boolean?>(null) }
-    var onlyFavoritas by rememberSaveable { mutableStateOf(false) }
+    var onlyCertificadas by rememberSaveable { mutableStateOf<Boolean?>(null) }
     val catalogMax = remember(bundle) { LevelFilter.maximum(bundle.recetas.map { it.nivelCocina }) ?: 0 }
     var chosenLevel by rememberSaveable { mutableIntStateOf(-1) }
     val levelCap = if (chosenLevel < 0) null else chosenLevel.coerceAtMost(catalogMax)
+    val ingredientCatalog = remember(bundle) {
+        CocinaIngredients.catalogUnique(bundle.recetas, bundle.siembras)
+    }
 
-    val filtered = bundle.recetas.filter { entry ->
+  val filteredRecetas = bundle.recetas.filter { entry ->
         val searchOk = query.isBlank() || TextMatch.contains(entry.nombre, query)
         val filtroOk = when (filtro) {
             "Todas" -> true
@@ -105,13 +115,17 @@ fun CocinaScreen(
             false -> entry.id !in ui.recetaFound
             else -> true
         }
-        val favOk = !onlyFavoritas || entry.id in ui.recetaFavorites
-        searchOk && filtroOk && levelOk && aboveOk && markOk && favOk
+        val certOk = when (onlyCertificadas) {
+            true -> entry.id in ui.recetaCertified
+            false -> entry.id !in ui.recetaCertified
+            else -> true
+        }
+        searchOk && filtroOk && levelOk && aboveOk && markOk && certOk
     }
-    val sorted = if (sortByLevel) {
-        filtered.sortedWith(compareBy({ it.nivelCocina }, { it.nombre }))
+    val sortedRecetas = if (sortByLevel) {
+        filteredRecetas.sortedWith(compareBy({ it.nivelCocina }, { it.nombre }))
     } else {
-        filtered.sortedBy { it.nombre }
+        filteredRecetas.sortedBy { it.nombre }
     }
 
     Column(
@@ -127,66 +141,119 @@ fun CocinaScreen(
             title = "Cocina",
             subtitle = "${bundle.recetas.size} recetas",
         )
-        if (locked > 0) {
-            PixelCard(container = PaperSubtle) {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                    Text("$locked recetas piden más nivel que el tuyo", style = MaterialTheme.typography.bodyMedium, color = Ink)
-                    TextButton(onClick = onOpenAboveLevel) { Text("Ver lista") }
+        PillTabs(CocinaTabs, tab) {
+            tab = it
+            selectedIngredient = null
+        }
+        if (tab == 0) {
+            OutlinedTextField(
+                value = query,
+                onValueChange = { query = it },
+                placeholder = { Text("Buscar por nombre...") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+            )
+            AficionesListHeader(
+                found = ui.recetaFound.size,
+                total = bundle.recetas.size,
+                sortByLevel = sortByLevel,
+                onSort = { sortByLevel = !sortByLevel },
+                onlyConseguidas = onlyConseguidas,
+                onConseguidas = { onlyConseguidas = it },
+                onlyCertificadas = onlyCertificadas,
+                onCertificadas = { onlyCertificadas = it },
+                extraChips = {
+                    filtros.forEach { f ->
+                        FilterChip(
+                            selected = filtro == f,
+                            onClick = { filtro = f },
+                            label = { Text(f, maxLines = 1, overflow = TextOverflow.Clip) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = HoneySoft,
+                                selectedLabelColor = Ink,
+                            ),
+                        )
+                    }
+                },
+            )
+            LevelDropdown(selected = levelCap, maximum = catalogMax, onSelect = { chosenLevel = it ?: -1 })
+            Text(
+                "${sortedRecetas.size} en esta lista",
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                color = Muted,
+            )
+            sortedRecetas.forEach { entry ->
+                RecetaCard(
+                    entry = entry,
+                    siembras = bundle.siembras,
+                    recetas = bundle.recetas,
+                    found = entry.id in ui.recetaFound,
+                    certified = entry.id in ui.recetaCertified,
+                    onOpen = { onOpenReceta(entry.id) },
+                    onToggleFound = { onToggleFound(entry.id) },
+                    onToggleCertified = {
+                        onToggleCertified(entry.id, AficionesMarks.certifiableReceta(entry))
+                    },
+                )
+            }
+        } else {
+            val selected = selectedIngredient?.let { key ->
+                ingredientCatalog.firstOrNull { it.key == key }
+            }
+            if (selected != null) {
+                TextButton(onClick = { selectedIngredient = null }) { Text("← Ingredientes") }
+                Text(
+                    selected.displayName,
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                    color = Ink,
+                )
+                IngredientImage(
+                    imagen = CocinaIngredients.resolveImagen(selected, bundle.siembras, bundle.recetas),
+                    size = 72.dp,
+                    contentDescription = selected.displayName,
+                )
+                Text("Recetas que lo usan", style = MaterialTheme.typography.titleMedium, color = Ink)
+                CocinaIngredients.recetasConIngrediente(bundle.recetas, bundle.siembras, selected.key)
+                    .sortedBy { it.nombre }
+                    .forEach { entry ->
+                        TextButton(onClick = { onOpenReceta(entry.id) }) { Text(entry.nombre) }
+                    }
+            } else {
+                OutlinedTextField(
+                    value = query,
+                    onValueChange = { query = it },
+                    placeholder = { Text("Buscar ingrediente...") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                )
+                val filteredIng = ingredientCatalog.filter {
+                    query.isBlank() || TextMatch.contains(it.displayName, query)
+                }
+                filteredIng.forEach { ref ->
+                    IngredientListRow(ref, bundle.siembras, bundle.recetas) {
+                        selectedIngredient = ref.key
+                    }
                 }
             }
         }
-        OutlinedTextField(
-            value = query,
-            onValueChange = { query = it },
-            placeholder = { Text("Buscar por nombre...") },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-        )
-        AficionesListHeader(
-            found = ui.recetaFound.size,
-            total = bundle.recetas.size,
-            sortByLevel = sortByLevel,
-            onSort = { sortByLevel = !sortByLevel },
-            onlyConseguidas = onlyConseguidas,
-            onConseguidas = { onlyConseguidas = it },
-            extraChips = {
-                FilterChip(
-                    selected = onlyFavoritas,
-                    onClick = { onlyFavoritas = !onlyFavoritas },
-                    label = { Text("Favoritas", maxLines = 1) },
-                )
-                filtros.forEach { f ->
-                    FilterChip(
-                        selected = filtro == f,
-                        onClick = { filtro = f },
-                        label = { Text(f, maxLines = 1) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = HoneySoft,
-                            selectedLabelColor = Ink,
-                        ),
-                    )
-                }
-            },
-        )
-        LevelDropdown(selected = levelCap, maximum = catalogMax, onSelect = { chosenLevel = it ?: -1 })
-        Text(
-            "${sorted.size} en esta lista",
-            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-            color = Muted,
-        )
-        sorted.forEach { entry ->
-            RecetaCard(
-                entry,
-                found = entry.id in ui.recetaFound,
-                certified = entry.id in ui.recetaCertified,
-                favorite = entry.id in ui.recetaFavorites,
-                onOpen = { onOpenReceta(entry.id) },
-                onToggleFound = { onToggleFound(entry.id) },
-                onToggleCertified = {
-                    onToggleCertified(entry.id, AficionesMarks.certifiableReceta(entry))
-                },
-                onToggleFavorite = { onToggleFavorite(entry.id) },
+    }
+}
+
+@Composable
+private fun IngredientListRow(
+    ref: CocinaIngredienteRef,
+    siembras: List<SiembraEntry>,
+    recetas: List<RecetaEntry>,
+    onClick: () -> Unit,
+) {
+    PixelCard(Modifier.clickable(onClick = onClick).fillMaxWidth()) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            IngredientImage(
+                imagen = CocinaIngredients.resolveImagen(ref, siembras, recetas),
+                size = 56.dp,
+                contentDescription = ref.displayName,
             )
+            Text(ref.displayName, style = MaterialTheme.typography.titleMedium, color = Ink)
         }
     }
 }
@@ -194,17 +261,20 @@ fun CocinaScreen(
 @Composable
 private fun RecetaCard(
     entry: RecetaEntry,
+    siembras: List<SiembraEntry>,
+    recetas: List<RecetaEntry>,
     found: Boolean,
     certified: Boolean,
-    favorite: Boolean,
     onOpen: () -> Unit,
     onToggleFound: () -> Unit,
     onToggleCertified: () -> Unit,
-    onToggleFavorite: () -> Unit,
 ) {
     val certifiable = AficionesMarks.certifiableReceta(entry)
     var zoom by remember(entry.id) { mutableStateOf(false) }
     val model = rememberAficionesModel(entry.imagen)
+    val ingredientLines = remember(entry, siembras, recetas) {
+        CocinaIngredients.linesForReceta(entry, siembras, recetas)
+    }
     if (zoom && model != null) {
         CreatureZoomDialog(
             name = entry.nombre,
@@ -219,23 +289,21 @@ private fun RecetaCard(
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
         ) {
             AficionesImage(
                 imagen = entry.imagen,
                 sectionLabel = "Cocina",
-                size = 72.dp,
+                size = 88.dp,
                 contentDescription = ImageZoom.enlargedDescription(entry.nombre),
                 onClick = { if (model != null) zoom = true },
             )
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(entry.nombre, style = MaterialTheme.typography.titleMedium, color = Ink)
                 Text("Nivel ${entry.nivelCocina}", style = MaterialTheme.typography.bodySmall, color = Muted)
-                entry.categoria?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = Muted) }
-                entry.evento?.let { Text("Evento: $it", style = MaterialTheme.typography.bodySmall, color = Muted) }
-            }
-            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                FavoritaToggle(favorite, onToggleFavorite)
+                entry.evento?.let {
+                    Text("Evento: $it", style = MaterialTheme.typography.bodySmall, color = Muted)
+                }
                 AficionCertifyRow(
                     found = found,
                     certified = certified,
@@ -243,7 +311,34 @@ private fun RecetaCard(
                     onToggleFound = onToggleFound,
                     onToggleCertified = onToggleCertified,
                 )
+                if (ingredientLines.isNotEmpty()) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        ingredientLines.forEach { line ->
+                            IngredientMini(line, siembras, recetas)
+                        }
+                    }
+                }
             }
+        }
+    }
+}
+
+@Composable
+private fun IngredientMini(
+    line: CocinaIngredienteLine,
+    siembras: List<SiembraEntry>,
+    recetas: List<RecetaEntry>,
+) {
+    val imagen = CocinaIngredients.resolveImagen(line.ref, siembras, recetas)
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        IngredientImage(imagen = imagen, size = 36.dp, contentDescription = line.ref.displayName)
+        line.cantidad?.let {
+            Text("×$it", style = MaterialTheme.typography.labelSmall, color = Muted)
         }
     }
 }
@@ -255,11 +350,9 @@ fun RecetaDetailScreen(
     recetas: List<RecetaEntry>,
     found: Boolean,
     certified: Boolean,
-    favorite: Boolean,
     onBack: () -> Unit,
     onToggleFound: () -> Unit,
     onToggleCertified: () -> Unit,
-    onToggleFavorite: () -> Unit,
     onOpenSiembra: (String) -> Unit,
     onOpenReceta: (String) -> Unit,
 ) {
@@ -295,9 +388,6 @@ fun RecetaDetailScreen(
                 )
                 Column(Modifier.weight(1f)) {
                     Text(entry.nombre, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold), color = Ink)
-                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        FavoritaToggle(favorite, onToggleFavorite)
-                    }
                     AficionCertifyRow(
                         found = found,
                         certified = certified,
@@ -351,7 +441,7 @@ private fun IngredienteRow(
     onOpenSiembra: (String) -> Unit,
     onOpenReceta: (String) -> Unit,
 ) {
-  val elegir = ing.elegir
+    val elegir = ing.elegir
     if (elegir != null && ing.opciones.isNotEmpty()) {
         Text(
             "Elige $elegir de los siguientes:",
@@ -359,27 +449,33 @@ private fun IngredienteRow(
             color = Ink,
         )
         ing.opciones.forEach { opt ->
-            val nombre = AficionesContent.opcionNombre(opt, siembras, recetas)
-            when {
-                opt.idSiembra != null -> {
-                    TextButton(onClick = { onOpenSiembra(opt.idSiembra) }) { Text(nombre) }
-                }
-                opt.idReceta != null -> {
-                    TextButton(onClick = { onOpenReceta(opt.idReceta) }) { Text(nombre) }
-                }
-                else -> {
-                    Text(nombre, style = MaterialTheme.typography.bodyMedium, color = Ink)
-                }
-            }
+            val ref = CocinaIngredients.refForOpcion(opt, siembras, recetas)
+            SingleIngredientRow(ref, null, siembras, recetas, onOpenSiembra, onOpenReceta)
         }
         return
     }
-    val line = AficionesContent.ingredienteLine(ing, siembras, recetas)
-    val sid = ing.idSiembra
-    val rid = ing.idReceta
-    when {
-        sid != null -> TextButton(onClick = { onOpenSiembra(sid) }) { Text(line) }
-        rid != null -> TextButton(onClick = { onOpenReceta(rid) }) { Text(line) }
-        else -> Text(line, style = MaterialTheme.typography.bodyMedium, color = Ink)
+    val ref = CocinaIngredients.refForIngrediente(ing, siembras, recetas)
+    SingleIngredientRow(ref, ing.cantidad, siembras, recetas, onOpenSiembra, onOpenReceta)
+}
+
+@Composable
+private fun SingleIngredientRow(
+    ref: CocinaIngredienteRef,
+    cantidad: Int?,
+    siembras: List<SiembraEntry>,
+    recetas: List<RecetaEntry>,
+    onOpenSiembra: (String) -> Unit,
+    onOpenReceta: (String) -> Unit,
+) {
+    val imagen = CocinaIngredients.resolveImagen(ref, siembras, recetas)
+    val suffix = cantidad?.let { " ×$it" }.orEmpty()
+    val label = ref.displayName + suffix
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        IngredientImage(imagen = imagen, size = 44.dp, contentDescription = ref.displayName)
+        when {
+            ref.idSiembra != null -> TextButton(onClick = { onOpenSiembra(ref.idSiembra) }) { Text(label) }
+            ref.idReceta != null -> TextButton(onClick = { onOpenReceta(ref.idReceta) }) { Text(label) }
+            else -> Text(label, style = MaterialTheme.typography.bodyMedium, color = Ink)
+        }
     }
 }

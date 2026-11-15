@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -89,14 +90,40 @@ fun AficionesImage(
                     modifier = Modifier.fillMaxSize().clip(shape),
                 )
             } else {
-                CreatureGlyph(
-                    category = sectionLabel,
-                    locations = emptyList(),
-                    level = null,
-                    modifier = Modifier.fillMaxSize(),
-                    size = size,
-                )
+                if (sectionLabel == "Ingrediente") {
+                    Image(
+                        painter = painterResource(com.guiaheartopia.app.R.drawable.ic_aficion_cocina),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize().padding(4.dp),
+                        contentScale = ContentScale.Fit,
+                    )
+                } else {
+                    CreatureGlyph(
+                        category = sectionLabel,
+                        locations = emptyList(),
+                        level = null,
+                        modifier = Modifier.fillMaxSize(),
+                        size = size,
+                    )
+                }
             }
         }
     }
+}
+
+@Composable
+fun IngredientImage(
+    imagen: String?,
+    modifier: Modifier = Modifier,
+    size: Dp = 40.dp,
+    contentDescription: String = "Ingrediente",
+) {
+    AficionesImage(
+        imagen = imagen,
+        sectionLabel = "Ingrediente",
+        modifier = modifier,
+        size = size,
+        shapeRadius = 10.dp,
+        contentDescription = contentDescription,
+    )
 }

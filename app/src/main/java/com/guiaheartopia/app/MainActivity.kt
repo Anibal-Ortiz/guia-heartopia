@@ -469,8 +469,6 @@ private fun AppScaffold(
                     onOpenReceta = { nav.navigate("cocina/receta/$it") },
                     onToggleFound = vm::toggleRecetaFound,
                     onToggleCertified = vm::toggleRecetaCertified,
-                    onToggleFavorite = vm::toggleRecetaFavorite,
-                    onOpenAboveLevel = { nav.navigate("cocina/pendiente-nivel") },
                 )
             }
             composable("cocina/pendiente-nivel") {
@@ -480,8 +478,6 @@ private fun AppScaffold(
                     onOpenReceta = { nav.navigate("cocina/receta/$it") },
                     onToggleFound = vm::toggleRecetaFound,
                     onToggleCertified = vm::toggleRecetaCertified,
-                    onToggleFavorite = vm::toggleRecetaFavorite,
-                    onOpenAboveLevel = { nav.navigate("cocina/pendiente-nivel") },
                     onlyAboveLevel = true,
                 )
             }
@@ -668,13 +664,11 @@ private fun AppScaffold(
                         recetas = bundle.recetas,
                         found = receta.id in ui.recetaFound,
                         certified = receta.id in ui.recetaCertified,
-                        favorite = receta.id in ui.recetaFavorites,
                         onBack = { nav.popBackStack() },
                         onToggleFound = { vm.toggleRecetaFound(receta.id) },
                         onToggleCertified = {
                             vm.toggleRecetaCertified(receta.id, com.guiaheartopia.app.domain.AficionesMarks.certifiableReceta(receta))
                         },
-                        onToggleFavorite = { vm.toggleRecetaFavorite(receta.id) },
                         onOpenSiembra = { nav.navigate("huerto/siembra/$it") },
                         onOpenReceta = { nav.navigate("cocina/receta/$it") },
                     )

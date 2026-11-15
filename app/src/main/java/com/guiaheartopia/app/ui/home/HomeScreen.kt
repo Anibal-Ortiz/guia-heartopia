@@ -44,6 +44,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -54,8 +55,8 @@ import com.guiaheartopia.app.domain.CatalogMarks
 import com.guiaheartopia.app.domain.Countries
 import com.guiaheartopia.app.domain.RedeemCodes
 import com.guiaheartopia.app.domain.ReminderPlan
-import com.guiaheartopia.app.ui.components.CaptureNetIcon
-import com.guiaheartopia.app.ui.components.CertificateMedalIcon
+import com.guiaheartopia.app.ui.components.CertificadoMarkIcon
+import com.guiaheartopia.app.ui.components.ConseguidoMarkIcon
 import com.guiaheartopia.app.domain.DexSchedule
 import com.guiaheartopia.app.domain.ResourceCalendar
 import com.guiaheartopia.app.domain.SkyWeather
@@ -356,7 +357,7 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     modifier = Modifier.semantics { contentDescription = "Capturados $totalFound de $totalItems" },
                 ) {
-                    CaptureNetIcon(
+                    ConseguidoMarkIcon(
                         on = totalFound > 0,
                         size = 22.dp,
                         modifier = Modifier.semantics { contentDescription = "Capturados" },
@@ -372,7 +373,7 @@ fun HomeScreen(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     modifier = Modifier.semantics { contentDescription = "Certificados $certifiedTotal" },
                 ) {
-                    CertificateMedalIcon(
+                    CertificadoMarkIcon(
                         on = certifiedTotal > 0,
                         size = 22.dp,
                         modifier = Modifier.semantics { contentDescription = "Certificados" },
@@ -570,31 +571,24 @@ private fun GreetingHeroBanner(greeting: String, todayLabel: String) {
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(),
         )
-        Box(
+        Column(
             Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .background(Color(0xAA2A2118))
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .align(Alignment.TopStart)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(
-                    greeting,
-                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold),
-                    color = Color.White,
-                )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    Text("📅", fontSize = 13.sp)
-                    Text(
-                        todayLabel,
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                        color = Color(0xFFF7EFDB),
-                    )
-                }
-            }
+            Text(
+                greeting,
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold),
+                color = Ink,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                todayLabel,
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                color = Ink,
+            )
         }
     }
 }
@@ -633,7 +627,7 @@ private fun androidx.compose.foundation.layout.RowScope.CollectionColumn(
             horizontalArrangement = Arrangement.spacedBy(2.dp),
             modifier = Modifier.semantics { contentDescription = "Capturados $captured de $total" },
         ) {
-            CaptureNetIcon(
+            ConseguidoMarkIcon(
                 on = captured > 0,
                 size = 16.dp,
                 modifier = Modifier.semantics { contentDescription = "Capturados" },
@@ -651,7 +645,7 @@ private fun androidx.compose.foundation.layout.RowScope.CollectionColumn(
                 horizontalArrangement = Arrangement.spacedBy(2.dp),
                 modifier = Modifier.semantics { contentDescription = "Certificados $certified" },
             ) {
-                CertificateMedalIcon(
+                CertificadoMarkIcon(
                     on = certified > 0,
                     size = 16.dp,
                     modifier = Modifier.semantics { contentDescription = "Certificados" },

@@ -28,9 +28,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.guiaheartopia.app.ui.components.CaptureNetIcon
-import com.guiaheartopia.app.ui.components.CertificateMedalIcon
-import com.guiaheartopia.app.ui.components.NonCertifiableIcon
+import com.guiaheartopia.app.ui.components.CertificadoMarkIcon
+import com.guiaheartopia.app.ui.components.ConseguidoMarkIcon
+import com.guiaheartopia.app.ui.components.MarkIconButton
+import com.guiaheartopia.app.ui.components.NoCertificableMarkIcon
 import com.guiaheartopia.app.ui.theme.GreenDark
 import com.guiaheartopia.app.ui.theme.GreenSoft
 import com.guiaheartopia.app.ui.theme.HoneySoft
@@ -48,6 +49,8 @@ fun AficionesListHeader(
     onSort: () -> Unit,
     onlyConseguidas: Boolean?,
     onConseguidas: (Boolean?) -> Unit,
+    onlyCertificadas: Boolean? = null,
+    onCertificadas: (Boolean?) -> Unit = {},
     extraChips: (@Composable () -> Unit)? = null,
 ) {
     Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -91,6 +94,14 @@ fun AficionesListHeader(
                     Text("Pendientes", maxLines = 1, overflow = TextOverflow.Clip, style = MaterialTheme.typography.labelMedium)
                 },
             )
+            FilterChip(
+                selected = onlyCertificadas == true,
+                onClick = { onCertificadas(if (onlyCertificadas == true) null else true) },
+                label = {
+                    Text("Certificadas", maxLines = 1, overflow = TextOverflow.Clip, style = MaterialTheme.typography.labelMedium)
+                },
+                colors = FilterChipDefaults.filterChipColors(selectedContainerColor = GreenSoft, selectedLabelColor = GreenDark),
+            )
             extraChips?.invoke()
         }
     }
@@ -126,7 +137,7 @@ fun ConseguidoToggle(on: Boolean, onToggle: () -> Unit) {
         on = on,
         description = if (on) "Quitar conseguido" else "Marcar como conseguido",
         onClick = onToggle,
-    ) { CaptureNetIcon(on = on) }
+    ) { ConseguidoMarkIcon(on = on) }
 }
 
 @Composable
@@ -135,7 +146,7 @@ fun CertificadoToggle(on: Boolean, onToggle: () -> Unit) {
         on = on,
         description = if (on) "Quitar certificado" else "Marcar como certificado",
         onClick = onToggle,
-    ) { CertificateMedalIcon(on = on) }
+    ) { CertificadoMarkIcon(on = on) }
 }
 
 @Composable
@@ -151,16 +162,12 @@ fun AficionCertifyRow(
         if (certifiable) {
             CertificadoToggle(certified, onToggleCertified)
         } else {
-            Box(
-                Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .background(Paper)
-                    .border(1.dp, Line, CircleShape)
-                    .clearAndSetSemantics { contentDescription = "No certificable" },
-                contentAlignment = Alignment.Center,
+            MarkIconButton(
+                on = false,
+                description = "No certificable",
+                onClick = null,
             ) {
-                NonCertifiableIcon(size = 26.dp)
+                NoCertificableMarkIcon()
             }
         }
     }
@@ -174,29 +181,5 @@ fun FavoritaToggle(on: Boolean, onToggle: () -> Unit) {
         onClick = onToggle,
     ) {
         Text(if (on) "♥" else "♡", fontSize = 20.sp, color = if (on) Ochre else Ink)
-    }
-}
-
-@Composable
-private fun MarkIconButton(
-    on: Boolean,
-    description: String,
-    onClick: () -> Unit,
-    icon: @Composable () -> Unit,
-) {
-    Box(
-        Modifier
-            .size(48.dp)
-            .clip(CircleShape)
-            .background(if (on) HoneySoft else Paper)
-            .border(width = if (on) 2.dp else 1.dp, color = if (on) Ochre else Line, shape = CircleShape)
-            .clickable(onClick = onClick)
-            .clearAndSetSemantics {
-                contentDescription = description
-                role = Role.Button
-            },
-        contentAlignment = Alignment.Center,
-    ) {
-        icon()
     }
 }
