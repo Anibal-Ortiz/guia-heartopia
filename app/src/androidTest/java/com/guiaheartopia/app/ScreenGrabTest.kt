@@ -24,11 +24,17 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import com.guiaheartopia.app.data.AvatarStore
-import com.guiaheartopia.app.domain.HobbyContent
+import com.guiaheartopia.app.domain.ActiveCrop
+import com.guiaheartopia.app.domain.DexCategoryFilters
+import com.guiaheartopia.app.domain.GuideLaunch
 import com.guiaheartopia.app.domain.ImageZoom
 import com.guiaheartopia.app.ui.codes.CodesScreen
-import com.guiaheartopia.app.ui.hobbies.ComingHobbyScreen
+import com.guiaheartopia.app.ui.hobbies.CocinaScreen
+import com.guiaheartopia.app.ui.hobbies.HuertoScreen
 import com.guiaheartopia.app.ui.hobbies.HobbyHubScreen
+import com.guiaheartopia.app.ui.hobbies.FlorDetailScreen
+import com.guiaheartopia.app.ui.hobbies.RecetaDetailScreen
+import com.guiaheartopia.app.ui.hobbies.SiembraDetailScreen
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.guiaheartopia.app.domain.PlayerProfile
@@ -43,6 +49,8 @@ import com.guiaheartopia.app.ui.theme.GuiaTheme
 import com.guiaheartopia.app.ui.weather.WeatherScreen
 import com.guiaheartopia.app.ui.welcome.WelcomeScreen
 import java.io.File
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.onNodeWithText
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -108,13 +116,38 @@ class ScreenGrabTest {
                                 0, 1 -> HomeScreen(ui, onOpen = {})
                                 2 -> HomeScreen(ui.copy(profile = ui.profile.copy(avatarJpegBase64 = encoded)), onOpen = {})
                                 3 -> HomeScreen(ui, onOpen = {})
-                                4 -> HobbyHubScreen {}
-                                5 -> ComingHobbyScreen("Huerto", "Siembras y flores", HobbyContent.huertoPaths) {}
-                                6 -> ComingHobbyScreen("Cocina", "Platos y recetas", HobbyContent.cocinaPaths) {}
-                                7, 8 -> CodesScreen(seen = emptyList()) {}
-                                9 -> WeatherScreen("CL", "America/Santiago") { _, _, _ -> }
+                                4 -> HobbyHubScreen(ui) {}
+                                5 -> HuertoScreen(
+                                    ui,
+                                    onBack = {},
+                                    onOpenSiembra = {},
+                                    onOpenFlor = {},
+                                    onToggleSiembraFound = {},
+                                    onToggleFlorFound = {},
+                                    onCancelCrop = {},
+                                    onOpenAboveLevel = {},
+                                )
+                                6 -> CocinaScreen(
+                                    ui,
+                                    onBack = {},
+                                    onOpenReceta = {},
+                                    onToggleFound = {},
+                                    onToggleFavorite = {},
+                                    onOpenAboveLevel = {},
+                                )
+                                7, 8 -> CodesScreen(seen = emptyList(), redeemed = emptySet(), onSeen = {}, onRedeemed = { _, _ -> })
+                                9 -> WeatherScreen("CL", "America/Santiago", onRegion = { _, _, _ -> })
                                 10 -> androidx.compose.runtime.key(guideTab.intValue) {
-                                    GuideScreen(ui, {}, {}, {}, { _, _ -> }, { _, _, _, _ -> }, initialTab = guideTab.intValue)
+                                    GuideScreen(
+                                        ui,
+                                        {},
+                                        {},
+                                        {},
+                                        { _, _ -> },
+                                        { _, _, _, _ -> },
+                                        initialTab = guideTab.intValue,
+                                        onSaveDexFilters = { _, _ -> },
+                                    )
                                 }
                                 else -> HomeScreen(ui, onOpen = {})
                             }
@@ -135,6 +168,7 @@ class ScreenGrabTest {
         save("avatar-sin-foto")
         go(step, 4)
         save("aficiones")
+        writeAficionesOverlay(context)
         go(step, 5)
         save("huerto")
         go(step, 6)
@@ -208,6 +242,144 @@ class ScreenGrabTest {
         file.writeText(body)
     }
 
+    private fun writeAficionesOverlay(context: android.content.Context) {
+        writeOverlay(
+            context,
+            "huerto/siembras.json",
+            """
+            [{"id":"tomate","nombre":"Tomate","nivelSiembra":2,"precioSemilla":30,
+              "fuenteSemilla":"Tienda del pueblo","tiempoCrecimientoMinutos":90,
+              "precioVentaEstrellas":[10,20,30,40,50],"categoria":"Verduras"}]
+            """.trimIndent(),
+        )
+        writeOverlay(
+            context,
+            "huerto/flores.json",
+            """[{"id":"rosa","nombre":"Rosa","nivelSiembra":1,
+              "variantes":[{"color":"Roja","origen":"tienda","precioVenta":12}]}]""",
+        )
+        writeOverlay(
+            context,
+            "cocina/recetas.json",
+            """
+            [{"id":"ensalada","nombre":"Ensalada","nivelCocina":1,
+              "energiaEstrellas":[5,6,7,8,9],"precioVentaEstrellas":[11,12,13,14,15],
+              "ingredientes":[{"idSiembra":"tomate","cantidad":2}],
+              "categoria":"Ensaladas"}]
+            """.trimIndent(),
+        )
+    }
+
+    @Test
+    fun captureAficiones105() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        writeAficionesOverlay(context)
+        val planted = System.currentTimeMillis() - 30_000L
+        val plantedUi = sampleUi().copy(
+            huertoFound = setOf("tomate"),
+            florFound = setOf("rosa"),
+            recetaFound = emptySet(),
+            recetaFavorites = setOf("ensalada"),
+            activeCrops = listOf(
+                ActiveCrop("c1", "tomate", "Tomate", planted, planted + 90 * 60_000L),
+            ),
+        )
+        val lowLevelUi = sampleUi().copy(
+            hobbies = com.guiaheartopia.app.domain.HobbyCatalog.fixed.map { hobby ->
+                when (hobby.id) {
+                    "hob-siembra", "hob-cocina" -> hobby.copy(level = 0)
+                    else -> hobby
+                }
+            },
+            huertoFound = setOf("tomate"),
+            activeCrops = plantedUi.activeCrops,
+        )
+        val siembra = com.guiaheartopia.app.domain.AficionesContent.parseSiembras(
+            java.io.File(context.filesDir, "content/live/files/huerto/siembras.json").readText(),
+        ).single()
+        val flores = com.guiaheartopia.app.domain.AficionesContent.parseFlores(
+            java.io.File(context.filesDir, "content/live/files/huerto/flores.json").readText(),
+        )
+        val recetas = com.guiaheartopia.app.domain.AficionesContent.parseRecetas(
+            java.io.File(context.filesDir, "content/live/files/cocina/recetas.json").readText(),
+        )
+        val step = mutableIntStateOf(0)
+        rule.setContent {
+            GuiaTheme {
+                Box(Modifier.fillMaxSize().background(Cream)) {
+                    androidx.compose.runtime.key(step.intValue) {
+                        when (step.intValue) {
+                            0 -> HobbyHubScreen(lowLevelUi) {}
+                            1 -> HuertoScreen(
+                                plantedUi,
+                                onBack = {},
+                                onOpenSiembra = {},
+                                onOpenFlor = {},
+                                onToggleSiembraFound = {},
+                                onToggleFlorFound = {},
+                                onCancelCrop = {},
+                                onOpenAboveLevel = {},
+                            )
+                            2 -> HuertoScreen(
+                                plantedUi,
+                                onBack = {},
+                                onOpenSiembra = {},
+                                onOpenFlor = {},
+                                onToggleSiembraFound = {},
+                                onToggleFlorFound = {},
+                                onCancelCrop = {},
+                                onOpenAboveLevel = {},
+                                initialTab = 1,
+                            )
+                            3 -> CocinaScreen(
+                                plantedUi,
+                                onBack = {},
+                                onOpenReceta = {},
+                                onToggleFound = {},
+                                onToggleFavorite = {},
+                                onOpenAboveLevel = {},
+                            )
+                            4 -> SiembraDetailScreen(
+                                siembra, recetas, true, plantedUi.activeCrops.single(),
+                                {}, {}, {}, {},
+                            )
+                            5 -> FlorDetailScreen(flores.single(), true, {}, {})
+                            6 -> RecetaDetailScreen(
+                                recetas.single(), listOf(siembra), false, true,
+                                {}, {}, {}, {},
+                            )
+                            else -> HuertoScreen(
+                                lowLevelUi,
+                                onBack = {},
+                                onOpenSiembra = {},
+                                onOpenFlor = {},
+                                onToggleSiembraFound = {},
+                                onToggleFlorFound = {},
+                                onCancelCrop = {},
+                                onOpenAboveLevel = {},
+                                onlyAboveLevel = true,
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        val shots = listOf(
+            0 to ("105-aficiones-nivel-pendiente" to "Aficiones"),
+            1 to ("105-huerto-siembras-temporizador" to "Cultivos en curso"),
+            2 to ("105-huerto-flores" to "Rosa"),
+            3 to ("105-cocina" to "Ensalada"),
+            4 to ("105-ficha-siembra" to "Tomate"),
+            5 to ("105-ficha-flor" to "Rosa"),
+            6 to ("105-ficha-receta" to "Ensalada"),
+            7 to ("105-huerto-filtro-nivel" to "más nivel"),
+        )
+        shots.forEach { (value, shot) ->
+            go(step, value)
+            saveWhenVisible(shot.first, shot.second)
+        }
+    }
+
     private fun saveRoot(name: String, index: Int) {
         val roots = rule.onAllNodes(isRoot())
         val node = if (roots.fetchSemanticsNodes().size > index) roots[index] else rule.onRoot()
@@ -222,19 +394,102 @@ class ScreenGrabTest {
                 0 -> WelcomeScreen(PlayerProfile(countryId = "CL", zoneId = "America/Santiago"), {}, {}, {})
                 1 -> HomeScreen(ui, onOpen = {})
                 2 -> GuideScreen(ui, {}, {}, {}, { _, _ -> }, { _, _, _, _ -> }, initialTab = 0)
-                3 -> WeatherScreen("CL", "America/Santiago") { _, _, _ -> }
+                3 -> WeatherScreen("CL", "America/Santiago", onRegion = { _, _, _ -> })
                 else -> HobbiesScreen(ui.hobbies, { _, _, _, _ -> })
             }
         }
     }
 
     private fun save(name: String) {
+        rule.waitForIdle()
+        Thread.sleep(800)
         writeBitmap(name, rule.onRoot().captureToImage().asAndroidBitmap())
+    }
+
+    private fun saveWhenVisible(name: String, label: String) {
+        rule.waitUntil(timeoutMillis = 15_000) {
+            rule.onAllNodes(hasText(label, substring = true)).fetchSemanticsNodes().isNotEmpty()
+        }
+        save(name)
+    }
+
+    @Test
+    fun capturePart2105() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        writeOverlay(
+            context,
+            "codes/codigos.json",
+            """
+            [{"code":"PARTE2","recompensa":"Monedas de prueba","fechaVencimiento":"2026-12-31"}]
+            """.trimIndent(),
+        )
+        writeOverlay(
+            context,
+            "calendar/eventos.json",
+            """
+            {"zonaFuente":"Etc/GMT+5","eventos":[
+              {"id":"temp-test","tipo":"temporada","nombre":"Evento prueba",
+               "inicio":"2020-01-01T00:00","fin":"2030-12-31T23:59"}
+            ]}
+            """.trimIndent(),
+        )
+        val ui = sampleUi().copy(
+            redeemedCodes = emptySet(),
+            dexFilters = mapOf("Peces" to DexCategoryFilters(query = "", onlyNow = false)),
+        )
+        val step = mutableIntStateOf(0)
+        rule.setContent {
+            GuiaTheme {
+                androidx.compose.runtime.key(step.intValue) {
+                    when (step.intValue) {
+                        0 -> HomeScreen(ui, onOpen = {})
+                        1 -> GuideScreen(
+                            ui,
+                            {},
+                            {},
+                            {},
+                            { _, _ -> },
+                            { _, _, _, _ -> },
+                            guideLaunch = GuideLaunch(onlyNow = true),
+                            onSaveDexFilters = { _, _ -> },
+                        )
+                        2 -> CodesScreen(seen = listOf("PARTE2"), redeemed = emptySet(), onSeen = {}, onRedeemed = { _, _ -> })
+                        3 -> WeatherScreen("CL", "America/Santiago", onRegion = { _, _, _ -> }, onOpenEventCreatures = {})
+                        else -> GuideScreen(
+                            ui,
+                            {},
+                            {},
+                            {},
+                            { _, _ -> },
+                            { _, _, _, _ -> },
+                            guideLaunch = GuideLaunch(registered = "no"),
+                            onSaveDexFilters = { _, _ -> },
+                        )
+                    }
+                }
+            }
+        }
+        val shots = listOf(
+            0 to "105p2-inicio-evento-codigos",
+            1 to "105p2-naturaleza-disponibles",
+            2 to "105p2-codigos-vigentes",
+            3 to "105p2-calendario-eventos",
+            4 to "105p2-naturaleza-pendientes",
+        )
+        shots.forEach { (value, name) ->
+            go(step, value)
+            save(name)
+        }
     }
 
     private fun writeBitmap(name: String, bitmap: android.graphics.Bitmap) {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
-        listOf(File(context.filesDir, "screens"), context.externalCacheDir?.let { File(it, "screens") })
+        listOf(
+            File(context.filesDir, "screens"),
+            context.externalCacheDir?.let { File(it, "screens") },
+            context.getExternalFilesDir(null)?.let { File(it, "screens") },
+            File("/sdcard/Download/guia-screens"),
+        )
             .filterNotNull()
             .forEach { dir ->
                 dir.mkdirs()

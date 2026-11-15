@@ -22,8 +22,8 @@ data class HobbyEntry(
 private data class HobbyEntryFile(val items: List<HobbyEntry> = emptyList())
 
 object HobbyContent {
-    val huertoPaths: List<String> = listOf("huerto/siembras.json", "huerto/flores.json")
-    val cocinaPaths: List<String> = listOf("cocina/platos.json", "cocina/recetas.json")
+    val huertoPaths: List<String> = listOf(AficionesContent.siembrasPath, AficionesContent.floresPath)
+    val cocinaPaths: List<String> = listOf(AficionesContent.recetasPath)
 
     private val json = Json { ignoreUnknownKeys = true }
 

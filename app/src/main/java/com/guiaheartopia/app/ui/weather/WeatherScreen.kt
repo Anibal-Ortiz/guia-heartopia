@@ -45,6 +45,9 @@ import com.guiaheartopia.app.domain.SkyWeatherGameDay
 import com.guiaheartopia.app.data.SkyCatalog
 import com.guiaheartopia.app.domain.Countries
 import com.guiaheartopia.app.domain.ResourceCalendar
+import com.guiaheartopia.app.domain.ReminderPlan
+import com.guiaheartopia.app.domain.dexEntryMatchesEvent
+import com.guiaheartopia.app.ui.components.PixelButton
 import com.guiaheartopia.app.domain.SkyKind
 import com.guiaheartopia.app.domain.climateDisplay
 import com.guiaheartopia.app.domain.WeatherKind
@@ -81,6 +84,7 @@ fun WeatherScreen(
     zoneId: String,
     regionKey: String = "",
     onRegion: (String, String, String) -> Unit,
+    onOpenEventCreatures: (String) -> Unit = {},
 ) {
     val country = Countries.byId(countryId)
     val chosenZone = Countries.zone(country.id, zoneId, regionKey)
@@ -97,6 +101,16 @@ fun WeatherScreen(
     val now = ZonedDateTime.now(zone)
     val clock = DateTimeFormatter.ofPattern("d MMM yyyy HH:mm", Locale.forLanguageTag("es"))
     val selected = selectedToken?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
+    val eventsDoc = androidx.compose.runtime.remember(revision) {
+        val raw = com.guiaheartopia.app.data.AndroidContentLibrary(skyContext)
+            .effectiveBytes("calendar/eventos.json")
+            ?.decodeToString()
+        ReminderPlan.parseEvents(raw)
+    }
+    val eventDays = androidx.compose.runtime.remember(eventsDoc, zone) {
+        ReminderPlan.eventCalendarDays(eventsDoc, zone)
+    }
+    val todayDate = now.toLocalDate()
 
     Column(
         Modifier
@@ -147,8 +161,14 @@ fun WeatherScreen(
             )
             TextButton(onClick = { monthToken = month.plusMonths(1).toString() }) { Text("Mes siguiente") }
         }
-        if (month != YearMonth.from(now)) {
-            TextButton(onClick = { monthToken = YearMonth.from(now).toString() }) { Text("Volver a este mes") }
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (month != YearMonth.from(now)) {
+                TextButton(onClick = { monthToken = YearMonth.from(now).toString() }) { Text("Volver a este mes") }
+            }
+            TextButton(onClick = {
+                monthToken = YearMonth.from(now).toString()
+                selectedToken = todayDate.toString()
+            }) { Text("Volver a hoy") }
         }
         Text("Hora local: $zoneLabel · ${now.format(clock)}", style = MaterialTheme.typography.bodySmall)
         Text(
@@ -158,40 +178,56 @@ fun WeatherScreen(
         WeekHeader()
         MonthGrid(
             month = month,
-            today = now.toLocalDate(),
+            today = todayDate,
             selected = selected,
             filter = filter,
             sky = sky,
             zone = zone,
+            eventDays = eventDays,
             onSelect = { selectedToken = it.toString() },
         )
         Legend()
         val day = selected ?: now.toLocalDate()
         DayDetail(day, zone, sky)
-        CalendarEvents(zone)
+        CalendarEvents(zone, onOpenCreatures = onOpenEventCreatures)
     }
 }
 
 @Composable
-private fun CalendarEvents(zone: ZoneId) {
+fun CalendarEvents(
+    zone: ZoneId,
+    onOpenCreatures: ((String) -> Unit)? = null,
+) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val revision = com.guiaheartopia.app.ui.contentRevision()
-    val rows = androidx.compose.runtime.remember(revision, zone) {
+    val doc = androidx.compose.runtime.remember(revision) {
         val raw = com.guiaheartopia.app.data.AndroidContentLibrary(context)
             .effectiveBytes("calendar/eventos.json")
             ?.decodeToString()
-        com.guiaheartopia.app.domain.ReminderPlan.calendarRows(
-            com.guiaheartopia.app.domain.ReminderPlan.parseEvents(raw),
-            zone,
-            java.time.ZonedDateTime.now(zone),
-        )
+        ReminderPlan.parseEvents(raw)
+    }
+    val catalog = androidx.compose.runtime.remember(revision) {
+        com.guiaheartopia.app.data.HeartodexCatalog.load(context)
+    }
+    val now = java.time.ZonedDateTime.now(zone)
+    val rows = androidx.compose.runtime.remember(doc, zone) {
+        ReminderPlan.calendarRows(doc, zone, now)
     }
     if (rows.isEmpty()) return
     Text("Eventos", style = MaterialTheme.typography.titleMedium)
     rows.forEach { row ->
+        val creatureCount = catalog.count { dexEntryMatchesEvent(it, row.id, row.title) }
         PixelCard {
             Text(row.title, style = MaterialTheme.typography.titleMedium, color = Ink)
             row.detail?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = Ink) }
+            if (creatureCount > 0 && onOpenCreatures != null) {
+                PixelButton(
+                    text = "Ver criaturas del evento ($creatureCount)",
+                    onClick = { onOpenCreatures(row.id) },
+                    outlined = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
         }
     }
 }
@@ -227,6 +263,7 @@ private fun MonthGrid(
     filter: WeatherFilter,
     sky: com.guiaheartopia.app.data.SkyTable,
     zone: ZoneId,
+    eventDays: Set<LocalDate> = emptySet(),
     onSelect: (LocalDate) -> Unit,
 ) {
     val first = month.atDay(1)
@@ -246,15 +283,21 @@ private fun MonthGrid(
                         val data = ResourceCalendar.on(date)
                         val isToday = date == today
                         val isSelected = selected == date
+                        val hasEvent = date in eventDays
                         val bg = when {
                             isSelected -> GreenSoft
-                            isToday -> Sky
+                            isToday -> com.guiaheartopia.app.ui.theme.HoneySoft
                             else -> Paper
                         }
-                        val borderStroke = if (isSelected) 2.dp else 1.dp
+                        val borderStroke = when {
+                            isToday -> 2.dp
+                            isSelected -> 2.dp
+                            else -> 1.dp
+                        }
                         val borderColor = when {
                             isSelected -> Green
-                            isToday -> com.guiaheartopia.app.ui.theme.SkyTint
+                            isToday -> Honey
+                            hasEvent -> Orange
                             else -> com.guiaheartopia.app.ui.theme.Line
                         }
 
@@ -276,6 +319,14 @@ private fun MonthGrid(
                                 color = if (isSelected) Green else Ink,
                             )
                             ClimateSkyBar(sky, date, zone, Modifier.align(Alignment.Center).fillMaxWidth().height(16.dp))
+                            if (hasEvent) {
+                                Text(
+                                    "●",
+                                    modifier = Modifier.align(Alignment.TopEnd),
+                                    color = Orange,
+                                    style = MaterialTheme.typography.labelSmall,
+                                )
+                            }
                             Column(Modifier.align(Alignment.BottomCenter)) {
                                 if (filter != WeatherFilter.FLURITA && data.liuliu != null) {
                                     Text(shortSpot(data.liuliu), color = Green, style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)

@@ -22,6 +22,7 @@ object AppNavigation {
         route == "aficiones" || route.startsWith("guide") || route.startsWith("dex/") ||
             route.startsWith("animal/") || route.startsWith("huerto") ||
             route.startsWith("cocina") || route.startsWith("hobbies") ||
+            route.startsWith("guide/pendiente") ||
             route.startsWith("niveles") -> "aficiones"
         else -> null
     }
