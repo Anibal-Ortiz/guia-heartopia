@@ -97,7 +97,6 @@ import com.guiaheartopia.app.ui.home.HomeScreen
 import com.guiaheartopia.app.ui.legal.LegalScreen
 import com.guiaheartopia.app.ui.AppNavigation
 import com.guiaheartopia.app.ui.NavigationPolicy
-import com.guiaheartopia.app.ui.map.MapScreen
 import com.guiaheartopia.app.ui.settings.SettingsScreen
 import com.guiaheartopia.app.ui.theme.Cream
 import com.guiaheartopia.app.ui.theme.GreenSoft
@@ -437,7 +436,6 @@ private fun AppScaffold(
                 GuideScreen(
                     ui = ui,
                     onOpenAnimal = { nav.navigate("animal/$it") },
-                    onOpenMap = { nav.navigate("map") },
                     onOpenDex = { nav.navigate("dex/$it") },
                     onToggleFound = vm::toggleFound,
                     onToggleCertified = vm::toggleCertified,
@@ -453,7 +451,6 @@ private fun AppScaffold(
             composable("hobbies") {
                 HobbiesScreen(ui.hobbies, vm::setHobby, onBack = { nav.popBackStack() })
             }
-            composable("map") { MapScreen(ui.profile.zoneId) }
             composable(
                 "dex/{id}",
                 arguments = listOf(navArgument("id") { type = NavType.StringType }),

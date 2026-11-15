@@ -114,7 +114,7 @@ class ScreenGrabTest {
                                 7, 8 -> CodesScreen(seen = emptyList()) {}
                                 9 -> WeatherScreen("CL", "America/Santiago") { _, _, _ -> }
                                 10 -> androidx.compose.runtime.key(guideTab.intValue) {
-                                    GuideScreen(ui, {}, {}, {}, {}, { _, _ -> }, { _, _, _, _ -> }, initialTab = guideTab.intValue)
+                                    GuideScreen(ui, {}, {}, {}, { _, _ -> }, { _, _, _, _ -> }, initialTab = guideTab.intValue)
                                 }
                                 else -> HomeScreen(ui, onOpen = {})
                             }
@@ -221,7 +221,7 @@ class ScreenGrabTest {
             when (index) {
                 0 -> WelcomeScreen(PlayerProfile(countryId = "CL", zoneId = "America/Santiago"), {}, {}, {})
                 1 -> HomeScreen(ui, onOpen = {})
-                2 -> GuideScreen(ui, {}, {}, {}, {}, { _, _ -> }, { _, _, _, _ -> }, initialTab = 0)
+                2 -> GuideScreen(ui, {}, {}, {}, { _, _ -> }, { _, _, _, _ -> }, initialTab = 0)
                 3 -> WeatherScreen("CL", "America/Santiago") { _, _, _ -> }
                 else -> HobbiesScreen(ui.hobbies, { _, _, _, _ -> })
             }

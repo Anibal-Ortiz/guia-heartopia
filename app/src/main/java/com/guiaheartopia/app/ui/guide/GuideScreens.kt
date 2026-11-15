@@ -119,7 +119,6 @@ private val Tabs = GuideSections.dexCategories.map { CatalogLabels.category(it) 
 fun GuideScreen(
     ui: GuideUi,
     onOpenAnimal: (String) -> Unit,
-    onOpenMap: () -> Unit,
     onOpenDex: (String) -> Unit,
     onToggleFound: (String) -> Unit,
     onToggleCertified: (String, String) -> Unit,
