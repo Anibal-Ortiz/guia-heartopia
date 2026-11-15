@@ -182,20 +182,54 @@ object ReminderPlan {
     fun calendarRows(document: EventosDocument?, user: ZoneId, now: ZonedDateTime): List<CalendarEventRow> {
         val events = document?.eventos.orEmpty()
         if (events.isEmpty()) return emptyList()
+        val source = sourceZone(document) ?: return emptyList()
         val active = activeSeasons(document, user, now).associateBy { it.id }
-        return events.mapNotNull { event ->
+        val rows = events.mapNotNull { event ->
             if (event.nombre.isBlank()) return@mapNotNull null
             val key = event.id.ifBlank { event.nombre }
             val season = active[key]
             val detail = when {
                 season != null -> season.remaining
+                event.tipo == "temporada" -> formatEventSpan(event, user, source)
                 event.tipo == "aficion" && event.horas.isNotEmpty() -> event.horas.joinToString(", ")
-                !event.inicio.isNullOrBlank() && !event.fin.isNullOrBlank() -> "${event.inicio} – ${event.fin}"
-                !event.inicio.isNullOrBlank() -> event.inicio
-                !event.fin.isNullOrBlank() -> event.fin
+                !event.inicio.isNullOrBlank() && !event.fin.isNullOrBlank() -> formatEventSpan(event, user, source)
+                !event.inicio.isNullOrBlank() -> formatEventSpan(event, user, source)
+                !event.fin.isNullOrBlank() -> formatEventSpan(event, user, source)
                 else -> null
             }
             CalendarEventRow(id = key, title = event.nombre, detail = detail)
+        }
+        return rows.sortedWith(
+            compareByDescending<CalendarEventRow> { it.id in active }
+                .thenBy { it.title },
+        )
+    }
+
+    fun eventCalendarDays(document: EventosDocument?, user: ZoneId): Set<LocalDate> {
+        val source = sourceZone(document) ?: return emptySet()
+        val days = LinkedHashSet<LocalDate>()
+        for (event in document?.eventos.orEmpty()) {
+            if (event.tipo != "temporada") continue
+            val start = parseStamp(event.inicio)?.toLocalDate() ?: continue
+            val end = parseStamp(event.fin)?.toLocalDate() ?: start
+            val (from, to) = EventTime.localSpan(start, end, source, user)
+            var day = from
+            while (!day.isAfter(to)) {
+                days += day
+                day = day.plusDays(1)
+            }
+        }
+        return days
+    }
+
+    fun formatEventSpan(event: RemoteEvent, user: ZoneId, source: ZoneId): String? {
+        val start = parseStamp(event.inicio)?.atZone(source)?.withZoneSameInstant(user) ?: return null
+        val end = parseStamp(event.fin)?.atZone(source)?.withZoneSameInstant(user)
+        val fmt = DateTimeFormatter.ofPattern("d MMM yyyy HH:mm", Locale.forLanguageTag("es"))
+        return if (end != null) {
+            "${start.format(fmt)} – ${end.format(fmt)}"
+        } else {
+            "Desde ${start.format(fmt)}"
         }
     }
 

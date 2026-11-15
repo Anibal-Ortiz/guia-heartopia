@@ -25,6 +25,8 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import com.guiaheartopia.app.data.AvatarStore
 import com.guiaheartopia.app.domain.ActiveCrop
+import com.guiaheartopia.app.domain.DexCategoryFilters
+import com.guiaheartopia.app.domain.GuideLaunch
 import com.guiaheartopia.app.domain.ImageZoom
 import com.guiaheartopia.app.ui.codes.CodesScreen
 import com.guiaheartopia.app.ui.hobbies.CocinaScreen
@@ -133,10 +135,19 @@ class ScreenGrabTest {
                                     onToggleFavorite = {},
                                     onOpenAboveLevel = {},
                                 )
-                                7, 8 -> CodesScreen(seen = emptyList()) {}
-                                9 -> WeatherScreen("CL", "America/Santiago") { _, _, _ -> }
+                                7, 8 -> CodesScreen(seen = emptyList(), redeemed = emptySet(), onSeen = {}, onRedeemed = { _, _ -> })
+                                9 -> WeatherScreen("CL", "America/Santiago", onRegion = { _, _, _ -> })
                                 10 -> androidx.compose.runtime.key(guideTab.intValue) {
-                                    GuideScreen(ui, {}, {}, {}, { _, _ -> }, { _, _, _, _ -> }, initialTab = guideTab.intValue)
+                                    GuideScreen(
+                                        ui,
+                                        {},
+                                        {},
+                                        {},
+                                        { _, _ -> },
+                                        { _, _, _, _ -> },
+                                        initialTab = guideTab.intValue,
+                                        onSaveDexFilters = { _, _ -> },
+                                    )
                                 }
                                 else -> HomeScreen(ui, onOpen = {})
                             }
@@ -383,7 +394,7 @@ class ScreenGrabTest {
                 0 -> WelcomeScreen(PlayerProfile(countryId = "CL", zoneId = "America/Santiago"), {}, {}, {})
                 1 -> HomeScreen(ui, onOpen = {})
                 2 -> GuideScreen(ui, {}, {}, {}, { _, _ -> }, { _, _, _, _ -> }, initialTab = 0)
-                3 -> WeatherScreen("CL", "America/Santiago") { _, _, _ -> }
+                3 -> WeatherScreen("CL", "America/Santiago", onRegion = { _, _, _ -> })
                 else -> HobbiesScreen(ui.hobbies, { _, _, _, _ -> })
             }
         }
@@ -402,12 +413,82 @@ class ScreenGrabTest {
         save(name)
     }
 
+    @Test
+    fun capturePart2105() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        writeOverlay(
+            context,
+            "codes/codigos.json",
+            """
+            [{"code":"PARTE2","recompensa":"Monedas de prueba","fechaVencimiento":"2026-12-31"}]
+            """.trimIndent(),
+        )
+        writeOverlay(
+            context,
+            "calendar/eventos.json",
+            """
+            {"zonaFuente":"Etc/GMT+5","eventos":[
+              {"id":"temp-test","tipo":"temporada","nombre":"Evento prueba",
+               "inicio":"2020-01-01T00:00","fin":"2030-12-31T23:59"}
+            ]}
+            """.trimIndent(),
+        )
+        val ui = sampleUi().copy(
+            redeemedCodes = emptySet(),
+            dexFilters = mapOf("Peces" to DexCategoryFilters(query = "", onlyNow = false)),
+        )
+        val step = mutableIntStateOf(0)
+        rule.setContent {
+            GuiaTheme {
+                androidx.compose.runtime.key(step.intValue) {
+                    when (step.intValue) {
+                        0 -> HomeScreen(ui, onOpen = {})
+                        1 -> GuideScreen(
+                            ui,
+                            {},
+                            {},
+                            {},
+                            { _, _ -> },
+                            { _, _, _, _ -> },
+                            guideLaunch = GuideLaunch(onlyNow = true),
+                            onSaveDexFilters = { _, _ -> },
+                        )
+                        2 -> CodesScreen(seen = listOf("PARTE2"), redeemed = emptySet(), onSeen = {}, onRedeemed = { _, _ -> })
+                        3 -> WeatherScreen("CL", "America/Santiago", onRegion = { _, _, _ -> }, onOpenEventCreatures = {})
+                        else -> GuideScreen(
+                            ui,
+                            {},
+                            {},
+                            {},
+                            { _, _ -> },
+                            { _, _, _, _ -> },
+                            guideLaunch = GuideLaunch(registered = "no"),
+                            onSaveDexFilters = { _, _ -> },
+                        )
+                    }
+                }
+            }
+        }
+        val shots = listOf(
+            0 to "105p2-inicio-evento-codigos",
+            1 to "105p2-naturaleza-disponibles",
+            2 to "105p2-codigos-vigentes",
+            3 to "105p2-calendario-eventos",
+            4 to "105p2-naturaleza-pendientes",
+        )
+        shots.forEach { (value, name) ->
+            go(step, value)
+            save(name)
+        }
+    }
+
     private fun writeBitmap(name: String, bitmap: android.graphics.Bitmap) {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         listOf(
             File(context.filesDir, "screens"),
             context.externalCacheDir?.let { File(it, "screens") },
             context.getExternalFilesDir(null)?.let { File(it, "screens") },
+            File("/sdcard/Download/guia-screens"),
         )
             .filterNotNull()
             .forEach { dir ->

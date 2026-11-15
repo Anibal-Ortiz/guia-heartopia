@@ -149,12 +149,13 @@ fun VerifyBadge(
 }
 
 @Composable
-fun NowBadge(text: String = "Ahora") {
+fun NowBadge(text: String = "Ahora", onClick: (() -> Unit)? = null) {
     Row(
         modifier = Modifier
             .clip(RoundedCornerShape(999.dp))
             .background(GreenSoft)
             .border(1.dp, GreenTint, RoundedCornerShape(999.dp))
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .padding(horizontal = 10.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),

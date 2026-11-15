@@ -413,7 +413,9 @@ private fun AppScaffold(
             composable("codigos") {
                 com.guiaheartopia.app.ui.codes.CodesScreen(
                     seen = ui.profile.seenCodes,
+                    redeemed = ui.redeemedCodes,
                     onSeen = vm::markCodesSeen,
+                    onRedeemed = vm::setCodeRedeemed,
                 )
             }
             composable("huerto") {
@@ -471,6 +473,50 @@ private fun AppScaffold(
                     onToggleCertified = vm::toggleCertified,
                     onAddAnimal = vm::addAnimal,
                     onBack = { nav.popBackStack() },
+                    onSaveDexFilters = vm::saveDexFilters,
+                )
+            }
+            composable("guide/disponibles-ahora") {
+                GuideScreen(
+                    ui = ui,
+                    onOpenAnimal = { nav.navigate("animal/$it") },
+                    onOpenDex = { nav.navigate("dex/$it") },
+                    onToggleFound = vm::toggleFound,
+                    onToggleCertified = vm::toggleCertified,
+                    onAddAnimal = vm::addAnimal,
+                    onBack = { nav.popBackStack() },
+                    guideLaunch = com.guiaheartopia.app.domain.GuideLaunch(onlyNow = true),
+                    onSaveDexFilters = vm::saveDexFilters,
+                )
+            }
+            composable("guide/pendientes") {
+                GuideScreen(
+                    ui = ui,
+                    onOpenAnimal = { nav.navigate("animal/$it") },
+                    onOpenDex = { nav.navigate("dex/$it") },
+                    onToggleFound = vm::toggleFound,
+                    onToggleCertified = vm::toggleCertified,
+                    onAddAnimal = vm::addAnimal,
+                    onBack = { nav.popBackStack() },
+                    guideLaunch = com.guiaheartopia.app.domain.GuideLaunch(registered = "no"),
+                    onSaveDexFilters = vm::saveDexFilters,
+                )
+            }
+            composable(
+                "guide/evento/{eventId}",
+                arguments = listOf(navArgument("eventId") { type = NavType.StringType }),
+            ) { entry ->
+                val eventId = entry.arguments?.getString("eventId").orEmpty()
+                GuideScreen(
+                    ui = ui,
+                    onOpenAnimal = { nav.navigate("animal/$it") },
+                    onOpenDex = { nav.navigate("dex/$it") },
+                    onToggleFound = vm::toggleFound,
+                    onToggleCertified = vm::toggleCertified,
+                    onAddAnimal = vm::addAnimal,
+                    onBack = { nav.popBackStack() },
+                    guideLaunch = com.guiaheartopia.app.domain.GuideLaunch(eventFocus = eventId),
+                    onSaveDexFilters = vm::saveDexFilters,
                 )
             }
             composable("guide/pendiente-nivel") {
@@ -483,12 +529,19 @@ private fun AppScaffold(
                     onAddAnimal = vm::addAnimal,
                     onBack = { nav.popBackStack() },
                     onlyAboveLevel = true,
+                    onSaveDexFilters = vm::saveDexFilters,
                 )
             }
             composable("calendar") {
-                WeatherScreen(ui.profile.countryId, ui.profile.zoneId, ui.profile.regionKey) { country, zone, region ->
-                    vm.updateRegion(country, zone, regionKey = region)
-                }
+                WeatherScreen(
+                    ui.profile.countryId,
+                    ui.profile.zoneId,
+                    ui.profile.regionKey,
+                    onRegion = { country, zone, region ->
+                        vm.updateRegion(country, zone, regionKey = region)
+                    },
+                    onOpenEventCreatures = { eventId -> nav.navigate("guide/evento/$eventId") },
+                )
             }
             composable("hobbies") {
                 HobbiesScreen(ui.hobbies, vm::setHobby, onBack = { nav.popBackStack() })
@@ -580,6 +633,22 @@ private fun AppScaffold(
                 if (item == null) {
                     TextButton(onClick = { nav.popBackStack() }) { Text("Volver") }
                 } else {
+                    val zone = com.guiaheartopia.app.domain.DexSchedule.zoneOf(ui.profile.zoneId)
+                    val sky = androidx.compose.runtime.remember(revision) {
+                        com.guiaheartopia.app.data.SkyCatalog.load(context)
+                    }
+                    val nextWindow = androidx.compose.runtime.remember(item.id, revision) {
+                        com.guiaheartopia.app.domain.CreatureAppearing.nextWindow(
+                            item.schedule,
+                            item.weather,
+                            sky,
+                            zone,
+                        )
+                    }
+                    val nextLabel = nextWindow?.let {
+                        com.guiaheartopia.app.domain.CreatureAppearing.userLabel(it, zone)
+                    }
+                    val alarmScheduled = ui.creatureWindowAlarms.any { it.creatureId == item.id }
                     com.guiaheartopia.app.ui.guide.DexDetailScreen(
                         entry = item,
                         zoneId = ui.profile.zoneId,
@@ -588,6 +657,10 @@ private fun AppScaffold(
                         onToggle = { vm.toggleFound(item.id) },
                         onToggleCertified = { vm.toggleCertified(item.id, item.category) },
                         onBack = { nav.popBackStack() },
+                        windowAlarmScheduled = alarmScheduled,
+                        nextWindowLabel = nextLabel,
+                        onScheduleWindow = { vm.scheduleCreatureWindowAlarm(item.id, item.name) },
+                        onCancelWindow = { vm.cancelCreatureWindowAlarm(item.id) },
                     )
                 }
             }

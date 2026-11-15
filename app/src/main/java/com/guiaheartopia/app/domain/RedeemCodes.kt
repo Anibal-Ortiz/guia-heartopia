@@ -50,6 +50,9 @@ object RedeemCodes {
     fun unseen(active: List<RedeemCode>, seen: Set<String>): List<RedeemCode> =
         active.filter { it.code !in seen }
 
+    fun unredeemed(active: List<RedeemCode>, redeemed: Set<String>): List<RedeemCode> =
+        active.filter { it.code !in redeemed }
+
     fun parseDate(raw: String?): LocalDate? {
         if (raw.isNullOrBlank()) return null
         val date = raw.trim().take(10)

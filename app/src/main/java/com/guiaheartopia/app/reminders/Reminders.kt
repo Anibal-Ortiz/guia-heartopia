@@ -25,6 +25,7 @@ import java.time.Duration
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
+import com.guiaheartopia.app.domain.CreatureWindowReminders
 import com.guiaheartopia.app.domain.CropReminders
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -47,8 +48,11 @@ object ReminderScheduler {
         val zone = runCatching { ZoneId.of(profile.zoneId) }.getOrElse { ZoneId.systemDefault() }
         val now = ZonedDateTime.now(zone)
         val prefs = profile.reminders
+        val scheduled = runBlocking { GuideRepository(app).snapshots.first() }
+        val personal = CropReminders.notices(scheduled.activeCrops, zone, now) +
+            CreatureWindowReminders.notices(scheduled.creatureWindowAlarms, zone, now)
         val notices = if (!prefs.anyAlertOn()) {
-            emptyList()
+            personal
         } else {
             val weather = if (prefs.weatherEnabled) {
                 ReminderPlan.weatherNotices(SkyCatalog.load(app).days.values, zone, now)
@@ -57,10 +61,7 @@ object ReminderScheduler {
             }
             val raw = AndroidContentLibrary(app).effectiveBytes("calendar/eventos.json")?.decodeToString()
             val events = ReminderPlan.eventNotices(ReminderPlan.parseEvents(raw), prefs, zone, now)
-            val crops = runBlocking {
-                GuideRepository(app).snapshots.first().activeCrops
-            }
-            weather + events + CropReminders.notices(crops, zone, now)
+            weather + events + personal
         }
         val diff = ReminderSync.plan(previous, posted, notices)
         diff.cancel.forEach { manager.cancelUniqueWork(it) }

@@ -110,6 +110,9 @@ data class GuideSnapshot(
     val recetaFoundIds: List<String> = emptyList(),
     val recetaFavoriteIds: List<String> = emptyList(),
     val activeCrops: List<ActiveCrop> = emptyList(),
+    val redeemedCodeIds: List<String> = emptyList(),
+    val dexFilters: Map<String, DexCategoryFilters> = emptyMap(),
+    val creatureWindowAlarms: List<CreatureWindowAlarm> = emptyList(),
 )
 
 data class CategoryProgress(

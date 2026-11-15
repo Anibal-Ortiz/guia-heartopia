@@ -53,6 +53,7 @@ import com.guiaheartopia.app.domain.CatalogLabels
 import com.guiaheartopia.app.domain.CatalogMarks
 import com.guiaheartopia.app.domain.Countries
 import com.guiaheartopia.app.domain.RedeemCodes
+import com.guiaheartopia.app.domain.ReminderPlan
 import com.guiaheartopia.app.ui.components.CaptureNetIcon
 import com.guiaheartopia.app.ui.components.CertificateMedalIcon
 import com.guiaheartopia.app.domain.DexSchedule
@@ -96,6 +97,7 @@ import com.guiaheartopia.app.ui.theme.SkyTint
 import com.guiaheartopia.app.ui.theme.Yellow
 import java.time.Instant
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 @Composable
 fun HomeScreen(
@@ -120,11 +122,22 @@ fun HomeScreen(
     val climateDay = SkyWeatherGameDay.serverDawnLocalDate(nowInstant, zone)
     val climateLines = SkyWeatherGameDay.compactLinesForGameDay(sky, climateDay, zone)
     val spot = ResourceCalendar.on(today)
-    val unseenCodes = remember(revision, ui.profile.seenCodes, today) {
-        val raw = com.guiaheartopia.app.data.AndroidContentLibrary(context)
+    val codesRaw = remember(revision) {
+        com.guiaheartopia.app.data.AndroidContentLibrary(context)
             .effectiveBytes(RedeemCodes.PATH)
             ?.decodeToString()
-        RedeemCodes.unseen(RedeemCodes.active(RedeemCodes.parse(raw), today), ui.profile.seenCodes.toSet())
+    }
+    val activeCodes = remember(codesRaw, today) { RedeemCodes.active(RedeemCodes.parse(codesRaw), today) }
+    val unredeemedCodes = remember(activeCodes, ui.redeemedCodes) {
+        RedeemCodes.unredeemed(activeCodes, ui.redeemedCodes)
+    }
+    val eventsDoc = remember(revision) { ReminderPlan.parseEvents(
+        com.guiaheartopia.app.data.AndroidContentLibrary(context)
+            .effectiveBytes("calendar/eventos.json")
+            ?.decodeToString(),
+    ) }
+    val activeSeason = remember(eventsDoc, zone) {
+        ReminderPlan.activeSeasons(eventsDoc, zone, ZonedDateTime.now(zone)).firstOrNull()
     }
     val avatarFile = remember(ui.profile.avatarJpegBase64) {
         AvatarStore.restore(context, ui.profile.avatarJpegBase64)
@@ -232,10 +245,39 @@ fun HomeScreen(
                 },
             )
         }
-        if (unseenCodes.isNotEmpty()) {
+        activeSeason?.let { season ->
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(999.dp))
+                    .background(HoneySoft)
+                    .border(1.dp, HoneyTint, RoundedCornerShape(999.dp))
+                    .padding(horizontal = 14.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text("🎉", fontSize = 14.sp)
+                Column {
+                    Text(
+                        season.name,
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                        color = Ink,
+                    )
+                    season.remaining?.let {
+                        Text(it, style = MaterialTheme.typography.bodySmall, color = Muted)
+                    }
+                }
+            }
+        }
+
+        if (unredeemedCodes.isNotEmpty()) {
             NotebookCard(modifier = Modifier.clickable { onOpen("codigos") }) {
                 Text(
-                    if (unseenCodes.size == 1) "Hay un código nuevo" else "Hay ${unseenCodes.size} códigos nuevos",
+                    if (unredeemedCodes.size == 1) {
+                        "Tienes un código vigente sin marcar como canjeado"
+                    } else {
+                        "Tienes ${unredeemedCodes.size} códigos vigentes sin marcar como canjeado"
+                    },
                     style = MaterialTheme.typography.bodyMedium,
                     color = Ink,
                 )
@@ -311,7 +353,10 @@ fun HomeScreen(
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold),
                     )
                 }
-                NowBadge("$available ahora")
+                NowBadge(
+                    text = "Disponibles ahora: $available",
+                    onClick = { onOpen("guide/disponibles-ahora") },
+                )
             }
 
             Row(
@@ -389,12 +434,21 @@ fun HomeScreen(
                 )
             }
 
-            PixelButton(
-                "Explorar Catálogo →",
-                onClick = { onOpen("guide") },
-                container = Green,
-                modifier = Modifier.fillMaxWidth(),
-            )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                PixelButton(
+                    "Me faltan →",
+                    onClick = { onOpen("guide/pendientes") },
+                    outlined = true,
+                    container = Green,
+                    modifier = Modifier.weight(1f),
+                )
+                PixelButton(
+                    "Explorar Catálogo →",
+                    onClick = { onOpen("guide") },
+                    container = Green,
+                    modifier = Modifier.weight(1f),
+                )
+            }
         }
 
         com.guiaheartopia.app.ui.components.TwigDivider(0)
@@ -527,8 +581,9 @@ private fun androidx.compose.foundation.layout.RowScope.CollectionColumn(
                 size = 16.dp,
                 modifier = Modifier.semantics { contentDescription = "Capturados" },
             )
+            val pct = if (total > 0) captured * 100 / total else 0
             Text(
-                "$captured/$total",
+                "$captured/$total ($pct%)",
                 style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
                 color = GreenDark,
             )

@@ -39,7 +39,9 @@ import java.util.Locale
 @Composable
 fun CodesScreen(
     seen: List<String>,
+    redeemed: Set<String>,
     onSeen: (List<String>) -> Unit,
+    onRedeemed: (String, Boolean) -> Unit,
 ) {
     val context = LocalContext.current
     val revision = contentRevision()
@@ -67,28 +69,48 @@ fun CodesScreen(
             style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold),
             color = Ink,
         )
+        Text("Vigentes", style = MaterialTheme.typography.titleMedium, color = Ink)
         if (active.isEmpty()) {
             Text("No hay códigos activos por ahora", color = Muted, style = MaterialTheme.typography.bodyLarge)
         } else {
-            active.forEach { code -> CodeCard(code, expired = false) }
+            active.forEach { code ->
+                CodeCard(
+                    code = code,
+                    expired = false,
+                    redeemed = code.code in redeemed,
+                    onRedeemed = onRedeemed,
+                )
+            }
         }
         if (expired.isNotEmpty()) {
             PixelButton(
-                text = if (showExpired) "Ocultar vencidos" else "Vencidos (${expired.size})",
+                text = if (showExpired) "Ocultar vencidos" else "Ver vencidos (${expired.size})",
                 onClick = { showExpired = !showExpired },
                 outlined = true,
                 modifier = Modifier.fillMaxWidth(),
             )
             if (showExpired) {
                 Text("Vencidos", style = MaterialTheme.typography.titleMedium, color = Ink)
-                expired.forEach { code -> CodeCard(code, expired = true) }
+                expired.forEach { code ->
+                    CodeCard(
+                        code = code,
+                        expired = true,
+                        redeemed = code.code in redeemed,
+                        onRedeemed = onRedeemed,
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun CodeCard(code: RedeemCode, expired: Boolean) {
+private fun CodeCard(
+    code: RedeemCode,
+    expired: Boolean,
+    redeemed: Boolean,
+    onRedeemed: (String, Boolean) -> Unit,
+) {
     val context = LocalContext.current
     val until = RedeemCodes.parseDate(code.fechaVencimiento)
     val whenLabel = when {
@@ -109,6 +131,12 @@ private fun CodeCard(code: RedeemCode, expired: Boolean) {
         code.fuente?.takeIf { it.isNotBlank() }?.let {
             Text(it, style = MaterialTheme.typography.bodySmall, color = Muted)
         }
+        PixelButton(
+            text = if (redeemed) "Ya canjeado ✓" else "Marcar como canjeado",
+            onClick = { onRedeemed(code.code, !redeemed) },
+            outlined = !redeemed,
+            modifier = Modifier.fillMaxWidth(),
+        )
         PixelButton(
             text = "Copiar",
             onClick = {
