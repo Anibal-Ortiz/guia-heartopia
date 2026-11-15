@@ -156,10 +156,9 @@ fun HomeScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        com.guiaheartopia.app.ui.components.SectionBanner(
-            image = com.guiaheartopia.app.R.drawable.header_inicio,
-            title = "Mi día",
-            subtitle = "Horario, clima y lo que toca hoy",
+        GreetingHeroBanner(
+            greeting = ui.greeting,
+            todayLabel = ui.todayLabel.replaceFirstChar { it.titlecase() },
         )
         PixelCard(container = PaperSubtle, elevation = 1.dp) {
             Row(
@@ -169,22 +168,10 @@ fun HomeScreen(
             ) {
                 Column(Modifier.weight(1f)) {
                     Text(
-                        ui.greeting,
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold),
+                        "Hoy en Heartopia",
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                         color = Ink,
                     )
-                    Spacer(Modifier.height(4.dp))
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    ) {
-                        Text("📅", fontSize = 13.sp)
-                        Text(
-                            ui.todayLabel.replaceFirstChar { it.titlecase() },
-                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                            color = Ink,
-                        )
-                    }
                 }
                 Box(
                     Modifier
@@ -430,6 +417,7 @@ fun HomeScreen(
                             captured = tally.found,
                             total = tally.total,
                             certified = if (cert) tally.certified else null,
+                            onClick = { onOpen("guide/categoria/$cat") },
                         )
                     }
                 }
@@ -444,40 +432,34 @@ fun HomeScreen(
                         name = "Siembra",
                         captured = ui.huertoFound.count { it in siembraIds },
                         total = aficiones.siembras.size,
-                        certified = null,
+                        certified = ui.huertoCertified.count { it in siembraIds },
+                        onClick = { onOpen("huerto") },
                     )
                     CollectionColumn(
                         emoji = "🌸",
                         name = "Flores",
                         captured = ui.florFound.count { it in florIds },
                         total = aficiones.flores.size,
-                        certified = null,
+                        certified = ui.florCertified.count { it in florIds },
+                        onClick = { onOpen("huerto") },
                     )
                     CollectionColumn(
                         emoji = "🍳",
                         name = "Cocina",
                         captured = ui.recetaFound.count { it in recetaIds },
                         total = aficiones.recetas.size,
-                        certified = null,
+                        certified = ui.recetaCertified.count { it in recetaIds },
+                        onClick = { onOpen("cocina") },
                     )
                 }
             }
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                PixelButton(
-                    "Me faltan →",
-                    onClick = { onOpen("guide/pendientes") },
-                    outlined = true,
-                    container = Green,
-                    modifier = Modifier.weight(1f),
-                )
-                PixelButton(
-                    "Explorar Catálogo →",
-                    onClick = { onOpen("guide") },
-                    container = Green,
-                    modifier = Modifier.weight(1f),
-                )
-            }
+            PixelButton(
+                "Explorar Catálogo →",
+                onClick = { onOpen("guide") },
+                container = Green,
+                modifier = Modifier.fillMaxWidth(),
+            )
         }
 
         com.guiaheartopia.app.ui.components.TwigDivider(0)
@@ -574,12 +556,57 @@ fun HomeScreen(
 }
 
 @Composable
+private fun GreetingHeroBanner(greeting: String, todayLabel: String) {
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .height(168.dp)
+            .clip(RoundedCornerShape(18.dp))
+            .background(Color(0xFFF7EFDB)),
+    ) {
+        androidx.compose.foundation.Image(
+            painter = androidx.compose.ui.res.painterResource(com.guiaheartopia.app.R.drawable.header_inicio),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize(),
+        )
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .background(Color(0xAA2A2118))
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    greeting,
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold),
+                    color = Color.White,
+                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    Text("📅", fontSize = 13.sp)
+                    Text(
+                        todayLabel,
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                        color = Color(0xFFF7EFDB),
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun androidx.compose.foundation.layout.RowScope.CollectionColumn(
     emoji: String,
     name: String,
     captured: Int,
     total: Int,
     certified: Int?,
+    onClick: (() -> Unit)? = null,
 ) {
     Column(
         Modifier
@@ -588,6 +615,7 @@ private fun androidx.compose.foundation.layout.RowScope.CollectionColumn(
             .clip(RoundedCornerShape(12.dp))
             .background(PaperSubtle)
             .border(1.dp, Line, RoundedCornerShape(12.dp))
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .padding(vertical = 8.dp, horizontal = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp),

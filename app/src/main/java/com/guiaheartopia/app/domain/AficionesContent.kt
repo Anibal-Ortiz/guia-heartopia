@@ -205,8 +205,36 @@ object AficionesContent {
 }
 
 object AficionesMarks {
+    data class Marks(val found: Set<String>, val certified: Set<String>)
+
     fun toggle(set: Set<String>, id: String): Set<String> =
         if (id in set) set - id else set + id
+
+    fun toggleFound(marks: Marks, id: String): Marks =
+        if (id in marks.found) marks.copy(found = marks.found - id, certified = marks.certified - id)
+        else marks.copy(found = marks.found + id)
+
+    fun toggleCertified(marks: Marks, id: String, certifiable: Boolean): Marks {
+        if (!certifiable) return marks
+        return if (id in marks.certified) {
+            marks.copy(certified = marks.certified - id)
+        } else {
+            marks.copy(found = marks.found + id, certified = marks.certified + id)
+        }
+    }
+
+    fun certifiableSiembra(entry: SiembraEntry): Boolean =
+        entry.certificable != false &&
+            !entry.categoria.equals("Evento", ignoreCase = true) &&
+            entry.evento.isNullOrBlank()
+
+    fun certifiableFlor(entry: FlorEntry): Boolean =
+        !entry.categoria.equals("Evento", ignoreCase = true)
+
+    fun certifiableReceta(entry: RecetaEntry): Boolean =
+        entry.certificable != false &&
+            !entry.categoria.equals("Evento", ignoreCase = true) &&
+            entry.evento.isNullOrBlank()
 }
 
 object AficionesLevelSummary {

@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.data.AficionesCatalog
 import com.guiaheartopia.app.domain.AficionesContent
+import com.guiaheartopia.app.domain.AficionesMarks
 import com.guiaheartopia.app.domain.AficionesLevelSummary
 import com.guiaheartopia.app.domain.CreatureAvailability
 import com.guiaheartopia.app.domain.ImageZoom
@@ -60,6 +61,7 @@ fun CocinaScreen(
     onBack: () -> Unit,
     onOpenReceta: (String) -> Unit,
     onToggleFound: (String) -> Unit,
+    onToggleCertified: (String, Boolean) -> Unit,
     onToggleFavorite: (String) -> Unit,
     onOpenAboveLevel: () -> Unit,
     onlyAboveLevel: Boolean = false,
@@ -176,9 +178,13 @@ fun CocinaScreen(
             RecetaCard(
                 entry,
                 found = entry.id in ui.recetaFound,
+                certified = entry.id in ui.recetaCertified,
                 favorite = entry.id in ui.recetaFavorites,
                 onOpen = { onOpenReceta(entry.id) },
                 onToggleFound = { onToggleFound(entry.id) },
+                onToggleCertified = {
+                    onToggleCertified(entry.id, AficionesMarks.certifiableReceta(entry))
+                },
                 onToggleFavorite = { onToggleFavorite(entry.id) },
             )
         }
@@ -189,11 +195,14 @@ fun CocinaScreen(
 private fun RecetaCard(
     entry: RecetaEntry,
     found: Boolean,
+    certified: Boolean,
     favorite: Boolean,
     onOpen: () -> Unit,
     onToggleFound: () -> Unit,
+    onToggleCertified: () -> Unit,
     onToggleFavorite: () -> Unit,
 ) {
+    val certifiable = AficionesMarks.certifiableReceta(entry)
     var zoom by remember(entry.id) { mutableStateOf(false) }
     val model = rememberAficionesModel(entry.imagen)
     if (zoom && model != null) {
@@ -224,13 +233,16 @@ private fun RecetaCard(
                 Text("Nivel ${entry.nivelCocina}", style = MaterialTheme.typography.bodySmall, color = Muted)
                 entry.categoria?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = Muted) }
                 entry.evento?.let { Text("Evento: $it", style = MaterialTheme.typography.bodySmall, color = Muted) }
-                if (entry.certificable == false) {
-                    Text("No certificable", style = MaterialTheme.typography.labelSmall, color = Muted)
-                }
             }
             Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 FavoritaToggle(favorite, onToggleFavorite)
-                ConseguidoToggle(found, onToggleFound)
+                AficionCertifyRow(
+                    found = found,
+                    certified = certified,
+                    certifiable = certifiable,
+                    onToggleFound = onToggleFound,
+                    onToggleCertified = onToggleCertified,
+                )
             }
         }
     }
@@ -242,13 +254,16 @@ fun RecetaDetailScreen(
     siembras: List<SiembraEntry>,
     recetas: List<RecetaEntry>,
     found: Boolean,
+    certified: Boolean,
     favorite: Boolean,
     onBack: () -> Unit,
     onToggleFound: () -> Unit,
+    onToggleCertified: () -> Unit,
     onToggleFavorite: () -> Unit,
     onOpenSiembra: (String) -> Unit,
     onOpenReceta: (String) -> Unit,
 ) {
+    val certifiable = AficionesMarks.certifiableReceta(entry)
     var zoom by remember(entry.id) { mutableStateOf(false) }
     val model = rememberAficionesModel(entry.imagen)
     if (zoom && model != null) {
@@ -282,14 +297,20 @@ fun RecetaDetailScreen(
                     Text(entry.nombre, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold), color = Ink)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         FavoritaToggle(favorite, onToggleFavorite)
-                        ConseguidoToggle(found, onToggleFound)
                     }
+                    AficionCertifyRow(
+                        found = found,
+                        certified = certified,
+                        certifiable = certifiable,
+                        onToggleFound = onToggleFound,
+                        onToggleCertified = onToggleCertified,
+                    )
                 }
             }
             LabelValue("Nivel de cocina", entry.nivelCocina.toString(), false)
             entry.categoria?.let { LabelValue("Categoría", it, false) }
             entry.evento?.let { LabelValue("Evento", it, false) }
-            if (entry.certificable == false) {
+            if (!certifiable) {
                 Text("No certificable", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold), color = Muted)
             }
             val origen = entry.origen?.takeIf { it.isNotBlank() }

@@ -1,6 +1,7 @@
 package com.guiaheartopia.app
 
 import com.guiaheartopia.app.data.DexEntry
+import com.guiaheartopia.app.domain.CatalogMarks
 import com.guiaheartopia.app.domain.DexCategoryFilters
 import com.guiaheartopia.app.domain.GuideLaunch
 import com.guiaheartopia.app.domain.RedeemCodes
@@ -14,6 +15,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -56,6 +58,12 @@ class GuideDexPart2Test {
         val days = ReminderPlan.eventCalendarDays(doc, zone)
         assertTrue(days.contains(LocalDate.of(2026, 11, 10)))
         assertTrue(days.contains(LocalDate.of(2026, 11, 11)))
+    }
+
+    @Test
+    fun eventCreatureIsNotCertifiable() {
+        val entry = DexEntry(id = "x", name = "Pez", category = "Peces", event = "Fiesta")
+        assertFalse(CatalogMarks.certifiable(entry))
     }
 
     @Test

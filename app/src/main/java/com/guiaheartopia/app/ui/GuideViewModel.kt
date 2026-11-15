@@ -61,8 +61,11 @@ data class GuideUi(
     val collectionFraction: Float = 0f,
     val hobbies: List<Hobby> = emptyList(),
     val huertoFound: Set<String> = emptySet(),
+    val huertoCertified: Set<String> = emptySet(),
     val florFound: Set<String> = emptySet(),
+    val florCertified: Set<String> = emptySet(),
     val recetaFound: Set<String> = emptySet(),
+    val recetaCertified: Set<String> = emptySet(),
     val recetaFavorites: Set<String> = emptySet(),
     val activeCrops: List<ActiveCrop> = emptyList(),
     val redeemedCodes: Set<String> = emptySet(),
@@ -258,6 +261,11 @@ class GuideViewModel(
 
     fun toggleCertified(id: String, category: String) {
         viewModelScope.launch {
+            val context = appContext
+            if (context != null) {
+                val entry = HeartodexCatalog.load(context).firstOrNull { it.id == id }
+                if (entry != null && !CatalogMarks.certifiable(entry)) return@launch
+            }
             repository.update { snap ->
                 val next = CatalogMarks.toggleCertified(marks(snap), id, category)
                 snap.copy(foundIds = next.found.toList(), certifiedIds = next.certified.toList())
@@ -321,7 +329,24 @@ class GuideViewModel(
     fun toggleHuertoFound(id: String) {
         viewModelScope.launch {
             repository.update { snap ->
-                snap.copy(huertoFoundIds = AficionesMarks.toggle(snap.huertoFoundIds.toSet(), id).toList())
+                val marks = huertoMarks(snap)
+                val next = AficionesMarks.toggleFound(marks, id)
+                snap.copy(
+                    huertoFoundIds = next.found.toList(),
+                    huertoCertifiedIds = next.certified.toList(),
+                )
+            }
+        }
+    }
+
+    fun toggleHuertoCertified(id: String, certifiable: Boolean) {
+        viewModelScope.launch {
+            repository.update { snap ->
+                val next = AficionesMarks.toggleCertified(huertoMarks(snap), id, certifiable)
+                snap.copy(
+                    huertoFoundIds = next.found.toList(),
+                    huertoCertifiedIds = next.certified.toList(),
+                )
             }
         }
     }
@@ -329,7 +354,17 @@ class GuideViewModel(
     fun toggleFlorFound(id: String) {
         viewModelScope.launch {
             repository.update { snap ->
-                snap.copy(florFoundIds = AficionesMarks.toggle(snap.florFoundIds.toSet(), id).toList())
+                val next = AficionesMarks.toggleFound(florMarks(snap), id)
+                snap.copy(florFoundIds = next.found.toList(), florCertifiedIds = next.certified.toList())
+            }
+        }
+    }
+
+    fun toggleFlorCertified(id: String, certifiable: Boolean) {
+        viewModelScope.launch {
+            repository.update { snap ->
+                val next = AficionesMarks.toggleCertified(florMarks(snap), id, certifiable)
+                snap.copy(florFoundIds = next.found.toList(), florCertifiedIds = next.certified.toList())
             }
         }
     }
@@ -337,7 +372,17 @@ class GuideViewModel(
     fun toggleRecetaFound(id: String) {
         viewModelScope.launch {
             repository.update { snap ->
-                snap.copy(recetaFoundIds = AficionesMarks.toggle(snap.recetaFoundIds.toSet(), id).toList())
+                val next = AficionesMarks.toggleFound(recetaMarks(snap), id)
+                snap.copy(recetaFoundIds = next.found.toList(), recetaCertifiedIds = next.certified.toList())
+            }
+        }
+    }
+
+    fun toggleRecetaCertified(id: String, certifiable: Boolean) {
+        viewModelScope.launch {
+            repository.update { snap ->
+                val next = AficionesMarks.toggleCertified(recetaMarks(snap), id, certifiable)
+                snap.copy(recetaFoundIds = next.found.toList(), recetaCertifiedIds = next.certified.toList())
             }
         }
     }
@@ -449,8 +494,11 @@ class GuideViewModel(
             collectionFraction = CollectionProgress.overall(collectibles, found),
             hobbies = hobbies,
             huertoFound = snap.huertoFoundIds.toSet(),
+            huertoCertified = snap.huertoCertifiedIds.toSet(),
             florFound = snap.florFoundIds.toSet(),
+            florCertified = snap.florCertifiedIds.toSet(),
             recetaFound = snap.recetaFoundIds.toSet(),
+            recetaCertified = snap.recetaCertifiedIds.toSet(),
             recetaFavorites = snap.recetaFavoriteIds.toSet(),
             activeCrops = snap.activeCrops,
             redeemedCodes = snap.redeemedCodeIds.toSet(),
@@ -470,6 +518,15 @@ class GuideViewModel(
             ?: return emptyMap()
         return HobbyCatalog.parseOverrides(bytes.decodeToString())
     }
+
+    private fun huertoMarks(snap: GuideSnapshot) =
+        AficionesMarks.Marks(snap.huertoFoundIds.toSet(), snap.huertoCertifiedIds.toSet())
+
+    private fun florMarks(snap: GuideSnapshot) =
+        AficionesMarks.Marks(snap.florFoundIds.toSet(), snap.florCertifiedIds.toSet())
+
+    private fun recetaMarks(snap: GuideSnapshot) =
+        AficionesMarks.Marks(snap.recetaFoundIds.toSet(), snap.recetaCertifiedIds.toSet())
 
     private fun marks(snap: GuideSnapshot): CatalogMarks.Marks =
         CatalogMarks.Marks(snap.foundIds.toSet(), snap.certifiedIds.toSet())

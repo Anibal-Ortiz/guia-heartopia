@@ -38,6 +38,13 @@ class HobbyAndLevelTest {
     }
 
     @Test
+    fun listWithoutOnlyNowIgnoresHobbyLevelCap() {
+        val hobbies = HobbyCatalog.migrate(listOf(Hobby("hob-pesca", "Pesca", level = 0)))
+        assertTrue(CreatureAvailability.levelAllowed(9, null))
+        assertFalse(CreatureAvailability.availableNow("Peces", 9, hobbies, timeAndWeatherOk = true))
+    }
+
+    @Test
     fun availableNowAlsoRequiresTheMatchingHobbyLevel() {
         val hobbies = HobbyCatalog.migrate(
             listOf(

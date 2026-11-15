@@ -80,6 +80,7 @@ import com.guiaheartopia.app.domain.TextMatch
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.ui.components.CaptureNetIcon
 import com.guiaheartopia.app.ui.components.CertificateMedalIcon
+import com.guiaheartopia.app.ui.components.NonCertifiableIcon
 import com.guiaheartopia.app.ui.components.ClearSkyIcon
 import com.guiaheartopia.app.ui.components.CozyGuideIcon
 import com.guiaheartopia.app.ui.components.CreatureGlyph
@@ -136,6 +137,9 @@ fun GuideScreen(
     onSaveDexFilters: (String, DexCategoryFilters) -> Unit = { _, _ -> },
 ) {
     var tab by rememberSaveable { mutableIntStateOf(initialTab) }
+    androidx.compose.runtime.LaunchedEffect(initialTab, guideLaunch.eventFocus) {
+        tab = initialTab
+    }
 
     Column(
         Modifier
@@ -541,7 +545,7 @@ private fun DexTab(
             now = now,
             found = entry.id in ui.found,
             certified = entry.id in ui.certified,
-            canCertify = canCertify,
+            certifiable = CatalogMarks.certifiable(entry),
             onOpen = { onOpen(entry.id) },
             onToggleFound = { onToggleFound(entry.id) },
             onToggleCertified = { onToggleCertified(entry.id, entry.category) },
@@ -699,12 +703,24 @@ fun DexDetailScreen(
                 description = if (found) "Quitar capturado" else "Marcar como capturado",
                 onClick = onToggle,
             ) { CaptureNetIcon(on = found) }
-            if (CatalogMarks.certifiable(entry.category)) {
+            if (CatalogMarks.certifiable(entry)) {
                 MarkIconButton(
                     on = certified,
                     description = if (certified) "Quitar certificado" else "Marcar como certificado",
                     onClick = onToggleCertified,
                 ) { CertificateMedalIcon(on = certified) }
+            } else if (CatalogMarks.certifiable(entry.category)) {
+                Box(
+                    Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(Paper)
+                        .border(1.dp, Line, CircleShape)
+                        .clearAndSetSemantics { contentDescription = "No certificable" },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    NonCertifiableIcon(size = 26.dp)
+                }
             }
         }
 
@@ -922,7 +938,7 @@ private fun DexCreatureCard(
     now: Boolean,
     found: Boolean,
     certified: Boolean,
-    canCertify: Boolean,
+    certifiable: Boolean,
     onOpen: () -> Unit,
     onToggleFound: () -> Unit,
     onToggleCertified: () -> Unit,
@@ -1013,12 +1029,24 @@ private fun DexCreatureCard(
                 description = if (found) "Quitar capturado" else "Marcar como capturado",
                 onClick = onToggleFound,
             ) { CaptureNetIcon(on = found) }
-            if (canCertify) {
+            if (certifiable) {
                 MarkIconButton(
                     on = certified,
                     description = if (certified) "Quitar certificado" else "Marcar como certificado",
                     onClick = onToggleCertified,
                 ) { CertificateMedalIcon(on = certified) }
+            } else if (CatalogMarks.certifiable(entry.category)) {
+                Box(
+                    Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                        .background(Paper)
+                        .border(1.dp, Line, CircleShape)
+                        .clearAndSetSemantics { contentDescription = "No certificable" },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    NonCertifiableIcon(size = 26.dp)
+                }
             }
         }
     }

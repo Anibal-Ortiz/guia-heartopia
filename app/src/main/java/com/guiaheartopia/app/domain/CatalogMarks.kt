@@ -1,10 +1,15 @@
 package com.guiaheartopia.app.domain
 
+import com.guiaheartopia.app.data.DexEntry
+
 object CatalogMarks {
     fun certifiable(category: String): Boolean = when (category) {
         "Peces", "Pájaros", "Aves", "Insectos" -> true
         else -> false
     }
+
+    fun certifiable(entry: DexEntry): Boolean =
+        certifiable(entry.category) && entry.event.isNullOrBlank()
 
     data class Marks(val found: Set<String>, val certified: Set<String>)
 

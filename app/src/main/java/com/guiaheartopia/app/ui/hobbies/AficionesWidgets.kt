@@ -29,6 +29,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guiaheartopia.app.ui.components.CaptureNetIcon
+import com.guiaheartopia.app.ui.components.CertificateMedalIcon
+import com.guiaheartopia.app.ui.components.NonCertifiableIcon
 import com.guiaheartopia.app.ui.theme.GreenDark
 import com.guiaheartopia.app.ui.theme.GreenSoft
 import com.guiaheartopia.app.ui.theme.HoneySoft
@@ -125,6 +127,43 @@ fun ConseguidoToggle(on: Boolean, onToggle: () -> Unit) {
         description = if (on) "Quitar conseguido" else "Marcar como conseguido",
         onClick = onToggle,
     ) { CaptureNetIcon(on = on) }
+}
+
+@Composable
+fun CertificadoToggle(on: Boolean, onToggle: () -> Unit) {
+    MarkIconButton(
+        on = on,
+        description = if (on) "Quitar certificado" else "Marcar como certificado",
+        onClick = onToggle,
+    ) { CertificateMedalIcon(on = on) }
+}
+
+@Composable
+fun AficionCertifyRow(
+    found: Boolean,
+    certified: Boolean,
+    certifiable: Boolean,
+    onToggleFound: () -> Unit,
+    onToggleCertified: () -> Unit,
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+        ConseguidoToggle(found, onToggleFound)
+        if (certifiable) {
+            CertificadoToggle(certified, onToggleCertified)
+        } else {
+            Box(
+                Modifier
+                    .size(48.dp)
+                    .clip(CircleShape)
+                    .background(Paper)
+                    .border(1.dp, Line, CircleShape)
+                    .clearAndSetSemantics { contentDescription = "No certificable" },
+                contentAlignment = Alignment.Center,
+            ) {
+                NonCertifiableIcon(size = 26.dp)
+            }
+        }
+    }
 }
 
 @Composable

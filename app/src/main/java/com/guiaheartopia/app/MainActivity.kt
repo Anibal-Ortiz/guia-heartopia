@@ -425,7 +425,9 @@ private fun AppScaffold(
                     onOpenSiembra = { nav.navigate("huerto/siembra/$it") },
                     onOpenFlor = { nav.navigate("huerto/flor/$it") },
                     onToggleSiembraFound = vm::toggleHuertoFound,
+                    onToggleSiembraCertified = vm::toggleHuertoCertified,
                     onToggleFlorFound = vm::toggleFlorFound,
+                    onToggleFlorCertified = vm::toggleFlorCertified,
                     onCancelCrop = vm::cancelCrop,
                     onOpenAboveLevel = { nav.navigate("huerto/pendiente-nivel") },
                 )
@@ -437,7 +439,9 @@ private fun AppScaffold(
                     onOpenSiembra = { nav.navigate("huerto/siembra/$it") },
                     onOpenFlor = { nav.navigate("huerto/flor/$it") },
                     onToggleSiembraFound = vm::toggleHuertoFound,
+                    onToggleSiembraCertified = vm::toggleHuertoCertified,
                     onToggleFlorFound = vm::toggleFlorFound,
+                    onToggleFlorCertified = vm::toggleFlorCertified,
                     onCancelCrop = vm::cancelCrop,
                     onOpenAboveLevel = { nav.navigate("huerto/pendiente-nivel") },
                     onlyAboveLevel = true,
@@ -449,6 +453,7 @@ private fun AppScaffold(
                     onBack = { nav.popBackStack() },
                     onOpenReceta = { nav.navigate("cocina/receta/$it") },
                     onToggleFound = vm::toggleRecetaFound,
+                    onToggleCertified = vm::toggleRecetaCertified,
                     onToggleFavorite = vm::toggleRecetaFavorite,
                     onOpenAboveLevel = { nav.navigate("cocina/pendiente-nivel") },
                 )
@@ -459,6 +464,7 @@ private fun AppScaffold(
                     onBack = { nav.popBackStack() },
                     onOpenReceta = { nav.navigate("cocina/receta/$it") },
                     onToggleFound = vm::toggleRecetaFound,
+                    onToggleCertified = vm::toggleRecetaCertified,
                     onToggleFavorite = vm::toggleRecetaFavorite,
                     onOpenAboveLevel = { nav.navigate("cocina/pendiente-nivel") },
                     onlyAboveLevel = true,
@@ -507,6 +513,10 @@ private fun AppScaffold(
                 arguments = listOf(navArgument("eventId") { type = NavType.StringType }),
             ) { entry ->
                 val eventId = entry.arguments?.getString("eventId").orEmpty()
+                val context = androidx.compose.ui.platform.LocalContext.current
+                val eventTab = androidx.compose.runtime.remember(eventId) {
+                    com.guiaheartopia.app.domain.GuideEventNav.dexTabIndexFromContext(context, eventId)
+                }
                 GuideScreen(
                     ui = ui,
                     onOpenAnimal = { nav.navigate("animal/$it") },
@@ -515,7 +525,28 @@ private fun AppScaffold(
                     onToggleCertified = vm::toggleCertified,
                     onAddAnimal = vm::addAnimal,
                     onBack = { nav.popBackStack() },
+                    initialTab = eventTab,
                     guideLaunch = com.guiaheartopia.app.domain.GuideLaunch(eventFocus = eventId),
+                    onSaveDexFilters = vm::saveDexFilters,
+                )
+            }
+            composable(
+                "guide/categoria/{category}",
+                arguments = listOf(navArgument("category") { type = NavType.StringType }),
+            ) { entry ->
+                val category = entry.arguments?.getString("category").orEmpty()
+                val tab = com.guiaheartopia.app.domain.GuideSections.dexCategories
+                    .indexOfFirst { it.equals(category, true) }
+                    .coerceAtLeast(0)
+                GuideScreen(
+                    ui = ui,
+                    onOpenAnimal = { nav.navigate("animal/$it") },
+                    onOpenDex = { nav.navigate("dex/$it") },
+                    onToggleFound = vm::toggleFound,
+                    onToggleCertified = vm::toggleCertified,
+                    onAddAnimal = vm::addAnimal,
+                    onBack = { nav.popBackStack() },
+                    initialTab = tab,
                     onSaveDexFilters = vm::saveDexFilters,
                 )
             }
@@ -565,9 +596,13 @@ private fun AppScaffold(
                         entry = siembra,
                         recetas = bundle.recetas,
                         found = siembra.id in ui.huertoFound,
+                        certified = siembra.id in ui.huertoCertified,
                         activeCrop = crop,
                         onBack = { nav.popBackStack() },
                         onToggleFound = { vm.toggleHuertoFound(siembra.id) },
+                        onToggleCertified = {
+                            vm.toggleHuertoCertified(siembra.id, com.guiaheartopia.app.domain.AficionesMarks.certifiableSiembra(siembra))
+                        },
                         onPlant = { vm.plantSiembra(siembra.id, siembra.nombre, siembra.tiempoCrecimientoMinutos) },
                         onOpenReceta = { nav.navigate("cocina/receta/$it") },
                     )
@@ -589,8 +624,12 @@ private fun AppScaffold(
                     com.guiaheartopia.app.ui.hobbies.FlorDetailScreen(
                         entry = flor,
                         found = flor.id in ui.florFound,
+                        certified = flor.id in ui.florCertified,
                         onBack = { nav.popBackStack() },
                         onToggleFound = { vm.toggleFlorFound(flor.id) },
+                        onToggleCertified = {
+                            vm.toggleFlorCertified(flor.id, com.guiaheartopia.app.domain.AficionesMarks.certifiableFlor(flor))
+                        },
                     )
                 }
             }
@@ -613,9 +652,13 @@ private fun AppScaffold(
                         siembras = bundle.siembras,
                         recetas = bundle.recetas,
                         found = receta.id in ui.recetaFound,
+                        certified = receta.id in ui.recetaCertified,
                         favorite = receta.id in ui.recetaFavorites,
                         onBack = { nav.popBackStack() },
                         onToggleFound = { vm.toggleRecetaFound(receta.id) },
+                        onToggleCertified = {
+                            vm.toggleRecetaCertified(receta.id, com.guiaheartopia.app.domain.AficionesMarks.certifiableReceta(receta))
+                        },
                         onToggleFavorite = { vm.toggleRecetaFavorite(receta.id) },
                         onOpenSiembra = { nav.navigate("huerto/siembra/$it") },
                         onOpenReceta = { nav.navigate("cocina/receta/$it") },

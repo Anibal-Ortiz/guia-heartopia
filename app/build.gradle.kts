@@ -109,7 +109,7 @@ val uploadSigningReady = uploadKeystore.isFile &&
     uploadKeyPassword.isNotEmpty()
 
 base {
-    archivesName.set("Guia-Heartopia-1.0.6")
+    archivesName.set("Guia-Heartopia-1.0.7")
 }
 
 android {
@@ -121,8 +121,8 @@ android {
         applicationId = "com.guiaheartopia.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 39
-        versionName = "1.0.6"
+        versionCode = 40
+        versionName = "1.0.7"
         buildConfigField(
             "String",
             "CONTENT_BASE_URL",

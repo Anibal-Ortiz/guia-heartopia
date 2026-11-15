@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.data.AficionesCatalog
 import com.guiaheartopia.app.domain.ActiveCrop
 import com.guiaheartopia.app.domain.AficionesContent
+import com.guiaheartopia.app.domain.AficionesMarks
 import com.guiaheartopia.app.domain.AficionesLevelSummary
 import com.guiaheartopia.app.domain.CreatureAvailability
 import com.guiaheartopia.app.domain.FlorEntry
@@ -63,7 +64,9 @@ fun HuertoScreen(
     onOpenSiembra: (String) -> Unit,
     onOpenFlor: (String) -> Unit,
     onToggleSiembraFound: (String) -> Unit,
+    onToggleSiembraCertified: (String, Boolean) -> Unit,
     onToggleFlorFound: (String) -> Unit,
+    onToggleFlorCertified: (String, Boolean) -> Unit,
     onCancelCrop: (String) -> Unit,
     onOpenAboveLevel: () -> Unit,
     initialTab: Int = 0,
@@ -107,18 +110,22 @@ fun HuertoScreen(
             0 -> SiembrasTab(
                 siembras = bundle.siembras,
                 found = ui.huertoFound,
+                certified = ui.huertoCertified,
                 playerLevel = siembraLevel,
                 onlyAboveLevel = onlyAboveLevel,
                 onOpen = onOpenSiembra,
                 onToggleFound = onToggleSiembraFound,
+                onToggleCertified = onToggleSiembraCertified,
             )
             else -> FloresTab(
                 flores = bundle.flores,
                 found = ui.florFound,
+                certified = ui.florCertified,
                 playerLevel = siembraLevel,
                 onlyAboveLevel = onlyAboveLevel,
                 onOpen = onOpenFlor,
                 onToggleFound = onToggleFlorFound,
+                onToggleCertified = onToggleFlorCertified,
             )
         }
     }
@@ -173,10 +180,12 @@ private fun ActiveCropsPanel(crops: List<ActiveCrop>, onCancel: (String) -> Unit
 private fun SiembrasTab(
     siembras: List<SiembraEntry>,
     found: Set<String>,
+    certified: Set<String>,
     playerLevel: Int,
     onlyAboveLevel: Boolean,
     onOpen: (String) -> Unit,
     onToggleFound: (String) -> Unit,
+    onToggleCertified: (String, Boolean) -> Unit,
 ) {
     var sortByLevel by rememberSaveable { mutableStateOf(false) }
     var onlyConseguidas by rememberSaveable { mutableStateOf<Boolean?>(null) }
@@ -214,7 +223,14 @@ private fun SiembrasTab(
     grouped.forEach { (level, items) ->
         Text("Nivel $level", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold), color = Muted)
         items.forEach { entry ->
-            SiembraCard(entry, entry.id in found, onOpen = { onOpen(entry.id) }, onToggleFound = { onToggleFound(entry.id) })
+            SiembraCard(
+                entry,
+                found = entry.id in found,
+                certified = entry.id in certified,
+                onOpen = { onOpen(entry.id) },
+                onToggleFound = { onToggleFound(entry.id) },
+                onToggleCertified = { onToggleCertified(entry.id, AficionesMarks.certifiableSiembra(entry)) },
+            )
         }
     }
 }
@@ -223,10 +239,12 @@ private fun SiembrasTab(
 private fun FloresTab(
     flores: List<FlorEntry>,
     found: Set<String>,
+    certified: Set<String>,
     playerLevel: Int,
     onlyAboveLevel: Boolean,
     onOpen: (String) -> Unit,
     onToggleFound: (String) -> Unit,
+    onToggleCertified: (String, Boolean) -> Unit,
 ) {
     var sortByLevel by rememberSaveable { mutableStateOf(false) }
     var onlyConseguidas by rememberSaveable { mutableStateOf<Boolean?>(null) }
@@ -267,19 +285,41 @@ private fun FloresTab(
     withLevel.forEach { (level, items) ->
         Text("Nivel $level", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold), color = Muted)
         items.forEach { entry ->
-            FlorCard(entry, entry.id in found, onOpen = { onOpen(entry.id) }, onToggleFound = { onToggleFound(entry.id) })
+            FlorCard(
+                entry,
+                found = entry.id in found,
+                certified = entry.id in certified,
+                onOpen = { onOpen(entry.id) },
+                onToggleFound = { onToggleFound(entry.id) },
+                onToggleCertified = { onToggleCertified(entry.id, AficionesMarks.certifiableFlor(entry)) },
+            )
         }
     }
     if (sinNivel.isNotEmpty()) {
         Text("Sin nivel", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold), color = Muted)
         sinNivel.forEach { entry ->
-            FlorCard(entry, entry.id in found, onOpen = { onOpen(entry.id) }, onToggleFound = { onToggleFound(entry.id) })
+            FlorCard(
+                entry,
+                found = entry.id in found,
+                certified = entry.id in certified,
+                onOpen = { onOpen(entry.id) },
+                onToggleFound = { onToggleFound(entry.id) },
+                onToggleCertified = { onToggleCertified(entry.id, AficionesMarks.certifiableFlor(entry)) },
+            )
         }
     }
 }
 
 @Composable
-private fun SiembraCard(entry: SiembraEntry, found: Boolean, onOpen: () -> Unit, onToggleFound: () -> Unit) {
+private fun SiembraCard(
+    entry: SiembraEntry,
+    found: Boolean,
+    certified: Boolean,
+    onOpen: () -> Unit,
+    onToggleFound: () -> Unit,
+    onToggleCertified: () -> Unit,
+) {
+    val certifiable = AficionesMarks.certifiableSiembra(entry)
     var zoom by remember(entry.id) { mutableStateOf(false) }
   val model = rememberAficionesModel(entry.imagen)
     if (zoom && model != null) {
@@ -326,17 +366,30 @@ private fun SiembraCard(entry: SiembraEntry, found: Boolean, onOpen: () -> Unit,
                     )
                 }
                 entry.evento?.let { Text("Evento: $it", style = MaterialTheme.typography.bodySmall, color = Muted) }
-                if (entry.certificable == false) {
-                    Text("No certificable", style = MaterialTheme.typography.labelSmall, color = Muted)
-                }
             }
-            ConseguidoToggle(found, onToggleFound)
+            Column(horizontalAlignment = Alignment.End) {
+                AficionCertifyRow(
+                    found = found,
+                    certified = certified,
+                    certifiable = certifiable,
+                    onToggleFound = onToggleFound,
+                    onToggleCertified = onToggleCertified,
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun FlorCard(entry: FlorEntry, found: Boolean, onOpen: () -> Unit, onToggleFound: () -> Unit) {
+private fun FlorCard(
+    entry: FlorEntry,
+    found: Boolean,
+    certified: Boolean,
+    onOpen: () -> Unit,
+    onToggleFound: () -> Unit,
+    onToggleCertified: () -> Unit,
+) {
+    val certifiable = AficionesMarks.certifiableFlor(entry)
     var zoom by remember(entry.id) { mutableStateOf(false) }
     val model = rememberAficionesModel(entry.imagen)
     if (zoom && model != null) {
@@ -374,7 +427,13 @@ private fun FlorCard(entry: FlorEntry, found: Boolean, onOpen: () -> Unit, onTog
                     )
                 }
             }
-            ConseguidoToggle(found, onToggleFound)
+            AficionCertifyRow(
+                found = found,
+                certified = certified,
+                certifiable = certifiable,
+                onToggleFound = onToggleFound,
+                onToggleCertified = onToggleCertified,
+            )
         }
     }
 }
@@ -384,12 +443,15 @@ fun SiembraDetailScreen(
     entry: SiembraEntry,
     recetas: List<RecetaEntry>,
     found: Boolean,
+    certified: Boolean,
     activeCrop: ActiveCrop?,
     onBack: () -> Unit,
     onToggleFound: () -> Unit,
+    onToggleCertified: () -> Unit,
     onPlant: () -> Unit,
     onOpenReceta: (String) -> Unit,
 ) {
+    val certifiable = AficionesMarks.certifiableSiembra(entry)
     val usadas = remember(entry, recetas) { AficionesContent.recetasQueUsanSiembra(recetas, entry) }
     var zoom by remember(entry.id) { mutableStateOf(false) }
     val model = rememberAficionesModel(entry.imagen)
@@ -423,7 +485,13 @@ fun SiembraDetailScreen(
                 )
                 Column(Modifier.weight(1f)) {
                     Text(entry.nombre, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold), color = Ink)
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) { ConseguidoToggle(found, onToggleFound) }
+                    AficionCertifyRow(
+                        found = found,
+                        certified = certified,
+                        certifiable = certifiable,
+                        onToggleFound = onToggleFound,
+                        onToggleCertified = onToggleCertified,
+                    )
                 }
             }
             LabelValue("Nivel de siembra", entry.nivelSiembra.toString(), false)
@@ -440,7 +508,7 @@ fun SiembraDetailScreen(
             entry.maestriaCosechas?.let { LabelValue("Maestría", it, false) }
             entry.categoria?.let { LabelValue("Categoría", it, false) }
             entry.evento?.let { LabelValue("Evento", it, false) }
-            if (entry.certificable == false) {
+            if (!certifiable) {
                 Text("No certificable", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold), color = Muted)
             }
             if (usadas.isNotEmpty()) {
@@ -469,9 +537,12 @@ fun SiembraDetailScreen(
 fun FlorDetailScreen(
     entry: FlorEntry,
     found: Boolean,
+    certified: Boolean,
     onBack: () -> Unit,
     onToggleFound: () -> Unit,
+    onToggleCertified: () -> Unit,
 ) {
+    val certifiable = AficionesMarks.certifiableFlor(entry)
     var zoomId by remember { mutableStateOf<String?>(null) }
     val zoomVariant = entry.variantes.firstOrNull { it.id == zoomId || it.imagen == zoomId }
     val zoomPath = zoomVariant?.imagen ?: entry.imagen
@@ -499,7 +570,13 @@ fun FlorDetailScreen(
         TextButton(onClick = onBack) { Text("Atrás") }
         PixelCard(category = entry.nombre) {
             Text(entry.nombre, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold), color = Ink)
-            ConseguidoToggle(found, onToggleFound)
+            AficionCertifyRow(
+                found = found,
+                certified = certified,
+                certifiable = certifiable,
+                onToggleFound = onToggleFound,
+                onToggleCertified = onToggleCertified,
+            )
             entry.nivelSiembra?.let { LabelValue("Nivel de siembra", it.toString(), false) }
             entry.precioSemilla?.let { LabelValue("Precio de semilla", it.toString(), false) }
             entry.tiempoCrecimientoMinutos?.let {

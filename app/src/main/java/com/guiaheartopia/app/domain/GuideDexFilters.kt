@@ -30,7 +30,7 @@ data class GuideLaunch(
 
 fun mergeGuideLaunch(base: DexCategoryFilters, launch: GuideLaunch): DexCategoryFilters =
     base.copy(
-        onlyNow = base.onlyNow || launch.onlyNow,
+        onlyNow = if (launch.onlyNow) true else base.onlyNow,
         registered = launch.registered.ifBlank { base.registered },
         eventFocus = launch.eventFocus.ifBlank { base.eventFocus },
     )
