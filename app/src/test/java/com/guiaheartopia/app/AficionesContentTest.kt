@@ -75,6 +75,6 @@ class AficionesContentTest {
             )),
             siembras = siembra.let { listOf(it) },
         )
-        assertTrue(line.startsWith("Elige 2 de:"))
+        assertTrue(line.startsWith("Elige 2 de los siguientes:"))
     }
 }

@@ -20,6 +20,8 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.R
@@ -445,6 +447,39 @@ fun CaptureNetIcon(
             stroke,
             cap = StrokeCap.Round,
         )
+    }
+}
+
+@Composable
+fun NonCertifiableIcon(
+    modifier: Modifier = Modifier,
+    size: Dp = 26.dp,
+) {
+    val ink = Color(0xFF9A9A9A)
+    Canvas(modifier.size(size).semantics { contentDescription = "No certificable" }) {
+        val w = this.size.width
+        val h = this.size.height
+        val stroke = 1.8.dp.toPx()
+        val center = Offset(w * 0.50f, h * 0.40f)
+        val radius = w * 0.24f
+        drawCircle(Color.Transparent, radius, center, style = Stroke(stroke))
+        drawCircle(ink, radius, center, style = Stroke(stroke))
+        drawLine(
+            ink,
+            Offset(center.x - radius * 0.75f, center.y + radius * 0.65f),
+            Offset(center.x + radius * 0.75f, center.y - radius * 0.65f),
+            stroke,
+            cap = StrokeCap.Round,
+        )
+        val ribbon = Path().apply {
+            moveTo(w * 0.36f, h * 0.50f)
+            lineTo(w * 0.30f, h * 0.90f)
+            lineTo(w * 0.50f, h * 0.78f)
+            lineTo(w * 0.70f, h * 0.90f)
+            lineTo(w * 0.64f, h * 0.50f)
+            close()
+        }
+        drawPath(ribbon, Color.Transparent, style = Stroke(stroke * 0.75f, cap = StrokeCap.Round))
     }
 }
 

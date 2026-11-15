@@ -16,6 +16,7 @@ data class SiembraEntry(
     val evento: String? = null,
     val maestriaCosechas: String? = null,
     val imagen: String? = null,
+    val certificable: Boolean? = null,
 )
 
 @Serializable
@@ -24,6 +25,9 @@ data class FlorVariante(
     val origen: String,
     val estrellas: Int? = null,
     val precioVenta: Int? = null,
+    val id: String? = null,
+    val nombre: String? = null,
+    val imagen: String? = null,
 )
 
 @Serializable
@@ -33,17 +37,22 @@ data class FlorEntry(
     val nivelSiembra: Int? = null,
     val variantes: List<FlorVariante> = emptyList(),
     val imagen: String? = null,
+    val tiempoCrecimientoMinutos: Int? = null,
+    val precioSemilla: Int? = null,
+    val categoria: String? = null,
 )
 
 @Serializable
 data class IngredienteOpcion(
     val idSiembra: String? = null,
+    val idReceta: String? = null,
     val nombre: String? = null,
 )
 
 @Serializable
 data class RecetaIngrediente(
     val idSiembra: String? = null,
+    val idReceta: String? = null,
     val nombre: String? = null,
     val cantidad: Int? = null,
     val elegir: Int? = null,
@@ -62,6 +71,10 @@ data class RecetaEntry(
     val evento: String? = null,
     val maestria: String? = null,
     val imagen: String? = null,
+    val ingredientesCompletos: Boolean = true,
+    val ingredientesPendientes: Int = 0,
+    val certificable: Boolean? = null,
+    val origen: String? = null,
 )
 
 @Serializable
@@ -156,20 +169,35 @@ object AficionesContent {
         (opt.idSiembra != null && opt.idSiembra == id) ||
             (opt.nombre != null && TextMatch.contains(nombre, opt.nombre))
 
-    fun ingredienteLine(ing: RecetaIngrediente, siembras: List<SiembraEntry>): String {
+    fun ingredienteLine(
+        ing: RecetaIngrediente,
+        siembras: List<SiembraEntry>,
+        recetas: List<RecetaEntry> = emptyList(),
+    ): String {
         val elegir = ing.elegir
         if (elegir != null && ing.opciones.isNotEmpty()) {
-            val nombres = ing.opciones.map { opt ->
-                opt.idSiembra?.let { sid -> siembras.firstOrNull { it.id == sid }?.nombre }
-                    ?: opt.nombre.orEmpty()
-            }.filter { it.isNotBlank() }
-            return "Elige $elegir de: ${nombres.joinToString(", ")}"
+            val nombres = ing.opciones.map { opcionNombre(it, siembras, recetas) }.filter { it.isNotBlank() }
+            return "Elige $elegir de los siguientes: ${nombres.joinToString(", ")}"
         }
-        val qty = ing.cantidad?.let { "×$it" }.orEmpty()
-        val label = ing.idSiembra?.let { sid -> siembras.firstOrNull { it.id == sid }?.nombre }
-            ?: ing.nombre.orEmpty()
-        return "$label$qty".trim()
+        val qty = ing.cantidad?.let { " ×$it" }.orEmpty()
+        return "${ingredienteNombre(ing, siembras, recetas)}$qty".trim()
     }
+
+    fun ingredienteNombre(
+        ing: RecetaIngrediente,
+        siembras: List<SiembraEntry>,
+        recetas: List<RecetaEntry>,
+    ): String = ing.idSiembra?.let { siembras.firstOrNull { s -> s.id == it }?.nombre }
+        ?: ing.idReceta?.let { recetas.firstOrNull { r -> r.id == it }?.nombre }
+        ?: ing.nombre.orEmpty()
+
+    fun opcionNombre(
+        opt: IngredienteOpcion,
+        siembras: List<SiembraEntry>,
+        recetas: List<RecetaEntry>,
+    ): String = opt.idSiembra?.let { siembras.firstOrNull { s -> s.id == it }?.nombre }
+        ?: opt.idReceta?.let { recetas.firstOrNull { r -> r.id == it }?.nombre }
+        ?: opt.nombre.orEmpty()
 
     fun siembraPorId(siembras: List<SiembraEntry>, id: String?): SiembraEntry? =
         id?.let { want -> siembras.firstOrNull { it.id == want } }
@@ -177,8 +205,36 @@ object AficionesContent {
 }
 
 object AficionesMarks {
+    data class Marks(val found: Set<String>, val certified: Set<String>)
+
     fun toggle(set: Set<String>, id: String): Set<String> =
         if (id in set) set - id else set + id
+
+    fun toggleFound(marks: Marks, id: String): Marks =
+        if (id in marks.found) marks.copy(found = marks.found - id, certified = marks.certified - id)
+        else marks.copy(found = marks.found + id)
+
+    fun toggleCertified(marks: Marks, id: String, certifiable: Boolean): Marks {
+        if (!certifiable) return marks
+        return if (id in marks.certified) {
+            marks.copy(certified = marks.certified - id)
+        } else {
+            marks.copy(found = marks.found + id, certified = marks.certified + id)
+        }
+    }
+
+    fun certifiableSiembra(entry: SiembraEntry): Boolean =
+        entry.certificable != false &&
+            !entry.categoria.equals("Evento", ignoreCase = true) &&
+            entry.evento.isNullOrBlank()
+
+    fun certifiableFlor(entry: FlorEntry): Boolean =
+        !entry.categoria.equals("Evento", ignoreCase = true)
+
+    fun certifiableReceta(entry: RecetaEntry): Boolean =
+        entry.certificable != false &&
+            !entry.categoria.equals("Evento", ignoreCase = true) &&
+            entry.evento.isNullOrBlank()
 }
 
 object AficionesLevelSummary {

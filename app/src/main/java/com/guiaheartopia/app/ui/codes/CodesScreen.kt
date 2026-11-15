@@ -142,6 +142,7 @@ private fun CodeCard(
             onClick = {
                 val clipboard = context.getSystemService(ClipboardManager::class.java)
                 clipboard.setPrimaryClip(ClipData.newPlainText("código", code.code))
+                if (!redeemed) onRedeemed(code.code, true)
                 Toast.makeText(context, "Código copiado", Toast.LENGTH_SHORT).show()
             },
             outlined = true,
