@@ -1,5 +1,6 @@
 package com.guiaheartopia.app.ui.hobbies
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,18 +22,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.guiaheartopia.app.R
 import com.guiaheartopia.app.data.AficionesCatalog
 import com.guiaheartopia.app.data.HeartodexCatalog
 import com.guiaheartopia.app.domain.AficionesLevelSummary
 import com.guiaheartopia.app.domain.CreatureAvailability
 import com.guiaheartopia.app.domain.GuideSections
 import com.guiaheartopia.app.ui.GuideUi
-import com.guiaheartopia.app.ui.components.CozyGuideIcon
-import com.guiaheartopia.app.ui.components.CozyHobbiesIcon
-import com.guiaheartopia.app.ui.components.CookingPotIcon
 import com.guiaheartopia.app.ui.components.PixelCard
-import com.guiaheartopia.app.ui.components.SproutIcon
 import com.guiaheartopia.app.ui.contentRevision
 import com.guiaheartopia.app.ui.theme.GreenDark
 import com.guiaheartopia.app.ui.theme.Honey
@@ -112,7 +111,7 @@ fun HobbyHubScreen(ui: GuideUi, onOpen: (String) -> Unit) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(14.dp),
                 ) {
-                    HobbyDoorIcon(door.route, Modifier.size(48.dp))
+                    HobbyDoorIcon(door.route, Modifier.size(56.dp))
                     Column(Modifier.weight(1f)) {
                         Text(
                             door.title,
@@ -143,10 +142,11 @@ fun HobbyHubScreen(ui: GuideUi, onOpen: (String) -> Unit) {
 
 @Composable
 private fun HobbyDoorIcon(route: String, modifier: Modifier = Modifier) {
-    when (route) {
-        "guide" -> CozyGuideIcon(modifier = modifier, tint = GreenDark, size = 48.dp, filled = true)
-        "huerto" -> SproutIcon(modifier = modifier, size = 48.dp)
-        "cocina" -> CookingPotIcon(modifier = modifier, size = 48.dp)
-        else -> CozyHobbiesIcon(modifier = modifier, tint = Honey, size = 48.dp, filled = true)
+    val res = when (route) {
+        "guide" -> R.drawable.ic_aficion_naturaleza
+        "huerto" -> R.drawable.ic_aficion_huerto
+        "cocina" -> R.drawable.ic_aficion_cocina
+        else -> R.drawable.ic_aficion_niveles
     }
+    Image(painter = painterResource(res), contentDescription = null, modifier = modifier)
 }

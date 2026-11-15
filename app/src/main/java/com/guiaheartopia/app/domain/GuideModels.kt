@@ -111,7 +111,6 @@ data class GuideSnapshot(
     val florCertifiedIds: List<String> = emptyList(),
     val recetaFoundIds: List<String> = emptyList(),
     val recetaCertifiedIds: List<String> = emptyList(),
-    val recetaFavoriteIds: List<String> = emptyList(),
     val activeCrops: List<ActiveCrop> = emptyList(),
     val redeemedCodeIds: List<String> = emptyList(),
     val dexFilters: Map<String, DexCategoryFilters> = emptyMap(),

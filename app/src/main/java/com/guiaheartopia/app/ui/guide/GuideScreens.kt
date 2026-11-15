@@ -52,6 +52,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -78,9 +79,10 @@ import com.guiaheartopia.app.domain.dexEntryMatchesEvent
 import com.guiaheartopia.app.domain.mergeGuideLaunch
 import com.guiaheartopia.app.domain.TextMatch
 import com.guiaheartopia.app.ui.GuideUi
-import com.guiaheartopia.app.ui.components.CaptureNetIcon
-import com.guiaheartopia.app.ui.components.CertificateMedalIcon
-import com.guiaheartopia.app.ui.components.NonCertifiableIcon
+import com.guiaheartopia.app.ui.components.CertificadoMarkIcon
+import com.guiaheartopia.app.ui.components.ConseguidoMarkIcon
+import com.guiaheartopia.app.ui.components.MarkIconButton
+import com.guiaheartopia.app.ui.components.NoCertificableMarkIcon
 import com.guiaheartopia.app.ui.components.ClearSkyIcon
 import com.guiaheartopia.app.ui.components.CozyGuideIcon
 import com.guiaheartopia.app.ui.components.CreatureGlyph
@@ -119,6 +121,7 @@ import com.guiaheartopia.app.ui.theme.Sky
 import com.guiaheartopia.app.ui.theme.SkyBlue
 import com.guiaheartopia.app.ui.theme.SkyTint
 import java.time.Instant
+import java.time.ZoneId
 
 private val Tabs = GuideSections.dexCategories.map { CatalogLabels.category(it) }
 
@@ -579,9 +582,6 @@ fun DexDetailScreen(
         sky,
         zone,
     )
-    val localHours = DexSchedule.windowsAround(zone, instant)
-        .filter { it.slot.key in entry.schedule }
-        .joinToString(" · ") { "${DexSchedule.titled(it.slot)} ${DexSchedule.hoursLabel(it)}" }
     val photoCredit = remember(revision, entry.id) {
         PhotoCredits.byId(detailContext)[entry.id]
     }
@@ -681,8 +681,16 @@ fun DexDetailScreen(
                 WeatherIcons(entry.weather)
             }
 
-            LabelValue("🌐 En tu hora local", localHours.ifBlank { "—" }, false)
-            nextWindowLabel?.let { LabelValue("⏭ Próxima ventana", it, false) }
+            DexLocalScheduleSection(entry.schedule, zone, instant)
+            nextWindowLabel?.let { label ->
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    "Próxima ventana",
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                    color = Ink,
+                )
+                Text(label, style = MaterialTheme.typography.bodyMedium, color = Ink)
+            }
             if (entry.level != null) LabelValue("⭐ Nivel", entry.level.toString(), false)
             if (!entry.shadow.isNullOrBlank()) LabelValue("👥 Sombra", entry.shadow, false)
             if (!entry.event.isNullOrBlank()) LabelValue("🎉 Evento", entry.event, false)
@@ -702,24 +710,20 @@ fun DexDetailScreen(
                 on = found,
                 description = if (found) "Quitar capturado" else "Marcar como capturado",
                 onClick = onToggle,
-            ) { CaptureNetIcon(on = found) }
+            ) { ConseguidoMarkIcon(on = found) }
             if (CatalogMarks.certifiable(entry)) {
                 MarkIconButton(
                     on = certified,
                     description = if (certified) "Quitar certificado" else "Marcar como certificado",
                     onClick = onToggleCertified,
-                ) { CertificateMedalIcon(on = certified) }
+                ) { CertificadoMarkIcon(on = certified) }
             } else if (CatalogMarks.certifiable(entry.category)) {
-                Box(
-                    Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(Paper)
-                        .border(1.dp, Line, CircleShape)
-                        .clearAndSetSemantics { contentDescription = "No certificable" },
-                    contentAlignment = Alignment.Center,
+                MarkIconButton(
+                    on = false,
+                    description = "No certificable",
+                    onClick = null,
                 ) {
-                    NonCertifiableIcon(size = 26.dp)
+                    NoCertificableMarkIcon()
                 }
             }
         }
@@ -1028,24 +1032,20 @@ private fun DexCreatureCard(
                 on = found,
                 description = if (found) "Quitar capturado" else "Marcar como capturado",
                 onClick = onToggleFound,
-            ) { CaptureNetIcon(on = found) }
+            ) { ConseguidoMarkIcon(on = found) }
             if (certifiable) {
                 MarkIconButton(
                     on = certified,
                     description = if (certified) "Quitar certificado" else "Marcar como certificado",
                     onClick = onToggleCertified,
-                ) { CertificateMedalIcon(on = certified) }
+                ) { CertificadoMarkIcon(on = certified) }
             } else if (CatalogMarks.certifiable(entry.category)) {
-                Box(
-                    Modifier
-                        .size(48.dp)
-                        .clip(CircleShape)
-                        .background(Paper)
-                        .border(1.dp, Line, CircleShape)
-                        .clearAndSetSemantics { contentDescription = "No certificable" },
-                    contentAlignment = Alignment.Center,
+                MarkIconButton(
+                    on = false,
+                    description = "No certificable",
+                    onClick = null,
                 ) {
-                    NonCertifiableIcon(size = 26.dp)
+                    NoCertificableMarkIcon()
                 }
             }
         }
@@ -1053,26 +1053,51 @@ private fun DexCreatureCard(
 }
 
 @Composable
-private fun MarkIconButton(
-    on: Boolean,
-    description: String,
-    onClick: () -> Unit,
-    icon: @Composable () -> Unit,
+private fun DexLocalScheduleSection(
+    schedule: List<String>,
+    zone: ZoneId,
+    instant: Instant,
 ) {
-    Box(
-        Modifier
-            .size(48.dp)
-            .clip(CircleShape)
-            .background(if (on) HoneySoft else Paper)
-            .border(width = if (on) 2.dp else 1.dp, color = if (on) Ochre else Line, shape = CircleShape)
-            .clickable(onClick = onClick)
-            .clearAndSetSemantics {
-                contentDescription = description
-                role = Role.Button
-            },
-        contentAlignment = Alignment.Center,
-    ) {
-        icon()
+    val windows = DexSchedule.windowsAround(zone, instant).filter { it.slot.key in schedule }
+    Spacer(Modifier.height(8.dp))
+    Text(
+        "En tu hora local",
+        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+        color = Ink,
+    )
+    if (windows.isEmpty()) {
+        Text("—", style = MaterialTheme.typography.bodyMedium, color = Muted)
+    } else {
+        windows.forEach { window ->
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Row(
+                    Modifier.weight(1f),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (window.slot.emoji.isNotBlank()) {
+                        Text(window.slot.emoji, style = MaterialTheme.typography.bodyMedium)
+                    }
+                    Text(
+                        window.slot.label,
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                        color = Ink,
+                    )
+                }
+                Text(
+                    DexSchedule.hoursLabel(window),
+                    modifier = Modifier.width(112.dp),
+                    textAlign = TextAlign.End,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Ink,
+                )
+            }
+        }
     }
 }
 
