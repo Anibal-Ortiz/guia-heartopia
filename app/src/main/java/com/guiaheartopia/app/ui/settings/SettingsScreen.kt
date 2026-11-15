@@ -17,6 +17,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import android.app.AlarmManager
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.runtime.Composable
@@ -311,10 +315,26 @@ private fun ReminderBlock(current: ReminderPrefs, onChange: (ReminderPrefs) -> U
         Text(
             "El clima avisa 30 min antes de una franja que no sea despejado. " +
                 "Pesca, aves e insectos avisan antes de cada hora del archivo de eventos. " +
-                "La temporada avisa al empezar y un día antes de terminar. " +
-                "El sistema puede retrasar el aviso. No pedimos una alarma exacta.",
+                "La temporada avisa al empezar y un día antes de terminar.",
             style = MaterialTheme.typography.bodySmall,
         )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val manager = context.getSystemService(AlarmManager::class.java)
+            if (manager != null && !manager.canScheduleExactAlarms()) {
+                PixelButton(
+                    text = "Permitir alertas puntuales",
+                    onClick = {
+                        context.startActivity(
+                            Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {
+                                data = Uri.parse("package:${context.packageName}")
+                            },
+                        )
+                    },
+                    outlined = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        }
         ToggleRow("Clima", current.weatherEnabled) { update(current.copy(weatherEnabled = it)) }
         ToggleRow("Pesca", current.pescaEnabled) { update(current.copy(pescaEnabled = it)) }
         ToggleRow("Aves", current.avesEnabled) { update(current.copy(avesEnabled = it)) }

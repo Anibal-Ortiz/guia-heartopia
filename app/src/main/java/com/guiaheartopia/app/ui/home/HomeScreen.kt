@@ -441,7 +441,7 @@ fun HomeScreen(
                         captured = ui.florFound.count { it in florIds },
                         total = aficiones.flores.size,
                         certified = ui.florCertified.count { it in florIds },
-                        onClick = { onOpen("huerto") },
+                        onClick = { onOpen("huerto/flores") },
                     )
                     CollectionColumn(
                         emoji = "🍳",

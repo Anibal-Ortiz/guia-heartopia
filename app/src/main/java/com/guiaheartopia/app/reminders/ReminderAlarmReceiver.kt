@@ -6,9 +6,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.content.ContextCompat
-import com.guiaheartopia.app.data.GuideRepository
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 
 class ReminderAlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {
@@ -18,20 +18,29 @@ class ReminderAlarmReceiver : BroadcastReceiver() {
         val id = intent.getStringExtra(EXTRA_ID).orEmpty()
         if (title.isBlank() || body.isBlank() || id.isBlank()) return
         val app = context.applicationContext
-        if (Build.VERSION.SDK_INT >= 33) {
-            val granted = ContextCompat.checkSelfPermission(
-                app,
-                android.Manifest.permission.POST_NOTIFICATIONS,
-            ) == PackageManager.PERMISSION_GRANTED
-            if (!granted) {
-                ReminderScheduler.markPosted(app, id)
-                return
+        val pending = goAsync()
+        try {
+            if (Build.VERSION.SDK_INT >= 33) {
+                val granted = ContextCompat.checkSelfPermission(
+                    app,
+                    android.Manifest.permission.POST_NOTIFICATIONS,
+                ) == PackageManager.PERMISSION_GRANTED
+                if (!granted) {
+                    ReminderScheduler.markPosted(app, id)
+                    return
+                }
             }
+            ReminderNotifications.show(app, title, body, id)
+            ReminderScheduler.markPosted(app, id)
+            val request = OneTimeWorkRequestBuilder<ReminderRescheduleWorker>().build()
+            WorkManager.getInstance(app).enqueueUniqueWork(
+                "recordatorios-tras-alarma",
+                ExistingWorkPolicy.REPLACE,
+                request,
+            )
+        } finally {
+            pending.finish()
         }
-        ReminderNotifications.show(app, title, body, id)
-        ReminderScheduler.markPosted(app, id)
-        val profile = runBlocking { GuideRepository(app).snapshots.first() }.profile
-        ReminderScheduler.sync(app, profile)
     }
 
     companion object {

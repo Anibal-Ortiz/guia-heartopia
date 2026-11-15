@@ -351,6 +351,29 @@ private fun IngredienteRow(
     onOpenSiembra: (String) -> Unit,
     onOpenReceta: (String) -> Unit,
 ) {
+  val elegir = ing.elegir
+    if (elegir != null && ing.opciones.isNotEmpty()) {
+        Text(
+            "Elige $elegir de los siguientes:",
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+            color = Ink,
+        )
+        ing.opciones.forEach { opt ->
+            val nombre = AficionesContent.opcionNombre(opt, siembras, recetas)
+            when {
+                opt.idSiembra != null -> {
+                    TextButton(onClick = { onOpenSiembra(opt.idSiembra) }) { Text(nombre) }
+                }
+                opt.idReceta != null -> {
+                    TextButton(onClick = { onOpenReceta(opt.idReceta) }) { Text(nombre) }
+                }
+                else -> {
+                    Text(nombre, style = MaterialTheme.typography.bodyMedium, color = Ink)
+                }
+            }
+        }
+        return
+    }
     val line = AficionesContent.ingredienteLine(ing, siembras, recetas)
     val sid = ing.idSiembra
     val rid = ing.idReceta

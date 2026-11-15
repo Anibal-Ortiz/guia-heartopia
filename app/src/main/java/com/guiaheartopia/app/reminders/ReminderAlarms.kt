@@ -23,13 +23,7 @@ object ReminderAlarms {
         val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         val pending = PendingIntent.getBroadcast(app, requestCode, intent, flags)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !manager.canScheduleExactAlarms()) {
-            val show = PendingIntent.getActivity(
-                app,
-                requestCode xor 0x5a5a,
-                Intent(app, com.guiaheartopia.app.MainActivity::class.java),
-                flags,
-            )
-            manager.setAlarmClock(AlarmManager.AlarmClockInfo(trigger, show), pending)
+            manager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, trigger, pending)
         } else {
             manager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, trigger, pending)
         }

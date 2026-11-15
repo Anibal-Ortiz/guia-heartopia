@@ -432,6 +432,21 @@ private fun AppScaffold(
                     onOpenAboveLevel = { nav.navigate("huerto/pendiente-nivel") },
                 )
             }
+            composable("huerto/flores") {
+                com.guiaheartopia.app.ui.hobbies.HuertoScreen(
+                    ui = ui,
+                    onBack = { nav.popBackStack() },
+                    onOpenSiembra = { nav.navigate("huerto/siembra/$it") },
+                    onOpenFlor = { nav.navigate("huerto/flor/$it") },
+                    onToggleSiembraFound = vm::toggleHuertoFound,
+                    onToggleSiembraCertified = vm::toggleHuertoCertified,
+                    onToggleFlorFound = vm::toggleFlorFound,
+                    onToggleFlorCertified = vm::toggleFlorCertified,
+                    onCancelCrop = vm::cancelCrop,
+                    onOpenAboveLevel = { nav.navigate("huerto/pendiente-nivel") },
+                    initialTab = 1,
+                )
+            }
             composable("huerto/pendiente-nivel") {
                 com.guiaheartopia.app.ui.hobbies.HuertoScreen(
                     ui = ui,
