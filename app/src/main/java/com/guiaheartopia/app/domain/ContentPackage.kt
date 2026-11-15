@@ -13,6 +13,8 @@ data class ContentFileEntry(
     val path: String,
     val size: Long,
     val sha256: String,
+    /** Si existe, solo la descarga la app con versionCode >= este valor. */
+    val minAppVersionCode: Int? = null,
 )
 
 @Serializable
@@ -50,7 +52,8 @@ object ContentPackage {
         if (parsed.contentVersion < 1 || parsed.minAppVersionCode < 0 || parsed.publishedOn.isBlank()) {
             null
         } else if (parsed.files.any { file ->
-                !isSafePath(file.path) || file.size < 0 || !shaPattern.matches(file.sha256)
+                !isSafePath(file.path) || file.size < 0 || !shaPattern.matches(file.sha256) ||
+                    (file.minAppVersionCode != null && file.minAppVersionCode < 0)
             }
         ) {
             null
@@ -107,6 +110,7 @@ object ContentPackage {
         }
         val next = LinkedHashMap<String, ByteArray>()
         for (file in remote.files) {
+            if (file.minAppVersionCode != null && file.minAppVersionCode > appVersionCode) continue
             val have = library.effectiveBytes(file.path)
             val same = have != null &&
                 have.size.toLong() == file.size &&

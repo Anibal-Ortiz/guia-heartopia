@@ -25,7 +25,9 @@ import java.time.Duration
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
+import com.guiaheartopia.app.domain.CropReminders
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 
 private const val CHANNEL = "guia-recordatorios"
 private const val PREFS = "guia-avisos"
@@ -55,7 +57,10 @@ object ReminderScheduler {
             }
             val raw = AndroidContentLibrary(app).effectiveBytes("calendar/eventos.json")?.decodeToString()
             val events = ReminderPlan.eventNotices(ReminderPlan.parseEvents(raw), prefs, zone, now)
-            weather + events
+            val crops = runBlocking {
+                GuideRepository(app).snapshots.first().activeCrops
+            }
+            weather + events + CropReminders.notices(crops, zone, now)
         }
         val diff = ReminderSync.plan(previous, posted, notices)
         diff.cancel.forEach { manager.cancelUniqueWork(it) }

@@ -24,11 +24,14 @@ import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import com.guiaheartopia.app.data.AvatarStore
-import com.guiaheartopia.app.domain.HobbyContent
+import com.guiaheartopia.app.domain.ActiveCrop
 import com.guiaheartopia.app.domain.ImageZoom
 import com.guiaheartopia.app.ui.codes.CodesScreen
-import com.guiaheartopia.app.ui.hobbies.ComingHobbyScreen
+import com.guiaheartopia.app.ui.hobbies.CocinaScreen
+import com.guiaheartopia.app.ui.hobbies.HuertoScreen
 import com.guiaheartopia.app.ui.hobbies.HobbyHubScreen
+import com.guiaheartopia.app.ui.hobbies.SiembraDetailScreen
+import com.guiaheartopia.app.ui.hobbies.RecetaDetailScreen
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.guiaheartopia.app.domain.PlayerProfile
@@ -108,9 +111,25 @@ class ScreenGrabTest {
                                 0, 1 -> HomeScreen(ui, onOpen = {})
                                 2 -> HomeScreen(ui.copy(profile = ui.profile.copy(avatarJpegBase64 = encoded)), onOpen = {})
                                 3 -> HomeScreen(ui, onOpen = {})
-                                4 -> HobbyHubScreen {}
-                                5 -> ComingHobbyScreen("Huerto", "Siembras y flores", HobbyContent.huertoPaths) {}
-                                6 -> ComingHobbyScreen("Cocina", "Platos y recetas", HobbyContent.cocinaPaths) {}
+                                4 -> HobbyHubScreen(ui) {}
+                                5 -> HuertoScreen(
+                                    ui,
+                                    onBack = {},
+                                    onOpenSiembra = {},
+                                    onOpenFlor = {},
+                                    onToggleSiembraFound = {},
+                                    onToggleFlorFound = {},
+                                    onCancelCrop = {},
+                                    onOpenAboveLevel = {},
+                                )
+                                6 -> CocinaScreen(
+                                    ui,
+                                    onBack = {},
+                                    onOpenReceta = {},
+                                    onToggleFound = {},
+                                    onToggleFavorite = {},
+                                    onOpenAboveLevel = {},
+                                )
                                 7, 8 -> CodesScreen(seen = emptyList()) {}
                                 9 -> WeatherScreen("CL", "America/Santiago") { _, _, _ -> }
                                 10 -> androidx.compose.runtime.key(guideTab.intValue) {
@@ -135,6 +154,7 @@ class ScreenGrabTest {
         save("avatar-sin-foto")
         go(step, 4)
         save("aficiones")
+        writeAficionesOverlay(context)
         go(step, 5)
         save("huerto")
         go(step, 6)
@@ -206,6 +226,89 @@ class ScreenGrabTest {
         val file = java.io.File(context.filesDir, "content/live/files/$relative")
         file.parentFile?.mkdirs()
         file.writeText(body)
+    }
+
+    private fun writeAficionesOverlay(context: android.content.Context) {
+        writeOverlay(
+            context,
+            "huerto/siembras.json",
+            """
+            [{"id":"tomate","nombre":"Tomate","nivelSiembra":2,"precioSemilla":30,
+              "fuenteSemilla":"Tienda del pueblo","tiempoCrecimientoMinutos":90,
+              "precioVentaEstrellas":[10,20,30,40,50],"categoria":"Verduras"}]
+            """.trimIndent(),
+        )
+        writeOverlay(
+            context,
+            "huerto/flores.json",
+            """[{"id":"rosa","nombre":"Rosa","nivelSiembra":1,
+              "variantes":[{"color":"Roja","origen":"tienda","precioVenta":12}]}]""",
+        )
+        writeOverlay(
+            context,
+            "cocina/recetas.json",
+            """
+            [{"id":"ensalada","nombre":"Ensalada","nivelCocina":1,
+              "energiaEstrellas":[5,6,7,8,9],"precioVentaEstrellas":[11,12,13,14,15],
+              "ingredientes":[{"idSiembra":"tomate","cantidad":2}],
+              "categoria":"Ensaladas"}]
+            """.trimIndent(),
+        )
+    }
+
+    @Test
+    fun captureAficiones105() {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        writeAficionesOverlay(context)
+        val planted = System.currentTimeMillis() - 30_000L
+        val ui = sampleUi().copy(
+            huertoFound = setOf("tomate"),
+            activeCrops = listOf(
+                ActiveCrop("c1", "tomate", "Tomate", planted, planted + 90 * 60_000L),
+            ),
+        )
+        val siembra = com.guiaheartopia.app.domain.AficionesContent.parseSiembras(
+            java.io.File(context.filesDir, "content/live/files/huerto/siembras.json").readText(),
+        ).single()
+        val recetas = com.guiaheartopia.app.domain.AficionesContent.parseRecetas(
+            java.io.File(context.filesDir, "content/live/files/cocina/recetas.json").readText(),
+        )
+        rule.setContent {
+            GuiaTheme {
+                Box(Modifier.fillMaxSize().background(Cream)) {
+                    SiembraDetailScreen(
+                        entry = siembra,
+                        recetas = recetas,
+                        found = true,
+                        activeCrop = ui.activeCrops.single(),
+                        onBack = {},
+                        onToggleFound = {},
+                        onPlant = {},
+                        onOpenReceta = {},
+                    )
+                }
+            }
+        }
+        rule.waitForIdle()
+        save("ficha-siembra-temporizador")
+        rule.setContent {
+            GuiaTheme {
+                Box(Modifier.fillMaxSize().background(Cream)) {
+                    RecetaDetailScreen(
+                        entry = recetas.single(),
+                        siembras = listOf(siembra),
+                        found = false,
+                        favorite = true,
+                        onBack = {},
+                        onToggleFound = {},
+                        onToggleFavorite = {},
+                        onOpenSiembra = {},
+                    )
+                }
+            }
+        }
+        rule.waitForIdle()
+        save("ficha-receta")
     }
 
     private fun saveRoot(name: String, index: Int) {

@@ -16,6 +16,9 @@ object ReminderIds {
 
     fun seasonDay(eventId: String): String = "temporada-dia-${slug(eventId)}"
 
+    fun crop(siembraId: String, plantedAtEpochMilli: Long): String =
+        "cultivo-${slug(siembraId)}-$plantedAtEpochMilli"
+
     /**
      * Id de notificación positivo y estable. No usa el texto visible,
      * así dos avisos a la misma hora no se pisan en la barra.

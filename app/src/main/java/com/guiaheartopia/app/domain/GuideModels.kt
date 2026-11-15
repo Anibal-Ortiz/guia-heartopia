@@ -105,6 +105,11 @@ data class GuideSnapshot(
     val hiddenSeedCollectibleIds: List<String> = emptyList(),
     val hobbies: List<Hobby> = emptyList(),
     val hobbiesInitialized: Boolean = false,
+    val huertoFoundIds: List<String> = emptyList(),
+    val florFoundIds: List<String> = emptyList(),
+    val recetaFoundIds: List<String> = emptyList(),
+    val recetaFavoriteIds: List<String> = emptyList(),
+    val activeCrops: List<ActiveCrop> = emptyList(),
 )
 
 data class CategoryProgress(

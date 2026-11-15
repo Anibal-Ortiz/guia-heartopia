@@ -17,6 +17,8 @@ import com.guiaheartopia.app.domain.Greeting
 import com.guiaheartopia.app.domain.GuideSnapshot
 import com.guiaheartopia.app.domain.Hobby
 import com.guiaheartopia.app.domain.HobbyCatalog
+import com.guiaheartopia.app.domain.ActiveCrop
+import com.guiaheartopia.app.domain.AficionesMarks
 import com.guiaheartopia.app.domain.HobbyProgress
 import com.guiaheartopia.app.domain.PlayerProfile
 import com.guiaheartopia.app.domain.SampleIds
@@ -52,6 +54,11 @@ data class GuideUi(
     val categoryProgress: List<com.guiaheartopia.app.domain.CategoryProgress> = emptyList(),
     val collectionFraction: Float = 0f,
     val hobbies: List<Hobby> = emptyList(),
+    val huertoFound: Set<String> = emptySet(),
+    val florFound: Set<String> = emptySet(),
+    val recetaFound: Set<String> = emptySet(),
+    val recetaFavorites: Set<String> = emptySet(),
+    val activeCrops: List<ActiveCrop> = emptyList(),
     val greeting: String = "",
     val todayLabel: String = "",
 )
@@ -302,6 +309,68 @@ class GuideViewModel(
         }
     }
 
+    fun toggleHuertoFound(id: String) {
+        viewModelScope.launch {
+            repository.update { snap ->
+                snap.copy(huertoFoundIds = AficionesMarks.toggle(snap.huertoFoundIds.toSet(), id).toList())
+            }
+        }
+    }
+
+    fun toggleFlorFound(id: String) {
+        viewModelScope.launch {
+            repository.update { snap ->
+                snap.copy(florFoundIds = AficionesMarks.toggle(snap.florFoundIds.toSet(), id).toList())
+            }
+        }
+    }
+
+    fun toggleRecetaFound(id: String) {
+        viewModelScope.launch {
+            repository.update { snap ->
+                snap.copy(recetaFoundIds = AficionesMarks.toggle(snap.recetaFoundIds.toSet(), id).toList())
+            }
+        }
+    }
+
+    fun toggleRecetaFavorite(id: String) {
+        viewModelScope.launch {
+            repository.update { snap ->
+                snap.copy(recetaFavoriteIds = AficionesMarks.toggle(snap.recetaFavoriteIds.toSet(), id).toList())
+            }
+        }
+    }
+
+    fun plantSiembra(siembraId: String, nombre: String, growthMinutes: Int) {
+        val context = appContext ?: return
+        if (growthMinutes <= 0) return
+        viewModelScope.launch {
+            repository.update { snap ->
+                val now = System.currentTimeMillis()
+                val ready = now + growthMinutes * 60_000L
+                val crop = ActiveCrop(
+                    id = "crop-${UUID.randomUUID()}",
+                    siembraId = siembraId,
+                    nombre = nombre,
+                    plantedAtEpochMilli = now,
+                    readyAtEpochMilli = ready,
+                )
+                snap.copy(activeCrops = snap.activeCrops.filterNot { it.siembraId == siembraId } + crop)
+            }
+            ReminderScheduler.sync(context, repository.snapshots.first().profile)
+        }
+    }
+
+    fun cancelCrop(cropId: String) {
+        val context = appContext ?: return
+        viewModelScope.launch {
+            repository.update { snap ->
+                snap.copy(activeCrops = snap.activeCrops.filterNot { it.id == cropId })
+            }
+            ReminderScheduler.sync(context, repository.snapshots.first().profile)
+        }
+    }
+
     private fun present(snap: GuideSnapshot, day: LocalDate): GuideUi {
         val animals = SeedCatalog.animals.filter { it.id !in snap.hiddenSeedAnimalIds } + snap.customAnimals
         val collectibles = SeedCatalog.collectibles.filter { it.id !in snap.hiddenSeedCollectibleIds } +
@@ -320,6 +389,11 @@ class GuideViewModel(
             categoryProgress = CollectionProgress.byCategory(collectibles, found),
             collectionFraction = CollectionProgress.overall(collectibles, found),
             hobbies = hobbies,
+            huertoFound = snap.huertoFoundIds.toSet(),
+            florFound = snap.florFoundIds.toSet(),
+            recetaFound = snap.recetaFoundIds.toSet(),
+            recetaFavorites = snap.recetaFavoriteIds.toSet(),
+            activeCrops = snap.activeCrops,
             greeting = Greeting.line(LocalTime.now(zone).hour, snap.profile.name),
             todayLabel = day.format(dateFormat),
         )

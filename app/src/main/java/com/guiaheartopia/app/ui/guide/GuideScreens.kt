@@ -125,6 +125,7 @@ fun GuideScreen(
     onAddAnimal: (String, String, String, String) -> Unit,
     onBack: (() -> Unit)? = null,
     initialTab: Int = 0,
+    onlyAboveLevel: Boolean = false,
 ) {
     var tab by rememberSaveable { mutableIntStateOf(initialTab) }
 
@@ -148,7 +149,7 @@ fun GuideScreen(
         // Pill Tabs with Icons
         PillTabs(Tabs, tab) { tab = it }
 
-        DexTab(GuideSections.dexCategories[tab], ui, onOpenDex, onToggleFound, onToggleCertified)
+        DexTab(GuideSections.dexCategories[tab], ui, onOpenDex, onToggleFound, onToggleCertified, onlyAboveLevel)
 
         Spacer(Modifier.height(8.dp))
     }
@@ -282,6 +283,7 @@ private fun DexTab(
     onOpen: (String) -> Unit,
     onToggleFound: (String) -> Unit,
     onToggleCertified: (String, String) -> Unit,
+    onlyAboveLevel: Boolean = false,
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val revision = com.guiaheartopia.app.ui.contentRevision()
@@ -312,6 +314,7 @@ private fun DexTab(
             (place.isBlank() || entry.location.any { TextMatch.contains(it, place) }) &&
             (weather == "Todos" || weather in entry.weather) &&
             CreatureAvailability.levelAllowed(entry.level, levelCap) &&
+            (!onlyAboveLevel || (entry.level != null && entry.level > (hobbyLevel ?: 0))) &&
             (!onlyNow || CreatureAvailability.availableNow(category, entry.level, ui.hobbies, timeOk)) &&
             when (registered) {
                 "si" -> entry.id in ui.found
@@ -782,7 +785,7 @@ private fun ScheduleWeatherLegend(weatherKeys: List<String>) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun LevelDropdown(
+internal fun LevelDropdown(
     selected: Int?,
     maximum: Int,
     onSelect: (Int?) -> Unit,

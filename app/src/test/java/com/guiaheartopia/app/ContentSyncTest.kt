@@ -51,6 +51,27 @@ class ContentSyncTest {
     }
 
     @Test
+    fun perFileMinAppVersionSkipsUnsupportedPathsButAppliesTheRest() {
+        val base = mapOf("catalog/creatures.json" to creatures("trucha", "Trucha"))
+        val library = memory(base, version = 1)
+        val huerto = """[{"id":"a","nombre":"A","nivelSiembra":0,"tiempoCrecimientoMinutos":1,"precioVentaEstrellas":[1,2,3,4,5]}]""".toByteArray()
+        val newerCreatures = creatures("trucha", "Trucha remota")
+        val manifest = ContentManifest(
+            contentVersion = 2,
+            minAppVersionCode = 23,
+            publishedOn = "2026-12-01",
+            files = listOf(
+                ContentFileEntry("catalog/creatures.json", newerCreatures.size.toLong(), ContentPackage.sha256(newerCreatures)),
+                ContentFileEntry("huerto/siembras.json", huerto.size.toLong(), ContentPackage.sha256(huerto), minAppVersionCode = 99),
+            ),
+        )
+        val remote = remoteFiles(manifest, keep = mapOf("catalog/creatures.json" to newerCreatures, "huerto/siembras.json" to huerto))
+        assertEquals(ContentSyncResult.APPLIED, sync(library, remote, appVersionCode = 37))
+        assertEquals("Trucha remota", creatureName(library.overlayBytes("catalog/creatures.json")!!, "trucha"))
+        assertNull(library.overlayBytes("huerto/siembras.json"))
+    }
+
+    @Test
     fun incompatibleMinAppVersionDoesNotReplaceContent() {
         val base = mapOf("catalog/creatures.json" to creatures("trucha", "Trucha"))
         val library = memory(base, version = 1)
@@ -158,7 +179,7 @@ class ContentSyncTest {
         assertNotNull(rootManifest)
         assertEquals(rootManifest, appManifest)
         assertEquals(1, appManifest!!.contentVersion)
-        assertEquals(37, appManifest.minAppVersionCode)
+        assertEquals(38, appManifest.minAppVersionCode)
         assertTrue(appManifest.files.any { it.path == "catalog/creatures.json" })
         assertTrue(appManifest.files.any { it.path == "calendar/clima-2026.json" })
         assertTrue(appManifest.files.none { it.path.startsWith("catalog/images/") })
@@ -177,7 +198,7 @@ class ContentSyncTest {
             emptyMap(),
             ContentManifest(contentVersion = 0, minAppVersionCode = 23, publishedOn = "2026-01-01"),
         )
-        assertEquals(ContentSyncResult.APPLIED, sync(library, served, appVersionCode = 37))
+        assertEquals(ContentSyncResult.APPLIED, sync(library, served, appVersionCode = 38))
 
         val creatures = parseCreatures(library.overlayBytes("catalog/creatures.json")!!)
         assertTrue(creatures.size > 100)
