@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -38,7 +36,11 @@ import com.guiaheartopia.app.domain.LevelFilter
 import com.guiaheartopia.app.domain.RecetaEntry
 import com.guiaheartopia.app.domain.SiembraEntry
 import com.guiaheartopia.app.ui.GuideUi
+import com.guiaheartopia.app.domain.ImageZoom
+import com.guiaheartopia.app.ui.components.AficionesImage
+import com.guiaheartopia.app.ui.components.CreatureZoomDialog
 import com.guiaheartopia.app.ui.components.LabelValue
+import com.guiaheartopia.app.ui.components.rememberAficionesModel
 import com.guiaheartopia.app.ui.guide.LevelDropdown
 import com.guiaheartopia.app.ui.components.PillTabs
 import com.guiaheartopia.app.ui.components.PixelButton
@@ -47,7 +49,6 @@ import com.guiaheartopia.app.ui.components.SectionBanner
 import com.guiaheartopia.app.ui.contentRevision
 import com.guiaheartopia.app.ui.theme.GreenDark
 import com.guiaheartopia.app.ui.theme.GreenSoft
-import com.guiaheartopia.app.ui.theme.HoneySoft
 import com.guiaheartopia.app.ui.theme.Ink
 import com.guiaheartopia.app.ui.theme.Muted
 import com.guiaheartopia.app.ui.theme.PaperSubtle
@@ -200,7 +201,7 @@ private fun SiembrasTab(
     }
     val grouped = sorted.groupBy { it.nivelSiembra }.toSortedMap()
 
-    ListToolbar(
+    AficionesListHeader(
         found = found.size,
         total = siembras.size,
         sortByLevel = sortByLevel,
@@ -251,7 +252,7 @@ private fun FloresTab(
     val withLevel = sorted.filter { it.nivelSiembra != null }.groupBy { it.nivelSiembra!! }.toSortedMap()
     val sinNivel = sorted.filter { it.nivelSiembra == null }
 
-    ListToolbar(
+    AficionesListHeader(
         found = found.size,
         total = flores.size,
         sortByLevel = sortByLevel,
@@ -278,43 +279,56 @@ private fun FloresTab(
 }
 
 @Composable
-private fun ListToolbar(
-    found: Int,
-    total: Int,
-    sortByLevel: Boolean,
-    onSort: () -> Unit,
-    onlyConseguidas: Boolean?,
-    onConseguidas: (Boolean?) -> Unit,
-) {
-    Text("Conseguidas $found/$total", style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold), color = Muted)
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        FilterChip(
-            selected = sortByLevel,
-            onClick = onSort,
-            label = { Text(if (sortByLevel) "Orden: nivel" else "Orden: nombre") },
-            colors = FilterChipDefaults.filterChipColors(selectedContainerColor = HoneySoft, selectedLabelColor = Ink),
-        )
-        FilterChip(
-            selected = onlyConseguidas == true,
-            onClick = { onConseguidas(if (onlyConseguidas == true) null else true) },
-            label = { Text("Conseguidas") },
-            colors = FilterChipDefaults.filterChipColors(selectedContainerColor = GreenSoft, selectedLabelColor = GreenDark),
-        )
-        FilterChip(
-            selected = onlyConseguidas == false,
-            onClick = { onConseguidas(if (onlyConseguidas == false) null else false) },
-            label = { Text("Pendientes") },
+private fun SiembraCard(entry: SiembraEntry, found: Boolean, onOpen: () -> Unit, onToggleFound: () -> Unit) {
+    var zoom by remember(entry.id) { mutableStateOf(false) }
+  val model = rememberAficionesModel(entry.imagen)
+    if (zoom && model != null) {
+        CreatureZoomDialog(
+            name = entry.nombre,
+            model = model,
+            category = "Siembra",
+            locations = emptyList(),
+            level = entry.nivelSiembra,
+            onDismiss = { zoom = false },
         )
     }
-}
-
-@Composable
-private fun SiembraCard(entry: SiembraEntry, found: Boolean, onOpen: () -> Unit, onToggleFound: () -> Unit) {
     PixelCard(Modifier.clickable(onClick = onOpen).fillMaxWidth(), category = "Siembra") {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)) {
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            AficionesImage(
+                imagen = entry.imagen,
+                sectionLabel = "Siembra",
+                size = 72.dp,
+                contentDescription = ImageZoom.enlargedDescription(entry.nombre),
+                onClick = { if (model != null) zoom = true },
+            )
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(entry.nombre, style = MaterialTheme.typography.titleMedium, color = Ink)
                 Text("Nivel ${entry.nivelSiembra}", style = MaterialTheme.typography.bodySmall, color = Muted)
+                entry.precioSemilla?.let {
+                    Text("Semilla $it", style = MaterialTheme.typography.bodySmall, color = Muted)
+                }
+                if (entry.tiempoCrecimientoMinutos > 0) {
+                    Text(
+                        AficionesContent.formatGrowthMinutes(entry.tiempoCrecimientoMinutos),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = GreenDark,
+                    )
+                }
+                if (entry.precioVentaEstrellas.isNotEmpty()) {
+                    Text(
+                        "Venta ★1: ${entry.precioVentaEstrellas.first()}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Muted,
+                    )
+                }
+                entry.evento?.let { Text("Evento: $it", style = MaterialTheme.typography.bodySmall, color = Muted) }
+                if (entry.certificable == false) {
+                    Text("No certificable", style = MaterialTheme.typography.labelSmall, color = Muted)
+                }
             }
             ConseguidoToggle(found, onToggleFound)
         }
@@ -323,11 +337,42 @@ private fun SiembraCard(entry: SiembraEntry, found: Boolean, onOpen: () -> Unit,
 
 @Composable
 private fun FlorCard(entry: FlorEntry, found: Boolean, onOpen: () -> Unit, onToggleFound: () -> Unit) {
+    var zoom by remember(entry.id) { mutableStateOf(false) }
+    val model = rememberAficionesModel(entry.imagen)
+    if (zoom && model != null) {
+        CreatureZoomDialog(
+            name = entry.nombre,
+            model = model,
+            category = entry.nombre,
+            locations = emptyList(),
+            level = entry.nivelSiembra,
+            onDismiss = { zoom = false },
+        )
+    }
     PixelCard(Modifier.clickable(onClick = onOpen).fillMaxWidth(), category = entry.nombre) {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)) {
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            AficionesImage(
+                imagen = entry.imagen,
+                sectionLabel = entry.nombre,
+                size = 72.dp,
+                contentDescription = ImageZoom.enlargedDescription(entry.nombre),
+                onClick = { if (model != null) zoom = true },
+            )
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(entry.nombre, style = MaterialTheme.typography.titleMedium, color = Ink)
                 entry.nivelSiembra?.let { Text("Nivel $it", style = MaterialTheme.typography.bodySmall, color = Muted) }
+                entry.precioSemilla?.let { Text("Semilla $it", style = MaterialTheme.typography.bodySmall, color = Muted) }
+                entry.tiempoCrecimientoMinutos?.let {
+                    Text(
+                        AficionesContent.formatGrowthMinutes(it),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = GreenDark,
+                    )
+                }
             }
             ConseguidoToggle(found, onToggleFound)
         }
@@ -346,6 +391,18 @@ fun SiembraDetailScreen(
     onOpenReceta: (String) -> Unit,
 ) {
     val usadas = remember(entry, recetas) { AficionesContent.recetasQueUsanSiembra(recetas, entry) }
+    var zoom by remember(entry.id) { mutableStateOf(false) }
+    val model = rememberAficionesModel(entry.imagen)
+    if (zoom && model != null) {
+        CreatureZoomDialog(
+            name = entry.nombre,
+            model = model,
+            category = "Siembra",
+            locations = emptyList(),
+            level = entry.nivelSiembra,
+            onDismiss = { zoom = false },
+        )
+    }
     Column(
         Modifier
             .fillMaxSize()
@@ -355,8 +412,20 @@ fun SiembraDetailScreen(
     ) {
         TextButton(onClick = onBack) { Text("Atrás") }
         PixelCard(category = "Siembra") {
-            Text(entry.nombre, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold), color = Ink)
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) { ConseguidoToggle(found, onToggleFound) }
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Top) {
+                AficionesImage(
+                    imagen = entry.imagen,
+                    sectionLabel = "Siembra",
+                    size = 96.dp,
+                    shapeRadius = 20.dp,
+                    contentDescription = ImageZoom.enlargedDescription(entry.nombre),
+                    onClick = { if (model != null) zoom = true },
+                )
+                Column(Modifier.weight(1f)) {
+                    Text(entry.nombre, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold), color = Ink)
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) { ConseguidoToggle(found, onToggleFound) }
+                }
+            }
             LabelValue("Nivel de siembra", entry.nivelSiembra.toString(), false)
             if (entry.tiempoCrecimientoMinutos > 0) {
                 LabelValue("Tiempo de crecimiento", AficionesContent.formatGrowthMinutes(entry.tiempoCrecimientoMinutos), false)
@@ -371,9 +440,12 @@ fun SiembraDetailScreen(
             entry.maestriaCosechas?.let { LabelValue("Maestría", it, false) }
             entry.categoria?.let { LabelValue("Categoría", it, false) }
             entry.evento?.let { LabelValue("Evento", it, false) }
+            if (entry.certificable == false) {
+                Text("No certificable", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold), color = Muted)
+            }
             if (usadas.isNotEmpty()) {
                 Spacer(Modifier.height(6.dp))
-                Text("Se usa en", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold))
+                Text("Recetas que la usan", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold))
                 usadas.forEach { receta ->
                     TextButton(onClick = { onOpenReceta(receta.id) }) { Text(receta.nombre) }
                 }
@@ -400,6 +472,23 @@ fun FlorDetailScreen(
     onBack: () -> Unit,
     onToggleFound: () -> Unit,
 ) {
+    var zoomId by remember { mutableStateOf<String?>(null) }
+    val zoomVariant = entry.variantes.firstOrNull { it.id == zoomId || it.imagen == zoomId }
+    val zoomPath = zoomVariant?.imagen ?: entry.imagen
+    val zoomName = zoomVariant?.nombre?.takeIf { it.isNotBlank() }
+        ?: zoomVariant?.color?.let { "${entry.nombre} $it" }
+        ?: entry.nombre
+    val zoomModel = rememberAficionesModel(zoomPath)
+    if (zoomId != null && zoomModel != null) {
+        CreatureZoomDialog(
+            name = zoomName,
+            model = zoomModel,
+            category = entry.nombre,
+            locations = emptyList(),
+            level = entry.nivelSiembra,
+            onDismiss = { zoomId = null },
+        )
+    }
     Column(
         Modifier
             .fillMaxSize()
@@ -412,11 +501,36 @@ fun FlorDetailScreen(
             Text(entry.nombre, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold), color = Ink)
             ConseguidoToggle(found, onToggleFound)
             entry.nivelSiembra?.let { LabelValue("Nivel de siembra", it.toString(), false) }
+            entry.precioSemilla?.let { LabelValue("Precio de semilla", it.toString(), false) }
+            entry.tiempoCrecimientoMinutos?.let {
+                LabelValue("Tiempo de crecimiento", AficionesContent.formatGrowthMinutes(it), false)
+            }
+            entry.categoria?.let { LabelValue("Categoría", it, false) }
+            Text("Variantes", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold))
             entry.variantes.forEach { v ->
-                val origen = AficionesContent.origenFlorLabel(v.origen)
-                val precio = v.precioVenta?.let { " · $it" }.orEmpty()
-                val estrellas = v.estrellas?.let { " · ★$it" }.orEmpty()
-                LabelValue(v.color, "$origen$precio$estrellas", false)
+                val titulo = v.nombre?.takeIf { it.isNotBlank() } ?: "${entry.nombre} ${v.color}"
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.CenterVertically) {
+                    AficionesImage(
+                        imagen = v.imagen ?: entry.imagen,
+                        sectionLabel = entry.nombre,
+                        size = 56.dp,
+                        contentDescription = ImageZoom.enlargedDescription(titulo),
+                        onClick = { zoomId = v.id ?: v.imagen },
+                    )
+                    Column {
+                        Text(titulo, style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold))
+                        Text(
+                            buildString {
+                                append(AficionesContent.origenFlorLabel(v.origen))
+                                v.estrellas?.let { append(" · ★$it") }
+                                v.precioVenta?.let { append(" · Venta $it") }
+                            },
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Muted,
+                        )
+                    }
+                }
+                Spacer(Modifier.height(8.dp))
             }
         }
     }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -32,17 +33,22 @@ import com.guiaheartopia.app.data.AficionesCatalog
 import com.guiaheartopia.app.domain.AficionesContent
 import com.guiaheartopia.app.domain.AficionesLevelSummary
 import com.guiaheartopia.app.domain.CreatureAvailability
+import com.guiaheartopia.app.domain.ImageZoom
 import com.guiaheartopia.app.domain.LevelFilter
 import com.guiaheartopia.app.domain.RecetaEntry
+import com.guiaheartopia.app.domain.RecetaIngrediente
 import com.guiaheartopia.app.domain.SiembraEntry
+import com.guiaheartopia.app.domain.TextMatch
 import com.guiaheartopia.app.ui.GuideUi
+import com.guiaheartopia.app.ui.components.AficionesImage
+import com.guiaheartopia.app.ui.components.CreatureZoomDialog
 import com.guiaheartopia.app.ui.components.LabelValue
+import com.guiaheartopia.app.ui.components.rememberAficionesModel
 import com.guiaheartopia.app.ui.guide.LevelDropdown
 import com.guiaheartopia.app.ui.components.PixelCard
 import com.guiaheartopia.app.ui.components.SectionBanner
 import com.guiaheartopia.app.ui.contentRevision
 import com.guiaheartopia.app.ui.theme.GreenDark
-import com.guiaheartopia.app.ui.theme.GreenSoft
 import com.guiaheartopia.app.ui.theme.HoneySoft
 import com.guiaheartopia.app.ui.theme.Ink
 import com.guiaheartopia.app.ui.theme.Muted
@@ -69,9 +75,11 @@ fun CocinaScreen(
     val locked = remember(bundle, cocinaLevel) {
         AficionesLevelSummary.lockedCount(bundle.recetas.map { it.nivelCocina }, cocinaLevel)
     }
-    var categoria by rememberSaveable { mutableStateOf("Todas") }
-    val categorias = remember(bundle) {
-        listOf("Todas") + bundle.recetas.mapNotNull { it.categoria }.distinct().sorted()
+    var query by rememberSaveable { mutableStateOf("") }
+    var filtro by rememberSaveable { mutableStateOf("Todas") }
+    val filtros = remember(bundle) {
+        val eventos = bundle.recetas.mapNotNull { it.evento }.distinct().sorted()
+        listOf("Todas", "Común", "Evento") + eventos
     }
     var sortByLevel by rememberSaveable { mutableStateOf(false) }
     var onlyConseguidas by rememberSaveable { mutableStateOf<Boolean?>(null) }
@@ -81,7 +89,13 @@ fun CocinaScreen(
     val levelCap = if (chosenLevel < 0) null else chosenLevel.coerceAtMost(catalogMax)
 
     val filtered = bundle.recetas.filter { entry ->
-        val catOk = categoria == "Todas" || entry.categoria == categoria
+        val searchOk = query.isBlank() || TextMatch.contains(entry.nombre, query)
+        val filtroOk = when (filtro) {
+            "Todas" -> true
+            "Común" -> entry.categoria.equals("Común", ignoreCase = true)
+            "Evento" -> entry.categoria.equals("Evento", ignoreCase = true)
+            else -> entry.evento.equals(filtro, ignoreCase = true)
+        }
         val levelOk = CreatureAvailability.levelAllowed(entry.nivelCocina, levelCap)
         val aboveOk = !onlyAboveLevel || entry.nivelCocina > cocinaLevel
         val markOk = when (onlyConseguidas) {
@@ -90,14 +104,13 @@ fun CocinaScreen(
             else -> true
         }
         val favOk = !onlyFavoritas || entry.id in ui.recetaFavorites
-        catOk && levelOk && aboveOk && markOk && favOk
+        searchOk && filtroOk && levelOk && aboveOk && markOk && favOk
     }
     val sorted = if (sortByLevel) {
         filtered.sortedWith(compareBy({ it.nivelCocina }, { it.nombre }))
     } else {
         filtered.sortedBy { it.nombre }
     }
-    val grouped = sorted.groupBy { it.nivelCocina }.toSortedMap()
 
     Column(
         Modifier
@@ -110,7 +123,7 @@ fun CocinaScreen(
         SectionBanner(
             image = com.guiaheartopia.app.R.drawable.header_aficiones,
             title = "Cocina",
-            subtitle = "Recetas",
+            subtitle = "${bundle.recetas.size} recetas",
         )
         if (locked > 0) {
             PixelCard(container = PaperSubtle) {
@@ -120,46 +133,54 @@ fun CocinaScreen(
                 }
             }
         }
+        OutlinedTextField(
+            value = query,
+            onValueChange = { query = it },
+            placeholder = { Text("Buscar por nombre...") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+        )
+        AficionesListHeader(
+            found = ui.recetaFound.size,
+            total = bundle.recetas.size,
+            sortByLevel = sortByLevel,
+            onSort = { sortByLevel = !sortByLevel },
+            onlyConseguidas = onlyConseguidas,
+            onConseguidas = { onlyConseguidas = it },
+            extraChips = {
+                FilterChip(
+                    selected = onlyFavoritas,
+                    onClick = { onlyFavoritas = !onlyFavoritas },
+                    label = { Text("Favoritas", maxLines = 1) },
+                )
+                filtros.forEach { f ->
+                    FilterChip(
+                        selected = filtro == f,
+                        onClick = { filtro = f },
+                        label = { Text(f, maxLines = 1) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = HoneySoft,
+                            selectedLabelColor = Ink,
+                        ),
+                    )
+                }
+            },
+        )
+        LevelDropdown(selected = levelCap, maximum = catalogMax, onSelect = { chosenLevel = it ?: -1 })
         Text(
-            "Conseguidas ${ui.recetaFound.size}/${bundle.recetas.size}",
+            "${sorted.size} en esta lista",
             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
             color = Muted,
         )
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            categorias.forEach { cat ->
-                FilterChip(
-                    selected = categoria == cat,
-                    onClick = { categoria = cat },
-                    label = { Text(cat) },
-                    colors = FilterChipDefaults.filterChipColors(selectedContainerColor = HoneySoft, selectedLabelColor = Ink),
-                )
-            }
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            FilterChip(
-                selected = sortByLevel,
-                onClick = { sortByLevel = !sortByLevel },
-                label = { Text(if (sortByLevel) "Orden: nivel" else "Orden: nombre") },
+        sorted.forEach { entry ->
+            RecetaCard(
+                entry,
+                found = entry.id in ui.recetaFound,
+                favorite = entry.id in ui.recetaFavorites,
+                onOpen = { onOpenReceta(entry.id) },
+                onToggleFound = { onToggleFound(entry.id) },
+                onToggleFavorite = { onToggleFavorite(entry.id) },
             )
-            FilterChip(
-                selected = onlyFavoritas,
-                onClick = { onlyFavoritas = !onlyFavoritas },
-                label = { Text("Favoritas") },
-            )
-        }
-        LevelDropdown(selected = levelCap, maximum = catalogMax, onSelect = { chosenLevel = it ?: -1 })
-        grouped.forEach { (level, items) ->
-            Text("Nivel $level", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold), color = Muted)
-            items.forEach { entry ->
-                RecetaCard(
-                    entry,
-                    found = entry.id in ui.recetaFound,
-                    favorite = entry.id in ui.recetaFavorites,
-                    onOpen = { onOpenReceta(entry.id) },
-                    onToggleFound = { onToggleFound(entry.id) },
-                    onToggleFavorite = { onToggleFavorite(entry.id) },
-                )
-            }
         }
     }
 }
@@ -173,14 +194,41 @@ private fun RecetaCard(
     onToggleFound: () -> Unit,
     onToggleFavorite: () -> Unit,
 ) {
+    var zoom by remember(entry.id) { mutableStateOf(false) }
+    val model = rememberAficionesModel(entry.imagen)
+    if (zoom && model != null) {
+        CreatureZoomDialog(
+            name = entry.nombre,
+            model = model,
+            category = "Cocina",
+            locations = emptyList(),
+            level = entry.nivelCocina,
+            onDismiss = { zoom = false },
+        )
+    }
     PixelCard(Modifier.clickable(onClick = onOpen).fillMaxWidth(), category = "Cocina") {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)) {
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            AficionesImage(
+                imagen = entry.imagen,
+                sectionLabel = "Cocina",
+                size = 72.dp,
+                contentDescription = ImageZoom.enlargedDescription(entry.nombre),
+                onClick = { if (model != null) zoom = true },
+            )
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(entry.nombre, style = MaterialTheme.typography.titleMedium, color = Ink)
                 Text("Nivel ${entry.nivelCocina}", style = MaterialTheme.typography.bodySmall, color = Muted)
                 entry.categoria?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = Muted) }
+                entry.evento?.let { Text("Evento: $it", style = MaterialTheme.typography.bodySmall, color = Muted) }
+                if (entry.certificable == false) {
+                    Text("No certificable", style = MaterialTheme.typography.labelSmall, color = Muted)
+                }
             }
-            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 FavoritaToggle(favorite, onToggleFavorite)
                 ConseguidoToggle(found, onToggleFound)
             }
@@ -192,13 +240,27 @@ private fun RecetaCard(
 fun RecetaDetailScreen(
     entry: RecetaEntry,
     siembras: List<SiembraEntry>,
+    recetas: List<RecetaEntry>,
     found: Boolean,
     favorite: Boolean,
     onBack: () -> Unit,
     onToggleFound: () -> Unit,
     onToggleFavorite: () -> Unit,
     onOpenSiembra: (String) -> Unit,
+    onOpenReceta: (String) -> Unit,
 ) {
+    var zoom by remember(entry.id) { mutableStateOf(false) }
+    val model = rememberAficionesModel(entry.imagen)
+    if (zoom && model != null) {
+        CreatureZoomDialog(
+            name = entry.nombre,
+            model = model,
+            category = "Cocina",
+            locations = emptyList(),
+            level = entry.nivelCocina,
+            onDismiss = { zoom = false },
+        )
+    }
     Column(
         Modifier
             .fillMaxSize()
@@ -208,24 +270,43 @@ fun RecetaDetailScreen(
     ) {
         TextButton(onClick = onBack) { Text("Atrás") }
         PixelCard(category = "Cocina") {
-            Text(entry.nombre, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold), color = Ink)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FavoritaToggle(favorite, onToggleFavorite)
-                ConseguidoToggle(found, onToggleFound)
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Top) {
+                AficionesImage(
+                    imagen = entry.imagen,
+                    sectionLabel = "Cocina",
+                    size = 96.dp,
+                    contentDescription = ImageZoom.enlargedDescription(entry.nombre),
+                    onClick = { if (model != null) zoom = true },
+                )
+                Column(Modifier.weight(1f)) {
+                    Text(entry.nombre, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold), color = Ink)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        FavoritaToggle(favorite, onToggleFavorite)
+                        ConseguidoToggle(found, onToggleFound)
+                    }
+                }
             }
             LabelValue("Nivel de cocina", entry.nivelCocina.toString(), false)
-            if (entry.ingredientes.isNotEmpty()) {
+            entry.categoria?.let { LabelValue("Categoría", it, false) }
+            entry.evento?.let { LabelValue("Evento", it, false) }
+            if (entry.certificable == false) {
+                Text("No certificable", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold), color = Muted)
+            }
+            val origen = entry.origen?.takeIf { it.isNotBlank() }
+            if (origen != null) {
+                LabelValue("Origen", origen, false)
+            } else if (entry.ingredientes.isNotEmpty()) {
                 Spacer(Modifier.height(6.dp))
                 Text("Ingredientes", style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold))
                 entry.ingredientes.forEach { ing ->
-                    val linked = ing.idSiembra?.let { id -> siembras.firstOrNull { it.id == id } }
-                    if (linked != null) {
-                        TextButton(onClick = { onOpenSiembra(linked.id) }) {
-                            Text(AficionesContent.ingredienteLine(ing, siembras))
-                        }
-                    } else {
-                        Text(AficionesContent.ingredienteLine(ing, siembras), style = MaterialTheme.typography.bodyMedium, color = Ink)
-                    }
+                    IngredienteRow(ing, siembras, recetas, onOpenSiembra, onOpenReceta)
+                }
+                if (!entry.ingredientesCompletos) {
+                    Text(
+                        "Faltan ${entry.ingredientesPendientes} ingredientes por confirmar",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = GreenDark,
+                    )
                 }
             }
             if (entry.energiaEstrellas.isNotEmpty()) {
@@ -237,8 +318,24 @@ fun RecetaDetailScreen(
                 StarPriceRow(entry.precioVentaEstrellas)
             }
             entry.maestria?.let { LabelValue("Maestría", it, false) }
-            entry.categoria?.let { LabelValue("Categoría", it, false) }
-            entry.evento?.let { LabelValue("Evento", it, false) }
         }
+    }
+}
+
+@Composable
+private fun IngredienteRow(
+    ing: RecetaIngrediente,
+    siembras: List<SiembraEntry>,
+    recetas: List<RecetaEntry>,
+    onOpenSiembra: (String) -> Unit,
+    onOpenReceta: (String) -> Unit,
+) {
+    val line = AficionesContent.ingredienteLine(ing, siembras, recetas)
+    val sid = ing.idSiembra
+    val rid = ing.idReceta
+    when {
+        sid != null -> TextButton(onClick = { onOpenSiembra(sid) }) { Text(line) }
+        rid != null -> TextButton(onClick = { onOpenReceta(rid) }) { Text(line) }
+        else -> Text(line, style = MaterialTheme.typography.bodyMedium, color = Ink)
     }
 }

@@ -51,6 +51,36 @@ class ContentSyncTest {
     }
 
     @Test
+    fun sameContentVersionBackfillsEligibleFilesMissingFromOverlay() {
+        val creatures = creatures("trucha", "Trucha")
+        val recetas = """[{"id":"ensalada","nombre":"Ensalada","nivelCocina":1}]""".toByteArray()
+        val manifest = ContentManifest(
+            contentVersion = 5,
+            minAppVersionCode = 35,
+            publishedOn = "2026-12-01",
+            files = listOf(
+                ContentFileEntry("catalog/creatures.json", creatures.size.toLong(), ContentPackage.sha256(creatures)),
+                ContentFileEntry(
+                    "cocina/recetas.json",
+                    recetas.size.toLong(),
+                    ContentPackage.sha256(recetas),
+                    minAppVersionCode = 39,
+                ),
+            ),
+        )
+        val library = MemoryContentLibrary(
+            mapOf("catalog/creatures.json" to creatures),
+            manifest,
+            overlayOnly = mapOf("catalog/creatures.json" to creatures),
+            installedManifest = manifest,
+        )
+        val remote = remoteFiles(manifest, keep = mapOf("catalog/creatures.json" to creatures, "cocina/recetas.json" to recetas))
+        assertEquals(ContentSyncResult.APPLIED, sync(library, remote, appVersionCode = 39))
+        assertNotNull(library.overlayBytes("cocina/recetas.json"))
+        assertEquals(ContentSyncResult.UNCHANGED, sync(library, remote, appVersionCode = 39))
+    }
+
+    @Test
     fun perFileMinAppVersionSkipsUnsupportedPathsButAppliesTheRest() {
         val base = mapOf("catalog/creatures.json" to creatures("trucha", "Trucha"))
         val library = memory(base, version = 1)
@@ -179,7 +209,7 @@ class ContentSyncTest {
         assertNotNull(rootManifest)
         assertEquals(rootManifest, appManifest)
         assertEquals(1, appManifest!!.contentVersion)
-        assertEquals(38, appManifest.minAppVersionCode)
+        assertEquals(39, appManifest.minAppVersionCode)
         assertTrue(appManifest.files.any { it.path == "catalog/creatures.json" })
         assertTrue(appManifest.files.any { it.path == "calendar/clima-2026.json" })
         assertTrue(appManifest.files.none { it.path.startsWith("catalog/images/") })
@@ -198,7 +228,7 @@ class ContentSyncTest {
             emptyMap(),
             ContentManifest(contentVersion = 0, minAppVersionCode = 23, publishedOn = "2026-01-01"),
         )
-        assertEquals(ContentSyncResult.APPLIED, sync(library, served, appVersionCode = 38))
+        assertEquals(ContentSyncResult.APPLIED, sync(library, served, appVersionCode = 39))
 
         val creatures = parseCreatures(library.overlayBytes("catalog/creatures.json")!!)
         assertTrue(creatures.size > 100)
@@ -290,9 +320,11 @@ class ContentSyncTest {
 private class MemoryContentLibrary(
     private val bundledFiles: Map<String, ByteArray>,
     private val bundled: ContentManifest,
+    overlayOnly: Map<String, ByteArray>? = null,
+    installedManifest: ContentManifest? = null,
 ) : ContentLibrary {
-    var installed: ContentManifest? = null
-    val overlay = LinkedHashMap<String, ByteArray>()
+    var installed: ContentManifest? = installedManifest
+    val overlay = LinkedHashMap<String, ByteArray>().apply { overlayOnly?.let { putAll(it) } }
     private var needsApp = false
 
     override fun bundledManifest(): ContentManifest = bundled

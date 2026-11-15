@@ -611,12 +611,14 @@ private fun AppScaffold(
                     com.guiaheartopia.app.ui.hobbies.RecetaDetailScreen(
                         entry = receta,
                         siembras = bundle.siembras,
+                        recetas = bundle.recetas,
                         found = receta.id in ui.recetaFound,
                         favorite = receta.id in ui.recetaFavorites,
                         onBack = { nav.popBackStack() },
                         onToggleFound = { vm.toggleRecetaFound(receta.id) },
                         onToggleFavorite = { vm.toggleRecetaFavorite(receta.id) },
                         onOpenSiembra = { nav.navigate("huerto/siembra/$it") },
+                        onOpenReceta = { nav.navigate("cocina/receta/$it") },
                     )
                 }
             }
