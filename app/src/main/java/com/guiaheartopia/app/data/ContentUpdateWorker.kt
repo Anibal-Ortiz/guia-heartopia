@@ -28,11 +28,8 @@ object ContentSignals {
     }
 
     fun note(context: Context) {
-        val version = AndroidContentStore.installedVersion(context)
-        if (version != seenVersion) {
-            seenVersion = version
-            ticks.value = ticks.value + 1
-        }
+        seenVersion = AndroidContentStore.installedVersion(context)
+        ticks.value = ticks.value + 1
     }
 }
 

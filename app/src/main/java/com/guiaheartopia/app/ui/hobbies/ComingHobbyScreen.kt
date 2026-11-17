@@ -20,11 +20,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.data.AndroidContentLibrary
 import com.guiaheartopia.app.domain.HobbyContent
 import com.guiaheartopia.app.domain.HobbyEntry
 import com.guiaheartopia.app.ui.components.PixelCard
+import com.guiaheartopia.app.ui.SearchDrafts
 import com.guiaheartopia.app.ui.contentRevision
 import com.guiaheartopia.app.ui.theme.Ink
 import com.guiaheartopia.app.ui.theme.Muted
@@ -38,7 +40,10 @@ fun ComingHobbyScreen(
 ) {
     val context = LocalContext.current
     val revision = contentRevision()
-    var query by rememberSaveable { mutableStateOf("") }
+    var queryField by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue(SearchDrafts.read("hobby:$title") ?: ""))
+    }
+    val query = queryField.text
     val items = remember(revision, paths) {
         val library = AndroidContentLibrary(context)
         paths.flatMap { path ->
@@ -57,8 +62,11 @@ fun ComingHobbyScreen(
         Text(title, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold), color = Ink)
         Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = Muted)
         OutlinedTextField(
-            value = query,
-            onValueChange = { query = it },
+            value = queryField,
+            onValueChange = {
+                queryField = it
+                SearchDrafts.write("hobby:$title", it.text)
+            },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             label = { Text("Buscar") },

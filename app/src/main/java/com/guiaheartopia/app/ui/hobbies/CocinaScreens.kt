@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.data.AficionesCatalog
@@ -47,6 +48,7 @@ import com.guiaheartopia.app.domain.RecetaIngrediente
 import com.guiaheartopia.app.domain.SiembraEntry
 import com.guiaheartopia.app.domain.TextMatch
 import com.guiaheartopia.app.ui.GuideUi
+import com.guiaheartopia.app.ui.SearchDrafts
 import com.guiaheartopia.app.ui.components.AficionesImage
 import com.guiaheartopia.app.ui.components.CreatureZoomDialog
 import com.guiaheartopia.app.ui.components.IngredientImage
@@ -84,7 +86,10 @@ fun CocinaScreen(
     val cocinaLevel = ui.hobbies.firstOrNull { it.id == "hob-cocina" }?.level ?: 0
     var tab by rememberSaveable { mutableIntStateOf(0) }
     var selectedIngredient by rememberSaveable { mutableStateOf<String?>(null) }
-    var query by rememberSaveable { mutableStateOf("") }
+    var queryField by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue(SearchDrafts.read("cocina") ?: ""))
+    }
+    val query = queryField.text
     var filtro by rememberSaveable { mutableStateOf("Todas") }
     val filtros = remember(bundle) {
         val eventos = bundle.recetas.mapNotNull { it.evento }.distinct().sorted()
@@ -147,8 +152,11 @@ fun CocinaScreen(
         }
         if (tab == 0) {
             OutlinedTextField(
-                value = query,
-                onValueChange = { query = it },
+                value = queryField,
+                onValueChange = {
+                    queryField = it
+                    SearchDrafts.write("cocina", it.text)
+                },
                 placeholder = { Text("Buscar por nombre...") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
@@ -220,8 +228,11 @@ fun CocinaScreen(
                     }
             } else {
                 OutlinedTextField(
-                    value = query,
-                    onValueChange = { query = it },
+                    value = queryField,
+                    onValueChange = {
+                        queryField = it
+                        SearchDrafts.write("cocina", it.text)
+                    },
                     placeholder = { Text("Buscar ingrediente...") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,

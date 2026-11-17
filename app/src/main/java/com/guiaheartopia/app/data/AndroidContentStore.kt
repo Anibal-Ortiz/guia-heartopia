@@ -66,7 +66,9 @@ object AndroidContentStore {
             connectTimeout = 20_000
             readTimeout = 60_000
             instanceFollowRedirects = true
+            useCaches = false
             setRequestProperty("Accept", "*/*")
+            setRequestProperty("Cache-Control", "no-cache")
         }
         try {
             if (connection.responseCode != HttpURLConnection.HTTP_OK) {

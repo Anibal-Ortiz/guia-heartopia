@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +29,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -45,12 +48,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -79,6 +86,7 @@ import com.guiaheartopia.app.domain.dexEntryMatchesEvent
 import com.guiaheartopia.app.domain.mergeGuideLaunch
 import com.guiaheartopia.app.domain.TextMatch
 import com.guiaheartopia.app.ui.GuideUi
+import com.guiaheartopia.app.ui.SearchDrafts
 import com.guiaheartopia.app.ui.components.CertificadoMarkIcon
 import com.guiaheartopia.app.ui.components.ConseguidoMarkIcon
 import com.guiaheartopia.app.ui.components.MarkIconButton
@@ -194,14 +202,13 @@ private fun AnimalsTab(
             TextMatch.contains(animal.name, query)
     }
 
-    OutlinedTextField(
-        value = query,
-        onValueChange = { query = it },
-        placeholder = { Text("Buscar animal por nombre...") },
-        modifier = Modifier.fillMaxWidth(),
+    GuideSearchField(
+        query = query,
+        onQueryChange = { query = it },
+        placeholder = "Buscar animal por nombre...",
+        leadingIcon = "🔍",
+        draftKey = "guide:animals",
         shape = RoundedCornerShape(16.dp),
-        leadingIcon = { Text("🔍", fontSize = 16.sp) },
-        singleLine = true,
     )
 
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -299,6 +306,68 @@ private fun AnimalsTab(
     }
 }
 
+/**
+ * Campo de búsqueda con estado local síncrono.
+ *
+ * El `value` externo puede llegar con retraso (p. ej. tras guardarlo en DataStore), lo que
+ * reiniciaba la selección del cursor en cada tecla y, al escribir rápido (p. ej. "caracol"),
+ * truncaba el texto a un valor viejo ("cara", "carol"). Por eso el texto mostrado **no** se
+ * sincroniza con el estado persistido: vive en un borrador en memoria ([SearchDrafts]) que es
+ * la única fuente de verdad y sobrevive a recomposiciones o recreaciones de la pantalla.
+ * El valor externo solo se usa al abrir el buscador por primera vez.
+ */
+@Composable
+private fun GuideSearchField(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    placeholder: String,
+    leadingIcon: String,
+    draftKey: String,
+    modifier: Modifier = Modifier.fillMaxWidth(),
+    shape: RoundedCornerShape = RoundedCornerShape(14.dp),
+) {
+    val focusManager = LocalFocusManager.current
+    var textFieldValue by remember(draftKey) {
+        val initial = SearchDrafts.read(draftKey) ?: query
+        mutableStateOf(
+            TextFieldValue(
+                text = initial,
+                selection = TextRange(initial.length),
+            ),
+        )
+    }
+
+    OutlinedTextField(
+        value = textFieldValue,
+        onValueChange = { newValue ->
+            textFieldValue = newValue
+            SearchDrafts.write(draftKey, newValue.text)
+            onQueryChange(newValue.text)
+        },
+        placeholder = { Text(placeholder) },
+        modifier = modifier,
+        shape = shape,
+        leadingIcon = { Text(leadingIcon, fontSize = 15.sp) },
+        trailingIcon = {
+            if (textFieldValue.text.isNotEmpty()) {
+                IconButton(
+                    onClick = {
+                        textFieldValue = TextFieldValue("")
+                        SearchDrafts.write(draftKey, "")
+                        onQueryChange("")
+                    },
+                    modifier = Modifier.semantics { contentDescription = "Limpiar búsqueda" },
+                ) {
+                    Text("✕", fontSize = 15.sp, color = Ink.copy(alpha = 0.7f))
+                }
+            }
+        },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
+    )
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun DexTab(
@@ -329,6 +398,14 @@ private fun DexTab(
     }
     val stored = ui.dexFilters[category] ?: DexCategoryFilters()
     val filters = mergeGuideLaunch(stored, guideLaunch)
+    // El texto vive en memoria (y en [SearchDrafts] para sobrevivir recreaciones). Así la lista
+    // se filtra al instante y no depende de cuándo termine de guardarse en DataStore.
+    var nameQuery by remember(category) {
+        mutableStateOf(SearchDrafts.read("dex:$category:name") ?: filters.query)
+    }
+    var placeQuery by remember(category) {
+        mutableStateOf(SearchDrafts.read("dex:$category:place") ?: filters.place)
+    }
     val canCertify = CatalogMarks.certifiable(category)
     val hobbyLevel = CreatureAvailability.hobbyLevel(category, ui.hobbies)
     val catalogMax = remember(all, category) {
@@ -359,8 +436,8 @@ private fun DexTab(
         val timeOk = SkyWeather.availableNow(entry.schedule, entry.weather, instant, sky, zone)
         entry.category == category &&
             eventFocusOk(entry) &&
-            (filters.query.isBlank() || TextMatch.contains(entry.name, filters.query)) &&
-            (filters.place.isBlank() || entry.location.any { TextMatch.contains(it, filters.place) }) &&
+            (nameQuery.isBlank() || TextMatch.contains(entry.name, nameQuery)) &&
+            (placeQuery.isBlank() || entry.location.any { TextMatch.contains(it, placeQuery) }) &&
             (filters.weather == "Todos" || filters.weather in entry.weather) &&
             CreatureAvailability.levelAllowed(entry.level, levelCap) &&
             (!onlyAboveLevel || (entry.level != null && entry.level > (hobbyLevel ?: 0))) &&
@@ -399,24 +476,26 @@ private fun DexTab(
             )
         }
 
-        OutlinedTextField(
-            value = filters.query,
-            onValueChange = { onSaveDexFilters(category, stored.copy(query = it)) },
-            placeholder = { Text("Buscar por nombre en español...") },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(14.dp),
-            leadingIcon = { Text("🔍", fontSize = 15.sp) },
-            singleLine = true,
+        GuideSearchField(
+            query = nameQuery,
+            onQueryChange = {
+                nameQuery = it
+                onSaveDexFilters(category, stored.copy(query = it))
+            },
+            placeholder = "Buscar por nombre en español...",
+            leadingIcon = "🔍",
+            draftKey = "dex:$category:name",
         )
 
-        OutlinedTextField(
-            value = filters.place,
-            onValueChange = { onSaveDexFilters(category, stored.copy(place = it)) },
-            placeholder = { Text("Filtrar por ubicación...") },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(14.dp),
-            leadingIcon = { Text("📍", fontSize = 15.sp) },
-            singleLine = true,
+        GuideSearchField(
+            query = placeQuery,
+            onQueryChange = {
+                placeQuery = it
+                onSaveDexFilters(category, stored.copy(place = it))
+            },
+            placeholder = "Filtrar por ubicación...",
+            leadingIcon = "📍",
+            draftKey = "dex:$category:place",
         )
 
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

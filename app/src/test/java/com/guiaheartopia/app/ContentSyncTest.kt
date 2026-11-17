@@ -188,15 +188,18 @@ class ContentSyncTest {
     @Test
     fun generatedPackageIsReadByTheApp() {
         val repo = listOf(File(".."), File(".")).first { File(it, "tools/publicar_contenido.py").isFile }
+        val python = pythonCommand()
+        org.junit.Assume.assumeTrue("Se requiere Python 3 para validar el paquete publicado", python.isNotEmpty())
         val output = Files.createTempDirectory("contenido-publicado").toFile()
         val process = ProcessBuilder(
-            "python3",
-            File(repo, "tools/publicar_contenido.py").absolutePath,
-            "--inicial",
-            "--fecha",
-            "2026-11-10",
-            "--salida",
-            output.absolutePath,
+            python + listOf(
+                File(repo, "tools/publicar_contenido.py").absolutePath,
+                "--inicial",
+                "--fecha",
+                "2026-11-10",
+                "--salida",
+                output.absolutePath,
+            ),
         )
             .directory(repo)
             .redirectErrorStream(true)
@@ -209,7 +212,7 @@ class ContentSyncTest {
         assertNotNull(rootManifest)
         assertEquals(rootManifest, appManifest)
         assertEquals(1, appManifest!!.contentVersion)
-        assertEquals(41, appManifest.minAppVersionCode)
+        assertEquals(BuildConfig.VERSION_CODE, appManifest.minAppVersionCode)
         assertTrue(appManifest.files.any { it.path == "catalog/creatures.json" })
         assertTrue(appManifest.files.any { it.path == "calendar/clima-2026.json" })
         assertTrue(appManifest.files.none { it.path.startsWith("catalog/images/") })
@@ -228,7 +231,7 @@ class ContentSyncTest {
             emptyMap(),
             ContentManifest(contentVersion = 0, minAppVersionCode = 23, publishedOn = "2026-01-01"),
         )
-        assertEquals(ContentSyncResult.APPLIED, sync(library, served, appVersionCode = 41))
+        assertEquals(ContentSyncResult.APPLIED, sync(library, served, appVersionCode = BuildConfig.VERSION_CODE))
 
         val creatures = parseCreatures(library.overlayBytes("catalog/creatures.json")!!)
         assertTrue(creatures.size > 100)
@@ -278,6 +281,29 @@ class ContentSyncTest {
         remote: Map<String, ByteArray>,
         appVersionCode: Int = 35,
     ): ContentSyncResult = ContentPackage.sync(library, { remote[it] }, appVersionCode, baseUrl).result
+
+    /**
+     * Devuelve un intérprete de Python 3 disponible. En Windows el alias `python3` de la
+     * Microsoft Store no existe como tal y devuelve 9009, así que se prueban alternativas.
+     */
+    private fun pythonCommand(): List<String> {
+        val candidates = listOf(
+            listOf("python3"),
+            listOf("python"),
+            listOf("py", "-3"),
+        )
+        return candidates.firstOrNull { command ->
+            try {
+                val probe = ProcessBuilder(command + "--version")
+                    .redirectErrorStream(true)
+                    .start()
+                val text = probe.inputStream.bufferedReader().readText()
+                probe.waitFor() == 0 && text.contains("Python 3")
+            } catch (_: Exception) {
+                false
+            }
+        }.orEmpty()
+    }
 
     private fun remoteFiles(manifest: ContentManifest, keep: Map<String, ByteArray> = emptyMap()): Map<String, ByteArray> {
         val out = LinkedHashMap<String, ByteArray>()
