@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -29,6 +30,8 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -45,6 +48,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.ImageShader
@@ -79,9 +83,11 @@ import com.guiaheartopia.app.data.AndroidContentStore
 import com.guiaheartopia.app.data.ContentCheckStore
 import com.guiaheartopia.app.data.ContentSignals
 import com.guiaheartopia.app.data.ContentUpdateScheduler
+import com.guiaheartopia.app.domain.ContentDownloadProgress
 import com.guiaheartopia.app.domain.ContentSyncResult
 import com.guiaheartopia.app.domain.ContentUpdatePolicy
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import com.guiaheartopia.app.reminders.ReminderScheduler
 import com.guiaheartopia.app.ui.GuideUi
@@ -99,6 +105,7 @@ import com.guiaheartopia.app.ui.AppNavigation
 import com.guiaheartopia.app.ui.NavigationPolicy
 import com.guiaheartopia.app.ui.settings.SettingsScreen
 import com.guiaheartopia.app.ui.theme.Cream
+import com.guiaheartopia.app.ui.theme.Green
 import com.guiaheartopia.app.ui.theme.GreenSoft
 import com.guiaheartopia.app.ui.theme.GuiaTheme
 import com.guiaheartopia.app.ui.theme.Ink
@@ -138,7 +145,9 @@ class MainActivity : ComponentActivity() {
                                 ContentSignals.setBusy(true)
                                 try {
                                     val report = withContext(Dispatchers.IO) {
-                                        AndroidContentStore.syncNow(this@MainActivity)
+                                        AndroidContentStore.syncNow(this@MainActivity) {
+                                            ContentSignals.setProgress(it)
+                                        }
                                     }
                                     ContentCheckStore.record(this@MainActivity, report, System.currentTimeMillis())
                                     if (report.result == ContentSyncResult.APPLIED) {
@@ -146,6 +155,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                 } finally {
                                     ContentSignals.setBusy(false)
+                                    ContentSignals.setProgress(null)
                                 }
                             }
                         }
@@ -157,7 +167,6 @@ class MainActivity : ComponentActivity() {
                 onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
             }
             val ads = rememberAdsState(this, ui.ready && ui.profile.onboarded)
-            val contentBusy by ContentSignals.busy().collectAsStateWithLifecycle()
             val adRewards by AdRewardStore.observe(this).collectAsStateWithLifecycle(AdRewardState())
             LaunchedEffect(adRewards.suppressAds) {
                 ads.setAdFree(adRewards.suppressAds)
@@ -207,17 +216,7 @@ class MainActivity : ComponentActivity() {
                         onAdPrivacy = ads::showPrivacyOptions,
                     )
                 }
-                if (contentBusy) {
-                    Text(
-                        "Actualizando contenido…",
-                        color = Ink,
-                        style = MaterialTheme.typography.labelSmall,
-                        modifier = Modifier
-                            .align(Alignment.TopCenter)
-                            .windowInsetsPadding(WindowInsets.statusBars)
-                            .padding(top = 4.dp),
-                    )
-                }
+
             }
         }
     }
@@ -241,6 +240,22 @@ private fun AppScaffold(
     val scope = rememberCoroutineScope()
     val nav = rememberNavController()
     val showBanner = ads.state.canShowBanner(adRewards.suppressAds)
+
+    val contentBusy by ContentSignals.busy().collectAsStateWithLifecycle()
+    val contentProgress by ContentSignals.progress().collectAsStateWithLifecycle()
+    var contentDone by remember { mutableStateOf(false) }
+    var wasContentBusy by remember { mutableStateOf(false) }
+    LaunchedEffect(contentBusy) {
+        if (contentBusy) {
+            wasContentBusy = true
+            contentDone = false
+        } else if (wasContentBusy) {
+            wasContentBusy = false
+            contentDone = true
+            delay(1_500)
+            contentDone = false
+        }
+    }
     fun toast(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
@@ -341,17 +356,27 @@ private fun AppScaffold(
                         )
                     }
                 }
-                Box(
-                    modifier = Modifier
-                        .testTag("open_settings")
-                        .size(38.dp)
-                        .clip(CircleShape)
-                        .background(PaperSubtle)
-                        .border(1.dp, Line, CircleShape)
-                        .clickable { nav.navigate("settings") },
-                    contentAlignment = Alignment.Center,
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    CozySettingsIcon(tint = Ink, size = 18.dp)
+                    ContentSyncBadge(
+                        busy = contentBusy || contentProgress != null,
+                        percent = contentPercent(contentProgress),
+                        done = contentDone,
+                    )
+                    Box(
+                        modifier = Modifier
+                            .testTag("open_settings")
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(PaperSubtle)
+                            .border(1.dp, Line, CircleShape)
+                            .clickable { nav.navigate("settings") },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        CozySettingsIcon(tint = Ink, size = 18.dp)
+                    }
                 }
             }
         },
@@ -408,7 +433,7 @@ private fun AppScaffold(
                 )
             }
             composable("aficiones") {
-                com.guiaheartopia.app.ui.hobbies.HobbyHubScreen(ui = ui) { dest -> nav.navigate(dest) }
+                com.guiaheartopia.app.ui.hobbies.HobbyHubScreen { dest -> nav.navigate(dest) }
             }
             composable("codigos") {
                 com.guiaheartopia.app.ui.codes.CodesScreen(
@@ -429,7 +454,6 @@ private fun AppScaffold(
                     onToggleFlorFound = vm::toggleFlorFound,
                     onToggleFlorCertified = vm::toggleFlorCertified,
                     onCancelCrop = vm::cancelCrop,
-                    onOpenAboveLevel = { nav.navigate("huerto/pendiente-nivel") },
                 )
             }
             composable("huerto/flores") {
@@ -443,23 +467,7 @@ private fun AppScaffold(
                     onToggleFlorFound = vm::toggleFlorFound,
                     onToggleFlorCertified = vm::toggleFlorCertified,
                     onCancelCrop = vm::cancelCrop,
-                    onOpenAboveLevel = { nav.navigate("huerto/pendiente-nivel") },
                     initialTab = 1,
-                )
-            }
-            composable("huerto/pendiente-nivel") {
-                com.guiaheartopia.app.ui.hobbies.HuertoScreen(
-                    ui = ui,
-                    onBack = { nav.popBackStack() },
-                    onOpenSiembra = { nav.navigate("huerto/siembra/$it") },
-                    onOpenFlor = { nav.navigate("huerto/flor/$it") },
-                    onToggleSiembraFound = vm::toggleHuertoFound,
-                    onToggleSiembraCertified = vm::toggleHuertoCertified,
-                    onToggleFlorFound = vm::toggleFlorFound,
-                    onToggleFlorCertified = vm::toggleFlorCertified,
-                    onCancelCrop = vm::cancelCrop,
-                    onOpenAboveLevel = { nav.navigate("huerto/pendiente-nivel") },
-                    onlyAboveLevel = true,
                 )
             }
             composable("cocina") {
@@ -469,16 +477,6 @@ private fun AppScaffold(
                     onOpenReceta = { nav.navigate("cocina/receta/$it") },
                     onToggleFound = vm::toggleRecetaFound,
                     onToggleCertified = vm::toggleRecetaCertified,
-                )
-            }
-            composable("cocina/pendiente-nivel") {
-                com.guiaheartopia.app.ui.hobbies.CocinaScreen(
-                    ui = ui,
-                    onBack = { nav.popBackStack() },
-                    onOpenReceta = { nav.navigate("cocina/receta/$it") },
-                    onToggleFound = vm::toggleRecetaFound,
-                    onToggleCertified = vm::toggleRecetaCertified,
-                    onlyAboveLevel = true,
                 )
             }
             composable("guide") {
@@ -558,19 +556,6 @@ private fun AppScaffold(
                     onAddAnimal = vm::addAnimal,
                     onBack = { nav.popBackStack() },
                     initialTab = tab,
-                    onSaveDexFilters = vm::saveDexFilters,
-                )
-            }
-            composable("guide/pendiente-nivel") {
-                GuideScreen(
-                    ui = ui,
-                    onOpenAnimal = { nav.navigate("animal/$it") },
-                    onOpenDex = { nav.navigate("dex/$it") },
-                    onToggleFound = vm::toggleFound,
-                    onToggleCertified = vm::toggleCertified,
-                    onAddAnimal = vm::addAnimal,
-                    onBack = { nav.popBackStack() },
-                    onlyAboveLevel = true,
                     onSaveDexFilters = vm::saveDexFilters,
                 )
             }
@@ -784,5 +769,69 @@ private fun AppScaffold(
                 }
             }
         }
+    }
+}
+
+private fun contentPercent(progress: ContentDownloadProgress?): Int = when {
+    progress == null -> 0
+    progress.totalBytes > 0 -> (progress.downloadedBytes * 100 / progress.totalBytes).toInt()
+    progress.totalFiles > 0 -> progress.downloadedFiles * 100 / progress.totalFiles
+    else -> 0
+}.coerceIn(0, 100)
+
+@Composable
+private fun ContentSyncBadge(busy: Boolean, percent: Int, done: Boolean) {
+    if (!busy && !done) return
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier
+            .clip(RoundedCornerShape(999.dp))
+            .background(GreenSoft)
+            .border(1.dp, Green, RoundedCornerShape(999.dp))
+            .padding(horizontal = 8.dp, vertical = 5.dp),
+    ) {
+        if (done) {
+            DoneCheckIcon(Green, Modifier.size(16.dp))
+        } else {
+            if (percent > 0) {
+                CircularProgressIndicator(
+                    progress = { percent / 100f },
+                    modifier = Modifier.size(16.dp),
+                    color = Green,
+                    trackColor = Green.copy(alpha = 0.25f),
+                    strokeWidth = 2.dp,
+                )
+            } else {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(16.dp),
+                    color = Green,
+                    strokeWidth = 2.dp,
+                )
+            }
+            Text(
+                "$percent%",
+                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                color = Ink,
+            )
+        }
+    }
+}
+
+@Composable
+private fun DoneCheckIcon(tint: Color, modifier: Modifier = Modifier) {
+    Canvas(modifier) {
+        drawLine(
+            color = tint,
+            start = Offset(size.width * 0.2f, size.height * 0.52f),
+            end = Offset(size.width * 0.43f, size.height * 0.74f),
+            strokeWidth = 2.dp.toPx(),
+        )
+        drawLine(
+            color = tint,
+            start = Offset(size.width * 0.43f, size.height * 0.74f),
+            end = Offset(size.width * 0.8f, size.height * 0.26f),
+            strokeWidth = 2.dp.toPx(),
+        )
     }
 }

@@ -17,8 +17,9 @@ import com.guiaheartopia.app.domain.ReminderPlan
 import com.guiaheartopia.app.domain.ReminderSync
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import com.guiaheartopia.app.domain.CreatureWindowReminders
 import com.guiaheartopia.app.domain.CropReminders
 
@@ -27,7 +28,7 @@ private const val ENQUEUED = "enqueued"
 private const val POSTED = "posted"
 
 object ReminderScheduler {
-    fun sync(context: Context, profile: PlayerProfile) {
+    suspend fun sync(context: Context, profile: PlayerProfile) = withContext(Dispatchers.IO) {
         val app = context.applicationContext
         WorkManager.getInstance(app).cancelUniqueWork("recordatorio-rutina")
         WorkManager.getInstance(app).cancelUniqueWork("recordatorio-clima")
@@ -38,7 +39,7 @@ object ReminderScheduler {
         val zone = runCatching { ZoneId.of(profile.zoneId) }.getOrElse { ZoneId.systemDefault() }
         val now = ZonedDateTime.now(zone)
         val prefs = profile.reminders
-        val scheduled = runBlocking { GuideRepository(app).snapshots.first() }
+        val scheduled = GuideRepository(app).snapshots.first()
         val personal = CropReminders.notices(scheduled.activeCrops, zone, now) +
             CreatureWindowReminders.notices(scheduled.creatureWindowAlarms, zone, now)
         val notices = if (!prefs.anyAlertOn()) {

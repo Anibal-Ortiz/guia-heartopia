@@ -1,6 +1,11 @@
 package com.guiaheartopia.app.domain
 
 import java.security.MessageDigest
+import java.util.concurrent.Callable
+import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicLong
+import java.util.concurrent.atomic.AtomicReference
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -25,6 +30,14 @@ data class ContentManifest(
     val files: List<ContentFileEntry> = emptyList(),
 )
 
+/** Avance de la descarga de los archivos pendientes de un paquete de contenido. */
+data class ContentDownloadProgress(
+    val downloadedFiles: Int,
+    val totalFiles: Int,
+    val downloadedBytes: Long,
+    val totalBytes: Long,
+)
+
 interface ContentLibrary {
     fun bundledManifest(): ContentManifest
     fun installedManifest(): ContentManifest?
@@ -36,8 +49,10 @@ interface ContentLibrary {
 }
 
 object ContentPackage {
+    private const val DOWNLOAD_THREADS = 5
     private val json = Json { ignoreUnknownKeys = true; encodeDefaults = true }
     private val shaPattern = Regex("[0-9a-fA-F]{64}")
+    private val progressLock = Any()
 
     fun sha256(bytes: ByteArray): String =
         MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
@@ -91,6 +106,7 @@ object ContentPackage {
         fetch: (String) -> ByteArray?,
         appVersionCode: Int,
         baseUrl: String,
+        onProgress: ((ContentDownloadProgress) -> Unit)? = null,
     ): ContentSyncReport {
         val current = currentVersion(library)
         val raw = fetch(manifestUrl(baseUrl)) ?: return ContentSyncReport(ContentSyncResult.NETWORK_ERROR, current, null)
@@ -109,10 +125,7 @@ object ContentPackage {
             if (remote.minAppVersionCode <= appVersionCode) library.setNeedsNewerApp(false)
             return ContentSyncReport(ContentSyncResult.UNCHANGED, current, remoteVersion)
         }
-        if (remote.contentVersion == current && missing.isNotEmpty()) {
-            return applyOverlay(library, fetch, baseUrl, remote, appVersionCode, current, remoteVersion)
-        }
-        return applyOverlay(library, fetch, baseUrl, remote, appVersionCode, current, remoteVersion)
+        return applyOverlay(library, fetch, baseUrl, remote, appVersionCode, current, remoteVersion, onProgress)
     }
 
     internal fun fileEligible(file: ContentFileEntry, appVersionCode: Int): Boolean =
@@ -139,24 +152,84 @@ object ContentPackage {
         appVersionCode: Int,
         current: Int,
         remoteVersion: Int,
+        onProgress: ((ContentDownloadProgress) -> Unit)? = null,
     ): ContentSyncReport {
-        val next = LinkedHashMap<String, ByteArray>()
-        for (file in remote.files) {
-            if (!fileEligible(file, appVersionCode)) continue
-            if (overlayMatches(file, library)) {
-                library.overlayBytes(file.path)?.let { next[file.path] = it }
-                continue
-            }
-            val bytes = fetch(fileUrl(baseUrl, file.path))
-                ?: return ContentSyncReport(ContentSyncResult.NETWORK_ERROR, current, remoteVersion)
-            if (bytes.size.toLong() != file.size || sha256(bytes) != file.sha256) {
-                return ContentSyncReport(ContentSyncResult.VERIFY_FAILED, current, remoteVersion)
-            }
-            next[file.path] = bytes
+        // Calculamos primero qué hay que bajar y cuánto pesa para poder informar del progreso.
+        val pending = pendingDownloads(remote, library, appVersionCode)
+        val totalBytes = pending.sumOf { it.size }
+        if (pending.isNotEmpty()) {
+            onProgress?.invoke(ContentDownloadProgress(0, pending.size, 0L, totalBytes))
         }
+
+        // Los archivos que ya tienen el SHA correcto se reutilizan sin volver a descargarlos.
+        val pendingPaths = pending.map { it.path }.toSet()
+        val reusable = LinkedHashMap<String, ByteArray>()
+        remote.files.forEach { file ->
+            if (fileEligible(file, appVersionCode) && file.path !in pendingPaths) {
+                library.overlayBytes(file.path)?.let { reusable[file.path] = it }
+            }
+        }
+
+        val downloaded = arrayOfNulls<ByteArray>(pending.size)
+        val doneFiles = AtomicInteger(0)
+        val doneBytes = AtomicLong(0L)
+        val failure = AtomicReference<ContentSyncResult?>(null)
+
+        val executor = Executors.newFixedThreadPool(DOWNLOAD_THREADS)
+        try {
+            val tasks: List<Callable<Unit>> = pending.mapIndexed { index, file -> Callable<Unit> {
+                if (failure.get() == null) {
+                    val bytes = fetch(fileUrl(baseUrl, file.path))
+                    when {
+                        bytes == null -> failure.compareAndSet(null, ContentSyncResult.NETWORK_ERROR)
+                        bytes.size.toLong() != file.size || sha256(bytes) != file.sha256 ->
+                            failure.compareAndSet(null, ContentSyncResult.VERIFY_FAILED)
+
+                        else -> {
+                            downloaded[index] = bytes
+                            synchronized(progressLock) {
+                                val files = doneFiles.incrementAndGet()
+                                val bytesDone = doneBytes.addAndGet(bytes.size.toLong())
+                                onProgress?.invoke(
+                                    ContentDownloadProgress(files, pending.size, bytesDone, totalBytes),
+                                )
+                            }
+                        }
+                    }
+                }
+                Unit
+            } }
+            executor.invokeAll(tasks)
+        } catch (_: InterruptedException) {
+            Thread.currentThread().interrupt()
+            failure.compareAndSet(null, ContentSyncResult.NETWORK_ERROR)
+        } finally {
+            executor.shutdownNow()
+        }
+
+        failure.get()?.let { return ContentSyncReport(it, current, remoteVersion) }
+
+        // Reconstruimos el mapa en el orden del manifiesto, aunque la descarga haya terminado desordenada.
+        val next = LinkedHashMap<String, ByteArray>()
+        val pendingIndexByPath = pending.mapIndexed { index, file -> file.path to index }.toMap()
+        remote.files.forEach { file ->
+            if (!fileEligible(file, appVersionCode)) return@forEach
+            val index = pendingIndexByPath[file.path]
+            if (index == null) {
+                reusable[file.path]?.let { next[file.path] = it }
+            } else {
+                val bytes = downloaded[index]
+                    ?: return ContentSyncReport(ContentSyncResult.VERIFY_FAILED, current, remoteVersion)
+                next[file.path] = bytes
+            }
+        }
+
         return try {
             library.publish(remote, next)
             library.setNeedsNewerApp(false)
+            if (pending.isNotEmpty()) {
+                onProgress?.invoke(ContentDownloadProgress(pending.size, pending.size, totalBytes, totalBytes))
+            }
             ContentSyncReport(
                 ContentSyncResult.APPLIED,
                 currentVersion(library),

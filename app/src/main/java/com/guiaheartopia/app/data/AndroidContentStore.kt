@@ -2,6 +2,7 @@ package com.guiaheartopia.app.data
 
 import android.content.Context
 import com.guiaheartopia.app.BuildConfig
+import com.guiaheartopia.app.domain.ContentDownloadProgress
 import com.guiaheartopia.app.domain.ContentLibrary
 import com.guiaheartopia.app.domain.ContentManifest
 import com.guiaheartopia.app.domain.ContentPackage
@@ -51,13 +52,17 @@ object AndroidContentStore {
             .apply()
     }
 
-    fun syncNow(context: Context): com.guiaheartopia.app.domain.ContentSyncReport {
+    fun syncNow(
+        context: Context,
+        onProgress: ((ContentDownloadProgress) -> Unit)? = null,
+    ): com.guiaheartopia.app.domain.ContentSyncReport {
         val library = AndroidContentLibrary(context)
         return ContentPackage.sync(
             library = library,
             fetch = ::httpGet,
             appVersionCode = BuildConfig.VERSION_CODE,
             baseUrl = BuildConfig.CONTENT_BASE_URL,
+            onProgress = onProgress,
         )
     }
 

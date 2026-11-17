@@ -20,6 +20,7 @@ private val Context.contentCheckStore by preferencesDataStore(name = "content_ch
 data class ContentCheckState(
     val lastCheckedMillis: Long = 0L,
     val lastMessage: String = "",
+    val result: ContentSyncResult? = null,
 )
 
 object ContentCheckStore {
@@ -43,6 +44,7 @@ object ContentCheckStore {
             ContentCheckState(
                 lastCheckedMillis = prefs[KEY_CHECKED_MS] ?: 0L,
                 lastMessage = message,
+                result = result,
             )
         }
 

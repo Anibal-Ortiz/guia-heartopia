@@ -1,19 +1,28 @@
 package com.guiaheartopia.app.ui.settings
 
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -31,12 +40,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import java.util.Locale
+import kotlin.math.cos
+import kotlin.math.sin
 import com.guiaheartopia.app.BuildConfig
 import com.guiaheartopia.app.R
 import com.guiaheartopia.app.ads.AdsMode
@@ -50,6 +68,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.guiaheartopia.app.data.AndroidContentStore
 import com.guiaheartopia.app.data.ContentCheckStore
 import com.guiaheartopia.app.data.ContentSignals
+import com.guiaheartopia.app.domain.ContentDownloadProgress
 import com.guiaheartopia.app.domain.ContentSyncResult
 import com.guiaheartopia.app.data.VerifiedCatalog
 import kotlinx.coroutines.Dispatchers
@@ -234,46 +253,220 @@ fun SettingsScreen(
 private fun ContentUpdateCard() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var status by remember { mutableStateOf(AndroidContentStore.status(context)) }
-    var busy by remember { mutableStateOf(false) }
+    val busy by ContentSignals.busy().collectAsStateWithLifecycle()
     val checkState by ContentCheckStore.observe(context).collectAsStateWithLifecycle(
         com.guiaheartopia.app.data.ContentCheckState(),
     )
-    PixelCard {
-        Text("Contenido", style = MaterialTheme.typography.titleMedium)
-        Text("Versión de contenido: ${status.contentVersion}", style = MaterialTheme.typography.bodyMedium)
-        Text(
-            "Última actualización: ${publishedLabel(status.publishedOn)}",
-            style = MaterialTheme.typography.bodyMedium,
-        )
-        Text(
-            ContentCheckStore.lastCheckedLabel(checkState.lastCheckedMillis),
-            style = MaterialTheme.typography.bodySmall,
-        )
-        if (busy) {
-            CircularProgressIndicator(modifier = Modifier.padding(vertical = 4.dp))
+    val progress by ContentSignals.progress().collectAsStateWithLifecycle()
+    // note() incrementa ticks tras cada APPLIED: esto refresca la versión al instante.
+    val tick by ContentSignals.flow().collectAsStateWithLifecycle()
+    val status = remember(tick) { AndroidContentStore.status(context) }
+    val downloading = busy || progress != null
+
+    val result = checkState.result
+    val failed = result == ContentSyncResult.NETWORK_ERROR || result == ContentSyncResult.VERIFY_FAILED
+    val needsNewer = result == ContentSyncResult.NEEDS_NEWER_APP
+
+    val container = when {
+        downloading -> MaterialTheme.colorScheme.surfaceVariant
+        failed -> MaterialTheme.colorScheme.errorContainer
+        needsNewer -> MaterialTheme.colorScheme.tertiaryContainer
+        else -> MaterialTheme.colorScheme.primaryContainer
+    }
+    val onContainer = when {
+        downloading -> MaterialTheme.colorScheme.onSurfaceVariant
+        failed -> MaterialTheme.colorScheme.onErrorContainer
+        needsNewer -> MaterialTheme.colorScheme.onTertiaryContainer
+        else -> MaterialTheme.colorScheme.onPrimaryContainer
+    }
+    val accent = when {
+        failed -> MaterialTheme.colorScheme.error
+        needsNewer -> MaterialTheme.colorScheme.tertiary
+        else -> MaterialTheme.colorScheme.primary
+    }
+    val glyph = when {
+        downloading || needsNewer -> StatusGlyph.UPDATE
+        failed -> StatusGlyph.ERROR
+        else -> StatusGlyph.CHECK
+    }
+    val title = when {
+        downloading -> "Descargando contenido…"
+        failed -> "No se pudo actualizar"
+        needsNewer -> "Actualización disponible"
+        else -> "Contenido al día"
+    }
+
+    fun check() {
+        if (busy) return
+        ContentSignals.setBusy(true)
+        scope.launch {
+            try {
+                val report = withContext(Dispatchers.IO) {
+                    AndroidContentStore.syncNow(context) { ContentSignals.setProgress(it) }
+                }
+                ContentCheckStore.record(context, report, System.currentTimeMillis())
+                if (report.result == ContentSyncResult.APPLIED) {
+                    ContentSignals.note(context)
+                }
+            } finally {
+                ContentSignals.setBusy(false)
+            }
         }
-        PixelButton(
-            text = "Buscar actualizaciones",
-            modifier = Modifier.alpha(if (busy) 0.45f else 1f),
-            onClick = {
-                if (!busy) {
-                    busy = true
-                    scope.launch {
-                        val report = withContext(Dispatchers.IO) { AndroidContentStore.syncNow(context) }
-                        val now = System.currentTimeMillis()
-                        ContentCheckStore.record(context, report, now)
-                        if (report.result == ContentSyncResult.APPLIED) {
-                            ContentSignals.note(context)
-                        }
-                        status = AndroidContentStore.status(context)
-                        busy = false
+    }
+
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = container,
+        contentColor = onContainer,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(
+            Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                Box(
+                    Modifier
+                        .size(34.dp)
+                        .clip(CircleShape)
+                        .background(accent.copy(alpha = 0.14f)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    StatusIcon(glyph, accent, Modifier.size(22.dp))
+                }
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        title,
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    )
+                    Text(
+                        "Versión ${status.contentVersion} · ${publishedLabel(status.publishedOn)}",
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
+            }
+
+            if (downloading) {
+                val shown = progress ?: ContentDownloadProgress(0, 0, 0L, 0L)
+                val fraction = when {
+                    shown.totalBytes > 0 -> shown.downloadedBytes.toFloat() / shown.totalBytes
+                    shown.totalFiles > 0 -> shown.downloadedFiles.toFloat() / shown.totalFiles
+                    else -> 0f
+                }.coerceIn(0f, 1f)
+                val percent = (fraction * 100).toInt()
+                Text(
+                    "Descargando... ${mb(shown.downloadedBytes)} / ${mb(shown.totalBytes)} MB" +
+                        if (shown.totalBytes > 0 || shown.totalFiles > 0) " · $percent%" else "",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                LinearProgressIndicator(
+                    progress = { fraction },
+                    modifier = Modifier.fillMaxWidth(),
+                    color = accent,
+                    trackColor = onContainer.copy(alpha = 0.16f),
+                )
+            } else {
+                val detail = if (failed || needsNewer) {
+                    checkState.lastMessage
+                } else {
+                    ContentCheckStore.lastCheckedLabel(checkState.lastCheckedMillis)
+                }
+                if (detail.isNotBlank()) {
+                    Text(detail, style = MaterialTheme.typography.bodyMedium)
+                }
+            }
+
+            if (!downloading) {
+                if (failed) {
+                    OutlinedButton(onClick = { check() }, modifier = Modifier.fillMaxWidth()) {
+                        Text("Reintentar")
+                    }
+                } else {
+                    TextButton(onClick = { check() }, modifier = Modifier.fillMaxWidth()) {
+                        Text("Buscar actualizaciones")
                     }
                 }
-            },
-        )
-        if (checkState.lastMessage.isNotBlank()) {
-            Text(checkState.lastMessage, style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+    }
+}
+
+private enum class StatusGlyph { CHECK, ERROR, UPDATE }
+
+/** Iconos vectoriales dibujados en local para no añadir dependencias al proyecto. */
+@Composable
+private fun StatusIcon(glyph: StatusGlyph, tint: Color, modifier: Modifier = Modifier) {
+    Canvas(modifier) {
+        val radius = size.minDimension * 0.38f
+        val centerPoint = center
+        when (glyph) {
+            StatusGlyph.CHECK -> {
+                drawCircle(color = tint, radius = radius, style = Stroke(width = 1.6.dp.toPx()))
+                drawLine(
+                    color = tint,
+                    start = Offset(centerPoint.x - radius * 0.45f, centerPoint.y),
+                    end = Offset(centerPoint.x - radius * 0.08f, centerPoint.y + radius * 0.42f),
+                    strokeWidth = 2.dp.toPx(),
+                )
+                drawLine(
+                    color = tint,
+                    start = Offset(centerPoint.x - radius * 0.08f, centerPoint.y + radius * 0.42f),
+                    end = Offset(centerPoint.x + radius * 0.5f, centerPoint.y - radius * 0.42f),
+                    strokeWidth = 2.dp.toPx(),
+                )
+            }
+
+            StatusGlyph.ERROR -> {
+                drawCircle(color = tint, radius = radius, style = Stroke(width = 1.6.dp.toPx()))
+                drawLine(
+                    color = tint,
+                    start = Offset(centerPoint.x, centerPoint.y - radius * 0.5f),
+                    end = Offset(centerPoint.x, centerPoint.y + radius * 0.22f),
+                    strokeWidth = 2.dp.toPx(),
+                )
+                drawCircle(
+                    color = tint,
+                    radius = 1.6.dp.toPx(),
+                    center = Offset(centerPoint.x, centerPoint.y + radius * 0.55f),
+                )
+            }
+
+            StatusGlyph.UPDATE -> {
+                val startAngle = -80f
+                val sweep = 285f
+                drawArc(
+                    color = tint,
+                    startAngle = startAngle,
+                    sweepAngle = sweep,
+                    useCenter = false,
+                    style = Stroke(width = 1.8.dp.toPx()),
+                )
+                val endRad = Math.toRadians((startAngle + sweep).toDouble())
+                val tip = Offset(
+                    centerPoint.x + radius * cos(endRad).toFloat(),
+                    centerPoint.y + radius * sin(endRad).toFloat(),
+                )
+                val tangentX = -sin(endRad).toFloat()
+                val tangentY = cos(endRad).toFloat()
+                val back = 6.dp.toPx()
+                val side = 4.dp.toPx()
+                val baseX = tip.x - back * tangentX
+                val baseY = tip.y - back * tangentY
+                val normalX = cos(endRad).toFloat()
+                val normalY = sin(endRad).toFloat()
+                drawPath(
+                    path = Path().apply {
+                        moveTo(tip.x, tip.y)
+                        lineTo(baseX + side * normalX, baseY + side * normalY)
+                        lineTo(baseX - side * normalX, baseY - side * normalY)
+                        close()
+                    },
+                    color = tint,
+                )
+            }
         }
     }
 }
@@ -282,6 +475,9 @@ private fun publishedLabel(iso: String): String {
     val parts = iso.split("-")
     return if (parts.size == 3) "${parts[2]}/${parts[1]}/${parts[0]}" else iso
 }
+
+private fun mb(bytes: Long): String =
+    String.format(Locale.getDefault(), "%.1f", bytes / (1024f * 1024f))
 
 @Composable
 private fun ReminderBlock(current: ReminderPrefs, onChange: (ReminderPrefs) -> Unit) {

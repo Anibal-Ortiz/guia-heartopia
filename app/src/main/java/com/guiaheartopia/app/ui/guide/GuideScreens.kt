@@ -143,7 +143,6 @@ fun GuideScreen(
     onAddAnimal: (String, String, String, String) -> Unit,
     onBack: (() -> Unit)? = null,
     initialTab: Int = 0,
-    onlyAboveLevel: Boolean = false,
     guideLaunch: GuideLaunch = GuideLaunch(),
     onSaveDexFilters: (String, DexCategoryFilters) -> Unit = { _, _ -> },
 ) {
@@ -178,7 +177,6 @@ fun GuideScreen(
             onOpenDex,
             onToggleFound,
             onToggleCertified,
-            onlyAboveLevel,
             guideLaunch,
             onSaveDexFilters,
         )
@@ -376,7 +374,6 @@ private fun DexTab(
     onOpen: (String) -> Unit,
     onToggleFound: (String) -> Unit,
     onToggleCertified: (String, String) -> Unit,
-    onlyAboveLevel: Boolean = false,
     guideLaunch: GuideLaunch = GuideLaunch(),
     onSaveDexFilters: (String, DexCategoryFilters) -> Unit = { _, _ -> },
 ) {
@@ -407,7 +404,6 @@ private fun DexTab(
         mutableStateOf(SearchDrafts.read("dex:$category:place") ?: filters.place)
     }
     val canCertify = CatalogMarks.certifiable(category)
-    val hobbyLevel = CreatureAvailability.hobbyLevel(category, ui.hobbies)
     val catalogMax = remember(all, category) {
         LevelFilter.maximum(all.filter { it.category == category }.map { it.level })
     }
@@ -440,7 +436,6 @@ private fun DexTab(
             (placeQuery.isBlank() || entry.location.any { TextMatch.contains(it, placeQuery) }) &&
             (filters.weather == "Todos" || filters.weather in entry.weather) &&
             CreatureAvailability.levelAllowed(entry.level, levelCap) &&
-            (!onlyAboveLevel || (entry.level != null && entry.level > (hobbyLevel ?: 0))) &&
             (!filters.onlyNow || CreatureAvailability.availableNow(category, entry.level, ui.hobbies, timeOk)) &&
             when (filters.registered) {
                 "si" -> entry.id in ui.found

@@ -11,7 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.FilterChip
@@ -74,7 +77,6 @@ fun CocinaScreen(
     onOpenReceta: (String) -> Unit,
     onToggleFound: (String) -> Unit,
     onToggleCertified: (String, Boolean) -> Unit,
-    onlyAboveLevel: Boolean = false,
 ) {
     val context = LocalContext.current
     val revision = contentRevision()
@@ -83,7 +85,6 @@ fun CocinaScreen(
         ProntoScreen("Cocina", "Recetas", onBack)
         return
     }
-    val cocinaLevel = ui.hobbies.firstOrNull { it.id == "hob-cocina" }?.level ?: 0
     var tab by rememberSaveable { mutableIntStateOf(0) }
     var selectedIngredient by rememberSaveable { mutableStateOf<String?>(null) }
     var queryField by rememberSaveable(stateSaver = TextFieldValue.Saver) {
@@ -114,7 +115,6 @@ fun CocinaScreen(
             else -> entry.evento.equals(filtro, ignoreCase = true)
         }
         val levelOk = CreatureAvailability.levelAllowed(entry.nivelCocina, levelCap)
-        val aboveOk = !onlyAboveLevel || entry.nivelCocina > cocinaLevel
         val markOk = when (onlyConseguidas) {
             true -> entry.id in ui.recetaFound
             false -> entry.id !in ui.recetaFound
@@ -125,7 +125,7 @@ fun CocinaScreen(
             false -> entry.id !in ui.recetaCertified
             else -> true
         }
-        searchOk && filtroOk && levelOk && aboveOk && markOk && certOk
+        searchOk && filtroOk && levelOk && markOk && certOk
     }
     val sortedRecetas = if (sortByLevel) {
         filteredRecetas.sortedWith(compareBy({ it.nivelCocina }, { it.nombre }))
@@ -133,64 +133,89 @@ fun CocinaScreen(
         filteredRecetas.sortedBy { it.nombre }
     }
 
-    Column(
-        Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
+    val selectedIngredientRef = selectedIngredient?.let { key ->
+        ingredientCatalog.firstOrNull { it.key == key }
+    }
+    val filteredIng = if (selectedIngredientRef == null) {
+        ingredientCatalog.filter { query.isBlank() || TextMatch.contains(it.displayName, query) }
+    } else {
+        emptyList()
+    }
+    val recetasDelIngrediente = if (selectedIngredientRef != null) {
+        CocinaIngredients.recetasConIngrediente(bundle.recetas, bundle.siembras, selectedIngredientRef.key)
+            .sortedBy { it.nombre }
+    } else {
+        emptyList()
+    }
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        TextButton(onClick = onBack) { Text("Atrás") }
-        SectionBanner(
-            image = com.guiaheartopia.app.R.drawable.header_aficiones,
-            title = "Cocina",
-            subtitle = "${bundle.recetas.size} recetas",
-        )
-        PillTabs(CocinaTabs, tab) {
-            tab = it
-            selectedIngredient = null
+        item(key = "back") { TextButton(onClick = onBack) { Text("Atrás") } }
+        item(key = "banner") {
+            SectionBanner(
+                image = com.guiaheartopia.app.R.drawable.header_aficiones,
+                title = "Cocina",
+                subtitle = "${bundle.recetas.size} recetas",
+            )
+        }
+        item(key = "tabs") {
+            PillTabs(CocinaTabs, tab) {
+                tab = it
+                selectedIngredient = null
+            }
         }
         if (tab == 0) {
-            OutlinedTextField(
-                value = queryField,
-                onValueChange = {
-                    queryField = it
-                    SearchDrafts.write("cocina", it.text)
-                },
-                placeholder = { Text("Buscar por nombre...") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-            )
-            AficionesListHeader(
-                found = ui.recetaFound.size,
-                total = bundle.recetas.size,
-                sortByLevel = sortByLevel,
-                onSort = { sortByLevel = !sortByLevel },
-                onlyConseguidas = onlyConseguidas,
-                onConseguidas = { onlyConseguidas = it },
-                onlyCertificadas = onlyCertificadas,
-                onCertificadas = { onlyCertificadas = it },
-                extraChips = {
-                    filtros.forEach { f ->
-                        FilterChip(
-                            selected = filtro == f,
-                            onClick = { filtro = f },
-                            label = { Text(f, maxLines = 1, overflow = TextOverflow.Clip) },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = HoneySoft,
-                                selectedLabelColor = Ink,
-                            ),
-                        )
-                    }
-                },
-            )
-            LevelDropdown(selected = levelCap, maximum = catalogMax, onSelect = { chosenLevel = it ?: -1 })
-            Text(
-                "${sortedRecetas.size} en esta lista",
-                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                color = Muted,
-            )
-            sortedRecetas.forEach { entry ->
+            item(key = "search") {
+                OutlinedTextField(
+                    value = queryField,
+                    onValueChange = {
+                        queryField = it
+                        SearchDrafts.write("cocina", it.text)
+                    },
+                    placeholder = { Text("Buscar por nombre...") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                )
+            }
+            item(key = "header") {
+                AficionesListHeader(
+                    found = ui.recetaFound.size,
+                    total = bundle.recetas.size,
+                    sortByLevel = sortByLevel,
+                    onSort = { sortByLevel = !sortByLevel },
+                    onlyConseguidas = onlyConseguidas,
+                    onConseguidas = { onlyConseguidas = it },
+                    onlyCertificadas = onlyCertificadas,
+                    onCertificadas = { onlyCertificadas = it },
+                    extraChips = {
+                        filtros.forEach { f ->
+                            FilterChip(
+                                selected = filtro == f,
+                                onClick = { filtro = f },
+                                label = { Text(f, maxLines = 1, overflow = TextOverflow.Clip) },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = HoneySoft,
+                                    selectedLabelColor = Ink,
+                                ),
+                            )
+                        }
+                    },
+                )
+            }
+            item(key = "level") {
+                LevelDropdown(selected = levelCap, maximum = catalogMax, onSelect = { chosenLevel = it ?: -1 })
+            }
+            item(key = "count") {
+                Text(
+                    "${sortedRecetas.size} en esta lista",
+                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                    color = Muted,
+                )
+            }
+            items(sortedRecetas, key = { it.id }) { entry ->
                 RecetaCard(
                     entry = entry,
                     siembras = bundle.siembras,
@@ -205,42 +230,48 @@ fun CocinaScreen(
                 )
             }
         } else {
-            val selected = selectedIngredient?.let { key ->
-                ingredientCatalog.firstOrNull { it.key == key }
-            }
-            if (selected != null) {
-                TextButton(onClick = { selectedIngredient = null }) { Text("← Ingredientes") }
-                Text(
-                    selected.displayName,
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                    color = Ink,
-                )
-                IngredientImage(
-                    imagen = CocinaIngredients.resolveImagen(selected, bundle.siembras, bundle.recetas),
-                    size = 72.dp,
-                    contentDescription = selected.displayName,
-                )
-                Text("Recetas que lo usan", style = MaterialTheme.typography.titleMedium, color = Ink)
-                CocinaIngredients.recetasConIngrediente(bundle.recetas, bundle.siembras, selected.key)
-                    .sortedBy { it.nombre }
-                    .forEach { entry ->
-                        TextButton(onClick = { onOpenReceta(entry.id) }) { Text(entry.nombre) }
-                    }
-            } else {
-                OutlinedTextField(
-                    value = queryField,
-                    onValueChange = {
-                        queryField = it
-                        SearchDrafts.write("cocina", it.text)
-                    },
-                    placeholder = { Text("Buscar ingrediente...") },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                )
-                val filteredIng = ingredientCatalog.filter {
-                    query.isBlank() || TextMatch.contains(it.displayName, query)
+            if (selectedIngredientRef != null) {
+                item(key = "back-ing") {
+                    TextButton(onClick = { selectedIngredient = null }) { Text("← Ingredientes") }
                 }
-                filteredIng.forEach { ref ->
+                item(key = "selected-name") {
+                    Text(
+                        selectedIngredientRef.displayName,
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                        color = Ink,
+                    )
+                }
+                item(key = "selected-image") {
+                    IngredientImage(
+                        imagen = CocinaIngredients.resolveImagen(
+                            selectedIngredientRef,
+                            bundle.siembras,
+                            bundle.recetas,
+                        ),
+                        size = 72.dp,
+                        contentDescription = selectedIngredientRef.displayName,
+                    )
+                }
+                item(key = "recipes-title") {
+                    Text("Recetas que lo usan", style = MaterialTheme.typography.titleMedium, color = Ink)
+                }
+                items(recetasDelIngrediente, key = { it.id }) { entry ->
+                    TextButton(onClick = { onOpenReceta(entry.id) }) { Text(entry.nombre) }
+                }
+            } else {
+                item(key = "search-ing") {
+                    OutlinedTextField(
+                        value = queryField,
+                        onValueChange = {
+                            queryField = it
+                            SearchDrafts.write("cocina", it.text)
+                        },
+                        placeholder = { Text("Buscar ingrediente...") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                    )
+                }
+                items(filteredIng, key = { it.key }) { ref ->
                     IngredientListRow(ref, bundle.siembras, bundle.recetas) {
                         selectedIngredient = ref.key
                     }

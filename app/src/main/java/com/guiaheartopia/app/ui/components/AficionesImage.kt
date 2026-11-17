@@ -27,17 +27,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.graphicsLayer
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
-import com.guiaheartopia.app.data.AndroidContentLibrary
+import com.guiaheartopia.app.data.AndroidContentStore
 import com.guiaheartopia.app.domain.AficionesImagePaths
 import com.guiaheartopia.app.ui.theme.Line
 @Composable
 fun rememberAficionesModel(imagen: String?): Any? {
     val context = LocalContext.current
-    val library = remember { AndroidContentLibrary(context) }
-    return AficionesImagePaths.candidates(imagen)
-        .firstNotNullOfOrNull { library.effectiveBytes(it) }
-        ?.takeIf { it.isNotEmpty() }
+    return remember(imagen) {
+        AficionesImagePaths.candidates(imagen).firstNotNullOfOrNull { path ->
+            AndroidContentStore.overlayFile(context, path)
+                ?: if (assetExists(context, path)) "file:///android_asset/$path" else null
+        }
+    }
 }
+
+private fun assetExists(context: android.content.Context, path: String): Boolean =
+    runCatching { context.assets.open(path).close() }.isSuccess
 
 @Composable
 fun AficionesImage(

@@ -236,7 +236,3 @@ object AficionesMarks {
             !entry.categoria.equals("Evento", ignoreCase = true) &&
             entry.evento.isNullOrBlank()
 }
-
-object AficionesLevelSummary {
-    fun lockedCount(levels: Iterable<Int>, playerLevel: Int): Int = levels.count { it > playerLevel }
-}

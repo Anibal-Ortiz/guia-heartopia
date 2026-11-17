@@ -8,6 +8,7 @@ import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.guiaheartopia.app.domain.ContentDownloadProgress
 import com.guiaheartopia.app.domain.ContentSyncResult
 import com.guiaheartopia.app.domain.ContentUpdatePolicy
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,16 +18,25 @@ import kotlinx.coroutines.flow.StateFlow
 object ContentSignals {
     private val ticks = MutableStateFlow(0)
     private val downloading = MutableStateFlow(false)
+    private val downloads = MutableStateFlow<ContentDownloadProgress?>(null)
     private var seenVersion = -1
 
     fun flow(): StateFlow<Int> = ticks
 
     fun busy(): StateFlow<Boolean> = downloading
 
+    fun progress(): StateFlow<ContentDownloadProgress?> = downloads
+
     fun setBusy(value: Boolean) {
         downloading.value = value
+        if (!value) downloads.value = null
     }
 
+    fun setProgress(value: ContentDownloadProgress?) {
+        downloads.value = value
+    }
+
+    /** Llamar siempre tras un ContentSyncResult.APPLIED: incrementa ticks para refrescar la UI al instante. */
     fun note(context: Context) {
         seenVersion = AndroidContentStore.installedVersion(context)
         ticks.value = ticks.value + 1
@@ -56,7 +66,11 @@ class ContentUpdateWorker(
         val now = System.currentTimeMillis()
         val last = AndroidContentStore.lastAttemptMillis(applicationContext)
         if (!ContentUpdatePolicy.isDue(last, now)) return Result.success()
-        val report = AndroidContentStore.syncNow(applicationContext)
+        val report = try {
+            AndroidContentStore.syncNow(applicationContext) { ContentSignals.setProgress(it) }
+        } finally {
+            ContentSignals.setProgress(null)
+        }
         ContentCheckStore.record(applicationContext, report, now)
         if (report.result == ContentSyncResult.APPLIED) {
             ContentSignals.note(applicationContext)

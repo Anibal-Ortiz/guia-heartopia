@@ -24,13 +24,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.data.AficionesCatalog
 import com.guiaheartopia.app.domain.ActiveCrop
 import com.guiaheartopia.app.domain.AficionesContent
 import com.guiaheartopia.app.domain.AficionesMarks
-import com.guiaheartopia.app.domain.AficionesLevelSummary
 import com.guiaheartopia.app.domain.CreatureAvailability
 import com.guiaheartopia.app.domain.FlorEntry
 import com.guiaheartopia.app.domain.LevelFilter
@@ -52,7 +52,6 @@ import com.guiaheartopia.app.ui.theme.GreenDark
 import com.guiaheartopia.app.ui.theme.GreenSoft
 import com.guiaheartopia.app.ui.theme.Ink
 import com.guiaheartopia.app.ui.theme.Muted
-import com.guiaheartopia.app.ui.theme.PaperSubtle
 import java.time.Instant
 
 private val HuertoTabs = listOf("Siembras", "Flores")
@@ -68,9 +67,7 @@ fun HuertoScreen(
     onToggleFlorFound: (String) -> Unit,
     onToggleFlorCertified: (String, Boolean) -> Unit,
     onCancelCrop: (String) -> Unit,
-    onOpenAboveLevel: () -> Unit,
     initialTab: Int = 0,
-    onlyAboveLevel: Boolean = false,
 ) {
     val context = LocalContext.current
     val revision = contentRevision()
@@ -79,11 +76,6 @@ fun HuertoScreen(
     if (!bundle.huertoReady) {
         ProntoScreen("Huerto", "Siembras y flores", onBack)
         return
-    }
-    val siembraLevel = ui.hobbies.firstOrNull { it.id == "hob-siembra" }?.level ?: 0
-    val lockedSiembras = remember(bundle, siembraLevel) {
-        AficionesLevelSummary.lockedCount(bundle.siembras.map { it.nivelSiembra }, siembraLevel) +
-            AficionesLevelSummary.lockedCount(bundle.flores.mapNotNull { it.nivelSiembra }, siembraLevel)
     }
 
     Column(
@@ -99,9 +91,6 @@ fun HuertoScreen(
             title = "Huerto",
             subtitle = "Siembras y flores",
         )
-        if (lockedSiembras > 0) {
-            LevelLockedBanner(lockedSiembras, onOpenAboveLevel)
-        }
         if (ui.activeCrops.isNotEmpty()) {
             ActiveCropsPanel(ui.activeCrops, onCancelCrop)
         }
@@ -111,8 +100,6 @@ fun HuertoScreen(
                 siembras = bundle.siembras,
                 found = ui.huertoFound,
                 certified = ui.huertoCertified,
-                playerLevel = siembraLevel,
-                onlyAboveLevel = onlyAboveLevel,
                 onOpen = onOpenSiembra,
                 onToggleFound = onToggleSiembraFound,
                 onToggleCertified = onToggleSiembraCertified,
@@ -121,8 +108,6 @@ fun HuertoScreen(
                 flores = bundle.flores,
                 found = ui.florFound,
                 certified = ui.florCertified,
-                playerLevel = siembraLevel,
-                onlyAboveLevel = onlyAboveLevel,
                 onOpen = onOpenFlor,
                 onToggleFound = onToggleFlorFound,
                 onToggleCertified = onToggleFlorCertified,
@@ -144,16 +129,6 @@ fun ProntoScreen(title: String, subtitle: String, onBack: () -> Unit) {
         Text(title, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold), color = Ink)
         Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = Muted)
         PixelCard { Text("Próximamente", style = MaterialTheme.typography.titleMedium, color = Ink) }
-    }
-}
-
-@Composable
-private fun LevelLockedBanner(count: Int, onOpen: () -> Unit) {
-    PixelCard(container = PaperSubtle) {
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-            Text("$count fichas piden más nivel que el tuyo", style = MaterialTheme.typography.bodyMedium, color = Ink)
-            TextButton(onClick = onOpen) { Text("Ver lista") }
-        }
     }
 }
 
@@ -181,8 +156,6 @@ private fun SiembrasTab(
     siembras: List<SiembraEntry>,
     found: Set<String>,
     certified: Set<String>,
-    playerLevel: Int,
-    onlyAboveLevel: Boolean,
     onOpen: (String) -> Unit,
     onToggleFound: (String) -> Unit,
     onToggleCertified: (String, Boolean) -> Unit,
@@ -195,13 +168,12 @@ private fun SiembrasTab(
 
     val filtered = siembras.filter { entry ->
         val levelOk = CreatureAvailability.levelAllowed(entry.nivelSiembra, levelCap)
-        val aboveOk = !onlyAboveLevel || entry.nivelSiembra > playerLevel
         val markOk = when (onlyConseguidas) {
             true -> entry.id in found
             false -> entry.id !in found
             else -> true
         }
-        levelOk && aboveOk && markOk
+        levelOk && markOk
     }
     val sorted = if (sortByLevel) {
         filtered.sortedWith(compareBy({ it.nivelSiembra }, { it.nombre }))
@@ -240,8 +212,6 @@ private fun FloresTab(
     flores: List<FlorEntry>,
     found: Set<String>,
     certified: Set<String>,
-    playerLevel: Int,
-    onlyAboveLevel: Boolean,
     onOpen: (String) -> Unit,
     onToggleFound: (String) -> Unit,
     onToggleCertified: (String, Boolean) -> Unit,
@@ -254,13 +224,12 @@ private fun FloresTab(
 
     val filtered = flores.filter { entry ->
         val levelOk = CreatureAvailability.levelAllowed(entry.nivelSiembra, levelCap)
-        val aboveOk = !onlyAboveLevel || (entry.nivelSiembra != null && entry.nivelSiembra > playerLevel)
         val markOk = when (onlyConseguidas) {
             true -> entry.id in found
             false -> entry.id !in found
             else -> true
         }
-        levelOk && aboveOk && markOk
+        levelOk && markOk
     }
     val sorted = if (sortByLevel) {
         filtered.sortedWith(compareBy({ it.nivelSiembra ?: 99 }, { it.nombre }))
