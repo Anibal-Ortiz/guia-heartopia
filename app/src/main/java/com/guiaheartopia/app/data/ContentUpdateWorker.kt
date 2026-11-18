@@ -10,6 +10,7 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.guiaheartopia.app.domain.ContentDownloadProgress
 import com.guiaheartopia.app.domain.ContentSyncResult
+import com.guiaheartopia.app.domain.checkOk
 import com.guiaheartopia.app.domain.ContentUpdatePolicy
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -17,11 +18,23 @@ import kotlinx.coroutines.flow.StateFlow
 
 object ContentSignals {
     private val ticks = MutableStateFlow(0)
+    private val checkOkTicks = MutableStateFlow(0)
+    private val failed = MutableStateFlow(false)
     private val downloading = MutableStateFlow(false)
     private val downloads = MutableStateFlow<ContentDownloadProgress?>(null)
     private var seenVersion = -1
 
     fun flow(): StateFlow<Int> = ticks
+
+    /** Se incrementa cuando la verificación terminó bien (APPLIED / UNCHANGED / OLDER). */
+    fun checkOkTicks(): StateFlow<Int> = checkOkTicks
+
+    /** Persiste hasta que una búsqueda termine correctamente. */
+    fun failed(): StateFlow<Boolean> = failed
+
+    fun setFailed(value: Boolean) {
+        failed.value = value
+    }
 
     fun busy(): StateFlow<Boolean> = downloading
 
@@ -36,10 +49,15 @@ object ContentSignals {
         downloads.value = value
     }
 
-    /** Llamar siempre tras un ContentSyncResult.APPLIED: incrementa ticks para refrescar la UI al instante. */
+    /** Refresca la UI al instante. Se llama en cada apertura, no implica que haya cambios. */
     fun note(context: Context) {
         seenVersion = AndroidContentStore.installedVersion(context)
         ticks.value = ticks.value + 1
+    }
+
+    /** Enciende el check del badge cuando la búsqueda terminó correctamente. */
+    fun noteCheckOk() {
+        checkOkTicks.value = checkOkTicks.value + 1
     }
 }
 
@@ -75,6 +93,10 @@ class ContentUpdateWorker(
         if (report.result == ContentSyncResult.APPLIED) {
             ContentSignals.note(applicationContext)
         }
+        if (report.result.checkOk) {
+            ContentSignals.noteCheckOk()
+        }
+        ContentSignals.setFailed(!report.result.checkOk)
         if (report.result == ContentSyncResult.APPLIED || report.result == ContentSyncResult.UNCHANGED) {
             val profile = GuideRepository(applicationContext).snapshots.first().profile
             com.guiaheartopia.app.reminders.ReminderScheduler.sync(applicationContext, profile)

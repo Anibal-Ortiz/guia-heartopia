@@ -58,6 +58,8 @@ import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
@@ -82,10 +84,9 @@ import com.guiaheartopia.app.data.GuideRepository
 import com.guiaheartopia.app.data.AndroidContentStore
 import com.guiaheartopia.app.data.ContentCheckStore
 import com.guiaheartopia.app.data.ContentSignals
-import com.guiaheartopia.app.data.ContentUpdateScheduler
 import com.guiaheartopia.app.domain.ContentDownloadProgress
 import com.guiaheartopia.app.domain.ContentSyncResult
-import com.guiaheartopia.app.domain.ContentUpdatePolicy
+import com.guiaheartopia.app.domain.checkOk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -128,6 +129,32 @@ class MainActivity : ComponentActivity() {
             val vm: GuideViewModel = viewModel(factory = GuideViewModel.factory(repository, this))
             val ui by vm.ui.collectAsStateWithLifecycle()
             val lifecycleOwner = LocalLifecycleOwner.current
+            fun checkContentUpdates() {
+                if (ContentSignals.busy().value) return
+                lifecycleScope.launch {
+                    ContentSignals.setBusy(true)
+                    try {
+                        val report = withContext(Dispatchers.IO) {
+                            AndroidContentStore.syncNow(this@MainActivity) {
+                                ContentSignals.setProgress(it)
+                            }
+                        }
+                        ContentCheckStore.record(this@MainActivity, report, System.currentTimeMillis())
+                        if (report.result == ContentSyncResult.APPLIED) {
+                            ContentSignals.note(this@MainActivity)
+                        }
+                        if (report.result.checkOk) {
+                            ContentSignals.noteCheckOk()
+                        }
+                        ContentSignals.setFailed(!report.result.checkOk)
+                    } catch (_: Exception) {
+                        ContentSignals.setFailed(true)
+                    } finally {
+                        ContentSignals.setBusy(false)
+                        ContentSignals.setProgress(null)
+                    }
+                }
+            }
             DisposableEffect(lifecycleOwner) {
                 val observer = LifecycleEventObserver { _, event ->
                     if (event == Lifecycle.Event.ON_STOP) {
@@ -135,31 +162,8 @@ class MainActivity : ComponentActivity() {
                     }
                     if (event == Lifecycle.Event.ON_RESUME) {
                         vm.refreshDay()
-                        val now = System.currentTimeMillis()
-                        val due = ContentUpdatePolicy.isDue(
-                            AndroidContentStore.lastAttemptMillis(this@MainActivity),
-                            now,
-                        )
-                        if (due) {
-                            lifecycleScope.launch {
-                                ContentSignals.setBusy(true)
-                                try {
-                                    val report = withContext(Dispatchers.IO) {
-                                        AndroidContentStore.syncNow(this@MainActivity) {
-                                            ContentSignals.setProgress(it)
-                                        }
-                                    }
-                                    ContentCheckStore.record(this@MainActivity, report, System.currentTimeMillis())
-                                    if (report.result == ContentSyncResult.APPLIED) {
-                                        ContentSignals.note(this@MainActivity)
-                                    }
-                                } finally {
-                                    ContentSignals.setBusy(false)
-                                    ContentSignals.setProgress(null)
-                                }
-                            }
-                        }
-                        ContentUpdateScheduler.enqueueIfDue(this@MainActivity)
+                        // Buscar actualizaciones en cada apertura de la app (sin intervalo de 12 h).
+                        checkContentUpdates()
                         ContentSignals.note(this@MainActivity)
                     }
                 }
@@ -214,6 +218,7 @@ class MainActivity : ComponentActivity() {
                         onPrivacy = { legal = "privacidad" },
                         onTerms = { legal = "terminos" },
                         onAdPrivacy = ads::showPrivacyOptions,
+                        onRetryContent = { checkContentUpdates() },
                     )
                 }
 
@@ -235,6 +240,7 @@ private fun AppScaffold(
     onPrivacy: () -> Unit,
     onTerms: () -> Unit,
     onAdPrivacy: () -> Unit,
+    onRetryContent: () -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -243,14 +249,14 @@ private fun AppScaffold(
 
     val contentBusy by ContentSignals.busy().collectAsStateWithLifecycle()
     val contentProgress by ContentSignals.progress().collectAsStateWithLifecycle()
+    val contentCheckOkTicks by ContentSignals.checkOkTicks().collectAsStateWithLifecycle()
+    val contentFailed by ContentSignals.failed().collectAsStateWithLifecycle()
     var contentDone by remember { mutableStateOf(false) }
-    var wasContentBusy by remember { mutableStateOf(false) }
     LaunchedEffect(contentBusy) {
-        if (contentBusy) {
-            wasContentBusy = true
-            contentDone = false
-        } else if (wasContentBusy) {
-            wasContentBusy = false
+        if (contentBusy) contentDone = false
+    }
+    LaunchedEffect(contentCheckOkTicks) {
+        if (contentCheckOkTicks > 0) {
             contentDone = true
             delay(1_500)
             contentDone = false
@@ -355,16 +361,18 @@ private fun AppScaffold(
                             color = Muted,
                         )
                     }
+                    ContentSyncBadge(
+                        busy = contentBusy || contentProgress != null,
+                        percent = contentPercent(contentProgress),
+                        done = contentDone,
+                        failed = contentFailed,
+                        onRetry = onRetryContent,
+                    )
                 }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    ContentSyncBadge(
-                        busy = contentBusy || contentProgress != null,
-                        percent = contentPercent(contentProgress),
-                        done = contentDone,
-                    )
                     Box(
                         modifier = Modifier
                             .testTag("open_settings")
@@ -780,40 +788,72 @@ private fun contentPercent(progress: ContentDownloadProgress?): Int = when {
 }.coerceIn(0, 100)
 
 @Composable
-private fun ContentSyncBadge(busy: Boolean, percent: Int, done: Boolean) {
-    if (!busy && !done) return
+private fun ContentSyncBadge(
+    busy: Boolean,
+    percent: Int,
+    done: Boolean,
+    failed: Boolean,
+    onRetry: () -> Unit,
+) {
+    if (!busy && !done && !failed) return
+    val error = Color(0xFFC0392B)
+    val errorSoft = Color(0xFFFBE9E7)
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         modifier = Modifier
             .clip(RoundedCornerShape(999.dp))
-            .background(GreenSoft)
-            .border(1.dp, Green, RoundedCornerShape(999.dp))
-            .padding(horizontal = 8.dp, vertical = 5.dp),
+            .background(if (failed && !busy && !done) errorSoft else GreenSoft)
+            .border(1.dp, if (failed && !busy && !done) error else Green, RoundedCornerShape(999.dp))
+            .padding(horizontal = 6.dp, vertical = 4.dp),
     ) {
-        if (done) {
-            DoneCheckIcon(Green, Modifier.size(16.dp))
-        } else {
-            if (percent > 0) {
-                CircularProgressIndicator(
-                    progress = { percent / 100f },
-                    modifier = Modifier.size(16.dp),
-                    color = Green,
-                    trackColor = Green.copy(alpha = 0.25f),
-                    strokeWidth = 2.dp,
-                )
-            } else {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(16.dp),
-                    color = Green,
-                    strokeWidth = 2.dp,
+        when {
+            busy -> {
+                if (percent > 0) {
+                    CircularProgressIndicator(
+                        progress = { percent / 100f },
+                        modifier = Modifier.size(16.dp),
+                        color = Green,
+                        trackColor = Green.copy(alpha = 0.25f),
+                        strokeWidth = 2.dp,
+                    )
+                } else {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(16.dp),
+                        color = Green,
+                        strokeWidth = 2.dp,
+                    )
+                }
+                Text(
+                    "$percent%",
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    color = Ink,
                 )
             }
-            Text(
-                "$percent%",
-                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                color = Ink,
-            )
+            done -> DoneCheckIcon(Green, Modifier.size(16.dp))
+            failed -> {
+                Text(
+                    "✕",
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                    color = error,
+                )
+                Box(
+                    modifier = Modifier
+                        .size(22.dp)
+                        .clip(CircleShape)
+                        .background(Color.White)
+                        .border(1.dp, error, CircleShape)
+                        .clickable(onClick = onRetry)
+                        .semantics { contentDescription = "Reintentar búsqueda de actualizaciones" },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        "↻",
+                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                        color = error,
+                    )
+                }
+            }
         }
     }
 }

@@ -34,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.foundation.layout.offset
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
@@ -88,6 +89,7 @@ fun PixelButton(
     container: Color = Green,
     contentColor: Color = if (container == Paper) Green else Color.White,
     outlined: Boolean = false,
+    enabled: Boolean = true,
     icon: @Composable (() -> Unit)? = null,
 ) {
     val shape = RoundedCornerShape(16.dp)
@@ -98,12 +100,14 @@ fun PixelButton(
 
     Row(
         modifier = modifier
+            .alpha(if (enabled) 1f else 0.45f)
             .clip(shape)
             .background(bg)
             .border(borderStroke, borderCol, shape)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = ripple(color = fg.copy(alpha = 0.2f)),
+                enabled = enabled,
                 onClick = onClick,
             )
             .padding(horizontal = 20.dp, vertical = 12.dp),

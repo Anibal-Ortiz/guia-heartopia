@@ -9,6 +9,12 @@ enum class ContentSyncResult {
     VERIFY_FAILED,
 }
 
+/** La verificación terminó bien: se aplicó contenido nuevo o ya estamos al día. */
+val ContentSyncResult.checkOk: Boolean
+    get() = this == ContentSyncResult.APPLIED ||
+        this == ContentSyncResult.UNCHANGED ||
+        this == ContentSyncResult.OLDER
+
 data class ContentSyncReport(
     val result: ContentSyncResult,
     val localVersion: Int,
