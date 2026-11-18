@@ -20,7 +20,9 @@ object EventTime {
      */
     fun localSpan(start: LocalDate, end: LocalDate, origin: ZoneId, viewer: ZoneId): Pair<LocalDate, LocalDate> {
         val from = start.atStartOfDay(origin).withZoneSameInstant(viewer).toLocalDate()
-        val to = end.atTime(23, 59).atZone(origin).withZoneSameInstant(viewer).toLocalDate()
+        // Incluir el último nanosegundo del día de cierre: 23:59 deja fuera el tramo final.
+        val to = end.plusDays(1).atStartOfDay(origin).minusNanos(1)
+            .withZoneSameInstant(viewer).toLocalDate()
         return from to to
     }
 

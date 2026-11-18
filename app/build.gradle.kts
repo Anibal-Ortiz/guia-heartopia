@@ -1,10 +1,75 @@
 import java.io.File
 import java.util.Properties
+import javax.xml.parsers.DocumentBuilderFactory
+import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.TaskAction
+import org.w3c.dom.Node
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+}
+
+/** Única fuente de la versión: nombre de archivo, versionName y artefacto de CI se derivan de ella. */
+val appVersion = "1.1.0"
+
+private val ANDROID_NS = "http://schemas.android.com/apk/res/android"
+private val TOOLS_NS = "http://schemas.android.com/tools"
+
+private fun Node.attr(ns: String, name: String): String? =
+    attributes?.getNamedItemNS(ns, name)?.nodeValue
+
+/** Genera el manifiesto de release en fase de ejecución, nunca al configurar. */
+abstract class GenerateReleaseManifestTask : DefaultTask() {
+    @get:Input
+    abstract val adsEnabled: Property<Boolean>
+
+    @get:Input
+    abstract val effectiveAppId: Property<String>
+
+    @get:OutputFile
+    abstract val releaseManifest: RegularFileProperty
+
+    @TaskAction
+    fun generate() {
+        val output = releaseManifest.get().asFile
+        output.parentFile.mkdirs()
+        val enabled = adsEnabled.get()
+        val appId = effectiveAppId.get()
+        output.writeText(
+            if (enabled) {
+                """
+                <?xml version="1.0" encoding="utf-8"?>
+                <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+                    <application>
+                        <meta-data
+                            android:name="com.google.android.gms.ads.APPLICATION_ID"
+                            android:value="$appId" />
+                    </application>
+                </manifest>
+                """.trimIndent()
+            } else {
+                """
+                <?xml version="1.0" encoding="utf-8"?>
+                <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+                    xmlns:tools="http://schemas.android.com/tools">
+                    <application>
+                        <!-- Sin App ID real no se deja arrancar el proveedor de anuncios. -->
+                        <provider
+                            android:name="com.google.android.gms.ads.MobileAdsInitProvider"
+                            tools:node="remove" />
+                    </application>
+                </manifest>
+                """.trimIndent()
+            },
+        )
+    }
 }
 
 val localProperties = Properties().apply {
@@ -54,34 +119,44 @@ fun effectiveAdId(real: String, test: String, useTest: Boolean): String =
 val effectiveReleaseAppId = effectiveAdId(releaseAppId, testAdMobApp, releaseUseTestAdIds)
 
 val releaseManifestFile = rootProject.file("app/generated-release-manifest/AndroidManifest.xml")
-releaseManifestFile.parentFile.mkdirs()
-releaseManifestFile.writeText(
-    if (releaseAdsEnabled) {
-        """
-        <?xml version="1.0" encoding="utf-8"?>
-        <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-            <application>
-                <meta-data
-                    android:name="com.google.android.gms.ads.APPLICATION_ID"
-                    android:value="${effectiveReleaseAppId}" />
-            </application>
-        </manifest>
-        """.trimIndent()
-    } else {
-        """
-        <?xml version="1.0" encoding="utf-8"?>
-        <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools">
-            <application>
-                <!-- Sin App ID real no se deja arrancar el proveedor de anuncios. -->
-                <provider
-                    android:name="com.google.android.gms.ads.MobileAdsInitProvider"
-                    tools:node="remove" />
-            </application>
-        </manifest>
-        """.trimIndent()
-    },
-)
+
+val generateReleaseManifest = tasks.register<GenerateReleaseManifestTask>("generateReleaseManifest") {
+    adsEnabled.set(releaseAdsEnabled)
+    effectiveAppId.set(effectiveReleaseAppId)
+    releaseManifest.set(releaseManifestFile)
+}
+
+/** Comprobación barata del manifiesto generado, pensada para la CI (sin secretos). */
+val verifyReleaseManifest = tasks.register("verifyReleaseManifest") {
+    dependsOn(generateReleaseManifest)
+    inputs.file(releaseManifestFile)
+    doLast {
+        val document = DocumentBuilderFactory.newInstance()
+            .apply { isNamespaceAware = true }
+            .newDocumentBuilder()
+            .parse(releaseManifestFile)
+        check(document.documentElement.tagName == "manifest") { "La raíz del manifiesto no es <manifest>" }
+        val applications = document.getElementsByTagName("application")
+        check(applications.length == 1) { "El manifiesto de release debe tener un solo <application>" }
+
+        val metaData = document.getElementsByTagName("meta-data")
+        val hasAppId = (0 until metaData.length).any {
+            metaData.item(it).attr(ANDROID_NS, "name") == "com.google.android.gms.ads.APPLICATION_ID"
+        }
+        check(hasAppId == releaseAdsEnabled) {
+            "APPLICATION_ID no coincide con ADS_ENABLED ($releaseAdsEnabled)"
+        }
+        if (!releaseAdsEnabled) {
+            val providers = document.getElementsByTagName("provider")
+            val providerRemoved = (0 until providers.length).any {
+                providers.item(it).attr(ANDROID_NS, "name") ==
+                    "com.google.android.gms.ads.MobileAdsInitProvider" &&
+                    providers.item(it).attr(TOOLS_NS, "node") == "remove"
+            }
+            check(providerRemoved) { "Falta tools:node=\"remove\" para MobileAdsInitProvider" }
+        }
+    }
+}
 
 val storeFilePath = secret("RELEASE_STORE_FILE")
 val releaseStorePassword = secret("RELEASE_STORE_PASSWORD")
@@ -90,8 +165,29 @@ val releaseKeyPassword = secret("RELEASE_KEY_PASSWORD")
 val releaseSigningReady = storeFilePath.isNotEmpty() && releaseStorePassword.isNotEmpty() &&
     releaseKeyAlias.isNotEmpty() && releaseKeyPassword.isNotEmpty()
 
+// La distro no tiene contraseñas en el repositorio: se leen como release/upload.
+// Si el keystore existe pero faltan secretos, solo se falla cuando se firma distro.
 val distroKeystore = File(System.getProperty("user.home"), ".wikifan-heartopia/release.jks")
-val distroSigningReady = distroKeystore.isFile
+val distroStorePassword = secret("DISTRO_STORE_PASSWORD")
+val distroKeyAlias = secret("DISTRO_KEY_ALIAS")
+val distroKeyPassword = secret("DISTRO_KEY_PASSWORD")
+val distroSigningReady = distroKeystore.isFile &&
+    distroStorePassword.isNotEmpty() && distroKeyAlias.isNotEmpty() && distroKeyPassword.isNotEmpty()
+
+val allowDebugSignedRelease = providers.gradleProperty("allowDebugSignedRelease")
+    .orNull?.toBoolean() ?: false
+val releaseSigningRequested = gradle.startParameter.taskNames.any { task ->
+    val simple = task.substringAfterLast(":")
+    simple in setOf("build", "assemble", "bundle") ||
+        simple.startsWith("assembleRelease") ||
+        simple.startsWith("bundleRelease") ||
+        simple.startsWith("installRelease") ||
+        simple.startsWith("publish")
+}
+
+fun failReleaseSigning(message: String) {
+    if (releaseSigningRequested) throw GradleException(message)
+}
 
 val uploadDir = File(System.getProperty("user.home"), ".wikifan-heartopia")
 val uploadProps = Properties().apply {
@@ -109,7 +205,7 @@ val uploadSigningReady = uploadKeystore.isFile &&
     uploadKeyPassword.isNotEmpty()
 
 base {
-    archivesName.set("Guia-Heartopia-1.0.9")
+    archivesName.set("Guia-Heartopia-$appVersion")
 }
 
 android {
@@ -121,13 +217,16 @@ android {
         applicationId = "com.guiaheartopia.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 42
-        versionName = "1.0.9"
+        versionCode = 43
+        versionName = appVersion
         buildConfigField(
             "String",
             "CONTENT_BASE_URL",
             "\"https://anibalortizdev.github.io/guia-heartopia-contenido/\"",
         )
+        // ADS_CONFIGURED se fija por variante en buildTypes: true = IDs sin placeholders.
+        // AdMobIds.kt podría usar BuildConfig.ADS_CONFIGURED en vez de detectar marcadores en runtime.
+        buildConfigField("boolean", "ADS_CONFIGURED", "false")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -143,9 +242,9 @@ android {
         if (distroSigningReady) {
             create("distro") {
                 storeFile = distroKeystore
-                storePassword = "wikifan-dist"
-                keyAlias = "wikifan"
-                keyPassword = "wikifan-dist"
+                storePassword = distroStorePassword
+                keyAlias = distroKeyAlias
+                keyPassword = distroKeyPassword
             }
         }
         if (uploadSigningReady) {
@@ -168,6 +267,8 @@ android {
             buildConfigField("String", "ADMOB_REWARDED_ADFREE_UNIT_ID", "\"$testAdMobRewarded\"")
             buildConfigField("boolean", "ADS_ENABLED", "true")
             buildConfigField("boolean", "ADS_USE_GOOGLE_TEST_IDS", "true")
+            // En debug los IDs oficiales de prueba cuentan como configurados.
+            buildConfigField("boolean", "ADS_CONFIGURED", "true")
             val geo = secret("UMP_DEBUG_GEOGRAPHY")
             val device = secret("UMP_TEST_DEVICE_ID")
             buildConfigField("String", "UMP_DEBUG_GEOGRAPHY", "\"${geo.replace("\"", "")}\"")
@@ -207,13 +308,28 @@ android {
             )
             buildConfigField("boolean", "ADS_ENABLED", releaseAdsEnabled.toString())
             buildConfigField("boolean", "ADS_USE_GOOGLE_TEST_IDS", releaseUseTestAdIds.toString())
+            // true solo con IDs reales: equivale a la detección de placeholders de admobPlaceholder().
+            buildConfigField("boolean", "ADS_CONFIGURED", releaseUseRealAdIds.toString())
             buildConfigField("String", "UMP_DEBUG_GEOGRAPHY", "\"\"")
             buildConfigField("String", "UMP_TEST_DEVICE_ID", "\"\"")
+            // Nunca firmar release con el keystore de debug en silencio.
             signingConfig = when {
                 releaseSigningReady -> signingConfigs.getByName("release")
                 uploadSigningReady -> signingConfigs.getByName("upload")
                 distroSigningReady -> signingConfigs.getByName("distro")
-                else -> signingConfigs.getByName("debug")
+                allowDebugSignedRelease -> signingConfigs.getByName("debug")
+                else -> {
+                    val reason = when {
+                        distroKeystore.isFile ->
+                            "Falta DISTRO_STORE_PASSWORD / DISTRO_KEY_ALIAS / DISTRO_KEY_PASSWORD " +
+                                "para el keystore de distro en $distroKeystore"
+                        else ->
+                            "Faltan secretos de firma (RELEASE_* / UPLOAD / DISTRO). " +
+                                "Usa -PallowDebugSignedRelease=true solo para una compilación local no publicable."
+                    }
+                    failReleaseSigning("No se puede firmar release: $reason")
+                    signingConfigs.getByName("debug")
+                }
             }
         }
     }
@@ -242,6 +358,15 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+}
+
+// El manifiesto de release se genera antes de que AGP lo procese; debug no depende de esta tarea.
+tasks.matching { task ->
+    task.name.contains("Release", ignoreCase = true) &&
+        task.name.startsWith("process") &&
+        task.name.endsWith("Manifest")
+}.configureEach {
+    dependsOn(generateReleaseManifest)
 }
 
 kotlin {

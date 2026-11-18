@@ -5,8 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,11 +15,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -38,7 +35,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -78,7 +74,6 @@ import com.guiaheartopia.app.domain.Countries
 import com.guiaheartopia.app.domain.StoreCopy
 import com.guiaheartopia.app.domain.SampleIds
 import com.guiaheartopia.app.domain.ImportResult
-import com.guiaheartopia.app.domain.PlaySession
 import com.guiaheartopia.app.domain.PlayerProfile
 import com.guiaheartopia.app.domain.ReminderPrefs
 import com.guiaheartopia.app.data.AdRewardStore
@@ -86,14 +81,12 @@ import com.guiaheartopia.app.ui.components.NotebookCard
 import com.guiaheartopia.app.ui.components.PickerField
 import com.guiaheartopia.app.ui.components.PixelButton
 import com.guiaheartopia.app.ui.components.PixelCard
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SettingsScreen(
     profile: PlayerProfile,
     adsMode: AdsMode,
     adsStatus: String,
     privacyOptions: Boolean,
-    onSave: (PlayerProfile) -> Unit,
     onRegion: (String, String, String, String) -> Unit,
     onPrivacy: () -> Unit,
     onTerms: () -> Unit,
@@ -105,14 +98,16 @@ fun SettingsScreen(
     scrollToReminders: Boolean = false,
     adFreeUntilMillis: Long = 0L,
     onWatchAdFree: () -> Unit = {},
+    onRetryAds: () -> Unit = {},
 ) {
-    var name by rememberSaveable(profile.name) { mutableStateOf(profile.name) }
-    var session by rememberSaveable(profile.session) { mutableStateOf(profile.session) }
     val country = Countries.byId(profile.countryId)
     val scroll = rememberScrollState()
     var remindersY by remember { mutableIntStateOf(0) }
-    androidx.compose.runtime.LaunchedEffect(scrollToReminders, remindersY) {
-        if (scrollToReminders && remindersY > 0) {
+    // El flag se consume una sola vez: si no, cualquier recomposición volvería a saltar.
+    var autoScrollConsumed by remember { mutableStateOf(false) }
+    androidx.compose.runtime.LaunchedEffect(scrollToReminders, remindersY, autoScrollConsumed) {
+        if (scrollToReminders && !autoScrollConsumed && remindersY > 0) {
+            autoScrollConsumed = true
             scroll.animateScrollTo((remindersY - 24).coerceAtLeast(0))
         }
     }
@@ -140,16 +135,6 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.bodySmall,
             )
         }
-        OutlinedTextField(name, { name = it }, label = { Text("Nombre") }, modifier = Modifier.fillMaxWidth())
-        Text("Cuándo sueles jugar", style = MaterialTheme.typography.bodyMedium)
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            PlaySession.entries.forEach { option ->
-                FilterChip(selected = session == option, onClick = { session = option }, label = { Text(option.label) })
-            }
-        }
-        PixelButton("Guardar perfil", onClick = {
-            if (name.isNotBlank()) onSave(profile.copy(name = name.trim(), session = session))
-        })
         PixelCard {
             Text("Calendario", style = MaterialTheme.typography.titleMedium)
             PickerField(
@@ -181,6 +166,9 @@ fun SettingsScreen(
             )
             if (privacyOptions) {
                 PixelButton("Opciones de privacidad de anuncios", onClick = onAdPrivacy)
+            }
+            if (adsMode == AdsMode.FAILED || adsMode == AdsMode.NOT_CONSENTED) {
+                PixelButton("Reintentar consentimiento de anuncios", onClick = onRetryAds, outlined = true)
             }
         }
         NotebookCard {
@@ -381,11 +369,19 @@ private fun ContentUpdateCard() {
 
             if (!downloading) {
                 if (failed) {
-                    OutlinedButton(onClick = { check() }, modifier = Modifier.fillMaxWidth()) {
+                    OutlinedButton(
+                        onClick = { check() },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = onContainer),
+                    ) {
                         Text("Reintentar")
                     }
                 } else {
-                    TextButton(onClick = { check() }, modifier = Modifier.fillMaxWidth()) {
+                    TextButton(
+                        onClick = { check() },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.textButtonColors(contentColor = onContainer),
+                    ) {
                         Text("Buscar actualizaciones")
                     }
                 }
@@ -493,7 +489,8 @@ private fun ReminderBlock(current: ReminderPrefs, onChange: (ReminderPrefs) -> U
             (next.pescaEnabled && !current.pescaEnabled) ||
             (next.avesEnabled && !current.avesEnabled) ||
             (next.insectosEnabled && !current.insectosEnabled) ||
-            (next.temporadaEnabled && !current.temporadaEnabled)
+            (next.temporadaEnabled && !current.temporadaEnabled) ||
+            (next.eventsEnabled && !current.eventsEnabled)
     fun update(next: ReminderPrefs) {
         val needsPermission = Build.VERSION.SDK_INT >= 33 &&
             enabling(next) &&
@@ -532,6 +529,9 @@ private fun ReminderBlock(current: ReminderPrefs, onChange: (ReminderPrefs) -> U
             }
         }
         ToggleRow("Clima", current.weatherEnabled) { update(current.copy(weatherEnabled = it)) }
+        ToggleRow("Avisos de eventos", current.eventsEnabled) {
+            update(current.copy(eventsEnabled = it, eventsMasterTouched = true))
+        }
         ToggleRow("Pesca", current.pescaEnabled) { update(current.copy(pescaEnabled = it)) }
         ToggleRow("Aves", current.avesEnabled) { update(current.copy(avesEnabled = it)) }
         ToggleRow("Insectos", current.insectosEnabled) { update(current.copy(insectosEnabled = it)) }

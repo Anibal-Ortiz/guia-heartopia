@@ -28,8 +28,9 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.R
+import com.guiaheartopia.app.ui.theme.AlertRed
+import com.guiaheartopia.app.ui.theme.AlertSoft
 import com.guiaheartopia.app.ui.theme.HoneySoft
-import com.guiaheartopia.app.ui.theme.Ink
 import com.guiaheartopia.app.ui.theme.Line
 import com.guiaheartopia.app.ui.theme.Ochre
 import com.guiaheartopia.app.ui.theme.Paper
@@ -83,18 +84,21 @@ fun NoCertificableMarkButton(modifier: Modifier = Modifier, size: Dp = 26.dp) {
         }
     }
 
-    val alertRed = Color(0xFFC62828)
+    val alertRed = AlertRed
     Box(
         modifier = modifier
             .size(48.dp)
             .clip(CircleShape)
-            .background(if (flash) Color(0xFFFFEBEE) else Paper)
+            .background(if (flash) AlertSoft else Paper)
             .border(width = 1.dp, color = if (flash) alertRed else Line, shape = CircleShape)
             .clickable {
                 flash = true
                 Toast.makeText(context, "No es certificable", Toast.LENGTH_SHORT).show()
             }
-            .clearAndSetSemantics { contentDescription = "No certificable" },
+            .clearAndSetSemantics {
+                role = Role.Button
+                contentDescription = "No certificable"
+            },
         contentAlignment = Alignment.Center,
     ) {
         NoCertificableMarkIcon(size = size, tint = if (flash) alertRed else null)

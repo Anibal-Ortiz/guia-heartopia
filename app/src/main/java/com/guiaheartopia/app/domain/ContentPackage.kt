@@ -50,6 +50,12 @@ interface ContentLibrary {
 
 object ContentPackage {
     private const val DOWNLOAD_THREADS = 5
+    // El catálogo publicado tiene ~740 imágenes y ~77 MB; los topes deben dar margen
+    // sin dejar que un manifiesto hostil provoque una descarga masiva.
+    private const val MAX_FILES = 2_000
+    private const val MAX_PATH_LENGTH = 240
+    private const val MAX_FILE_BYTES = 32L * 1024 * 1024
+    private const val MAX_TOTAL_BYTES = 256L * 1024 * 1024
     private val json = Json { ignoreUnknownKeys = true; encodeDefaults = true }
     private val shaPattern = Regex("[0-9a-fA-F]{64}")
     private val progressLock = Any()
@@ -58,8 +64,19 @@ object ContentPackage {
         MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
 
     fun isSafePath(path: String): Boolean {
-        if (path.isBlank() || path.startsWith("/") || path.contains('\\') || path.contains("..")) return false
+        if (path.isBlank() || path.length > MAX_PATH_LENGTH) return false
+        if (path.startsWith("/") || path.contains('\\') || path.contains("..")) return false
         return path.split('/').all { it.isNotEmpty() && it != "." }
+    }
+
+    /** Suma acotada: nunca desborda y permite rechazar totales absurdos. */
+    private fun totalSize(files: List<ContentFileEntry>): Long {
+        var total = 0L
+        for (file in files) {
+            if (file.size < 0 || total > MAX_TOTAL_BYTES - file.size) return Long.MAX_VALUE
+            total += file.size
+        }
+        return total
     }
 
     fun parseManifest(raw: String): ContentManifest? = try {
@@ -67,10 +84,13 @@ object ContentPackage {
         if (parsed.contentVersion < 1 || parsed.minAppVersionCode < 0 || parsed.publishedOn.isBlank()) {
             null
         } else if (parsed.files.any { file ->
-                !isSafePath(file.path) || file.size < 0 || !shaPattern.matches(file.sha256) ||
+                !isSafePath(file.path) || file.path.length > MAX_PATH_LENGTH ||
+                    file.size < 0 || file.size > MAX_FILE_BYTES || !shaPattern.matches(file.sha256) ||
                     (file.minAppVersionCode != null && file.minAppVersionCode < 0)
             }
         ) {
+            null
+        } else if (parsed.files.size > MAX_FILES || totalSize(parsed.files) > MAX_TOTAL_BYTES) {
             null
         } else if (parsed.files.map { it.path }.distinct().size != parsed.files.size) {
             null
@@ -156,7 +176,7 @@ object ContentPackage {
     ): ContentSyncReport {
         // Calculamos primero qué hay que bajar y cuánto pesa para poder informar del progreso.
         val pending = pendingDownloads(remote, library, appVersionCode)
-        val totalBytes = pending.sumOf { it.size }
+        val totalBytes = totalSize(pending)
         if (pending.isNotEmpty()) {
             onProgress?.invoke(ContentDownloadProgress(0, pending.size, 0L, totalBytes))
         }

@@ -1,11 +1,15 @@
 package com.guiaheartopia.app.ads
 
 import android.app.Activity
+import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,6 +17,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.google.ads.mediation.admob.AdMobAdapter
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
@@ -20,10 +28,12 @@ import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
+import com.google.android.ump.ConsentInformation
 import com.google.android.ump.ConsentDebugSettings
 import com.google.android.ump.ConsentRequestParameters
 import com.google.android.ump.UserMessagingPlatform
 import com.guiaheartopia.app.BuildConfig
+import java.lang.ref.WeakReference
 
 private const val TAG = "GuiaAds"
 
@@ -43,6 +53,15 @@ object AdConfig {
     val hasRewardedCalendar: Boolean = rewardedCalendarUnitId.isNotBlank()
     val hasRewardedAdFree: Boolean = rewardedAdFreeUnitId.isNotBlank()
     val usesGoogleTestIds: Boolean = BuildConfig.ADS_USE_GOOGLE_TEST_IDS
+
+    /**
+     * UMP 4.0 no permite saber si el consentimiento autoriza la personalización
+     * (`OBTAINED` = «personalized vs non-personalized undefined»). Política por
+     * defecto: personalizado. Poner `false` aquí hace que TODAS las peticiones
+     * (banner, intersticial y recompensados) lleven `npa=1`.
+     * En caliente se puede conmutar con `AdsController.setPersonalizedAds(...)`.
+     */
+    val personalizedAds: Boolean = true
     val umpDebugGeography: Int? = if (BuildConfig.DEBUG) geography(BuildConfig.UMP_DEBUG_GEOGRAPHY) else null
     val umpTestDeviceId: String = if (BuildConfig.DEBUG) BuildConfig.UMP_TEST_DEVICE_ID else ""
 
@@ -121,15 +140,68 @@ class UmpConsentGateway : AdsConsentGateway {
     }
 }
 
+/**
+ * Controlador de anuncios. La firma pública se mantiene intacta: el host llama a
+ * rememberAdsState(activity, ready). Internamente se guarda applicationContext y
+ * una [WeakReference] al Activity; las operaciones que exigen Activity se ignoran
+ * después de ON_DESTROY, y los callbacks del SDK se publican en el hilo principal
+ * solo mientras el host siga vivo.
+ */
 class AdsController(
-    private val activity: Activity,
+    activity: Activity,
     private val gateway: AdsConsentGateway = UmpConsentGateway(),
+    personalizedAds: Boolean = true,
 ) {
+    private val appContext: Context = activity.applicationContext
+    private val activityRef = WeakReference<Activity>(activity)
+    private val mainHandler = Handler(Looper.getMainLooper())
+
     val fullscreen = FullscreenAds(activity)
     var state by mutableStateOf(AdsUiState())
         private set
     private var started = false
     private var initStarted = false
+    private var destroyed = false
+
+    /**
+     * UMP 4.0 no expone si el consentimiento permite personalizar: `OBTAINED`
+     * significa «personalized vs non-personalized undefined». Por eso la decisión
+     * se aísla aquí. [setPersonalizedAds] conmuta TODAS las peticiones (banner,
+     * intersticial y recompensados) a `npa=1` sin reinicializar el SDK.
+     */
+    private var personalizedAds: Boolean = personalizedAds
+        private set
+
+    fun setPersonalizedAds(enabled: Boolean) {
+        if (destroyed || personalizedAds == enabled) return
+        personalizedAds = enabled
+        if (!state.initialized) return // se aplicará al inicializar el SDK
+        if (!canRequestAdsNow()) {
+            applyNotConsented()
+        } else {
+            applyMode(if (enabled) AdsMode.PERSONALIZED else AdsMode.NON_PERSONALIZED)
+        }
+    }
+
+    init {
+        val owner = activity as? LifecycleOwner
+        if (owner != null) {
+            val observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_DESTROY) {
+                    destroyed = true
+                    fullscreen.onHostDestroyed()
+                }
+            }
+            owner.lifecycle.addObserver(observer)
+        }
+    }
+
+    private fun currentActivity(): Activity? =
+        if (destroyed) null else activityRef.get()?.takeUnless { it.isFinishing || it.isDestroyed }
+
+    private fun postToUi(block: () -> Unit) {
+        mainHandler.post { if (!destroyed) block() }
+    }
 
     fun setAdFree(active: Boolean) {
         val was = state.adFreeActive
@@ -139,41 +211,109 @@ class AdsController(
     }
 
     fun start() {
-        if (started) return
+        if (started || destroyed) return
         started = true
         if (!AdConfig.adsEnabled) {
             state = AdsUiState(mode = AdsMode.NOT_CONFIGURED, status = "Anuncios sin configurar.")
             return
         }
-        gateway.gather(activity) { outcome ->
-            activity.runOnUiThread {
-                when (outcome) {
-                    ConsentOutcome.CAN_REQUEST -> initialize(personalized = true)
-                    ConsentOutcome.FAILED -> initialize(personalized = false)
-                    ConsentOutcome.NOT_CONSENTED -> {
-                        state = state.copy(
-                            mode = AdsMode.NOT_CONSENTED,
-                            initialized = false,
-                            status = "Sin consentimiento: no se piden anuncios.",
-                            privacyOptionsRequired = privacyRequired(),
-                        )
+        requestConsent()
+    }
+
+    /**
+     * Reintenta el flujo de consentimiento tras FAILED o NOT_CONSENTED.
+     * Call-site: opcional desde ui/, p. ej. un botón "Reintentar" junto al estado
+     * de anuncios: `ads.retryConsent()`. No cambia la API existente de MainActivity.
+     */
+    fun retryConsent() {
+        if (destroyed || !AdConfig.adsEnabled) return
+        if (state.mode != AdsMode.FAILED && state.mode != AdsMode.NOT_CONSENTED) return
+        initStarted = false
+        requestConsent()
+    }
+
+    private fun requestConsent() {
+        val host = currentActivity() ?: return
+        state = state.copy(status = "Comprobando consentimiento…")
+        try {
+            gateway.gather(host) { outcome ->
+                postToUi {
+                    // Una sola lectura de canRequestAds: evita decisiones encontradas
+                    // entre el gateway y la inicialización del SDK.
+                    when (ConsentDecision.mode(outcome, canRequestAdsNow(), personalizedAds)) {
+                        AdsMode.PERSONALIZED, AdsMode.NON_PERSONALIZED ->
+                            initialize(personalized = personalizedAds)
+                        // FAILED nunca inicializa el SDK con npa=1: modo seguro + reintento.
+                        AdsMode.FAILED -> applyFailed()
+                        else -> applyNotConsented()
                     }
                 }
             }
+        } catch (_: Throwable) {
+            postToUi { applyFailed() }
         }
+    }
+
+    private fun applyFailed() {
+        state = AdsUiState(
+            mode = AdsMode.FAILED,
+            initialized = false,
+            status = "No se pudo comprobar el consentimiento. Puedes reintentar.",
+            privacyOptionsRequired = privacyRequired(),
+            adFreeActive = state.adFreeActive,
+        )
+        fullscreen.preload(AdsMode.FAILED)
+    }
+
+    private fun applyNotConsented() {
+        state = AdsUiState(
+            mode = AdsMode.NOT_CONSENTED,
+            initialized = false,
+            status = "Sin consentimiento: no se piden anuncios.",
+            privacyOptionsRequired = privacyRequired(),
+            adFreeActive = state.adFreeActive,
+        )
+        fullscreen.preload(AdsMode.NOT_CONSENTED)
+    }
+
+    /** Cambia el modo con el SDK ya inicializado, descartando los anuncios del modo anterior. */
+    private fun applyMode(mode: AdsMode) {
+        if (state.mode == mode) return
+        fullscreen.clearLoadedAds()
+        state = state.copy(
+            mode = mode,
+            privacyOptionsRequired = privacyRequired(),
+            status = if (mode == AdsMode.NON_PERSONALIZED) {
+                "Anuncios no personalizados."
+            } else {
+                "Anuncios listos."
+            },
+        )
+        fullscreen.preload(mode)
     }
 
     fun showPrivacyOptions() {
+        val host = currentActivity() ?: return
         try {
-            UserMessagingPlatform.showPrivacyOptionsForm(activity) {
-                state = state.copy(privacyOptionsRequired = privacyRequired())
+            UserMessagingPlatform.showPrivacyOptionsForm(host) {
+                postToUi {
+                    if (!canRequestAdsNow()) {
+                        applyNotConsented()
+                    } else {
+                        state = state.copy(privacyOptionsRequired = privacyRequired())
+                        applyMode(if (personalizedAds) AdsMode.PERSONALIZED else AdsMode.NON_PERSONALIZED)
+                    }
+                }
             }
         } catch (_: Throwable) {
-            state = state.copy(status = "No se pudieron abrir las opciones de privacidad.")
+            postToUi { state = state.copy(status = "No se pudieron abrir las opciones de privacidad.") }
         }
     }
 
-    fun onAdsReady() = fullscreen.preload(state.mode)
+    fun onAdsReady() {
+        if (canRequestAdsNow()) fullscreen.preload(state.mode)
+        else applyNotConsented()
+    }
 
     fun showInterstitial(adFree: Boolean, onDone: () -> Unit = {}, onShown: () -> Unit = {}) {
         fullscreen.showInterstitial(adFree, onDone, onShown)
@@ -187,13 +327,28 @@ class AdsController(
         fullscreen.showRewardedCalendar(onReward, onUnavailable)
     }
 
+    /** Solo se inicializa el SDK si UMP permite pedir anuncios. */
+    private fun canRequestAdsNow(): Boolean = try {
+        UserMessagingPlatform.getConsentInformation(appContext).canRequestAds()
+    } catch (_: Throwable) {
+        false
+    }
+
     private fun initialize(personalized: Boolean) {
         if (initStarted) return
+        if (!canRequestAdsNow()) {
+            applyNotConsented()
+            return
+        }
         initStarted = true
         val mode = if (personalized) AdsMode.PERSONALIZED else AdsMode.NON_PERSONALIZED
         try {
-            MobileAds.initialize(activity) {
-                activity.runOnUiThread {
+            MobileAds.initialize(appContext) {
+                postToUi {
+                    if (!canRequestAdsNow()) {
+                        applyNotConsented()
+                        return@postToUi
+                    }
                     state = AdsUiState(
                         mode = mode,
                         initialized = true,
@@ -201,7 +356,7 @@ class AdsController(
                         status = if (personalized) {
                             "Anuncios listos."
                         } else {
-                            "Anuncios no personalizados: el consentimiento no se pudo completar."
+                            "Anuncios no personalizados."
                         },
                         adFreeActive = state.adFreeActive,
                     )
@@ -210,17 +365,13 @@ class AdsController(
                 }
             }
         } catch (_: Throwable) {
-            state = AdsUiState(
-                mode = AdsMode.FAILED,
-                initialized = false,
-                status = "Los anuncios no están disponibles.",
-            )
+            applyFailed()
         }
     }
 
     private fun privacyRequired(): Boolean = try {
-        val status = UserMessagingPlatform.getConsentInformation(activity).privacyOptionsRequirementStatus
-        status == com.google.android.ump.ConsentInformation.PrivacyOptionsRequirementStatus.REQUIRED
+        val status = UserMessagingPlatform.getConsentInformation(appContext).privacyOptionsRequirementStatus
+        status == ConsentInformation.PrivacyOptionsRequirementStatus.REQUIRED
     } catch (_: Throwable) {
         false
     }
@@ -228,47 +379,127 @@ class AdsController(
 
 @Composable
 fun rememberAdsState(activity: Activity, enabled: Boolean): AdsController {
-    val controller = remember(activity) { AdsController(activity) }
+    val controller = remember(activity) {
+        AdsController(activity, personalizedAds = AdConfig.personalizedAds)
+    }
     LaunchedEffect(enabled) {
         if (enabled) controller.start()
     }
     return controller
 }
 
+/**
+ * Banner adaptativo. Firma intacta: `DiscreteBanner(adsMode)`.
+ * Se oculta hasta onAdLoaded, reintenta con backoff y se pausa/destruye con el
+ * ciclo de vida del composable. No añade padding: MainActivity reserva el espacio.
+ */
 @Composable
 fun DiscreteBanner(mode: AdsMode, modifier: Modifier = Modifier) {
     if (!AdConfig.adsEnabled) return
     if (mode != AdsMode.PERSONALIZED && mode != AdsMode.NON_PERSONALIZED) return
-    var visible by remember { mutableStateOf(true) }
-    if (!visible) return
+    val hostRef = remember { mutableStateOf<BannerHost?>(null) }
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+
     AndroidView(
         modifier = modifier,
-        factory = { context ->
-            val holder = FrameLayout(context)
-            try {
-                val adView = AdView(context).apply {
-                    setAdSize(AdSize.BANNER)
-                    adUnitId = AdConfig.bannerUnitId
-                    adListener = object : AdListener() {
-                        override fun onAdFailedToLoad(error: LoadAdError) {
-                            Log.w(
-                                TAG,
-                                "load error kind=banner unit=${AdConfig.bannerUnitId} " +
-                                    "code=${error.code} message=${error.message}",
-                            )
-                            visibility = View.GONE
-                            visible = false
-                        }
+        factory = { ctx ->
+            val hostView = FrameLayout(ctx)
+            val host = BannerHost()
+            val adView = AdView(ctx).apply {
+                val density = ctx.resources.displayMetrics.density.coerceAtLeast(0.01f)
+                val widthDp = (ctx.resources.displayMetrics.widthPixels / density).toInt().coerceAtLeast(1)
+                setAdSize(AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(ctx, widthDp))
+                adUnitId = AdConfig.bannerUnitId
+                visibility = View.GONE
+                adListener = object : AdListener() {
+                    override fun onAdLoaded() {
+                        if (host.destroyed) return
+                        visibility = View.VISIBLE
+                        host.failures = 0
+                    }
+
+                    override fun onAdFailedToLoad(error: LoadAdError) {
+                        visibility = View.GONE
+                        Log.w(TAG, "load error kind=banner code=${error.code}")
+                        if (!host.destroyed) scheduleBannerRetry(host)
                     }
                 }
-                holder.addView(adView)
-                adView.loadAd(adRequest(mode))
-            } catch (_: Throwable) {
-                visible = false
             }
-            holder
+            host.adView = adView
+            hostRef.value = host
+            hostView.addView(adView)
+            hostView
+        },
+        update = { _ ->
+            val host = hostRef.value ?: return@AndroidView
+            if (host.destroyed || host.lastMode == mode) return@AndroidView
+            host.retry?.let { bannerHandler.removeCallbacks(it) }
+            host.retry = null
+            host.lastMode = mode
+            try {
+                host.adView.loadAd(adRequest(mode))
+            } catch (_: Throwable) {
+                Unit
+            }
         },
     )
+
+    DisposableEffect(lifecycle) {
+        val observer = object : LifecycleEventObserver {
+            override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+                val host = hostRef.value ?: return
+                when (event) {
+                    Lifecycle.Event.ON_RESUME -> host.adView.resume()
+                    Lifecycle.Event.ON_PAUSE -> host.adView.pause()
+                    else -> Unit
+                }
+            }
+        }
+        lifecycle.addObserver(observer)
+        onDispose {
+            lifecycle.removeObserver(observer)
+            val host = hostRef.value
+            host?.destroyed = true
+            host?.retry?.let { bannerHandler.removeCallbacks(it) }
+            try {
+                host?.adView?.destroy()
+            } catch (_: Throwable) {
+                Unit
+            }
+            hostRef.value = null
+        }
+    }
+}
+
+private val bannerHandler = Handler(Looper.getMainLooper())
+
+private class BannerHost {
+    lateinit var adView: AdView
+    var failures = 0
+    var retry: Runnable? = null
+    var destroyed = false
+    var lastMode: AdsMode? = null
+}
+
+/** Backoff 2s, 4s, 8s, 16s, 32s (tope). Sin IDs de unidad en los logs. */
+private fun scheduleBannerRetry(host: BannerHost) {
+    if (host.destroyed) return
+    host.retry?.let { bannerHandler.removeCallbacks(it) }
+    val attempt = host.failures++
+    val delayMs = 2_000L shl minOf(attempt, 4)
+    val runnable = Runnable {
+        host.retry = null
+        if (host.destroyed) return@Runnable
+        val currentMode = host.lastMode
+        if (currentMode != AdsMode.PERSONALIZED && currentMode != AdsMode.NON_PERSONALIZED) return@Runnable
+        try {
+            host.adView.loadAd(adRequest(currentMode))
+        } catch (_: Throwable) {
+            Unit
+        }
+    }
+    host.retry = runnable
+    bannerHandler.postDelayed(runnable, delayMs)
 }
 
 fun adRequest(mode: AdsMode): AdRequest {

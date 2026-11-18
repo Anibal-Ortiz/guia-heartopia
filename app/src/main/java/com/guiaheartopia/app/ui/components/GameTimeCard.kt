@@ -48,8 +48,19 @@ import com.guiaheartopia.app.ui.theme.Purple
 import com.guiaheartopia.app.ui.theme.Sky
 import com.guiaheartopia.app.ui.theme.SkyBlue
 import java.time.Instant
+
+/**
+ * Versión "viva": se recalcula con el tick compartido cada minuto.
+ * La sobrecarga con [instant] explícito se conserva para quien necesite un momento concreto.
+ */
 @Composable
-fun GameTimeCard(zoneId: String, modifier: Modifier = Modifier, instant: Instant = Instant.now()) {
+fun GameTimeCard(zoneId: String, modifier: Modifier = Modifier) {
+    val instant = rememberMinuteTick()
+    GameTimeCard(zoneId, modifier, instant)
+}
+
+@Composable
+fun GameTimeCard(zoneId: String, modifier: Modifier = Modifier, instant: Instant = GameClock.now()) {
     val zone = DexSchedule.zoneOf(zoneId)
     val model = GameTimePresentation.cardModel(zoneId, instant)
     val now = instant.atZone(zone)

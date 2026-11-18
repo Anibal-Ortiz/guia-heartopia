@@ -20,15 +20,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -109,22 +112,52 @@ private fun ZoomableModel(
 ) {
     var scale by remember { mutableFloatStateOf(ImageZoom.MIN) }
     var offset by remember { mutableStateOf(Offset.Zero) }
+    var boxSize by remember { mutableStateOf(Size.Zero) }
+    // Los gestos se registran una sola vez: rememberUpdatedState evita leer valores viejos.
+    val gestureState = rememberUpdatedState(Triple(scale, offset, boxSize))
+
+    fun clampOffset(value: Offset, currentScale: Float, size: Size): Offset {
+        if (currentScale <= ImageZoom.MIN || size == Size.Zero) return Offset.Zero
+        val maxX = (currentScale - 1f) * size.width / 2f
+        val maxY = (currentScale - 1f) * size.height / 2f
+        return Offset(value.x.coerceIn(-maxX, maxX), value.y.coerceIn(-maxY, maxY))
+    }
+
     Box(
         Modifier
             .sizeIn(minWidth = 220.dp, minHeight = 220.dp, maxWidth = 360.dp, maxHeight = 360.dp)
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
+            .onSizeChanged { size ->
+                val next = Size(size.width.toFloat(), size.height.toFloat())
+                if (next != boxSize) {
+                    boxSize = next
+                    offset = clampOffset(offset, scale, next)
+                }
+            }
             .pointerInput(Unit) {
                 detectTransformGestures { _, pan, zoom, _ ->
-                    scale = ImageZoom.pinch(scale, zoom)
-                    offset = if (scale <= ImageZoom.MIN) Offset.Zero else offset + pan
+                    val (currentScale, currentOffset, size) = gestureState.value
+                    val nextScale = ImageZoom.pinch(currentScale, zoom)
+                    scale = nextScale
+                    offset = if (nextScale <= ImageZoom.MIN) {
+                        Offset.Zero
+                    } else {
+                        clampOffset(currentOffset + pan, nextScale, size)
+                    }
                 }
             }
             .pointerInput(Unit) {
                 detectTapGestures(
                     onDoubleTap = {
-                        scale = ImageZoom.doubleTap(scale)
-                        if (scale <= ImageZoom.MIN) offset = Offset.Zero
+                        val (currentScale, currentOffset, size) = gestureState.value
+                        val nextScale = ImageZoom.doubleTap(currentScale)
+                        scale = nextScale
+                        offset = if (nextScale <= ImageZoom.MIN) {
+                            Offset.Zero
+                        } else {
+                            clampOffset(currentOffset, nextScale, size)
+                        }
                     },
                 )
             },

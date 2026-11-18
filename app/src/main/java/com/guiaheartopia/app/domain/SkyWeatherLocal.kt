@@ -5,30 +5,34 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
-import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.math.max
 
 /**
- * Conversión de tramos UTC del JSON a días y horas locales (IANA), con recorte por día civil.
+ * Tramos del JSON (hora civil de la zona elegida) convertidos a instantes y recortados
+ * por día civil. El JSON declara `serverZone: "reloj-local"`, así que tabla y relojes
+ * usan la misma zona; no hay desfase UTC que aplicar.
  */
 object SkyWeatherLocal {
-    fun utcSlotRange(utcDate: LocalDate, slot: SkySlot): Pair<Instant, Instant> {
-        val start = ZonedDateTime.of(utcDate, slot.start, ZoneOffset.UTC).toInstant()
+    fun utcSlotRange(date: LocalDate, slot: SkySlot, zone: ZoneId): Pair<Instant, Instant> {
+        val source = WeatherSource.zoneFor(zone)
+        val start = ZonedDateTime.of(date, slot.start, source).toInstant()
         val end = when {
             slot.end == LocalTime.MIDNIGHT || !slot.end.isAfter(slot.start) ->
-                ZonedDateTime.of(utcDate.plusDays(1), LocalTime.MIDNIGHT, ZoneOffset.UTC).toInstant()
-            else -> ZonedDateTime.of(utcDate, slot.end, ZoneOffset.UTC).toInstant()
+                ZonedDateTime.of(date.plusDays(1), LocalTime.MIDNIGHT, source).toInstant()
+            else -> ZonedDateTime.of(date, slot.end, source).toInstant()
         }
         return start to end
     }
 
-    fun utcDatesOverlapping(localDate: LocalDate, zone: ZoneId): List<LocalDate> {
-        val first = localDate.atStartOfDay(zone).withZoneSameInstant(ZoneOffset.UTC).toLocalDate()
-        val last = localDate.plusDays(1).atStartOfDay(zone).minusNanos(1)
-            .withZoneSameInstant(ZoneOffset.UTC).toLocalDate()
+    /** Fechas del JSON (hora civil de [zone]) que tocan el día civil indicado. */
+    fun utcDatesOverlapping(localDate: LocalDate, zone: ZoneId): List<LocalDate> =
+        listOf(localDate)
+
+    /** Fechas de origen comprendidas entre dos instantes (inclusive). */
+    fun utcDatesBetween(first: LocalDate, last: LocalDate): List<LocalDate> {
         val out = ArrayList<LocalDate>()
         var cursor = first
         while (!cursor.isAfter(last)) {
@@ -36,6 +40,15 @@ object SkyWeatherLocal {
             cursor = cursor.plusDays(1)
         }
         return out
+    }
+
+    /** Fechas del JSON (hora civil de [zone]) comprendidas entre dos instantes (inclusive). */
+    fun utcDatesBetween(start: Instant, end: Instant, zone: ZoneId): List<LocalDate> {
+        val source = WeatherSource.zoneFor(zone)
+        return utcDatesBetween(
+            start.atZone(source).toLocalDate(),
+            end.atZone(source).toLocalDate(),
+        )
     }
 
     fun clipToLocalDay(
@@ -59,13 +72,13 @@ object SkyWeatherLocal {
             for (slot in skyDay.slots) {
                 val display = slot.kind.climateDisplay()
                 if (display == SkyKind.SIN_DATOS) continue
-                val (s, e) = utcSlotRange(utcDate, slot)
+                val (s, e) = utcSlotRange(utcDate, slot, zone)
                 val clipped = clipToLocalDay(s, e, localDate, zone) ?: continue
                 pieces += SkySpan(display, slot.status, null, null, clipped.first, clipped.second)
             }
         }
         pieces.sortBy { it.start.toInstant() }
-        return mergeAdjacent(pieces)
+        return SkySpanSupport.mergeAdjacent(pieces)
     }
 
     fun barSegmentsOnLocalDay(table: SkyTable, localDate: LocalDate, zone: ZoneId): List<SkyBarSegment> {
@@ -116,21 +129,4 @@ object SkyWeatherLocal {
         return max(1, java.time.Duration.between(s, e).toMinutes())
     }
 
-    private fun mergeAdjacent(sorted: List<SkySpan>): List<SkySpan> {
-        if (sorted.isEmpty()) return sorted
-        val out = ArrayList<SkySpan>()
-        for (span in sorted) {
-            val prev = out.lastOrNull()
-            if (prev != null &&
-                prev.kind == span.kind &&
-                prev.status == span.status &&
-                prev.end.toInstant() == span.start.toInstant()
-            ) {
-                out[out.lastIndex] = prev.copy(end = span.end)
-            } else {
-                out += span
-            }
-        }
-        return out
-    }
 }

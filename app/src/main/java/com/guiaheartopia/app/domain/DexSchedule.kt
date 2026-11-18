@@ -69,8 +69,8 @@ object DexSchedule {
     fun availableAllDay(schedule: List<String>): Boolean = allDay.all { it in schedule }
 
     fun slotAt(instant: Instant): GameSlot {
-        val time = LocalTime.ofInstant(instant, ZoneOffset.UTC)
-        return UTC_SLOTS.first { it.containsUtc(time) }
+        val time = instant.atZone(ZoneOffset.UTC).toLocalTime()
+        return UTC_SLOTS.firstOrNull { it.containsUtc(time) } ?: UTC_SLOTS.first()
     }
 
     /** El clima no entra: solo cuenta el tramo. Una ficha sin horario no está «ahora». */
@@ -80,7 +80,7 @@ object DexSchedule {
     }
 
     fun window(slotKey: String, utcDate: LocalDate, zone: ZoneId): LocalGameWindow {
-        val slot = UTC_SLOTS.first { it.key == slotKey }
+        val slot = UTC_SLOTS.firstOrNull { it.key == slotKey } ?: UTC_SLOTS.first()
         return windowOnUtcDate(slot, utcDate, zone)
     }
 
@@ -106,7 +106,8 @@ object DexSchedule {
                 windowOnUtcDate(slot, utcDate.plusDays(delta), zone)
             }
             candidates.firstOrNull { it.contains(instant) }
-                ?: candidates.first { instant.isBefore(it.start.toInstant()) }
+                ?: candidates.firstOrNull { instant.isBefore(it.start.toInstant()) }
+                ?: candidates.last()
         }
     }
 

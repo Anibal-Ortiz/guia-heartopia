@@ -18,8 +18,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -28,10 +30,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.R
+import com.guiaheartopia.app.ui.theme.BannerSubtitle
+import com.guiaheartopia.app.ui.theme.CardLine
+import com.guiaheartopia.app.ui.theme.CardPaper
+import com.guiaheartopia.app.ui.theme.Cream
 import com.guiaheartopia.app.ui.theme.Ink
-
-private val CardPaper = Color(0xFFFBF6E9)
-private val CardLine = Color(0xFFD6C8AA)
 
 fun watercolorFor(category: String): Int? = when (category) {
     "Peces" -> R.drawable.acuarela_peces
@@ -52,6 +55,10 @@ fun washiFor(category: String?): Int = when (category) {
 fun NotebookCard(
     category: String? = null,
     modifier: Modifier = Modifier,
+    container: Color = CardPaper,
+    shape: RoundedCornerShape = RoundedCornerShape(12.dp),
+    elevation: Dp = 0.dp,
+    borderColor: Color = CardLine,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Box(modifier.fillMaxWidth()) {
@@ -59,8 +66,9 @@ fun NotebookCard(
             Modifier
                 .fillMaxWidth()
                 .padding(start = 8.dp, top = 12.dp)
-                .background(CardPaper, androidx.compose.foundation.shape.RoundedCornerShape(12.dp))
-                .border(1.dp, CardLine, androidx.compose.foundation.shape.RoundedCornerShape(12.dp))
+                .shadow(elevation, shape)
+                .background(container, shape)
+                .border(1.dp, borderColor, shape)
                 .padding(16.dp),
             verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(10.dp),
             content = content,
@@ -100,7 +108,7 @@ fun SectionBanner(
         modifier
             .bleed(bleed)
             .heightIn(min = 132.dp)
-            .background(Color(0xFFF7EFDB)),
+            .background(Cream),
     ) {
         Image(
             painter = painterResource(image),
@@ -119,9 +127,9 @@ fun SectionBanner(
                 .background(
                     Brush.horizontalGradient(
                         listOf(
-                            Color(0xFFF7EFDB),
-                            Color(0xF2F7EFDB),
-                            Color(0x00F7EFDB),
+                            Cream,
+                            Cream.copy(alpha = 0.95f),
+                            Cream.copy(alpha = 0f),
                         ),
                     ),
                 )
@@ -136,7 +144,7 @@ fun SectionBanner(
             Text(
                 subtitle,
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color(0xFF2A2118),
+                color = BannerSubtitle,
                 softWrap = true,
             )
         }

@@ -6,6 +6,7 @@ import com.guiaheartopia.app.domain.ContentDownloadProgress
 import com.guiaheartopia.app.domain.ContentLibrary
 import com.guiaheartopia.app.domain.ContentManifest
 import com.guiaheartopia.app.domain.ContentPackage
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
@@ -20,6 +21,8 @@ object AndroidContentStore {
     private const val PREFS = "content-sync"
     private const val KEY_ATTEMPT = "lastAttempt"
     private const val KEY_NEEDS_APP = "needsNewerApp"
+    private const val MAX_DOWNLOAD_BYTES = 50L * 1024 * 1024
+    private const val CHUNK = 16 * 1024
 
     fun root(context: Context): File = File(context.filesDir, "content")
 
@@ -66,6 +69,7 @@ object AndroidContentStore {
         )
     }
 
+    /** Descarga por chunks, con tope y validación de Content-Length. Nunca readBytes() sin límite. */
     fun httpGet(url: String): ByteArray? = try {
         val connection = (URL(url).openConnection() as HttpURLConnection).apply {
             connectTimeout = 20_000
@@ -79,7 +83,21 @@ object AndroidContentStore {
             if (connection.responseCode != HttpURLConnection.HTTP_OK) {
                 null
             } else {
-                connection.inputStream.use { it.readBytes() }
+                val declared = connection.contentLengthLong
+                if (declared > MAX_DOWNLOAD_BYTES) return null
+                connection.inputStream.use { input ->
+                    val out = ByteArrayOutputStream()
+                    val buffer = ByteArray(CHUNK)
+                    var total = 0L
+                    while (true) {
+                        val read = input.read(buffer)
+                        if (read < 0) break
+                        total += read
+                        if (total > MAX_DOWNLOAD_BYTES) return null
+                        out.write(buffer, 0, read)
+                    }
+                    out.toByteArray()
+                }
             }
         } finally {
             connection.disconnect()
@@ -107,23 +125,32 @@ class AndroidContentLibrary(private val context: Context) : ContentLibrary {
 
     override fun effectiveBytes(path: String): ByteArray? {
         if (!ContentPackage.isSafePath(path)) return null
-        overlayBytes(path)?.let { return it }
-        return try {
-            context.assets.open(path).use { it.readBytes() }
-        } catch (_: Exception) {
-            null
+        return ContentCache.bytes(path) {
+            overlayBytes(path) ?: try {
+                context.assets.open(path).use { it.readBytes() }
+            } catch (_: Exception) {
+                null
+            }
         }
     }
 
     override fun overlayBytes(path: String): ByteArray? =
-        AndroidContentStore.overlayFile(context, path)?.readBytes()
+        runCatching { AndroidContentStore.overlayFile(context, path)?.readBytes() }.getOrNull()
 
+    /**
+     * Publicación atómica: `previous` se conserva hasta confirmar staging→live,
+     * se verifica cada renameTo y nunca se deja la app sin contenido live.
+     */
     override fun publish(manifest: ContentManifest, overlay: Map<String, ByteArray>) {
         val root = AndroidContentStore.root(context)
         val staging = File(root, "staging")
-        staging.deleteRecursively()
+        val live = File(root, "live")
+        val previous = File(root, "previous")
+
+        // 1. Preparamos el staging completo antes de tocar live.
+        if (staging.exists() && !staging.deleteRecursively()) error("no se pudo limpiar el staging")
         val filesDir = File(staging, "files")
-        filesDir.mkdirs()
+        if (!filesDir.mkdirs() && !filesDir.isDirectory) error("no se pudo crear el staging")
         overlay.forEach { (path, bytes) ->
             require(ContentPackage.isSafePath(path))
             val dest = File(filesDir, path)
@@ -132,16 +159,29 @@ class AndroidContentLibrary(private val context: Context) : ContentLibrary {
             part.writeBytes(bytes)
             if (!part.renameTo(dest)) error("no se pudo guardar $path")
         }
-        File(staging, "manifest.json").writeText(ContentPackage.encodeManifest(manifest))
-        val live = File(root, "live")
-        val previous = File(root, "previous")
-        previous.deleteRecursively()
-        if (live.exists() && !live.renameTo(previous)) error("no se pudo apartar el contenido anterior")
+        val manifestFile = File(staging, "manifest.json")
+        val manifestPart = File(staging, "manifest.json.part")
+        manifestPart.writeText(ContentPackage.encodeManifest(manifest))
+        if (!manifestPart.renameTo(manifestFile)) error("no se pudo guardar el manifiesto")
+
+        // 2. Apartamos el contenido anterior solo con el staging ya completo.
+        if (previous.exists() && !previous.deleteRecursively()) error("no se pudo limpiar la copia anterior")
+        var movedPrevious = false
+        if (live.exists()) {
+            if (!live.renameTo(previous)) error("no se pudo apartar el contenido anterior")
+            movedPrevious = true
+        }
+
+        // 3. Publicamos. Si falla, restauramos el contenido anterior.
         if (!staging.renameTo(live)) {
-            if (!live.exists()) previous.renameTo(live)
+            if (movedPrevious && !previous.renameTo(live)) {
+                error("no se pudo publicar ni restaurar el contenido anterior")
+            }
             error("no se pudo publicar el contenido")
         }
-        previous.deleteRecursively()
+        // previous se conserva hasta aquí: live ya está confirmado.
+        if (previous.exists()) previous.deleteRecursively()
+        ContentCache.invalidate()
     }
 
     override fun needsNewerApp(): Boolean =

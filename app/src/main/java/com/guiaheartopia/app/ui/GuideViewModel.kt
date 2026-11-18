@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.guiaheartopia.app.data.ContentSignals
 import com.guiaheartopia.app.data.GuideRepository
 import com.guiaheartopia.app.data.SeedCatalog
 import com.guiaheartopia.app.domain.AnimalAnnotation
@@ -39,6 +40,8 @@ import com.guiaheartopia.app.domain.ImportResult
 import com.guiaheartopia.app.domain.ReminderPrefs
 import com.guiaheartopia.app.reminders.ReminderScheduler
 import com.guiaheartopia.app.data.AvatarStore
+import com.guiaheartopia.app.ui.components.GameClock
+import java.time.Instant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
@@ -82,8 +85,10 @@ class GuideViewModel(
     private val today = MutableStateFlow(LocalDate.now(zone))
     private val dateFormat = DateTimeFormatter.ofPattern("EEEE d 'de' MMMM", Locale.forLanguageTag("es"))
 
-    val ui = combine(repository.snapshots, today) { snap, day ->
-        present(snap, day)
+    // Misma fuente de reloj que la UI (GameClock) y revisiones de contenido: el saludo y
+    // los overrides se recalculan cuando cambia el minuto o el manifiesto remoto.
+    val ui = combine(repository.snapshots, today, GameClock.tick, ContentSignals.flow()) { snap, day, now, _ ->
+        present(snap, day, now)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), GuideUi())
 
     init {
@@ -94,11 +99,28 @@ class GuideViewModel(
         today.value = LocalDate.now(zone)
         viewModelScope.launch {
             repository.update { snap ->
-                val hobbies = ensureHobbies(snap)
-                if (hobbies == snap.hobbies && snap.hobbiesInitialized) snap
-                else snap.copy(hobbies = hobbies, hobbiesInitialized = true)
+                val migrated = migrateEventsMaster(snap)
+                val hobbies = ensureHobbies(migrated)
+                if (hobbies == migrated.hobbies && migrated.hobbiesInitialized && migrated === snap) snap
+                else migrated.copy(hobbies = hobbies, hobbiesInitialized = true)
             }
         }
+    }
+
+    /**
+     * Los perfiles guardados antes del interruptor maestro tenían los subtipos de eventos
+     * activos con `eventsEnabled = false`. Se habilita una sola vez para no dejarlos sin avisos.
+     */
+    private fun migrateEventsMaster(snap: com.guiaheartopia.app.domain.GuideSnapshot): com.guiaheartopia.app.domain.GuideSnapshot {
+        val reminders = snap.profile.reminders
+        val anySubtype = reminders.pescaEnabled || reminders.avesEnabled ||
+            reminders.insectosEnabled || reminders.temporadaEnabled
+        if (reminders.eventsMasterTouched || reminders.eventsEnabled || !anySubtype) return snap
+        return snap.copy(
+            profile = snap.profile.copy(
+                reminders = reminders.copy(eventsEnabled = true, eventsMasterTouched = true),
+            ),
+        )
     }
 
     fun dismissReminderPrompt() {
@@ -143,7 +165,8 @@ class GuideViewModel(
         onResult(parsed)
     }
 
-    fun saveProfile(profile: PlayerProfile) {
+    /** Cierra el asistente inicial guardando el nombre elegido en él. */
+    fun completeOnboarding(profile: PlayerProfile) {
         viewModelScope.launch {
             repository.update {
                 it.copy(profile = profile.copy(onboarded = true, name = profile.name.trim()))
@@ -466,7 +489,7 @@ class GuideViewModel(
         }
     }
 
-    private fun present(snap: GuideSnapshot, day: LocalDate): GuideUi {
+    private fun present(snap: GuideSnapshot, day: LocalDate, now: Instant = GameClock.now()): GuideUi {
         val animals = SeedCatalog.animals.filter { it.id !in snap.hiddenSeedAnimalIds } + snap.customAnimals
         val collectibles = SeedCatalog.collectibles.filter { it.id !in snap.hiddenSeedCollectibleIds } +
             snap.customCollectibles
@@ -494,7 +517,7 @@ class GuideViewModel(
             redeemedCodes = snap.redeemedCodeIds.toSet(),
             dexFilters = snap.dexFilters,
             creatureWindowAlarms = snap.creatureWindowAlarms,
-            greeting = Greeting.line(LocalTime.now(zone).hour, snap.profile.name),
+            greeting = Greeting.line(now.atZone(zone).hour, snap.profile.name),
             todayLabel = day.format(dateFormat),
         )
     }
@@ -502,11 +525,25 @@ class GuideViewModel(
     private fun ensureHobbies(snap: GuideSnapshot): List<Hobby> =
         HobbyCatalog.migrate(snap.hobbies, hobbyOverrides())
 
+    private var cachedOverridesRevision = -1
+    private var cachedOverrides: Map<String, Int>? = null
+
+    /**
+     * Parsear hobbies.json en cada `present()` era costoso (y se hacía varias veces por
+     * snapshot). Se cachea y se invalida cuando cambia contentRevision.
+     */
     private fun hobbyOverrides(): Map<String, Int> {
         val context = appContext ?: return emptyMap()
+        val revision = ContentSignals.flow().value
+        cachedOverrides?.let { cached ->
+            if (cachedOverridesRevision == revision) return cached
+        }
         val bytes = com.guiaheartopia.app.data.AndroidContentLibrary(context).effectiveBytes("hobbies.json")
             ?: return emptyMap()
-        return HobbyCatalog.parseOverrides(bytes.decodeToString())
+        val parsed = HobbyCatalog.parseOverrides(bytes.decodeToString())
+        cachedOverrides = parsed
+        cachedOverridesRevision = revision
+        return parsed
     }
 
     private fun huertoMarks(snap: GuideSnapshot) =

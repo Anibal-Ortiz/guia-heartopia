@@ -1,229 +1,159 @@
 # Guía Heartopia
 
-Versión 0.5.1. El clima de noviembre y diciembre de 2026 está en cuatro tramos, cruzado entre Tidebell y heartopia.th.gl. Los tramos de criaturas están en UTC fijo (Noche 05:00–11:00, Amanecer 11:00–17:00, Día 17:00–23:00, Tarde 23:00–05:00); en Chile a UTC−3 el 2026-11-06 equivalen a Noche 02:00–08:00, Amanecer 08:00–14:00, Día 14:00–20:00 y Tarde 20:00–02:00. La zona del país se convierte con `java.time` y horario de verano; el calendario de clima usa otro reloj (cuatro bloques de seis horas UTC).
+Guía companion **no oficial** para Heartopia. No está afiliada a los creadores ni a los editores del juego: no controla la partida, no pulsa la pantalla y no promete que los datos de terceros sean oficiales.
 
-Versión 0.5.0. El calendario de noviembre de 2026 junta heartodex y Tidebell. Diciembre se marca como estimado con el ciclo de 50 días. Los iconos de las criaturas son dibujos de la app.
+Versión **1.1.0** (`versionCode` 43, `versionName` 1.1.0).
 
-Versión 0.4.1. Los nombres, lugares, climas y horarios del catálogo salen de las páginas índice en español de heartodex. El nombre en inglés se guarda solo para buscar y no se muestra. Créditos y fuentes están en Ajustes.
+## Qué hay en esta versión
 
-Versión 0.4.0. Los tramos del juego están en UTC fijo (Amanecer 05:00–11:00, Día 11:00–17:00, Tarde 17:00–23:00, Noche 23:00–05:00), tomados de la hora de Chile a UTC−3 el 2026-11-06. La app los muestra en la zona del país elegido, con horario de verano. «Ahora» usa el tramo de cada criatura; el clima se muestra y todavía no filtra.
+- Cuatro pestañas en la barra inferior: **Inicio**, **Aficiones**, **Códigos** y **Calendario**. **Ajustes** se abre desde la barra superior.
+- Catálogos, bichos, peces, recetas, clima y códigos se cargan desde el manifiesto remoto publicado en `https://anibalortizdev.github.io/guia-heartopia-contenido/`. No se copiaron imágenes del juego.
+- Perfil, rutina, avisos y progreso se guardan solo en el dispositivo.
+- Alrededor de **40 pruebas unitarias** (`app/src/test`) más una prueba de UI que necesita dispositivo (`app/src/androidTest`).
+- El manifiesto de release se genera con una tarea Gradle, no al configurar el proyecto; la CI lo verifica sin secretos.
+- Firma de release sin secretos: la compilación falla con un mensaje claro, salvo que se pida explícitamente `-PallowDebugSignedRelease=true` para una prueba local.
 
-Versión 0.3.0. El catálogo de peces, pájaros, insectos y fauna sale de las páginas índice de [heartodex](https://www.heartodex.com/), extracción 2026-11-06 (`python3 tools/import_heartodex.py`). No se copiaron imágenes. Los términos del sitio piden no hacer scraping masivo, así que no se recorrieron las fichas individuales: precio, sombra, cebo y nivel no venían en el índice.
+### Histórico resumido
 
-Versión 0.2.0. La interfaz usa Plus Jakarta Sans (OFL, latín extendido): es una sans redondeada y limpia, más legible que la pixelada, y se parece al aire de una companion de life-sim sin copiar esa otra app. El pixel art queda solo en la herramienta de cuadrícula.
-
-## Datos contrastados en 0.2.0
-
-Comidas de ocho animales silvestres, citadas igual por Polygon, Dexerto y heartopia.noobgo.com. Los comederos no entran: esas guías no describen el mismo lugar.
-
-flurita y Liuliu del 1 al 30 de noviembre de 2026: Tidebell y heartodex coinciden. «flurita» se deja así; en inglés las guías dicen Flawless Fluorite. heartodex llama Liuliu Oak al recurso que Tidebell llama Roaming Oak. La hora 6:00 solo la da Tidebell y sin zona de servidor, así que no se convierte.
-
-Noche de la adivinación: el 10 de octubre de 2026 coincide en dos guías. El cierre no (20 o 21 de noviembre). El clima hora a hora y el catálogo completo de peces, insectos y pájaros siguen pendientes. Hay cuatro fichas de una sola guía, marcadas como tales.
-
-## Verificación de la 0.1.0 (histórico)
-
-Guía companion **no oficial** para Heartopia. Sirve para anotar la partida, llevar una rutina personal, consultar un calendario de climas y preparar una referencia de pixel art para pintar a mano.
-
-No está afiliada a los creadores ni a los editores de Heartopia. No controla el juego, no pulsa la pantalla y no promete que el lienzo real coincida con esta cuadrícula.
+- 0.5.1: clima de noviembre y diciembre de 2026 en cuatro tramos, cruzado entre Tidebell y heartodex; conversión con `java.time` y horario de verano.
+- 0.5.0: calendario de noviembre y diciembre estimado con ciclo de 50 días; iconos dibujados por la app.
+- 0.4.1: nombres, lugares, climas y horarios del catálogo desde páginas índice en español de heartodex; el nombre en inglés solo sirve para buscar.
+- 0.4.0: tramos del juego en UTC fijo, mostrados en la zona elegida.
+- 0.3.0: importación de catálogo desde heartodex (extracción 2026-11-06), sin scraping de fichas individuales.
+- 0.2.0: interfaz con Plus Jakarta Sans (OFL); se dejó el estilo pixelado para la herramienta de cuadrícula.
+- 0.1.0: primera versión, con bienvenida, rutina, guía, clima y referencia de pixel art.
 
 ## Requisitos
 
 - JDK 17 o superior (el proyecto compila con JDK 21).
-- Android SDK con la plataforma **37.2** y Build-Tools **37.0.0**.
-- `local.properties` con `sdk.dir`. Hay un ejemplo en `local.properties.example`.
+- Android SDK con plataforma **37** y Build-Tools **37.0.0**.
+- `local.properties` con `sdk.dir`:
 
 ```bash
 cp local.properties.example local.properties
 # edita sdk.dir
 ```
 
-`minSdk` 26, `compileSdk` y `targetSdk` 37, `versionCode` 1, `versionName` 0.1.0.
-El plugin de Android es 9.5.1 y Gradle 9.6, porque las bibliotecas actuales de Compose piden compilar contra la API 37.
+`minSdk` 26, `targetSdk` 36, `compileSdk` 37. Android Gradle Plugin 9.5.1, Kotlin 2.3.21 y Gradle 9.6.
 
-## Ejecutar
-
-```bash
-./gradlew :app:assembleDebug
-```
-
-El APK de pruebas queda en:
-
-```text
-app/build/outputs/apk/debug/app-debug.apk
-```
-
-En un dispositivo o emulador:
+## Ejecutar y verificar
 
 ```bash
-adb install -r app/build/outputs/apk/debug/app-debug.apk
+./gradlew :app:assembleDebug --console=plain
 ```
 
-## Verificación hecha en esta versión
-
-En este entorno, con JDK 21 y el Android SDK de la plataforma 37:
-
-- `./gradlew :app:testDebugUnitTest` terminó con 26 pruebas y 0 fallos.
-- `./gradlew :app:assembleDebug` generó `app/build/outputs/apk/debug/app-debug.apk`.
-- `./gradlew :app:compileDebugAndroidTestKotlin` compiló la prueba de UI de la bienvenida.
-- No hay emulador ni dispositivo, así que `connectedDebugAndroidTest` no se ejecutó.
-
-## Pruebas
+El APK queda en `app/build/outputs/apk/debug/` (con el nombre derivado de `appVersion`, por ejemplo `Guia-Heartopia-1.1.0-debug.apk`).
 
 ```bash
-./gradlew :app:testDebugUnitTest
+adb install -r app/build/outputs/apk/debug/<apk-generado>.apk
 ```
 
-Cubren el reinicio de la rutina por fecha local, la conversión de zonas (Chile, Nueva York y una zona sin horario de verano), el conversor de pixel art y el progreso de coleccionables.
-
-La prueba de UI de la bienvenida está en `app/src/androidTest` y necesita un dispositivo:
+Comprobaciones que no necesitan secretos:
 
 ```bash
-./gradlew :app:connectedDebugAndroidTest
+./gradlew :app:testDebugUnitTest --console=plain
+./gradlew :app:lintDebug --console=plain
+./gradlew :app:verifyReleaseManifest --console=plain
 ```
 
-Sin emulador esa tarea no se puede ejecutar. Compilarla no sustituye el resultado en un dispositivo.
+`verifyReleaseManifest` genera el manifiesto de release en una tarea Gradle y comprueba que es XML válido, que declara `APPLICATION_ID` cuando los anuncios están activos y que elimina `MobileAdsInitProvider` cuando no los hay. Las mismas cuatro comprobaciones (más `assembleDebug`) las ejecuta `.github/workflows/build.yml` con `--console=plain`, `permissions: contents: read`, concurrencia con cancelación y límite de 20 minutos.
+
+La prueba de UI de bienvenida está en `app/src/androidTest` y requiere dispositivo o emulador:
+
+```bash
+./gradlew :app:connectedDebugAndroidTest --console=plain
+```
 
 ## Mapa de pantallas
 
-| Pantalla | Cómo se abre | Qué hace ahora |
+| Pantalla | Cómo se abre | Qué hace |
 | --- | --- | --- |
-| Bienvenida | Primer arranque | Nombre, lugar, franja habitual, país y zona. Enlaza privacidad y términos. |
-| Inicio | Barra inferior | Saludo, fecha, progreso del día y accesos. |
-| Rutina | Barra inferior | Tareas marcables, progreso, reinicio al cambiar la fecha local y «Restaurar tareas del día». |
-| Guía | Barra inferior | Pestañas Animales y Coleccionables. Desde aquí también se abre el clima. |
-| Ficha de animal | Al tocar un animal | Comidas, comederos, notas tuyas y avistado. |
-| Clima | Inicio o Guía | Mes, país, zona, origen horario, filtros de flurita y Liuliu, detalle del día. |
-| Pixel | Barra inferior | Elegir imagen, cuadrícula, colores, conversión local, zoom, coordenadas, leyenda y PNG. |
-| Hobbies | Barra inferior | Cocina, jardinería, mascotas y otros, con nivel editable. |
-| Ajustes | Barra superior | Perfil, país, zona, anuncios, privacidad y términos. |
+| Inicio | Pestaña inferior | Saludo, fecha, progreso del día y accesos. |
+| Aficiones | Pestaña inferior | Cocina, jardinería, mascotas y otros, con nivel que anota quien juega. |
+| Códigos | Pestaña inferior | Códigos canjeables y su estado. |
+| Calendario | Pestaña inferior | Mes, país, zona, clima, flurita y Liuliu, detalle del día. |
+| Guía | Desde Inicio | Catálogo de animales y coleccionables, con búsqueda y filtros. |
+| Ajustes | Barra superior | Perfil, país, zona, anuncios, avisos, privacidad y términos. |
+| Bienvenida | Primer arranque | Nombre, lugar, franja habitual, país y zona; enlaza privacidad y términos. |
 
-La barra inferior tiene cinco destinos. Ajustes y el calendario no cabían ahí sin esconderlos: Ajustes está siempre arriba y el calendario está en Inicio y en Guía.
-
-## Estado inicial de cada módulo
+## Estado de los módulos
 
 | Módulo | Estado |
 | --- | --- |
-| Perfil | Funcional y guardado en el dispositivo. |
-| Rutina | Funcional. La lista inicial es una sugerencia personal, no la rutina oficial. |
-| Animales | Estructura lista. Las fichas de ejemplo no traen comidas ni lugares reales. |
-| Coleccionables | Seguimiento local por categoría. Los ítems de ejemplo no son oficiales. |
-| Clima | Conversión horaria real. Franjas, climas, flurita y Liuliu de ejemplo, pendientes de verificar. |
-| Pixel art | Conversión local usable. Paleta y tamaños comunitarios, no oficiales. |
-| Hobbies | Progreso personal. Los niveles no vienen de una tabla del juego. |
-| Anuncios | Banner de prueba en debug, después del consentimiento. Release sin IDs no pide anuncios. |
+| Perfil | Funcional, guardado en el dispositivo. |
+| Rutina | Funcional; la lista inicial es una sugerencia personal, no la oficial. |
+| Guía | Catálogo local/integrado con búsqueda reactiva; los datos vienen del manifiesto remoto. |
+| Aficiones | Progreso personal; los niveles no vienen de una tabla del juego. |
+| Códigos | Lista y seguimiento local de códigos. |
+| Calendario | Conversión horaria real; varios datos siguen marcados como pendientes de verificar. |
+| Anuncios | Banner adaptativo en debug con IDs de prueba; en release solo con IDs reales configurados. |
 
-## Dónde están los anuncios
+## Anuncios
 
-Solo la variante **debug** lleva IDs, y son los oficiales de prueba de Google:
+La variante **debug** usa los IDs oficiales de prueba de Google, definidos en `app/build.gradle.kts` (`buildTypes.debug`) y en `app/src/debug/AndroidManifest.xml`:
 
 - App ID: `ca-app-pub-3940256099942544~3347511713`
 - Banner: `ca-app-pub-3940256099942544/6300978111`
 
-Están en `app/src/debug/AndroidManifest.xml` y en `app/build.gradle.kts` (`buildTypes.debug`). No hay un App ID ni un bloque inventados.
-
-La variante **release** lee, si existen, estas variables de `local.properties` o del entorno:
+La variante **release** lee, si existen, estas claves de `local.properties` o del entorno:
 
 - `ADMOB_APP_ID`
 - `ADMOB_BANNER_AD_UNIT_ID`
+- `ADMOB_INTERSTITIAL_AD_UNIT_ID`
+- `ADMOB_REWARDED_CALENDAR_UNIT_ID`
+- `ADMOB_REWARDED_ADFREE_UNIT_ID`
 
-Si faltan, `ADS_ENABLED` queda en false, no se escribe un App ID y no se llama a `MobileAds.initialize`. No subas esos valores al repositorio.
+No hay IDs de producción inventados en el repositorio. Si el App ID o el banner están vacíos o parecen marcadores (`xxxx`, `yyyy`, `placeholder`, `tu_id`, `reemplazar`, `ejemplo`, `admob_…`), release cae a los IDs de prueba de Google y `ADS_USE_GOOGLE_TEST_IDS` queda en `true`. Esa detección de placeholders vive en `admobPlaceholder()` en `app/build.gradle.kts` y se expone a Kotlin como `BuildConfig.ADS_CONFIGURED` (`true` en debug por ser IDs de prueba válidos; en release, `true` solo con IDs reales). `AdMobIds.kt` podría usar ese booleano en lugar de repetir la comprobación en runtime.
 
-### Consentimiento
+El orden de inicialización es: terminar la bienvenida, consultar UMP y solo entonces `MobileAds.initialize`. El banner no aparece antes del consentimiento. Si UMP dice que no se pueden pedir anuncios, no hay banner; **si la consulta falla, el SDK no se inicializa** y Ajustes ofrece «Reintentar consentimiento de anuncios». No se usan anuncios no personalizados (`npa=1`) como fallback automático, pero la ruta está preparada: `AdConfig.personalizedAds = false` o `AdsController.setPersonalizedAds(false)` conmutan todas las peticiones a `npa=1`. El flujo se simula en `ConsentSimulationTest` con escenarios EEA (aceptar, rechazar, error). Para depurar el formulario se pueden definir `UMP_DEBUG_GEOGRAPHY` (`EEA`, `NOT_EEA`, `REGULATED_US_STATE`, `OTHER`) y `UMP_TEST_DEVICE_ID`.
 
-El orden es: terminar la bienvenida, consultar UMP, y solo entonces `MobileAds.initialize`. El banner no aparece en la bienvenida ni antes de que el SDK avise que está listo.
+Quedan intervenciones humanas antes de publicar (detalle en `docs/PUBLISHING-CHECKLIST.md`):
 
-- Si la persona no consiente y UMP dice que no se pueden pedir anuncios, no hay banner.
-- Si la consulta falla, la solicitud usa anuncios no personalizados (`npa=1`).
-- La app no marca el consentimiento como otorgado.
-- Para depurar el formulario se puede definir `UMP_DEBUG_GEOGRAPHY` (`EEA`, `NOT_EEA`, `REGULATED_US_STATE`, `OTHER`) y, si hace falta, `UMP_TEST_DEVICE_ID`. Vacío significa que no se fuerza la geografía.
+- Publicar el mensaje de privacidad GDPR/regiones reguladas en la consola de AdMob (Privacidad y mensajes), con la política enlazada.
+- Confirmar el nombre de quien responde en la política (el correo ya está actualizado a `anibalortiz.dev@gmail.com`); el dominio ya está publicado.
+- Enviar el formulario de Data Safety de Play con las respuestas preparadas en `docs/play-store/formularios.md`.
+- Verificar en la ficha de AdMob que el dominio del desarrollador es `anibalortizdev.github.io`, que ya sirve `app-ads.txt` con el publisher real (no se genera un archivo de relleno).
 
-Antes de publicar hace falta un **mensaje de privacidad GDPR/regiones reguladas creado y publicado en la consola de AdMob** (Privacidad y mensajes). Sin ese mensaje, el formulario no llega a los usuarios del EEE en producción. También faltan el nombre de quien responde, un correo y el dominio: la política dentro de la app lo dice.
+Permisos declarados: `INTERNET`, `ACCESS_NETWORK_STATE`, `AD_ID`, `POST_NOTIFICATIONS`, `RECEIVE_BOOT_COMPLETED`, `WAKE_LOCK` y `SCHEDULE_EXACT_ALARM`. `USE_EXACT_ALARM` se elimina con `tools:node="remove"` y `MobileAdsInitProvider` queda desactivado para que el SDK no se inicialice solo.
 
-### APK de pruebas y AAB de release
+## Copias de seguridad
+
+`android:allowBackup="true"` está acotado por `app/src/main/res/xml/backup_rules.xml` (API < 31) y `app/src/main/res/xml/data_extraction_rules.xml` (API 31+). Se excluyen de la nube y de la transferencia de dispositivo los DataStore de recompensas y perfil (`ad_rewards`, `guia_heartopia`, `content_checks`) y las SharedPreferences `guia-anuncios-nav`, `guia-avisos` y `content-sync`. El receptor de arranque `BootReminderReceiver` exige `android.permission.RECEIVE_BOOT_COMPLETED`.
+
+## Firma de release
 
 ```bash
-./gradlew :app:assembleDebug
+./gradlew :app:bundleRelease --console=plain
 ```
 
-Ese APK usa IDs de prueba. No lo subas a Play como si fuera la ficha definitiva.
+La firma no vive en el repositorio. Para el AAB de Play se usan `RELEASE_STORE_FILE`, `RELEASE_STORE_PASSWORD`, `RELEASE_KEY_ALIAS` y `RELEASE_KEY_PASSWORD`; también existe la ruta `upload` con `upload.properties` en `~/.wikifan-heartopia/`. Para la distro se usan `DISTRO_STORE_PASSWORD`, `DISTRO_KEY_ALIAS` y `DISTRO_KEY_PASSWORD` con el keystore `~/.wikifan-heartopia/release.jks`. Todas se leen con `secret(...)` desde `local.properties` o el entorno.
 
-```bash
-./gradlew :app:bundleRelease
-```
+Si no hay secretos de firma, `bundleRelease`/`assembleRelease` **fallan**; solo se permite firmar con el keystore de debug mediante `-PallowDebugSignedRelease=true`, y ese artefacto no es publicable. `testDebugUnitTest`, `lintDebug`, `verifyReleaseManifest` y `assembleDebug` no se ven afectados.
 
-`bundleRelease` genera un Android App Bundle solo cuando tiene sentido publicarlo. La firma **no** vive en el repositorio. Si quieres firmar, define fuera de git:
-
-- `RELEASE_STORE_FILE`
-- `RELEASE_STORE_PASSWORD`
-- `RELEASE_KEY_ALIAS`
-- `RELEASE_KEY_PASSWORD`
-
-Sin esas claves el bundle, si llega a generarse, queda sin firmar. No generes ni subas un keystore al repo. Esta versión no publica nada en Play.
-
-`versionCode` es 1 y `versionName` es `0.1.0`. Súbelos en `app/build.gradle.kts` antes de cada envío.
-
-### Play Data Safety y app-ads.txt
-
-Cuando haya anuncios reales, el formulario de Data Safety debe declarar que Google AdMob puede tratar el identificador de publicidad (`AD_ID`) y datos técnicos del dispositivo al pedir un anuncio. La guía en sí no tiene cuenta ni analítica propia: el progreso se queda en el teléfono.
-
-`app-ads.txt` queda pendiente del dominio y del ID de editor reales. No hay un archivo con un publisher ID de relleno. La línea, el día que existan, tiene esta forma y nada más:
-
-```text
-google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
-```
-
-`f08c47fec0942fa0` es el identificador de Google como autoridad de ventas, no un ID de esta app.
-
-Permisos de la app: `INTERNET`, `ACCESS_NETWORK_STATE` y `AD_ID` (lo exige el SDK de anuncios). No hay permiso de ubicación ni de almacenamiento amplio.
-
-## Pixel art
-
-El núcleo está en `app/src/main/java/com/guiaheartopia/app/pixel` y se puede sustituir por `ImageToPixel` sin rehacer la pantalla.
-
-1. La imagen se decodifica a ARGB y se limita a 1600 px.
-2. Box-filter con alfa, en modo recortar, encajar o estirar (`srcRect` existe en el conversor para un recorte posterior).
-3. Color más cercano en CIELAB (ΔE76²) sobre la paleta.
-4. Se puede quedar con los N colores más usados.
-5. Contornos nítidos por defecto, o dithering Floyd–Steinberg.
-6. El blanco conectado al borde puede quedar vacío.
-
-La paleta es una **paleta aproximada de referencia**, de origen comunitario. No es oficial. Los tamaños predefinidos tampoco son una especificación del lienzo: se pueden cambiar con los controles.
-
-La guía se ve con zoom, desplazamiento, grilla y números cuando la casilla es legible. Al tocar se muestran columna, fila y color. Exportar guarda un PNG en `Imágenes/GuiaHeartopia` mediante MediaStore en Android 10 o superior. En Android 8 y 9 el archivo queda en el directorio de imágenes de la propia app, sin permiso extra.
-
-## Clima, flurita y Liuliu
-
-La conversión está en `WeatherTime` y usa `java.time.ZoneId`. No hay desfases UTC fijos. En un hueco horario java.time adelanta la hora local; en un solapamiento usa el desfase anterior.
-
-Los datos están en `app/src/main/java/com/guiaheartopia/app/data/SampleCatalog.kt`, objeto `SampleWeather`. Para actualizarlos:
-
-1. Añade un `WeatherOrigin` con su `ZoneId` real si llega a conocerse el servidor. No inventes el nombre.
-2. Añade `WeatherSlot` con la hora civil de ese origen, el estado y, si la fuente lo dice, lugar y aparición de `flurita` o `Liuliu`.
-3. Deja `verified = false` hasta que la fuente se pueda citar. La interfaz muestra «Pendiente de verificar».
-
-No se corrigió «flurita» a «Fluorita» ni se interpretó «Liuliu»: no hay una fuente oficial en esta versión que fije el nombre en español, el lugar o el horario. Hay sitios de fans con calendarios y ubicaciones, y no coinciden entre ellos; por eso no se copiaron como si fueran el calendario del juego.
-
-El país y la zona se eligen en la bienvenida y en Ajustes, y el calendario usa esa misma selección. Si el idioma o la zona del teléfono están en la lista, se proponen al empezar. No se pide permiso de ubicación.
+`keystore.properties` y `CREDENCIALES-UPLOAD.txt` están ignorados por git. No subas keystores, contraseñas ni credenciales al repositorio.
 
 ## Contenido pendiente de verificar
 
 - Nombres, comidas y comederos de animales.
-- Catálogo de coleccionables.
-- Calendario de climas, servidor de origen, lugares y aparición de flurita y Liuliu.
-- Paleta de color y tamaños de lienzo.
-- Niveles oficiales de hobbies, si el juego los tiene. Aquí el número es solo el que anota quien juega.
+- Catálogo de coleccionables y códigos.
+- Clima, servidor de origen, lugares y aparición de flurita y Liuliu.
+- Niveles oficiales de aficiones, si el juego los tiene.
+
+El país y la zona se eligen en la bienvenida y en Ajustes; el calendario usa esa misma selección y no pide permiso de ubicación. Las fuentes citadas en el histórico son heartodex y Tidebell; «flurita» y «Liuliu» no se corrigen porque no hay fuente oficial que fije su nombre en español, lugar u horario.
 
 ## Estructura
 
 ```text
 app/src/main/java/com/guiaheartopia/app
-  MainActivity.kt          navegación, borde a borde e inicio de anuncios
-  ads/                     UMP y banner; el fallo no bloquea la app
-  data/                    DataStore y catálogos de ejemplo
-  domain/                  rutina, progreso, países y zonas
-  pixel/                   conversor, paleta, visor y exportación
-  ui/                      pantallas Compose
-app/src/main/assets/legal  privacidad y términos que también abre Ajustes
+  MainActivity.kt          raíz Compose, navegación e inicio de anuncios
+  ads/                     UMP, banners e historial de navegación
+  data/                    DataStore, repositorio y descarga del manifiesto remoto
+  domain/                  perfil, catálogos, clima, búsqueda y reglas de avisos
+  reminders/               receptores de arranque/cambio de hora y WorkManager
+  ui/                      pantallas Compose (codes, guide, hobbies, home, map,
+                           settings, theme, weather, welcome, …)
+app/src/main/assets/legal   privacidad y términos que también abre Ajustes
+app/src/main/res/xml        reglas de copia de seguridad y FileProvider
 ```
 
-La persistencia es DataStore Preferences. La última cuadrícula de pixel art se guarda en el almacenamiento interno de la app.
+La persistencia es DataStore Preferences. El contenido remoto se guarda en el almacenamiento interno de la app.

@@ -421,6 +421,39 @@ fun CozyMoonIcon(
     }
 }
 
+/** Robot sencillo para representar «seguir el tema del sistema». */
+@Composable
+fun AndroidRobotIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = Color(0xFF5E9C98),
+    size: Dp = 20.dp,
+) {
+    Canvas(modifier.size(size)) {
+        val w = this.size.width
+        val h = this.size.height
+        val stroke = 1.6.dp.toPx()
+        // Antenas.
+        drawLine(tint, Offset(w * 0.32f, h * 0.34f), Offset(w * 0.22f, h * 0.12f), stroke, StrokeCap.Round)
+        drawLine(tint, Offset(w * 0.68f, h * 0.34f), Offset(w * 0.78f, h * 0.12f), stroke, StrokeCap.Round)
+        // Cabeza (media circunferencia) y cuerpo.
+        drawArc(
+            color = tint,
+            startAngle = 180f,
+            sweepAngle = 180f,
+            useCenter = false,
+            topLeft = Offset(w * 0.15f, h * 0.24f),
+            size = Size(w * 0.7f, h * 0.62f),
+            style = Stroke(stroke),
+        )
+        drawLine(tint, Offset(w * 0.15f, h * 0.55f), Offset(w * 0.15f, h * 0.86f), stroke)
+        drawLine(tint, Offset(w * 0.85f, h * 0.55f), Offset(w * 0.85f, h * 0.86f), stroke)
+        drawLine(tint, Offset(w * 0.15f, h * 0.86f), Offset(w * 0.85f, h * 0.86f), stroke)
+        // Ojos.
+        drawCircle(tint, stroke, Offset(w * 0.38f, h * 0.48f))
+        drawCircle(tint, stroke, Offset(w * 0.62f, h * 0.48f))
+    }
+}
+
 @Composable
 fun CaptureNetIcon(
     on: Boolean,

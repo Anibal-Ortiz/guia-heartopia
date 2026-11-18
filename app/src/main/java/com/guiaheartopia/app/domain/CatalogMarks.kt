@@ -1,6 +1,7 @@
 package com.guiaheartopia.app.domain
 
 import com.guiaheartopia.app.data.DexEntry
+import com.guiaheartopia.app.domain.Marks as SharedMarks
 
 object CatalogMarks {
     /**
@@ -35,19 +36,15 @@ object CatalogMarks {
 
     data class Marks(val found: Set<String>, val certified: Set<String>)
 
-    fun toggleFound(marks: Marks, id: String): Marks = if (id in marks.found) {
-        marks.copy(found = marks.found - id, certified = marks.certified - id)
-    } else {
-        marks.copy(found = marks.found + id)
+    fun toggleFound(marks: Marks, id: String): Marks {
+        val next = SharedMarks.toggleFound(SharedMarks.Values(marks.found, marks.certified), id)
+        return Marks(next.found, next.certified)
     }
 
     fun toggleCertified(marks: Marks, id: String, category: String): Marks {
         if (!certifiable(category)) return marks
-        return if (id in marks.certified) {
-            marks.copy(certified = marks.certified - id)
-        } else {
-            marks.copy(found = marks.found + id, certified = marks.certified + id)
-        }
+        val next = SharedMarks.toggleCertified(SharedMarks.Values(marks.found, marks.certified), id, true)
+        return Marks(next.found, next.certified)
     }
 
     fun tally(category: String, ids: List<String>, found: Set<String>, certified: Set<String>): CategoryProgress =

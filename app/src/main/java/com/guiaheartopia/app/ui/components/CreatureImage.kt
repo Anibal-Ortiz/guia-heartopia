@@ -41,9 +41,12 @@ import java.io.File
 @Composable
 fun rememberCreatureModel(imageUrl: String?, creatureId: String): Any? {
     val context = LocalContext.current
-    val downloaded = CreatureImagePaths.candidates(imageUrl, creatureId)
-        .firstNotNullOfOrNull { AndroidContentStore.overlayFile(context, it) }
-    return bundledCreatureModel(imageUrl, downloaded, creatureId)
+    // Resolver rutas toca archivos: se hace una vez por par (url, id), no en cada recomposición.
+    return remember(imageUrl, creatureId, context) {
+        val downloaded = CreatureImagePaths.candidates(imageUrl, creatureId)
+            .firstNotNullOfOrNull { AndroidContentStore.overlayFile(context, it) }
+        bundledCreatureModel(imageUrl, downloaded, creatureId)
+    }
 }
 
 fun bundledCreatureModel(imageUrl: String?, downloaded: File? = null, id: String = ""): Any? {
@@ -67,10 +70,7 @@ fun CreatureImage(
     onClick: (() -> Unit)? = null,
 ) {
     val shape = RoundedCornerShape(shapeRadius)
-    val context = LocalContext.current
-    val downloaded = CreatureImagePaths.candidates(imageUrl, creatureId)
-        .firstNotNullOfOrNull { AndroidContentStore.overlayFile(context, it) }
-    val model = bundledCreatureModel(imageUrl, downloaded, creatureId)
+    val model = rememberCreatureModel(imageUrl, creatureId)
     var failed by remember(model) { mutableStateOf(false) }
     val stain = watercolorFor(category)
 

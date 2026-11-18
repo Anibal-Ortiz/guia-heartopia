@@ -29,13 +29,13 @@ class ReminderPlanTest {
         val now = ZonedDateTime.of(2026, 6, 2, 8, 0, 0, 0, santiago)
         val notices = ReminderPlan.weatherNotices(listOf(day), santiago, now)
         assertEquals(1, notices.size)
-        assertEquals("En 30 min: Lluvia (11:00)", notices[0].body)
-        assertEquals(10, notices[0].fireAt.hour)
+        assertEquals("En 30 min: Lluvia (10:00)", notices[0].body)
+        assertEquals(9, notices[0].fireAt.hour)
         assertEquals(30, notices[0].fireAt.minute)
         val serverStart = ReminderPlan.serverRange(
             day.date,
             day.slots.first(),
-            server,
+            santiago,
             santiago,
         ).first
         assertEquals(serverStart.minusMinutes(30).toInstant(), notices[0].fireAt.toInstant())
@@ -57,8 +57,8 @@ class ReminderPlanTest {
         val now = ZonedDateTime.of(2026, 6, 2, 12, 0, 0, 0, santiago)
         val notices = ReminderPlan.weatherNotices(listOf(day), santiago, now).sortedBy { it.fireAt.toInstant() }
         assertEquals(2, notices.size)
-        assertEquals("En 30 min: Arcoíris (19:00)", notices[0].body)
-        assertEquals("En 30 min: Lluvia de meteoritos (21:00)", notices[1].body)
+        assertEquals("En 30 min: Arcoíris (18:00)", notices[0].body)
+        assertEquals("En 30 min: Lluvia de meteoritos (20:00)", notices[1].body)
     }
 
     @Test
@@ -69,7 +69,7 @@ class ReminderPlanTest {
         )
         val now = ZonedDateTime.of(2026, 6, 2, 8, 0, 0, 0, santiago)
         val notices = ReminderPlan.weatherNotices(listOf(day), santiago, now)
-        assertEquals(listOf("En 30 min: Lluvia (11:00)"), notices.map { it.body })
+        assertEquals(listOf("En 30 min: Lluvia (10:00)"), notices.map { it.body })
     }
 
     @Test
@@ -90,7 +90,7 @@ class ReminderPlanTest {
                "repeticion":"diaria","horas":["12:00"],"inicio":"2026-04-04T00:00","fin":"2026-04-04T12:00","avisoMinAntes":15}
             ]}
         """.trimIndent()
-        val prefs = ReminderPrefs(pescaEnabled = true)
+        val prefs = ReminderPrefs(pescaEnabled = true, eventsEnabled = true)
         val now = ZonedDateTime.of(2026, 4, 4, 8, 0, 0, 0, santiago)
         val notices = ReminderPlan.eventNotices(ReminderPlan.parseEvents(raw), prefs, santiago, now)
         assertEquals(1, notices.size)
@@ -112,7 +112,12 @@ class ReminderPlanTest {
         val doc = ReminderPlan.parseEvents(raw)
         val end = ReminderPlan.serverToUser(LocalDateTime.of(2026, 11, 16, 5, 59), server, santiago)
         val now = end.minusHours(30)
-        val notices = ReminderPlan.eventNotices(doc, ReminderPrefs(temporadaEnabled = true), santiago, now)
+        val notices = ReminderPlan.eventNotices(
+            doc,
+            ReminderPrefs(temporadaEnabled = true, eventsEnabled = true),
+            santiago,
+            now,
+        )
         val day = notices.single { it.body == "Queda 1 día" }
         assertEquals(end.minusHours(24).toInstant(), day.fireAt.toInstant())
         val active = ReminderPlan.activeSeasons(doc, santiago, now)

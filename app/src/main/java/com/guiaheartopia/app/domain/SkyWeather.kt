@@ -103,21 +103,22 @@ object SkyWeather {
         }
     }
 
-    fun slotIndex(instant: Instant): Int {
-        val hour = instant.atZone(ZoneOffset.UTC).hour
+    fun slotIndex(instant: Instant, zone: ZoneId = ZoneOffset.UTC): Int {
+        val hour = instant.atZone(WeatherSource.zoneFor(zone)).hour
         return hour / 6
     }
 
     fun localWindow(date: LocalDate, slot: SkySlot, zone: ZoneId): Pair<ZonedDateTime, ZonedDateTime> {
-        val (start, end) = SkyWeatherLocal.utcSlotRange(date, slot)
+        val (start, end) = SkyWeatherLocal.utcSlotRange(date, slot, zone)
         return ZonedDateTime.ofInstant(start, zone) to ZonedDateTime.ofInstant(end, zone)
     }
 
-    fun slotAt(day: SkyDay?, instant: Instant): SkySlot? {
+    fun slotAt(day: SkyDay?, instant: Instant, zone: ZoneId = ZoneOffset.UTC): SkySlot? {
         if (day == null) return null
-        val utc = instant.atZone(ZoneOffset.UTC)
-        if (day.date != utc.toLocalDate()) return null
-        return day.slots.firstOrNull { slot -> containsClock(slot, utc.toLocalTime()) }
+        // El JSON es hora civil de la zona elegida: la tabla se indexa con esa fecha.
+        val source = instant.atZone(WeatherSource.zoneFor(zone))
+        if (day.date != source.toLocalDate()) return null
+        return day.slots.firstOrNull { slot -> containsClock(slot, source.toLocalTime()) }
     }
 
     fun availableNow(
@@ -169,9 +170,10 @@ object SkyWeather {
         neededWeather: List<String>,
         instant: Instant,
         day: SkyDay?,
+        zone: ZoneId = ZoneOffset.UTC,
     ): Boolean {
         if (!DexSchedule.availableNow(schedule, instant)) return false
-        val slot = slotAt(day, instant) ?: return true
+        val slot = slotAt(day, instant, zone) ?: return true
         if (slot.status == SkyStatus.SIN_DATOS || slot.kind == SkyKind.SIN_DATOS) return true
         return allows(neededWeather, slot.kind)
     }

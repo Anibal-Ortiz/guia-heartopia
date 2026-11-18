@@ -98,7 +98,7 @@ class ReminderCollisionTest {
         )
         val hobbies = ReminderPlan.eventNotices(
             ReminderPlan.parseEvents(events(includeBirds)),
-            ReminderPrefs(pescaEnabled = true, avesEnabled = true, weatherEnabled = true),
+            ReminderPrefs(pescaEnabled = true, avesEnabled = true, weatherEnabled = true, eventsEnabled = true),
             zone,
             now,
         )

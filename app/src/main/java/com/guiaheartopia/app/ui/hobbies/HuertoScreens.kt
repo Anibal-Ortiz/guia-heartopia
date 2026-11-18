@@ -3,12 +3,15 @@ package com.guiaheartopia.app.ui.hobbies
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -39,9 +42,12 @@ import com.guiaheartopia.app.domain.SiembraEntry
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.domain.ImageZoom
 import com.guiaheartopia.app.ui.components.AficionesImage
+import com.guiaheartopia.app.ui.components.ComingSoonCard
 import com.guiaheartopia.app.ui.components.CreatureZoomDialog
+import com.guiaheartopia.app.ui.components.EmptyStateCard
 import com.guiaheartopia.app.ui.components.LabelValue
 import com.guiaheartopia.app.ui.components.rememberAficionesModel
+import com.guiaheartopia.app.ui.components.rememberMinuteTick
 import com.guiaheartopia.app.ui.guide.LevelDropdown
 import com.guiaheartopia.app.ui.components.PillTabs
 import com.guiaheartopia.app.ui.components.PixelButton
@@ -72,7 +78,7 @@ fun HuertoScreen(
     val context = LocalContext.current
     val revision = contentRevision()
     val bundle = remember(revision) { AficionesCatalog.load(context) }
-  var tab by rememberSaveable { mutableIntStateOf(initialTab) }
+    var tab by rememberSaveable { mutableIntStateOf(initialTab) }
     if (!bundle.huertoReady) {
         ProntoScreen("Huerto", "Siembras y flores", onBack)
         return
@@ -81,7 +87,6 @@ fun HuertoScreen(
     Column(
         Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
@@ -103,6 +108,7 @@ fun HuertoScreen(
                 onOpen = onOpenSiembra,
                 onToggleFound = onToggleSiembraFound,
                 onToggleCertified = onToggleSiembraCertified,
+                modifier = Modifier.weight(1f),
             )
             else -> FloresTab(
                 flores = bundle.flores,
@@ -111,6 +117,7 @@ fun HuertoScreen(
                 onOpen = onOpenFlor,
                 onToggleFound = onToggleFlorFound,
                 onToggleCertified = onToggleFlorCertified,
+                modifier = Modifier.weight(1f),
             )
         }
     }
@@ -126,15 +133,13 @@ fun ProntoScreen(title: String, subtitle: String, onBack: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         TextButton(onClick = onBack) { Text("Atrás") }
-        Text(title, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold), color = Ink)
-        Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = Muted)
-        PixelCard { Text("Próximamente", style = MaterialTheme.typography.titleMedium, color = Ink) }
+        ComingSoonCard(title = title, subtitle = subtitle)
     }
 }
 
 @Composable
 private fun ActiveCropsPanel(crops: List<ActiveCrop>, onCancel: (String) -> Unit) {
-    val now = Instant.now().toEpochMilli()
+    val now = rememberMinuteTick().toEpochMilli()
     PixelCard(category = "Siembra") {
         Text("Cultivos en curso", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
         crops.forEach { crop ->
@@ -159,6 +164,7 @@ private fun SiembrasTab(
     onOpen: (String) -> Unit,
     onToggleFound: (String) -> Unit,
     onToggleCertified: (String, Boolean) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var sortByLevel by rememberSaveable { mutableStateOf(false) }
     var onlyConseguidas by rememberSaveable { mutableStateOf<Boolean?>(null) }
@@ -188,29 +194,53 @@ private fun SiembrasTab(
     }
     val grouped = sorted.groupBy { it.nivelSiembra }.toSortedMap()
 
-    AficionesListHeader(
-        found = found.size,
-        total = siembras.size,
-        sortByLevel = sortByLevel,
-        onSort = { sortByLevel = !sortByLevel },
-        onlyConseguidas = onlyConseguidas,
-        onConseguidas = { onlyConseguidas = it },
-        onlyCertificadas = onlyCertificadas,
-        onCertificadas = { onlyCertificadas = it },
-    )
-    LevelDropdown(selected = levelCap, maximum = catalogMax, onSelect = { chosenLevel = it ?: -1 })
-
-    grouped.forEach { (level, items) ->
-        Text("Nivel $level", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold), color = Muted)
-        items.forEach { entry ->
-            SiembraCard(
-                entry,
-                found = entry.id in found,
-                certified = entry.id in certified,
-                onOpen = { onOpen(entry.id) },
-                onToggleFound = { onToggleFound(entry.id) },
-                onToggleCertified = { onToggleCertified(entry.id, AficionesMarks.certifiableSiembra(entry)) },
-            )
+    LazyColumn(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(bottom = 16.dp),
+    ) {
+        item(key = "cabecera") {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                AficionesListHeader(
+                    found = found.size,
+                    total = siembras.size,
+                    sortByLevel = sortByLevel,
+                    onSort = { sortByLevel = !sortByLevel },
+                    onlyConseguidas = onlyConseguidas,
+                    onConseguidas = { onlyConseguidas = it },
+                    onlyCertificadas = onlyCertificadas,
+                    onCertificadas = { onlyCertificadas = it },
+                )
+                LevelDropdown(selected = levelCap, maximum = catalogMax, onSelect = { chosenLevel = it ?: -1 })
+            }
+        }
+        if (sorted.isEmpty()) {
+            item(key = "vacio") {
+                EmptyStateCard(
+                    title = if (siembras.isEmpty()) "Sin datos todavía" else "Sin coincidencias",
+                    message = if (siembras.isEmpty()) {
+                        "Las siembras aparecerán cuando se publique el catálogo."
+                    } else {
+                        "Ninguna siembra coincide con los filtros."
+                    },
+                    icon = if (siembras.isEmpty()) "🌱" else "🔍",
+                )
+            }
+        }
+        grouped.forEach { (level, entries) ->
+            item(key = "nivel:$level") {
+                Text("Nivel $level", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold), color = Muted)
+            }
+            items(entries, key = { it.id }) { entry ->
+                SiembraCard(
+                    entry,
+                    found = entry.id in found,
+                    certified = entry.id in certified,
+                    onOpen = { onOpen(entry.id) },
+                    onToggleFound = { onToggleFound(entry.id) },
+                    onToggleCertified = { onToggleCertified(entry.id, AficionesMarks.certifiableSiembra(entry)) },
+                )
+            }
         }
     }
 }
@@ -223,6 +253,7 @@ private fun FloresTab(
     onOpen: (String) -> Unit,
     onToggleFound: (String) -> Unit,
     onToggleCertified: (String, Boolean) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var sortByLevel by rememberSaveable { mutableStateOf(false) }
     var onlyConseguidas by rememberSaveable { mutableStateOf<Boolean?>(null) }
@@ -253,44 +284,70 @@ private fun FloresTab(
     val withLevel = sorted.filter { it.nivelSiembra != null }.groupBy { it.nivelSiembra!! }.toSortedMap()
     val sinNivel = sorted.filter { it.nivelSiembra == null }
 
-    AficionesListHeader(
-        found = found.size,
-        total = flores.size,
-        sortByLevel = sortByLevel,
-        onSort = { sortByLevel = !sortByLevel },
-        onlyConseguidas = onlyConseguidas,
-        onConseguidas = { onlyConseguidas = it },
-        onlyCertificadas = onlyCertificadas,
-        onCertificadas = { onlyCertificadas = it },
-    )
-    if (catalogMax > 0) {
-        LevelDropdown(selected = levelCap, maximum = catalogMax, onSelect = { chosenLevel = it ?: -1 })
-    }
-
-    withLevel.forEach { (level, items) ->
-        Text("Nivel $level", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold), color = Muted)
-        items.forEach { entry ->
-            FlorCard(
-                entry,
-                found = entry.id in found,
-                certified = entry.id in certified,
-                onOpen = { onOpen(entry.id) },
-                onToggleFound = { onToggleFound(entry.id) },
-                onToggleCertified = { onToggleCertified(entry.id, AficionesMarks.certifiableFlor(entry)) },
-            )
+    LazyColumn(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(bottom = 16.dp),
+    ) {
+        item(key = "cabecera") {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                AficionesListHeader(
+                    found = found.size,
+                    total = flores.size,
+                    sortByLevel = sortByLevel,
+                    onSort = { sortByLevel = !sortByLevel },
+                    onlyConseguidas = onlyConseguidas,
+                    onConseguidas = { onlyConseguidas = it },
+                    onlyCertificadas = onlyCertificadas,
+                    onCertificadas = { onlyCertificadas = it },
+                )
+                if (catalogMax > 0) {
+                    LevelDropdown(selected = levelCap, maximum = catalogMax, onSelect = { chosenLevel = it ?: -1 })
+                }
+            }
         }
-    }
-    if (sinNivel.isNotEmpty()) {
-        Text("Sin nivel", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold), color = Muted)
-        sinNivel.forEach { entry ->
-            FlorCard(
-                entry,
-                found = entry.id in found,
-                certified = entry.id in certified,
-                onOpen = { onOpen(entry.id) },
-                onToggleFound = { onToggleFound(entry.id) },
-                onToggleCertified = { onToggleCertified(entry.id, AficionesMarks.certifiableFlor(entry)) },
-            )
+        if (sorted.isEmpty()) {
+            item(key = "vacio") {
+                EmptyStateCard(
+                    title = if (flores.isEmpty()) "Sin datos todavía" else "Sin coincidencias",
+                    message = if (flores.isEmpty()) {
+                        "Las flores aparecerán cuando se publique el catálogo."
+                    } else {
+                        "Ninguna flor coincide con los filtros."
+                    },
+                    icon = if (flores.isEmpty()) "🌱" else "🔍",
+                )
+            }
+        }
+        withLevel.forEach { (level, entries) ->
+            item(key = "nivel:$level") {
+                Text("Nivel $level", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold), color = Muted)
+            }
+            items(entries, key = { it.id }) { entry ->
+                FlorCard(
+                    entry,
+                    found = entry.id in found,
+                    certified = entry.id in certified,
+                    onOpen = { onOpen(entry.id) },
+                    onToggleFound = { onToggleFound(entry.id) },
+                    onToggleCertified = { onToggleCertified(entry.id, AficionesMarks.certifiableFlor(entry)) },
+                )
+            }
+        }
+        if (sinNivel.isNotEmpty()) {
+            item(key = "sin-nivel") {
+                Text("Sin nivel", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold), color = Muted)
+            }
+            items(sinNivel, key = { it.id }) { entry ->
+                FlorCard(
+                    entry,
+                    found = entry.id in found,
+                    certified = entry.id in certified,
+                    onOpen = { onOpen(entry.id) },
+                    onToggleFound = { onToggleFound(entry.id) },
+                    onToggleCertified = { onToggleCertified(entry.id, AficionesMarks.certifiableFlor(entry)) },
+                )
+            }
         }
     }
 }
@@ -306,7 +363,7 @@ private fun SiembraCard(
 ) {
     val certifiable = AficionesMarks.certifiableSiembra(entry)
     var zoom by remember(entry.id) { mutableStateOf(false) }
-  val model = rememberAficionesModel(entry.imagen)
+    val model = rememberAficionesModel(entry.imagen)
     if (zoom && model != null) {
         CreatureZoomDialog(
             name = entry.nombre,
@@ -376,7 +433,7 @@ private fun FlorCard(
 ) {
     val certifiable = AficionesMarks.certifiableFlor(entry)
     var zoom by remember(entry.id) { mutableStateOf(false) }
-    val model = rememberAficionesModel(entry.imagen)
+      val model = rememberAficionesModel(entry.imagen)
     if (zoom && model != null) {
         CreatureZoomDialog(
             name = entry.nombre,
@@ -439,7 +496,7 @@ fun SiembraDetailScreen(
     val certifiable = AficionesMarks.certifiableSiembra(entry)
     val usadas = remember(entry, recetas) { AficionesContent.recetasQueUsanSiembra(recetas, entry) }
     var zoom by remember(entry.id) { mutableStateOf(false) }
-    val model = rememberAficionesModel(entry.imagen)
+      val model = rememberAficionesModel(entry.imagen)
     if (zoom && model != null) {
         CreatureZoomDialog(
             name = entry.nombre,
@@ -528,7 +585,7 @@ fun FlorDetailScreen(
     onToggleCertified: () -> Unit,
 ) {
     val certifiable = AficionesMarks.certifiableFlor(entry)
-    var zoomId by remember { mutableStateOf<String?>(null) }
+    var zoomId by remember(entry.id) { mutableStateOf<String?>(null) }
     val zoomVariant = entry.variantes.firstOrNull { it.id == zoomId || it.imagen == zoomId }
     val zoomPath = zoomVariant?.imagen ?: entry.imagen
     val zoomName = zoomVariant?.nombre?.takeIf { it.isNotBlank() }

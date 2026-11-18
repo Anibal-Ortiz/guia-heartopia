@@ -1,9 +1,11 @@
 package com.guiaheartopia.app.domain
 
+import com.guiaheartopia.app.data.ContentCache
 import com.guiaheartopia.app.data.DexEntry
 import com.guiaheartopia.app.data.HeartodexCatalog
 
 object GuideEventNav {
+    private val cachedTab = ContentCache.Slot<Int>()
     fun dexTabIndex(
         events: EventosDocument?,
         catalog: List<DexEntry>,
@@ -37,12 +39,17 @@ object GuideEventNav {
         return GuideSections.dexCategories.indexOf(best).coerceAtLeast(0)
     }
 
+    /** Cacheada por revisión de contenido, contexto y clave de evento. */
     fun dexTabIndexFromContext(context: android.content.Context, eventKey: String): Int {
-        val raw = com.guiaheartopia.app.data.AndroidContentLibrary(context)
-            .effectiveBytes("calendar/eventos.json")
-            ?.decodeToString()
-        val events = ReminderPlan.parseEvents(raw)
-        val catalog = HeartodexCatalog.load(context)
-        return dexTabIndex(events, catalog, eventKey)
+        val app = context.applicationContext
+        val key = Triple(ContentCache.generation(), app, eventKey)
+        return cachedTab.get(key) {
+            val raw = com.guiaheartopia.app.data.AndroidContentLibrary(context)
+                .effectiveBytes("calendar/eventos.json")
+                ?.decodeToString()
+            val events = ReminderPlan.parseEvents(raw)
+            val catalog = HeartodexCatalog.load(context)
+            dexTabIndex(events, catalog, eventKey)
+        }
     }
 }

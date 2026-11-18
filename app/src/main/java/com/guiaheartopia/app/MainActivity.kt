@@ -1,5 +1,6 @@
 package com.guiaheartopia.app
 
+import android.content.res.Configuration
 import android.graphics.Color as AndroidColor
 import android.os.Bundle
 import android.widget.Toast
@@ -11,6 +12,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -84,8 +86,11 @@ import com.guiaheartopia.app.data.GuideRepository
 import com.guiaheartopia.app.data.AndroidContentStore
 import com.guiaheartopia.app.data.ContentCheckStore
 import com.guiaheartopia.app.data.ContentSignals
+import com.guiaheartopia.app.data.ThemeMode
+import com.guiaheartopia.app.data.ThemeModeStore
 import com.guiaheartopia.app.domain.ContentDownloadProgress
 import com.guiaheartopia.app.domain.ContentSyncResult
+import com.guiaheartopia.app.domain.ContentUpdatePolicy
 import com.guiaheartopia.app.domain.checkOk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -93,7 +98,10 @@ import kotlinx.coroutines.withContext
 import com.guiaheartopia.app.reminders.ReminderScheduler
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.ui.GuideViewModel
+import com.guiaheartopia.app.ui.components.AndroidRobotIcon
+import com.guiaheartopia.app.ui.components.CozyMoonIcon
 import com.guiaheartopia.app.ui.components.CozySettingsIcon
+import com.guiaheartopia.app.ui.components.CozySunIcon
 import com.guiaheartopia.app.ui.components.WikiFanAppIcon
 import com.guiaheartopia.app.R
 import com.guiaheartopia.app.ui.components.PixelNavBar
@@ -102,6 +110,7 @@ import com.guiaheartopia.app.ui.guide.GuideScreen
 import com.guiaheartopia.app.ui.hobbies.HobbiesScreen
 import com.guiaheartopia.app.ui.home.HomeScreen
 import com.guiaheartopia.app.ui.legal.LegalScreen
+import com.guiaheartopia.app.ui.legal.openPrivacyPolicy
 import com.guiaheartopia.app.ui.AppNavigation
 import com.guiaheartopia.app.ui.NavigationPolicy
 import com.guiaheartopia.app.ui.settings.SettingsScreen
@@ -120,17 +129,51 @@ import com.guiaheartopia.app.ui.welcome.WelcomeScreen
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.light(AndroidColor.TRANSPARENT, AndroidColor.TRANSPARENT),
-            navigationBarStyle = SystemBarStyle.light(AndroidColor.TRANSPARENT, AndroidColor.TRANSPARENT),
-        )
+        val darkSystem = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK ==
+            Configuration.UI_MODE_NIGHT_YES
+        val statusStyle = if (darkSystem) {
+            SystemBarStyle.dark(AndroidColor.TRANSPARENT)
+        } else {
+            SystemBarStyle.light(AndroidColor.TRANSPARENT, AndroidColor.TRANSPARENT)
+        }
+        val navStyle = if (darkSystem) {
+            SystemBarStyle.dark(AndroidColor.TRANSPARENT)
+        } else {
+            SystemBarStyle.light(AndroidColor.TRANSPARENT, AndroidColor.TRANSPARENT)
+        }
+        enableEdgeToEdge(statusBarStyle = statusStyle, navigationBarStyle = navStyle)
         val repository = GuideRepository(this)
         setContent {
             val vm: GuideViewModel = viewModel(factory = GuideViewModel.factory(repository, this))
             val ui by vm.ui.collectAsStateWithLifecycle()
+            val themeMode by ThemeModeStore.observe(this@MainActivity)
+                .collectAsStateWithLifecycle(ThemeMode.SYSTEM)
+            val systemDark = isSystemInDarkTheme()
+            val darkTheme = when (themeMode) {
+                ThemeMode.DARK -> true
+                ThemeMode.LIGHT -> false
+                ThemeMode.SYSTEM -> systemDark
+            }
+            LaunchedEffect(darkTheme) {
+                val statusStyle = if (darkTheme) {
+                    SystemBarStyle.dark(AndroidColor.TRANSPARENT)
+                } else {
+                    SystemBarStyle.light(AndroidColor.TRANSPARENT, AndroidColor.TRANSPARENT)
+                }
+                val navStyle = if (darkTheme) {
+                    SystemBarStyle.dark(AndroidColor.TRANSPARENT)
+                } else {
+                    SystemBarStyle.light(AndroidColor.TRANSPARENT, AndroidColor.TRANSPARENT)
+                }
+                enableEdgeToEdge(statusBarStyle = statusStyle, navigationBarStyle = navStyle)
+            }
             val lifecycleOwner = LocalLifecycleOwner.current
-            fun checkContentUpdates() {
+            fun checkContentUpdates(force: Boolean = false) {
                 if (ContentSignals.busy().value) return
+                if (!force) {
+                    val last = AndroidContentStore.lastAttemptMillis(this@MainActivity)
+                    if (!ContentUpdatePolicy.isDue(last, System.currentTimeMillis())) return
+                }
                 lifecycleScope.launch {
                     ContentSignals.setBusy(true)
                     try {
@@ -145,6 +188,11 @@ class MainActivity : ComponentActivity() {
                         }
                         if (report.result.checkOk) {
                             ContentSignals.noteCheckOk()
+                        }
+                        if (report.result == ContentSyncResult.APPLIED ||
+                            report.result == ContentSyncResult.UNCHANGED
+                        ) {
+                            ContentSignals.emitSyncResult(report.result)
                         }
                         ContentSignals.setFailed(!report.result.checkOk)
                     } catch (_: Exception) {
@@ -178,17 +226,32 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(ui.profile) {
                 if (ui.ready && ui.profile.onboarded) ReminderScheduler.sync(this@MainActivity, ui.profile)
             }
-            GuiaTheme {
+            val currentProfile = androidx.compose.runtime.rememberUpdatedState(ui.profile)
+            LaunchedEffect(Unit) {
+                com.guiaheartopia.app.data.ContentSignals.syncResults().collect { result ->
+                    if (result == ContentSyncResult.APPLIED || result == ContentSyncResult.UNCHANGED) {
+                        ReminderScheduler.sync(this@MainActivity, currentProfile.value)
+                    }
+                }
+            }
+            GuiaTheme(darkTheme = darkTheme) {
+                val darkUi = darkTheme
                 val paper = ImageBitmap.imageResource(R.drawable.papel_textura)
                 val paperBrush = remember(paper) {
                     ShaderBrush(ImageShader(paper, TileMode.Repeated, TileMode.Repeated))
                 }
                 var legal by remember { mutableStateOf<String?>(null) }
+                // La política se abre en la web (es la registrada en Play/AdMob y se
+                // puede actualizar sin publicar un APK). Si no hay navegador, se
+                // muestra la copia incluida en la app.
+                val openPrivacy: () -> Unit = {
+                    if (!openPrivacyPolicy(this@MainActivity)) legal = "privacidad"
+                }
                 Box(
                     Modifier
                         .fillMaxSize()
-                        .background(Color(0xFFF7EFDB))
-                        .background(paperBrush),
+                        .background(MaterialTheme.colorScheme.background)
+                        .then(if (darkUi) Modifier else Modifier.background(paperBrush)),
                 ) {
                 when {
                     !ui.ready -> Box(Modifier.fillMaxSize())
@@ -202,8 +265,8 @@ class MainActivity : ComponentActivity() {
                     !ui.profile.onboarded -> Box(Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
                         WelcomeScreen(
                             initial = ui.profile,
-                            onContinue = vm::saveProfile,
-                            onPrivacy = { legal = "privacidad" },
+                            onContinue = vm::completeOnboarding,
+                            onPrivacy = openPrivacy,
                             onTerms = { legal = "terminos" },
                         )
                     }
@@ -215,10 +278,14 @@ class MainActivity : ComponentActivity() {
                         adsMode = ads.state.mode,
                         adsStatus = ads.state.status,
                         privacyOptions = ads.state.privacyOptionsRequired,
-                        onPrivacy = { legal = "privacidad" },
+                        onPrivacy = openPrivacy,
                         onTerms = { legal = "terminos" },
                         onAdPrivacy = ads::showPrivacyOptions,
-                        onRetryContent = { checkContentUpdates() },
+                        onRetryContent = { checkContentUpdates(force = true) },
+                        themeMode = themeMode,
+                        onThemeMode = { mode ->
+                            lifecycleScope.launch { ThemeModeStore.set(this@MainActivity, mode) }
+                        },
                     )
                 }
 
@@ -241,11 +308,35 @@ private fun AppScaffold(
     onTerms: () -> Unit,
     onAdPrivacy: () -> Unit,
     onRetryContent: () -> Unit,
+    themeMode: ThemeMode,
+    onThemeMode: (ThemeMode) -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val nav = rememberNavController()
     val showBanner = ads.state.canShowBanner(adRewards.suppressAds)
+    var themeFlash by remember { mutableStateOf(false) }
+    LaunchedEffect(themeFlash) {
+        if (themeFlash) {
+            delay(700)
+            themeFlash = false
+        }
+    }
+    fun cycleTheme() {
+        val next = when (themeMode) {
+            ThemeMode.SYSTEM -> ThemeMode.LIGHT
+            ThemeMode.LIGHT -> ThemeMode.DARK
+            ThemeMode.DARK -> ThemeMode.SYSTEM
+        }
+        val label = when (next) {
+            ThemeMode.SYSTEM -> "Modo del sistema"
+            ThemeMode.LIGHT -> "Modo claro"
+            ThemeMode.DARK -> "Modo oscuro"
+        }
+        themeFlash = true
+        Toast.makeText(context, "$label activado", Toast.LENGTH_SHORT).show()
+        onThemeMode(next)
+    }
 
     val contentBusy by ContentSignals.busy().collectAsStateWithLifecycle()
     val contentProgress by ContentSignals.progress().collectAsStateWithLifecycle()
@@ -375,6 +466,23 @@ private fun AppScaffold(
                 ) {
                     Box(
                         modifier = Modifier
+                            .testTag("theme_toggle")
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(if (themeFlash) GreenSoft else PaperSubtle)
+                            .border(1.dp, if (themeFlash) Green else Line, CircleShape)
+                            .clickable { cycleTheme() }
+                            .semantics { contentDescription = "Cambiar tema" },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        when (themeMode) {
+                            ThemeMode.SYSTEM -> AndroidRobotIcon(tint = Ink, size = 20.dp)
+                            ThemeMode.LIGHT -> CozySunIcon(tint = Ink, size = 20.dp)
+                            ThemeMode.DARK -> CozyMoonIcon(tint = Ink, size = 20.dp)
+                        }
+                    }
+                    Box(
+                        modifier = Modifier
                             .testTag("open_settings")
                             .size(38.dp)
                             .clip(CircleShape)
@@ -449,6 +557,7 @@ private fun AppScaffold(
                     redeemed = ui.redeemedCodes,
                     onSeen = vm::markCodesSeen,
                     onRedeemed = vm::setCodeRedeemed,
+                    zoneId = ui.profile.zoneId,
                 )
             }
             composable("huerto") {
@@ -717,7 +826,6 @@ private fun AppScaffold(
                     adsMode = adsMode,
                     adsStatus = adsStatus,
                     privacyOptions = privacyOptions,
-                    onSave = vm::saveProfile,
                     onRegion = { country, zone, origin, region ->
                         vm.updateRegion(country, zone, origin, region)
                     },
@@ -731,6 +839,7 @@ private fun AppScaffold(
                     scrollToReminders = true,
                     adFreeUntilMillis = adRewards.adFreeUntilMillis,
                     onWatchAdFree = watchAdFree,
+                    onRetryAds = ads::retryConsent,
                 )
             }
             composable("settings") {
@@ -739,7 +848,6 @@ private fun AppScaffold(
                     adsMode = adsMode,
                     adsStatus = adsStatus,
                     privacyOptions = privacyOptions,
-                    onSave = vm::saveProfile,
                     onRegion = { country, zone, origin, region ->
                         vm.updateRegion(country, zone, origin, region)
                     },
@@ -752,6 +860,7 @@ private fun AppScaffold(
                     onPhotoCredits = { nav.navigate("photo-credits") },
                     adFreeUntilMillis = adRewards.adFreeUntilMillis,
                     onWatchAdFree = watchAdFree,
+                    onRetryAds = ads::retryConsent,
                 )
             }
             composable("photo-credits") {

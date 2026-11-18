@@ -9,9 +9,22 @@ import kotlin.math.min
 
 /** La foto del avatar vive solo en el almacenamiento interno de la app. */
 object AvatarStore {
+    private const val MAX_BYTES = 2 * 1024 * 1024
+
+    /** SOI JPEG (FF D8) y tamaño acotado. Evita escribir arbitrary bytes como avatar. */
+    private fun isJpeg(bytes: ByteArray): Boolean =
+        bytes.size in 4..MAX_BYTES &&
+            (bytes[0].toInt() and 0xFF) == 0xFF &&
+            (bytes[1].toInt() and 0xFF) == 0xD8
+
     fun file(context: Context): File = File(context.filesDir, "avatar/avatar.jpg")
 
     fun save(context: Context, jpeg: ByteArray): String {
+        if (!isJpeg(jpeg)) {
+            return file(context).takeIf { it.isFile }?.let { existing ->
+                runCatching { Base64.encodeToString(existing.readBytes(), Base64.NO_WRAP) }.getOrDefault("")
+            } ?: ""
+        }
         val dest = file(context)
         dest.parentFile?.mkdirs()
         dest.writeBytes(jpeg)
@@ -28,6 +41,7 @@ object AvatarStore {
             return
         }
         val bytes = runCatching { Base64.decode(base64, Base64.DEFAULT) }.getOrNull() ?: return
+        if (!isJpeg(bytes)) return
         val dest = file(context)
         dest.parentFile?.mkdirs()
         dest.writeBytes(bytes)

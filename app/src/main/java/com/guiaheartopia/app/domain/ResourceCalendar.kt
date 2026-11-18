@@ -20,7 +20,8 @@ data class ResourceDay(
 )
 
 object ResourceCalendar {
-    private val november = listOf(
+    /** Tabla única de noviembre 2026, compartida con VerifiedCatalog. */
+    val novemberSpots: List<Pair<String, String>> = listOf(
         "2" to "8",
         "8" to "4",
         "4" to "1",
@@ -55,7 +56,7 @@ object ResourceCalendar {
 
     fun on(date: LocalDate): ResourceDay {
         val row = when {
-            date.year == 2026 && date.monthValue == 11 -> november.getOrNull(date.dayOfMonth - 1)
+            date.year == 2026 && date.monthValue == 11 -> novemberSpots.getOrNull(date.dayOfMonth - 1)
             else -> null
         } ?: return ResourceDay(null, null, DayCertainty.SIN_DATOS, 0)
         return ResourceDay(

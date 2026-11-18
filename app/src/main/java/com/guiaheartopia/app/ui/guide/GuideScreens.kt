@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.verticalScroll
@@ -105,7 +106,9 @@ import com.guiaheartopia.app.ui.components.ClearSkyIcon
 import com.guiaheartopia.app.ui.components.CozyGuideIcon
 import com.guiaheartopia.app.ui.components.CreatureGlyph
 import com.guiaheartopia.app.ui.components.CreatureZoomDialog
+import com.guiaheartopia.app.ui.components.EmptyStateCard
 import com.guiaheartopia.app.ui.components.rememberCreatureModel
+import com.guiaheartopia.app.ui.components.rememberMinuteTick
 import com.guiaheartopia.app.data.PhotoCredits
 import com.guiaheartopia.app.ui.components.CreatureImage
 import com.guiaheartopia.app.ui.settings.PhotoCreditCaption
@@ -125,6 +128,7 @@ import com.guiaheartopia.app.ui.theme.Honey
 import com.guiaheartopia.app.ui.theme.HoneySoft
 import com.guiaheartopia.app.ui.theme.HoneyTint
 import com.guiaheartopia.app.ui.theme.Ink
+import com.guiaheartopia.app.ui.theme.OchreDark
 import com.guiaheartopia.app.ui.theme.Lilac
 import com.guiaheartopia.app.ui.theme.Line
 import com.guiaheartopia.app.ui.theme.Muted
@@ -222,11 +226,10 @@ fun GuideScreen(
     Column(
         Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        // Header
+        // Cabecera fija; la lista del catálogo se desplaza sola (LazyColumn con keys).
         if (onBack != null) {
             androidx.compose.material3.TextButton(onClick = onBack) { Text("Atrás") }
         }
@@ -236,20 +239,18 @@ fun GuideScreen(
             subtitle = "Peces, aves, insectos y fauna",
         )
 
-        // Pill Tabs with Icons
         PillTabs(Tabs, tab) { tab = it }
 
         DexTab(
-            GuideSections.dexCategories[tab],
-            ui,
-            onOpenDex,
-            onToggleFound,
-            onToggleCertified,
-            guideLaunch,
-            onSaveDexFilters,
+            category = GuideSections.dexCategories[tab],
+            ui = ui,
+            onOpen = onOpenDex,
+            onToggleFound = onToggleFound,
+            onToggleCertified = onToggleCertified,
+            guideLaunch = guideLaunch,
+            onSaveDexFilters = onSaveDexFilters,
+            modifier = Modifier.weight(1f),
         )
-
-        Spacer(Modifier.height(8.dp))
     }
 }
 
@@ -294,9 +295,15 @@ private fun AnimalsTab(
     }
 
     if (shown.isEmpty()) {
-        PixelCard(container = PaperSubtle) {
-            Text("Ningún animal coincide con tu búsqueda.", style = MaterialTheme.typography.bodyMedium, color = Muted)
-        }
+        EmptyStateCard(
+            title = if (ui.animals.isEmpty()) "Sin fichas todavía" else "Sin coincidencias",
+            message = if (ui.animals.isEmpty()) {
+                "Todavía no hay animales en el catálogo."
+            } else {
+                "Ningún animal coincide con tu búsqueda."
+            },
+            icon = if (ui.animals.isEmpty()) "🌱" else "🔍",
+        )
     }
 
     shown.forEach { animal ->
@@ -505,13 +512,14 @@ private fun DexTab(
     onToggleCertified: (String, String) -> Unit,
     guideLaunch: GuideLaunch = GuideLaunch(),
     onSaveDexFilters: (String, DexCategoryFilters) -> Unit = { _, _ -> },
+    modifier: Modifier = Modifier,
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val revision = com.guiaheartopia.app.ui.contentRevision()
     val all = remember(revision) { com.guiaheartopia.app.data.HeartodexCatalog.load(context) }
     val sky = remember(revision) { SkyCatalog.load(context) }
     val zone = DexSchedule.zoneOf(ui.profile.zoneId)
-    val instant = Instant.now()
+    val instant = rememberMinuteTick()
     val current = DexSchedule.currentWindow(zone, instant)
     val eventsDoc = remember(revision) {
         val raw = com.guiaheartopia.app.data.AndroidContentLibrary(context)
@@ -650,7 +658,16 @@ private fun DexTab(
             .thenBy { it.name.lowercase() },
     )
 
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column(modifier) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            // Cabecera y filtros: una sola celda estable para no recomponerlos al scrollear.
+            item(key = "filtros") {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -930,26 +947,36 @@ private fun DexTab(
                 color = Muted,
             )
         }
-    }
+            } // Column de filtros
+        } // item("filtros")
 
-    if (items.isEmpty()) {
-        PixelCard(container = PaperSubtle) {
-            Text("No se encontraron criaturas con estos filtros.", style = MaterialTheme.typography.bodyMedium, color = Muted)
+        if (items.isEmpty()) {
+            item(key = "vacio") {
+                EmptyStateCard(
+                    title = if (categoryAll.isEmpty()) "Sin datos todavía" else "Sin coincidencias",
+                    message = if (categoryAll.isEmpty()) {
+                        "Esta categoría se completará cuando se publique el catálogo."
+                    } else {
+                        "No se encontraron criaturas con estos filtros."
+                    },
+                    icon = if (categoryAll.isEmpty()) "🌱" else "🔍",
+                )
+            }
         }
-    }
 
-    items.forEach { entry ->
-        val now = SkyWeather.availableNow(entry.schedule, entry.weather, instant, sky, zone)
-        DexCreatureCard(
-            entry = entry,
-            now = now,
-            found = entry.id in ui.found,
-            certified = entry.id in ui.certified,
-            certifiable = CatalogMarks.certifiable(entry),
-            onOpen = { onOpen(entry.id) },
-            onToggleFound = { onToggleFound(entry.id) },
-            onToggleCertified = { onToggleCertified(entry.id, entry.category) },
-        )
+        items(items, key = { it.id }) { entry ->
+            val now = SkyWeather.availableNow(entry.schedule, entry.weather, instant, sky, zone)
+            DexCreatureCard(
+                entry = entry,
+                now = now,
+                found = entry.id in ui.found,
+                certified = entry.id in ui.certified,
+                certifiable = CatalogMarks.certifiable(entry),
+                onOpen = { onOpen(entry.id) },
+                onToggleFound = { onToggleFound(entry.id) },
+                onToggleCertified = { onToggleCertified(entry.id, entry.category) },
+            )
+        }
     }
 
     if (showLegend) {
@@ -978,6 +1005,7 @@ private fun DexTab(
             },
         )
     }
+    } // Column contenedor (LazyColumn + diálogo)
 }
 
 @Composable
@@ -995,7 +1023,7 @@ fun DexDetailScreen(
     onCancelWindow: () -> Unit = {},
 ) {
     val zone = DexSchedule.zoneOf(zoneId)
-    val instant = Instant.now()
+    val instant = rememberMinuteTick()
     val detailContext = androidx.compose.ui.platform.LocalContext.current
     val revision = com.guiaheartopia.app.ui.contentRevision()
     val sky = remember(revision) { SkyCatalog.load(detailContext) }
@@ -1497,24 +1525,27 @@ private fun DexLocalScheduleSection(
 
 @Composable
 private fun CertifiedSeal() {
+    val sealOchre = Ochre
+    val sealOchreDark = OchreDark
+    val sealPaper = Paper
     Canvas(
         Modifier
             .size(16.dp)
             .semantics { contentDescription = "Certificado" },
     ) {
         val radius = size.minDimension / 2f
-        drawCircle(color = Ochre, radius = radius)
+        drawCircle(color = sealOchre, radius = radius)
         drawCircle(
-            color = Color(0xFF8C6A2F),
+            color = sealOchreDark,
             radius = radius * 0.72f,
             style = Stroke(width = radius * 0.14f),
         )
         val arm = radius * 0.34f
         val stroke = radius * 0.16f
-        drawLine(Paper, center + Offset(0f, -arm), center + Offset(arm, 0f), stroke, StrokeCap.Round)
-        drawLine(Paper, center + Offset(arm, 0f), center + Offset(0f, arm), stroke, StrokeCap.Round)
-        drawLine(Paper, center + Offset(0f, arm), center + Offset(-arm, 0f), stroke, StrokeCap.Round)
-        drawLine(Paper, center + Offset(-arm, 0f), center + Offset(0f, -arm), stroke, StrokeCap.Round)
+        drawLine(sealPaper, center + Offset(0f, -arm), center + Offset(arm, 0f), stroke, StrokeCap.Round)
+        drawLine(sealPaper, center + Offset(arm, 0f), center + Offset(0f, arm), stroke, StrokeCap.Round)
+        drawLine(sealPaper, center + Offset(0f, arm), center + Offset(-arm, 0f), stroke, StrokeCap.Round)
+        drawLine(sealPaper, center + Offset(-arm, 0f), center + Offset(0f, -arm), stroke, StrokeCap.Round)
     }
 }
 
@@ -1578,6 +1609,7 @@ private fun WeatherIcons(weather: List<String>) {
 @Composable
 private fun WeatherGlyph(key: String) {
     val label = DexSchedule.weatherEs(key)
+    val glyphOchre = Ochre
     Box(
         Modifier
             .size(24.dp)
@@ -1596,7 +1628,7 @@ private fun WeatherGlyph(key: String) {
                     lineTo(0f, size.height / 2f)
                     close()
                 }
-                drawPath(path, Ochre)
+                drawPath(path, glyphOchre)
             }
         }
     }

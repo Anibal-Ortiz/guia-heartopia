@@ -8,8 +8,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,13 +19,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -43,8 +42,8 @@ import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.domain.Countries
 import com.guiaheartopia.app.domain.Country
 import com.guiaheartopia.app.domain.CountryZone
-import com.guiaheartopia.app.domain.PlaySession
 import com.guiaheartopia.app.domain.PlayerProfile
+import com.guiaheartopia.app.ui.components.DraftSearchField
 import com.guiaheartopia.app.ui.components.PixelButton
 import com.guiaheartopia.app.ui.components.PixelCard
 import com.guiaheartopia.app.ui.components.StepBadge
@@ -85,7 +84,6 @@ private fun filteredZones(country: Country, query: String): List<CountryZone> {
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun WelcomeScreen(
     initial: PlayerProfile,
@@ -98,11 +96,19 @@ fun WelcomeScreen(
     var countryId by rememberSaveable { mutableStateOf(initial.countryId) }
     var zoneId by rememberSaveable { mutableStateOf(initial.zoneId) }
     var regionKey by rememberSaveable { mutableStateOf(initial.regionKey) }
-    var session by rememberSaveable { mutableStateOf(initial.session.name) }
     val country = Countries.byId(countryId)
-    if (country.zones.none { it.key == regionKey || it.zoneId == zoneId }) {
-        zoneId = country.zones.first().zoneId
-        regionKey = country.zones.first().key
+    // Antes se escribía estado dentro de la composición. Ahora se deriva y se corrige en un efecto.
+    val zoneValid by remember(country, regionKey, zoneId) {
+        derivedStateOf { country.zones.any { it.key == regionKey || it.zoneId == zoneId } }
+    }
+    val effectiveZoneId = if (zoneValid) zoneId else country.zones.first().zoneId
+    val effectiveRegionKey = if (zoneValid) regionKey else country.zones.first().key
+    LaunchedEffect(country, zoneValid) {
+        if (!zoneValid) {
+            val first = country.zones.first()
+            zoneId = first.zoneId
+            regionKey = first.key
+        }
     }
     val total = 4
     val ready = step != 0 || name.isNotBlank()
@@ -149,8 +155,11 @@ fun WelcomeScreen(
                 zoneId = zone.zoneId
             }
             else -> Column(contentModifier.verticalScroll(rememberScrollState())) {
-                StepPlay(session) { session = it }
-                StepSummary(name, country.name, Countries.label(country.id, zoneId, regionKey), session)
+                StepSummary(
+                    name,
+                    country.name,
+                    Countries.label(country.id, effectiveZoneId, effectiveRegionKey),
+                )
             }
         }
 
@@ -183,7 +192,6 @@ fun WelcomeScreen(
                             onContinue(
                                 initial.copy(
                                     name = name.trim(),
-                                    session = PlaySession.valueOf(session),
                                     countryId = countryId,
                                     zoneId = zoneId,
                                     regionKey = regionKey,
@@ -229,24 +237,13 @@ private fun SearchField(
     placeholder: String,
     modifier: Modifier = Modifier,
 ) {
-    OutlinedTextField(
+    // Buscador compartido: mismo comportamiento que el de Cocina, con botón de limpiar.
+    DraftSearchField(
         value = query,
         onValueChange = onQuery,
-        modifier = modifier.fillMaxWidth(),
-        placeholder = { Text(placeholder) },
-        singleLine = true,
-        shape = RoundedCornerShape(16.dp),
-        trailingIcon = {
-            if (query.text.isNotEmpty()) {
-                Box(
-                    Modifier
-                        .clickable { onQuery(TextFieldValue("")) }
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                ) {
-                    Text("✕", color = Muted, style = MaterialTheme.typography.titleSmall)
-                }
-            }
-        },
+        placeholder = placeholder,
+        modifier = modifier,
+        showClear = true,
     )
 }
 
@@ -393,25 +390,12 @@ private fun OptionRow(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun StepPlay(session: String, onPick: (String) -> Unit) {
-    Text("¿Cuándo sueles jugar?", style = MaterialTheme.typography.headlineSmall)
-    Text("Solo cambia el saludo. Los recordatorios se activan después, en Ajustes.", style = MaterialTheme.typography.bodyMedium)
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        PlaySession.entries.forEach { option ->
-            FilterChip(selected = session == option.name, onClick = { onPick(option.name) }, label = { Text(option.label) })
-        }
-    }
-}
-
-@Composable
-private fun StepSummary(name: String, country: String, zone: String, session: String) {
+private fun StepSummary(name: String, country: String, zone: String) {
     Text("Listo, $name", style = MaterialTheme.typography.headlineSmall)
     PixelCard {
         Text(country, style = MaterialTheme.typography.titleMedium)
         Text(zone, style = MaterialTheme.typography.bodyMedium)
-        Text(PlaySession.valueOf(session).label, style = MaterialTheme.typography.bodySmall)
     }
     Text("Puedes cambiarlo cuando quieras en Ajustes.", style = MaterialTheme.typography.bodyMedium)
 }

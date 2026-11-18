@@ -17,4 +17,4 @@ Sin garantía
 La app se ofrece tal como está. Puede fallar o quedar desactualizada.
 
 Contacto
-primero010102@gmail.com
+anibalortiz.dev@gmail.com

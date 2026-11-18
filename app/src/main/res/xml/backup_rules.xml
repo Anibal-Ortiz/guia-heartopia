@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Estado local: recompensas, consentimiento, perfil y avisos no se restauran en otro dispositivo. -->
+    <exclude domain="root" path="files/datastore/ad_rewards.preferences_pb" />
+    <exclude domain="root" path="files/datastore/guia_heartopia.preferences_pb" />
+    <exclude domain="root" path="files/datastore/content_checks.preferences_pb" />
+    <exclude domain="sharedpref" name="guia-anuncios-nav" />
+    <exclude domain="sharedpref" name="guia-avisos" />
+    <exclude domain="sharedpref" name="content-sync" />
+</full-backup-content>

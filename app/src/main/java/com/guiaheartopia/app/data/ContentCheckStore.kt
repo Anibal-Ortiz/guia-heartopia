@@ -28,7 +28,6 @@ object ContentCheckStore {
     private val KEY_RESULT = stringPreferencesKey("last_result")
     private val KEY_LOCAL_VERSION = intPreferencesKey("last_local_version")
     private val KEY_REMOTE_VERSION = intPreferencesKey("last_remote_version")
-    private val chile: ZoneId = ZoneId.of("America/Santiago")
     private val clock: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")
 
     fun observe(context: Context): Flow<ContentCheckState> =
@@ -55,14 +54,18 @@ object ContentCheckStore {
             prefs[KEY_LOCAL_VERSION] = report.localVersion
             prefs[KEY_REMOTE_VERSION] = report.remoteVersion ?: -1
         }
-        if (report.result != ContentSyncResult.NETWORK_ERROR) {
+        // VERIFY_FAILED no cuenta como intento: permite reintentar de inmediato.
+        if (report.result != ContentSyncResult.NETWORK_ERROR &&
+            report.result != ContentSyncResult.VERIFY_FAILED
+        ) {
             AndroidContentStore.markAttempt(context, checkedAtMillis)
         }
     }
 
-    fun lastCheckedLabel(epochMillis: Long): String {
+    /** La zona por defecto es la del dispositivo; se puede inyectar en pruebas. */
+    fun lastCheckedLabel(epochMillis: Long, zone: ZoneId = ZoneId.systemDefault()): String {
         if (epochMillis <= 0L) return "Sin comprobaciones aún"
-        val text = Instant.ofEpochMilli(epochMillis).atZone(chile).format(clock)
+        val text = Instant.ofEpochMilli(epochMillis).atZone(zone).format(clock)
         return "Última comprobación: $text"
     }
 }

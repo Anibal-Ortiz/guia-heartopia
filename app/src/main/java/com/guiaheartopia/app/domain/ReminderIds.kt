@@ -1,5 +1,7 @@
 package com.guiaheartopia.app.domain
 
+import java.util.Locale
+
 /**
  * Identificador estable de un aviso: tipo, evento y hora de inicio.
  * El mismo texto no basta: dos avisos distintos pueden compartir título
@@ -37,7 +39,7 @@ object ReminderIds {
     }
 
     fun slug(raw: String): String =
-        raw.lowercase()
+        raw.lowercase(Locale.ROOT)
             .replace('á', 'a')
             .replace('é', 'e')
             .replace('í', 'i')

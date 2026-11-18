@@ -70,7 +70,7 @@ object WeatherCalendar {
         originId: String,
     ): List<PlacedSlot> {
         val origin = origins.firstOrNull { it.id == originId } ?: return emptyList()
-        val originZone = ZoneId.of(origin.zoneId)
+        val originZone = DexSchedule.zoneOf(origin.zoneId)
         return slots.filter { it.originId == origin.id }
             .map { slot ->
                 val local = WeatherTime.convert(slot.originLocal, originZone, viewerZone)

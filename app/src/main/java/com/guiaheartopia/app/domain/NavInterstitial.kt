@@ -5,7 +5,7 @@ package com.guiaheartopia.app.domain
  * nunca con el beneficio de 24 h y nunca antes del intervalo mínimo.
  */
 object NavInterstitial {
-    const val MIN_GAP_MILLIS = 60_000L
+    const val MIN_GAP_MILLIS = 120_000L
 
     fun allow(
         adFree: Boolean,

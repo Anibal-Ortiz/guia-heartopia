@@ -3,19 +3,10 @@ package com.guiaheartopia.app.domain
 import kotlinx.serialization.Serializable
 
 @Serializable
-enum class PlaySession(val label: String) {
-    MANANA("Mañana"),
-    TARDE("Tarde"),
-    NOCHE("Noche"),
-    VARIABLE("Variable"),
-}
-
-@Serializable
 data class PlayerProfile(
     val onboarded: Boolean = false,
     val name: String = "",
     val placeName: String = "",
-    val session: PlaySession = PlaySession.VARIABLE,
     val countryId: String = "CL",
     val zoneId: String = "America/Santiago",
     val regionKey: String = "",
@@ -28,7 +19,11 @@ data class PlayerProfile(
 )
 
 object SampleIds {
-    /** Hora civil en el JSON (`calendar/clima-2026.json`) guardada en UTC. */
+    /**
+     * Identificador heredado del origen horario. El JSON de clima declara
+     * `serverZone: "reloj-local"`: sus horas son hora civil de la zona elegida
+     * por el jugador ([WeatherSource.zoneFor]), no UTC.
+     */
     const val WEATHER_ORIGIN = "utc-servidor"
     const val LEGACY_WEATHER_ORIGIN = "origen-ejemplo"
 }

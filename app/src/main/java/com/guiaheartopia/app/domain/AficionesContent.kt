@@ -1,5 +1,6 @@
 package com.guiaheartopia.app.domain
 
+import com.guiaheartopia.app.domain.Marks as SharedMarks
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -207,20 +208,16 @@ object AficionesContent {
 object AficionesMarks {
     data class Marks(val found: Set<String>, val certified: Set<String>)
 
-    fun toggle(set: Set<String>, id: String): Set<String> =
-        if (id in set) set - id else set + id
+    fun toggle(set: Set<String>, id: String): Set<String> = SharedMarks.toggle(set, id)
 
-    fun toggleFound(marks: Marks, id: String): Marks =
-        if (id in marks.found) marks.copy(found = marks.found - id, certified = marks.certified - id)
-        else marks.copy(found = marks.found + id)
+    fun toggleFound(marks: Marks, id: String): Marks {
+        val next = SharedMarks.toggleFound(SharedMarks.Values(marks.found, marks.certified), id)
+        return Marks(next.found, next.certified)
+    }
 
     fun toggleCertified(marks: Marks, id: String, certifiable: Boolean): Marks {
-        if (!certifiable) return marks
-        return if (id in marks.certified) {
-            marks.copy(certified = marks.certified - id)
-        } else {
-            marks.copy(found = marks.found + id, certified = marks.certified + id)
-        }
+        val next = SharedMarks.toggleCertified(SharedMarks.Values(marks.found, marks.certified), id, certifiable)
+        return Marks(next.found, next.certified)
     }
 
     fun certifiableSiembra(entry: SiembraEntry): Boolean =

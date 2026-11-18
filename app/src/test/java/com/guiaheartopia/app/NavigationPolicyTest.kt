@@ -4,6 +4,7 @@ import com.guiaheartopia.app.ui.AppNavigation
 import com.guiaheartopia.app.ui.NavigationPolicy
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class NavigationPolicyTest {
@@ -20,8 +21,8 @@ class NavigationPolicyTest {
     fun everyOtherTabOpensItsRootWithoutRestoringAnInnerScreen() {
         listOf("aficiones", "codigos", "calendar").forEach { route ->
             val policy = NavigationPolicy.onBottomTabSelected(route)
-            assertEquals(AppNavigation.HOME_ROUTE, policy.popUpToRoute)
-            assertFalse(policy.inclusive)
+            assertEquals(route, policy.popUpToRoute)
+            assertTrue(policy.inclusive)
             assertFalse(policy.saveState)
             assertFalse(policy.restoreState)
         }

@@ -1,6 +1,7 @@
 package com.guiaheartopia.app.data
 
 import com.guiaheartopia.app.domain.GameEvent
+import com.guiaheartopia.app.domain.ResourceCalendar
 import java.time.LocalDate
 
 /**
@@ -28,39 +29,8 @@ object VerifiedCatalog {
 
     val events: List<GameEvent> = emptyList()
 
-    /** Día de noviembre 2026 → parcela o zona del roble (Liuliu, según heartodex) y de la flurita. */
-    val novemberSpots: List<Pair<String, String>> = listOf(
-        "2" to "8",
-        "8" to "4",
-        "4" to "1",
-        "8" to "Ruinas",
-        "6" to "8",
-        "8" to "8",
-        "12" to "6",
-        "10" to "2",
-        "7" to "2",
-        "12" to "Ruinas",
-        "8" to "5",
-        "6" to "11",
-        "11" to "11",
-        "2" to "2",
-        "9" to "12",
-        "3" to "4",
-        "6" to "11",
-        "2" to "7",
-        "11" to "9",
-        "Bosque" to "4",
-        "Bosque" to "4",
-        "11" to "7",
-        "9" to "5",
-        "10" to "3",
-        "3" to "7",
-        "6" to "7",
-        "9" to "1",
-        "4" to "5",
-        "10" to "9",
-        "Bosque" to "11",
-    )
+    /** Día de noviembre 2026 → parcela o zona del roble (Liuliu) y de la flurita. Fuente única en domain. */
+    val novemberSpots: List<Pair<String, String>> get() = ResourceCalendar.novemberSpots
 
     fun novemberSpot(date: LocalDate): Pair<String, String>? {
         if (date.year != 2026 || date.monthValue != 11) return null

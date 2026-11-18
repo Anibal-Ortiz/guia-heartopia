@@ -27,12 +27,14 @@ import androidx.compose.ui.unit.sp
 import com.guiaheartopia.app.data.AndroidContentLibrary
 import com.guiaheartopia.app.domain.RedeemCode
 import com.guiaheartopia.app.domain.RedeemCodes
+import com.guiaheartopia.app.ui.components.EmptyStateCard
 import com.guiaheartopia.app.ui.components.PixelButton
 import com.guiaheartopia.app.ui.components.PixelCard
 import com.guiaheartopia.app.ui.contentRevision
 import com.guiaheartopia.app.ui.theme.Ink
 import com.guiaheartopia.app.ui.theme.Muted
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
@@ -42,6 +44,7 @@ fun CodesScreen(
     redeemed: Set<String>,
     onSeen: (List<String>) -> Unit,
     onRedeemed: (String, Boolean) -> Unit,
+    zoneId: String = "",
 ) {
     val context = LocalContext.current
     val revision = contentRevision()
@@ -49,7 +52,8 @@ fun CodesScreen(
         val raw = AndroidContentLibrary(context).effectiveBytes(RedeemCodes.PATH)?.decodeToString()
         RedeemCodes.parse(raw)
     }
-    val today = LocalDate.now()
+    val zone = runCatching { ZoneId.of(zoneId) }.getOrElse { ZoneId.systemDefault() }
+    val today = LocalDate.now(zone)
     val active = RedeemCodes.active(codes, today)
     val expired = RedeemCodes.expired(codes, today)
     LaunchedEffect(active.map { it.code }, seen) {
@@ -71,7 +75,11 @@ fun CodesScreen(
         )
         Text("Vigentes", style = MaterialTheme.typography.titleMedium, color = Ink)
         if (active.isEmpty()) {
-            Text("No hay códigos activos por ahora", color = Muted, style = MaterialTheme.typography.bodyLarge)
+            EmptyStateCard(
+                title = "Sin códigos activos",
+                message = "No hay códigos vigentes por ahora. Vuelve a mirar pronto.",
+                icon = "🎟️",
+            )
         } else {
             active.forEach { code ->
                 CodeCard(
@@ -131,18 +139,18 @@ private fun CodeCard(
         code.fuente?.takeIf { it.isNotBlank() }?.let {
             Text(it, style = MaterialTheme.typography.bodySmall, color = Muted)
         }
+        // Acciones independientes: copiar nunca cambia el estado de canjeo.
         PixelButton(
-            text = if (redeemed) "Ya canjeado ✓" else "Marcar como canjeado",
+            text = if (redeemed) "Canjeado ✓ (tocar para desmarcar)" else "Marcar como canjeado",
             onClick = { onRedeemed(code.code, !redeemed) },
             outlined = !redeemed,
             modifier = Modifier.fillMaxWidth(),
         )
         PixelButton(
-            text = "Copiar",
+            text = "Copiar código",
             onClick = {
                 val clipboard = context.getSystemService(ClipboardManager::class.java)
                 clipboard.setPrimaryClip(ClipData.newPlainText("código", code.code))
-                if (!redeemed) onRedeemed(code.code, true)
                 Toast.makeText(context, "Código copiado", Toast.LENGTH_SHORT).show()
             },
             outlined = true,

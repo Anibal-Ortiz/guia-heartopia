@@ -31,6 +31,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -170,17 +174,27 @@ private fun HobbyCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                // Decrement Button
+                // Decrement Button: no puede bajar de nivel 0.
+                val canLower = hobby.level > 0
                 Box(
                     Modifier
                         .size(38.dp)
                         .clip(CircleShape)
-                        .background(PaperSubtle)
-                        .border(1.dp, Line, CircleShape)
-                        .clickable { onChange(hobby.id, hobby.level - 1, null, null) },
+                        .background(if (canLower) GreenSoft else PaperSubtle)
+                        .border(1.dp, if (canLower) GreenTint else Line, CircleShape)
+                        .clickable(enabled = canLower) { onChange(hobby.id, hobby.level - 1, null, null) }
+                        .semantics {
+                            role = Role.Button
+                            contentDescription = "Bajar nivel"
+                        },
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text("−", fontSize = 20.sp, fontWeight = FontWeight.Bold, color = Ink)
+                    Text(
+                        "−",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (canLower) GreenDark else Muted,
+                    )
                 }
 
                 Text(

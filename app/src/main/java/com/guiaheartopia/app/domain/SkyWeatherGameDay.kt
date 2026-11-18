@@ -16,9 +16,9 @@ import java.time.format.DateTimeFormatter
  * Los tramos salen de [DexSchedule] en UTC y se convierten con la zona IANA (el desfase
  * de cada límite, horario de verano incluido). No se fija Chile a UTC−3.
  *
- * Las horas del JSON son el reloj local de Tidebell (la fecha y la hora del lector),
- * no UTC ni el desfase de un servidor regional. Se colocan en la zona elegida y después
- * se recortan a cada franja ya convertida. No se vuelven a desplazar.
+ * Las horas del JSON son hora civil de la zona elegida ([WeatherSource.zoneFor]);
+ * la tabla se indexa con esa misma fecha. Las franjas del juego, en cambio, son UTC
+ * fijo y se convierten con [DexSchedule] a la zona del jugador.
  */
 object SkyWeatherGameDay {
     private val frameOrder = listOf("Dawn", "Day", "Dusk", "Night")
@@ -40,8 +40,12 @@ object SkyWeatherGameDay {
     /** Inicio del próximo amanecer del servidor, cuando se reinicia el día. */
     fun nextServerDawn(instant: Instant, zone: ZoneId): Instant {
         val dawnDate = serverDawnLocalDate(instant, zone)
-        val opening = windowsForLocalDawn(dawnDate, zone).first { it.slot.key == "Dawn" }.start.toInstant()
-        val following = windowsForLocalDawn(dawnDate.plusDays(1), zone).first { it.slot.key == "Dawn" }.start.toInstant()
+        val opening = windowsForLocalDawn(dawnDate, zone)
+            .firstOrNull { it.slot.key == "Dawn" }?.start?.toInstant()
+            ?: return dawnDate.atStartOfDay(zone).toInstant()
+        val following = windowsForLocalDawn(dawnDate.plusDays(1), zone)
+            .firstOrNull { it.slot.key == "Dawn" }?.start?.toInstant()
+            ?: return dawnDate.plusDays(1).atStartOfDay(zone).toInstant()
         return if (instant.isBefore(opening)) opening else following
     }
 
@@ -111,11 +115,12 @@ object SkyWeatherGameDay {
     }
 
     fun conditionAt(table: SkyTable, instant: Instant, zone: ZoneId): SkySlot? {
-        val local = instant.atZone(zone)
-        val day = table.on(local.toLocalDate()) ?: return null
+        // El JSON es hora civil de la zona elegida: tabla y relojes comparten esa zona.
+        val source = instant.atZone(WeatherSource.zoneFor(zone))
+        val day = table.on(source.toLocalDate()) ?: return null
         return day.slots.firstOrNull { slot ->
-            val (start, end) = localRange(local.toLocalDate(), slot, zone)
-            !instant.isBefore(start.toInstant()) && instant.isBefore(end.toInstant())
+            val (start, end) = clockRange(source.toLocalDate(), slot, zone)
+            !instant.isBefore(start) && instant.isBefore(end)
         }
     }
 
@@ -160,29 +165,26 @@ object SkyWeatherGameDay {
 
     private fun spansInWindow(table: SkyTable, window: LocalGameWindow, zone: ZoneId): List<GameClimateSpan> {
         val raw = ArrayList<GameClimateSpan>()
-        var date = window.start.toLocalDate().minusDays(1)
-        val last = window.end.toLocalDate()
-        while (!date.isAfter(last)) {
-            val day = table.on(date)
-            if (day != null) {
-                for (slot in day.slots) {
-                    val (start, end) = localRange(date, slot, zone)
-                    val clipStart = maxOf(start.toInstant(), window.start.toInstant())
-                    val clipEnd = minOf(end.toInstant(), window.end.toInstant())
-                    if (!clipStart.isBefore(clipEnd)) continue
-                    raw += GameClimateSpan(
-                        kind = slot.kind.climateDisplay(),
-                        status = slot.status,
-                        start = clipStart.atZone(zone),
-                        end = clipEnd.atZone(zone),
-                        frameKey = window.slot.key,
-                    )
-                }
+        // Las horas del JSON son hora civil de la zona elegida; el recorte a la
+        // franja se hace en instantes ya convertidos.
+        for (date in SkyWeatherLocal.utcDatesBetween(window.start.toInstant(), window.end.toInstant(), zone)) {
+            val day = table.on(date) ?: continue
+            for (slot in day.slots) {
+                val (start, end) = clockRange(date, slot, zone)
+                val clipStart = maxOf(start, window.start.toInstant())
+                val clipEnd = minOf(end, window.end.toInstant())
+                if (!clipStart.isBefore(clipEnd)) continue
+                raw += GameClimateSpan(
+                    kind = slot.kind.climateDisplay(),
+                    status = slot.status,
+                    start = clipStart.atZone(zone),
+                    end = clipEnd.atZone(zone),
+                    frameKey = window.slot.key,
+                )
             }
-            date = date.plusDays(1)
         }
         raw.sortBy { it.start.toInstant() }
-        return mergeInsideFrame(raw)
+        return SkySpanSupport.mergeInsideFrame(raw)
     }
 
     private fun dawnUtcDate(localDawnDate: LocalDate, zone: ZoneId): LocalDate {
@@ -205,35 +207,17 @@ object SkyWeatherGameDay {
     }
 
     /**
-     * Las horas del archivo son hora civil de [date] en [zone]. Un fin a medianoche
-     * o un tramo que no avanza cae en el día siguiente.
+     * Las horas del archivo son hora civil de [date] en la zona elegida [zone].
+     * Un fin a medianoche o un tramo que no avanza cae en el día siguiente.
      */
-    private fun localRange(date: LocalDate, slot: SkySlot, zone: ZoneId): Pair<ZonedDateTime, ZonedDateTime> {
-        val start = ZonedDateTime.of(date, slot.start, zone)
+    private fun clockRange(date: LocalDate, slot: SkySlot, zone: ZoneId): Pair<Instant, Instant> {
+        val source = WeatherSource.zoneFor(zone)
+        val start = ZonedDateTime.of(date, slot.start, source).toInstant()
         val end = if (slot.end == LocalTime.MIDNIGHT || !slot.end.isAfter(slot.start)) {
-            ZonedDateTime.of(date.plusDays(1), LocalTime.MIDNIGHT, zone)
+            ZonedDateTime.of(date.plusDays(1), LocalTime.MIDNIGHT, source).toInstant()
         } else {
-            ZonedDateTime.of(date, slot.end, zone)
+            ZonedDateTime.of(date, slot.end, source).toInstant()
         }
         return start to end
-    }
-
-    private fun mergeInsideFrame(spans: List<GameClimateSpan>): List<GameClimateSpan> {
-        if (spans.isEmpty()) return spans
-        val out = ArrayList<GameClimateSpan>()
-        for (span in spans) {
-            val prev = out.lastOrNull()
-            if (
-                prev != null &&
-                prev.frameKey == span.frameKey &&
-                prev.kind == span.kind &&
-                prev.end.toInstant() == span.start.toInstant()
-            ) {
-                out[out.lastIndex] = prev.copy(end = span.end)
-            } else {
-                out += span
-            }
-        }
-        return out
     }
 }

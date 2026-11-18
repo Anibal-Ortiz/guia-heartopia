@@ -42,6 +42,16 @@ class ContentPackageTest {
     }
 
     @Test
+    fun parseManifestAcceptsThePublishedCatalogSize() {
+        // El catálogo publicado tiene ~743 archivos; un tope bajo devolvía VERIFY_FAILED.
+        val files = (0 until 743).map { index ->
+            ContentFileEntry("catalog/images/imagen-$index.webp", 1L, validSha)
+        }
+        val manifest = ContentManifest(10, 23, "2026-11-16", files)
+        assertNotNull(ContentPackage.parseManifest(ContentPackage.encodeManifest(manifest)))
+    }
+
+    @Test
     fun parseManifestRejectsMalformedOrIncompleteJson() {
         assertNull(ContentPackage.parseManifest(""))
         assertNull(ContentPackage.parseManifest("{"))

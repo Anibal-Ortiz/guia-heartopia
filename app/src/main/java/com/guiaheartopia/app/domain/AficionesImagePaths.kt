@@ -10,9 +10,5 @@ object AficionesImagePaths {
         return listOf(path)
     }
 
-    fun normalize(imagen: String?): String? {
-        if (imagen.isNullOrBlank()) return null
-        if (imagen.startsWith("http://") || imagen.startsWith("https://")) return null
-        return imagen.removePrefix("asset:").removePrefix("content:").removePrefix("/")
-    }
+    fun normalize(imagen: String?): String? = ContentPaths.normalize(imagen)
 }

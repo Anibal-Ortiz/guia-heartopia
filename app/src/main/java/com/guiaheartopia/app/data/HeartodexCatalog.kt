@@ -4,24 +4,8 @@ import android.content.Context
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-@Serializable
-data class DexEntry(
-    val id: String,
-    val category: String,
-    val name: String,
-    val nameEn: String = "",
-    val location: List<String> = emptyList(),
-    val schedule: List<String> = emptyList(),
-    val weather: List<String> = emptyList(),
-    val event: String? = null,
-    val level: Int? = null,
-    val shadow: String? = null,
-    val imageUrl: String = "",
-    val description: String = "",
-    val source: String = "heartodex",
-    val sourceUrl: String = "",
-    val extractedOn: String = "",
-)
+/** Alias público: el modelo vive en domain, la ruta antigua sigue funcionando. */
+typealias DexEntry = com.guiaheartopia.app.domain.DexEntry
 
 @Serializable
 data class DexFile(
@@ -33,15 +17,26 @@ data class DexFile(
 
 object HeartodexCatalog {
     private val json = Json { ignoreUnknownKeys = true }
+    private val cached = ContentCache.Slot<List<DexEntry>>()
 
-    fun load(context: Context): List<DexEntry> {
-        val base = context.assets.open("catalog/heartodex.json").bufferedReader().use { reader ->
-            json.decodeFromString(DexFile.serializer(), reader.readText()).entries
-        }
+    /** Caché invalidada automáticamente cuando cambia la revisión del contenido. */
+    fun load(context: Context): List<DexEntry> =
+        cached.get(ContentCache.key(context)) { loadUncached(context) }
+
+    fun invalidate() = cached.clear()
+
+    private fun loadUncached(context: Context): List<DexEntry> {
+        val base = runCatching {
+            context.assets.open("catalog/heartodex.json").bufferedReader().use { reader ->
+                json.decodeFromString(DexFile.serializer(), reader.readText()).entries
+            }
+        }.getOrDefault(emptyList())
         val overlay = AndroidContentStore.overlayFile(context, "catalog/creatures.json")
             ?: AndroidContentStore.overlayFile(context, "catalog/heartodex.json")
             ?: return base
-        val extra = json.decodeFromString(DexFile.serializer(), overlay.readText()).entries
+        val extra = runCatching {
+            json.decodeFromString(DexFile.serializer(), overlay.readText()).entries
+        }.getOrDefault(emptyList())
         return mergeCreatures(base, extra)
     }
 }

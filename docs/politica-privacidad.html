@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Política de privacidad — WikiFan para Heartopia</title>
+  <meta name="description" content="Política de privacidad de WikiFan para Heartopia, guía no oficial del juego Heartopia.">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #25302b;
+      --muted: #5d6b63;
+      --line: #dfe6e0;
+      --paper: #ffffff;
+      --bg: #f5f7f3;
+      --accent: #2f7d55;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 32px 16px 64px;
+      background: var(--bg);
+      color: var(--ink);
+      font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 32px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+    }
+    h1 { font-size: 1.9rem; line-height: 1.25; margin: 0 0 16px; }
+    h2 {
+      font-size: 1.25rem;
+      margin: 32px 0 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--line);
+    }
+    p { margin: 0 0 12px; }
+    ul { margin: 0 0 12px; padding-left: 22px; }
+    li { margin-bottom: 7px; }
+    code {
+      background: #eef2ed;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 0.92em;
+    }
+    a { color: var(--accent); overflow-wrap: anywhere; }
+    .meta { color: var(--muted); font-size: 0.94rem; }
+    .meta p { margin-bottom: 4px; }
+    .note {
+      background: #eef7f0;
+      border-left: 4px solid var(--accent);
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin: 18px 0;
+    }
+    footer {
+      margin-top: 36px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    @media (max-width: 600px) {
+      body { padding: 12px 10px 40px; }
+      main { padding: 20px 18px; }
+      h1 { font-size: 1.55rem; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Política de privacidad</h1>
+
+  <div class="meta">
+    <p><strong>WikiFan para Heartopia</strong><br>
+    Etiqueta del launcher: <strong>WikiFan Heartopia</strong></p>
+    <p>Versión de la política: <strong>1.1.0</strong> — 18 de noviembre de 2026<br>
+    Contacto: <a href="mailto:anibalortiz.dev@gmail.com">anibalortiz.dev@gmail.com</a></p>
+  </div>
+
+  <p class="note">App no oficial, no afiliada ni respaldada por los creadores de Heartopia.</p>
+
+  <h2>Responsable del tratamiento</h2>
+  <p>La responsabilidad del tratamiento de los datos de esta app es de su desarrollador. Para cualquier consulta, acceso, rectificación o borrado de tus datos: <a href="mailto:anibalortiz.dev@gmail.com">anibalortiz.dev@gmail.com</a>.</p>
+
+  <h2>Qué es esta app</h2>
+  <p>Es una guía para consultar criaturas, peces, recetas, horarios, clima, aficiones y anotaciones propias. No controla el juego, no lee su pantalla y no pulsa nada por ti. No hay cuenta de usuario ni servidor propio que reciba tu información personal.</p>
+
+  <h2>Datos que se quedan en el dispositivo</h2>
+  <ul>
+    <li><strong>Perfil:</strong> nombre, país, zona horaria y región elegidos.</li>
+    <li><strong>Avatar:</strong> si eliges una foto, entra por el selector de Android sin permiso de almacenamiento. Se recorta en el teléfono y se guarda solo en el almacenamiento interno de la app; no se sube a ningún servidor.</li>
+    <li><strong>Progreso:</strong> fichas marcadas, colección, anotaciones de criaturas, cultivos y recetas de las aficiones, códigos vistos y filtros de búsqueda.</li>
+    <li><strong>Recordatorios:</strong> cultivos y franjas horarias marcados y preferencias de avisos. Son notificaciones locales; en Android 13 o superior se pide <code>POST_NOTIFICATIONS</code> solo al activarlos.</li>
+    <li><strong>Anuncios y recompensas:</strong> cuándo termina el periodo sin anuncios obtenido por un vídeo y el desbloqueo del calendario.</li>
+    <li><strong>Respaldo:</strong> la exportación genera un archivo JSON con todo lo anterior (perfil, colección, aficiones, ajustes y avatar) en la ubicación que eliges. Importar reemplaza los datos del teléfono previa confirmación. El archivo no se envía a ningún servidor: guárdalo con seguridad.</li>
+  </ul>
+  <p>Borrar los datos de la app o desinstalarla sin respaldo elimina esa información del teléfono.</p>
+
+  <h2>Contenido público que descarga la app</h2>
+  <p>La app puede descargar desde <a href="https://anibalortizdev.github.io/guia-heartopia-contenido/">anibalortizdev.github.io/guia-heartopia-contenido</a> el manifiesto, las fichas, los horarios, el clima y, si se publican, las imágenes. Es una descarga anónima: no envía tu nombre, tu colección ni tu avatar. Los archivos se guardan en caché para no repetir la descarga.</p>
+
+  <h2>Permisos</h2>
+  <ul>
+    <li><code>INTERNET</code> y <code>ACCESS_NETWORK_STATE</code>: contenido público y anuncios.</li>
+    <li><code>POST_NOTIFICATIONS</code>: avisos locales, solo si los activas.</li>
+    <li><code>RECEIVE_BOOT_COMPLETED</code> y <code>WAKE_LOCK</code>: reprogramar avisos al reiniciar el móvil.</li>
+    <li><code>SCHEDULE_EXACT_ALARM</code>: avisos a la hora exacta (Android 12+).</li>
+    <li><code>com.google.android.gms.permission.AD_ID</code>: identificador de publicidad de Google.</li>
+  </ul>
+  <p>No pedimos ubicación, contactos, micrófono, cámara ni archivos del almacenamiento compartido.</p>
+
+  <h2>Anuncios, UMP y consentimiento en España y la Unión Europea</h2>
+  <p>La app muestra anuncios de Google AdMob: un banner separado del contenido y de los botones, intersticiales ocasionales y vídeos opcionales a cambio de una recompensa (quitar anuncios temporalmente o desbloquear el calendario).</p>
+  <p>Antes de pedir cualquier anuncio se usa <strong>User Messaging Platform (UMP)</strong> de Google, el formulario oficial para el Espacio Económico Europeo y otros territorios regulados. La app nunca marca el consentimiento como aceptado por su cuenta:</p>
+  <ul>
+    <li><strong>Aceptas:</strong> se piden anuncios personalizados.</li>
+    <li><strong>Rechazas:</strong> no se pide ningún anuncio (sin banner ni intersticiales).</li>
+    <li><strong>Falla el formulario o la consulta:</strong> tampoco se pide ningún anuncio y Ajustes ofrece «Reintentar consentimiento de anuncios».</li>
+    <li><strong>Anuncios no personalizados:</strong> si se activa esa opción, las peticiones van con <code>npa=1</code>, sin personalización. No se usa como fallback automático.</li>
+  </ul>
+  <p>Puedes cambiar o retirar tu decisión cuando quieras en <strong>Ajustes → Opciones de privacidad de anuncios</strong>. Retirarla vuelve a dejar la app sin anuncios. Ver un vídeo recompensado quita los anuncios durante un tiempo limitado y no modifica tu consentimiento.</p>
+  <p>Cuando se pide un anuncio, Google puede tratar el identificador de publicidad (<code>AD_ID</code>), la dirección IP y datos técnicos del dispositivo (modelo, idioma, versión del sistema) según su política y tus opciones. Google y sus socios los usan para mostrar, medir y mejorar anuncios, y pueden compartirlos con terceros según la política de Google. Esta app no vende esos datos, no tiene servidor que los guarde y no añade SDK de analítica, atribución ni redes sociales.</p>
+  <p>
+    Política de Google: <a href="https://policies.google.com/privacy">policies.google.com/privacy</a><br>
+    Anuncios de Google: <a href="https://policies.google.com/technologies/ads">policies.google.com/technologies/ads</a>
+  </p>
+
+  <h2>Menores</h2>
+  <p>La app no está dirigida a menores de 16 años y no pide datos personales a menores. Si eres menor, úsala con autorización de tu persona tutora.</p>
+
+  <h2>Cambios en esta política</h2>
+  <p>Si cambia algo, se actualizan este texto y su versión, y se publica en <a href="https://anibalortizdev.github.io/guia-heartopia-contenido/">anibalortizdev.github.io/guia-heartopia-contenido</a>.</p>
+
+  <footer>
+    <p><strong>Responsable</strong><br>
+    Correo: <a href="mailto:anibalortiz.dev@gmail.com">anibalortiz.dev@gmail.com</a></p>
+  </footer>
+</main>
+</body>
+</html>

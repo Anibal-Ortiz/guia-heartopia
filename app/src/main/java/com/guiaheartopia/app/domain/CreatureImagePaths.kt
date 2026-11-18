@@ -23,11 +23,7 @@ object CreatureImagePaths {
             .filter { ContentPackage.isSafePath(it) && it.startsWith("catalog/images/") }
     }
 
-    fun normalize(imageUrl: String?): String? {
-        if (imageUrl.isNullOrBlank()) return null
-        if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) return null
-        return imageUrl.removePrefix("asset:").removePrefix("content:").removePrefix("/")
-    }
+    fun normalize(imageUrl: String?): String? = ContentPaths.normalize(imageUrl)
 }
 
 object GuideSections {

@@ -16,7 +16,15 @@ data class AficionesBundle(
 }
 
 object AficionesCatalog {
-    fun load(context: Context): AficionesBundle {
+    private val cached = ContentCache.Slot<AficionesBundle>()
+
+    /** Caché invalidada automáticamente cuando cambia la revisión del contenido. */
+    fun load(context: Context): AficionesBundle =
+        cached.get(ContentCache.key(context)) { loadUncached(context) }
+
+    fun invalidate() = cached.clear()
+
+    private fun loadUncached(context: Context): AficionesBundle {
         val library = AndroidContentLibrary(context)
         val siembras = AficionesContent.parseSiembras(
             library.effectiveBytes(AficionesContent.siembrasPath)?.decodeToString(),

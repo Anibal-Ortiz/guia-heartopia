@@ -1,6 +1,7 @@
 package com.guiaheartopia.app.ads
 
 import android.app.Activity
+import android.content.Context
 import android.util.Log
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
@@ -10,10 +11,23 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
+import java.lang.ref.WeakReference
 
 private const val TAG = "GuiaAds"
 
-class FullscreenAds(private val activity: Activity) {
+/**
+ * Anuncios a pantalla completa.
+ *
+ * Modo seguro por defecto: no se carga nada hasta que [preload] recibe un modo
+ * consentido (PERSONALIZED o NON_PERSONALIZED). Solo se precarga el intersticial;
+ * los recompensados se cargan bajo demanda para no lanzar tres peticiones a la vez.
+ * El Activity se mantiene con [WeakReference] y las cargas usan applicationContext;
+ * tras [onHostDestroyed] se ignoran todos los callbacks del SDK.
+ */
+class FullscreenAds(activity: Activity) {
+    private val appContext: Context = activity.applicationContext
+    private val activityRef = WeakReference<Activity>(activity)
+
     private var interstitial: InterstitialAd? = null
     private var interstitialLoading = false
     private var rewardedAdFree: RewardedAd? = null
@@ -22,6 +36,10 @@ class FullscreenAds(private val activity: Activity) {
     private var rewardedCalendarLoading = false
 
     private var adFree = false
+    private var destroyed = false
+    private var consentAllowed = false
+    private var lastMode: AdsMode = AdsMode.IDLE
+    private var modeGeneration = 0
 
     fun setAdFree(active: Boolean) {
         adFree = active
@@ -31,17 +49,58 @@ class FullscreenAds(private val activity: Activity) {
         }
     }
 
+    /** Llamado desde el ON_DESTROY del host; evita callbacks y cargas posteriores. */
+    fun onHostDestroyed() {
+        destroyed = true
+        interstitial = null
+        rewardedAdFree = null
+        rewardedCalendar = null
+        interstitialLoading = false
+        rewardedAdFreeLoading = false
+        rewardedCalendarLoading = false
+    }
+
+    private fun canLoad(mode: AdsMode): Boolean =
+        !destroyed && consentAllowed && AdConfig.adsEnabled &&
+            (mode == AdsMode.PERSONALIZED || mode == AdsMode.NON_PERSONALIZED)
+
+    /**
+     * Precarga ligera e idempotente: únicamente el intersticial. Los recompensados
+     * se cargan cuando se solicitan (ver [showRewardedAdFree] y [showRewardedCalendar]).
+     * Un modo no consentido deja el objeto en modo seguro y limpia la caché.
+     */
     fun preload(mode: AdsMode) {
-        if (!AdConfig.adsEnabled) return
-        if (mode != AdsMode.PERSONALIZED && mode != AdsMode.NON_PERSONALIZED) return
-        loadRewardedAdFree(mode)
+        lastMode = mode
+        consentAllowed = AdConfig.adsEnabled &&
+            (mode == AdsMode.PERSONALIZED || mode == AdsMode.NON_PERSONALIZED)
+        if (!consentAllowed) {
+            interstitial = null
+            rewardedAdFree = null
+            rewardedCalendar = null
+            return
+        }
         if (adFree) return
         loadInterstitial(mode)
-        loadRewardedCalendar(mode)
+    }
+
+    /**
+     * Descarta los anuncios ya cargados (y los que estén en vuelo) antes de
+     * cambiar de modo, para que un anuncio personalizado no se muestre después
+     * de pasar a `npa=1`.
+     */
+    fun clearLoadedAds() {
+        modeGeneration++
+        interstitial = null
+        rewardedAdFree = null
+        rewardedCalendar = null
     }
 
     fun showInterstitial(adFree: Boolean, onDismiss: () -> Unit = {}, onShown: () -> Unit = {}) {
-        if (adFree || this.adFree || !AdConfig.hasInterstitial) {
+        if (destroyed) {
+            onDismiss()
+            return
+        }
+        if (adFree || this.adFree || !AdConfig.hasInterstitial || !consentAllowed) {
             onDismiss()
             return
         }
@@ -52,16 +111,40 @@ class FullscreenAds(private val activity: Activity) {
             return
         }
         interstitial = null
-        ad.fullScreenContentCallback = simpleCallback(onDismiss) { loadInterstitial(lastMode) }
-        onShown()
-        ad.show(activity)
+        val host = activityRef.get()
+        if (host == null) {
+            onDismiss()
+            return
+        }
+        val reload = once { loadInterstitial(lastMode) }
+        ad.fullScreenContentCallback = fullScreenCallback(
+            onDismissed = { onDismiss(); reload() },
+            onShowed = onShown,
+            onFailed = { onDismiss(); reload() },
+        )
+        try {
+            ad.show(host)
+        } catch (_: Throwable) {
+            onDismiss()
+            reload()
+        }
     }
 
     fun showRewardedAdFree(
         onReward: () -> Unit,
         onUnavailable: () -> Unit,
     ) {
-        showRewarded(rewardedAdFree, AdConfig.rewardedAdFreeUnitId, onReward, onUnavailable) {
+        if (destroyed || !consentAllowed) {
+            onUnavailable()
+            return
+        }
+        val ad = rewardedAdFree
+        if (ad == null) {
+            loadRewardedAdFree(lastMode)
+            onUnavailable()
+            return
+        }
+        showRewarded(ad, onReward, onUnavailable) {
             rewardedAdFree = null
             loadRewardedAdFree(lastMode)
         }
@@ -71,43 +154,55 @@ class FullscreenAds(private val activity: Activity) {
         onReward: () -> Unit,
         onUnavailable: () -> Unit,
     ) {
-        if (adFree) {
+        if (adFree || destroyed || !AdConfig.hasRewardedCalendar || !consentAllowed) {
             onUnavailable()
             return
         }
-        showRewarded(rewardedCalendar, AdConfig.rewardedCalendarUnitId, onReward, onUnavailable) {
+        val ad = rewardedCalendar
+        if (ad == null) {
+            loadRewardedCalendar(lastMode)
+            onUnavailable()
+            return
+        }
+        showRewarded(ad, onReward, onUnavailable) {
             rewardedCalendar = null
             loadRewardedCalendar(lastMode)
         }
     }
 
-    private var lastMode: AdsMode = AdsMode.IDLE
-
     private fun loadInterstitial(mode: AdsMode) {
         lastMode = mode
+        if (!canLoad(mode)) return
         val id = AdConfig.interstitialUnitId
         if (id.isBlank() || interstitialLoading || interstitial != null) return
         interstitialLoading = true
-        InterstitialAd.load(
-            activity,
-            id,
-            adRequest(mode),
-            object : InterstitialAdLoadCallback() {
-                override fun onAdLoaded(ad: InterstitialAd) {
-                    interstitialLoading = false
-                    interstitial = ad
-                }
+        val generation = modeGeneration
+        try {
+            InterstitialAd.load(
+                appContext,
+                id,
+                adRequest(mode),
+                object : InterstitialAdLoadCallback() {
+                    override fun onAdLoaded(ad: InterstitialAd) {
+                        interstitialLoading = false
+                        if (destroyed || !consentAllowed || generation != modeGeneration) return
+                        interstitial = ad
+                    }
 
-                override fun onAdFailedToLoad(error: LoadAdError) {
-                    interstitialLoading = false
-                    logLoadError("interstitial", id, error)
-                }
-            },
-        )
+                    override fun onAdFailedToLoad(error: LoadAdError) {
+                        interstitialLoading = false
+                        logLoadError("interstitial", error)
+                    }
+                },
+            )
+        } catch (_: Throwable) {
+            interstitialLoading = false
+        }
     }
 
     private fun loadRewardedAdFree(mode: AdsMode) {
         lastMode = mode
+        if (!canLoad(mode)) return
         loadRewarded(
             AdConfig.rewardedAdFreeUnitId,
             rewardedAdFreeLoading,
@@ -121,6 +216,7 @@ class FullscreenAds(private val activity: Activity) {
 
     private fun loadRewardedCalendar(mode: AdsMode) {
         lastMode = mode
+        if (!canLoad(mode)) return
         loadRewarded(
             AdConfig.rewardedCalendarUnitId,
             rewardedCalendarLoading,
@@ -141,60 +237,92 @@ class FullscreenAds(private val activity: Activity) {
         onFailed: () -> Unit,
         label: String,
     ) {
+        if (!canLoad(lastMode)) return
         if (unitId.isBlank() || loading || ready) return
         onStart()
-        RewardedAd.load(
-            activity,
-            unitId,
-            adRequest(lastMode),
-            object : RewardedAdLoadCallback() {
-                override fun onAdLoaded(ad: RewardedAd) {
-                    onLoaded(ad)
-                }
+        val generation = modeGeneration
+        try {
+            RewardedAd.load(
+                appContext,
+                unitId,
+                adRequest(lastMode),
+                object : RewardedAdLoadCallback() {
+                    override fun onAdLoaded(ad: RewardedAd) {
+                        if (destroyed || !consentAllowed || generation != modeGeneration) {
+                            onFailed()
+                            return
+                        }
+                        onLoaded(ad)
+                    }
 
-                override fun onAdFailedToLoad(error: LoadAdError) {
-                    onFailed()
-                    logLoadError(label, unitId, error)
-                }
-            },
-        )
+                    override fun onAdFailedToLoad(error: LoadAdError) {
+                        onFailed()
+                        logLoadError(label, error)
+                    }
+                },
+            )
+        } catch (_: Throwable) {
+            onFailed()
+        }
     }
 
     private fun showRewarded(
-        cached: RewardedAd?,
-        unitId: String,
+        ad: RewardedAd,
         onReward: () -> Unit,
         onUnavailable: () -> Unit,
         afterShow: () -> Unit,
     ) {
-        if (unitId.isBlank()) {
+        val host = activityRef.get()
+        if (host == null) {
             onUnavailable()
             return
         }
-        val ad = cached
-        if (ad == null) {
+        // dismissed y failed son rutas distintas, pero solo se ejecuta una vez.
+        val finish = once(afterShow)
+        ad.fullScreenContentCallback = fullScreenCallback(
+            onDismissed = finish,
+            onFailed = finish,
+        )
+        try {
+            ad.show(host) { onReward() }
+        } catch (_: Throwable) {
             onUnavailable()
-            return
+            finish()
         }
-        ad.fullScreenContentCallback = simpleCallback(onDismiss = afterShow, onClosed = afterShow)
-        ad.show(activity) { onReward() }
     }
 
-    private fun simpleCallback(onDismiss: () -> Unit, onClosed: () -> Unit) =
-        object : FullScreenContentCallback() {
-            override fun onAdDismissedFullScreenContent() {
-                onDismiss()
-                onClosed()
-            }
+    private fun fullScreenCallback(
+        onDismissed: () -> Unit = {},
+        onShowed: () -> Unit = {},
+        onFailed: () -> Unit = {},
+    ): FullScreenContentCallback = object : FullScreenContentCallback() {
+        override fun onAdShowedFullScreenContent() {
+            if (!destroyed) onShowed()
+        }
 
-            override fun onAdFailedToShowFullScreenContent(error: AdError) {
-                Log.w(TAG, "show error kind=fullscreen code=${error.code} message=${error.message}")
-                onDismiss()
-                onClosed()
+        override fun onAdDismissedFullScreenContent() {
+            if (!destroyed) onDismissed()
+        }
+
+        override fun onAdFailedToShowFullScreenContent(error: AdError) {
+            Log.w(TAG, "show error kind=fullscreen code=${error.code}")
+            if (!destroyed) onFailed()
+        }
+    }
+
+    /** Envuelve [action] para que se ejecute como máximo una vez. */
+    private fun once(action: () -> Unit): () -> Unit {
+        var called = false
+        return {
+            if (!called) {
+                called = true
+                action()
             }
         }
+    }
 }
 
-private fun logLoadError(kind: String, unitId: String, error: LoadAdError) {
-    Log.w(TAG, "load error kind=$kind unit=$unitId code=${error.code} message=${error.message}")
+/** Logs sin IDs de unidad: solo el tipo de anuncio y el código de error. */
+private fun logLoadError(kind: String, error: LoadAdError) {
+    Log.w(TAG, "load error kind=$kind code=${error.code}")
 }

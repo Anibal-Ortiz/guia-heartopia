@@ -25,6 +25,9 @@ import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.data.AndroidContentLibrary
 import com.guiaheartopia.app.domain.HobbyContent
 import com.guiaheartopia.app.domain.HobbyEntry
+import com.guiaheartopia.app.ui.components.ComingSoonCard
+import com.guiaheartopia.app.ui.components.DraftSearchField
+import com.guiaheartopia.app.ui.components.EmptyStateCard
 import com.guiaheartopia.app.ui.components.PixelCard
 import com.guiaheartopia.app.ui.SearchDrafts
 import com.guiaheartopia.app.ui.contentRevision
@@ -61,22 +64,24 @@ fun ComingHobbyScreen(
         TextButton(onClick = onBack) { Text("Atrás") }
         Text(title, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold), color = Ink)
         Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = Muted)
-        OutlinedTextField(
+        DraftSearchField(
             value = queryField,
             onValueChange = {
                 queryField = it
                 SearchDrafts.write("hobby:$title", it.text)
             },
+            placeholder = "Buscar",
             modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            label = { Text("Buscar") },
+            showClear = true,
         )
         if (items.isEmpty()) {
-            PixelCard {
-                Text("Próximamente", style = MaterialTheme.typography.titleMedium, color = Ink)
-            }
+            ComingSoonCard(title = title, subtitle = subtitle)
         } else if (shown.isEmpty()) {
-            Text("Nada coincide con la búsqueda.", color = Muted)
+            EmptyStateCard(
+                title = "Sin coincidencias",
+                message = "Nada coincide con la búsqueda.",
+                icon = "🔍",
+            )
         } else {
             shown.forEach { entry -> HobbyEntryCard(entry) }
         }

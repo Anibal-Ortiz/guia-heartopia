@@ -50,7 +50,6 @@ import com.guiaheartopia.app.ui.weather.WeatherScreen
 import com.guiaheartopia.app.ui.welcome.WelcomeScreen
 import java.io.File
 import androidx.compose.ui.test.hasText
-import androidx.compose.ui.test.onNodeWithText
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -83,7 +82,7 @@ class ScreenGrabTest {
                 }
                 Column(Modifier.fillMaxSize().background(Cream)) {
                     Box(Modifier.weight(1f)) { ScreenAt(index.intValue, ui) }
-                    PixelNavBar(AppNavigation.BottomNavTabs, current) {}
+                    PixelNavBar(items = AppNavigation.BottomNavTabs, current = current, onSelect = {})
                 }
             }
         }
@@ -113,43 +112,50 @@ class ScreenGrabTest {
                     Box(Modifier.fillMaxSize().background(Cream)) {
                         androidx.compose.runtime.key(step.intValue) {
                             when (step.intValue) {
-                                0, 1 -> HomeScreen(ui, onOpen = {})
-                                2 -> HomeScreen(ui.copy(profile = ui.profile.copy(avatarJpegBase64 = encoded)), onOpen = {})
-                                3 -> HomeScreen(ui, onOpen = {})
-                                4 -> HobbyHubScreen(ui) {}
+                                0, 1 -> HomeScreen(ui = ui, onOpen = {})
+                                2 -> HomeScreen(
+                                    ui = ui.copy(profile = ui.profile.copy(avatarJpegBase64 = encoded)),
+                                    onOpen = {},
+                                )
+                                3 -> HomeScreen(ui = ui, onOpen = {})
+                                4 -> HobbyHubScreen(onOpen = {})
                                 5 -> HuertoScreen(
-                                    ui,
+                                    ui = ui,
                                     onBack = {},
                                     onOpenSiembra = {},
                                     onOpenFlor = {},
                                     onToggleSiembraFound = {},
+                                    onToggleSiembraCertified = { _, _ -> },
                                     onToggleFlorFound = {},
+                                    onToggleFlorCertified = { _, _ -> },
                                     onCancelCrop = {},
-                                    onOpenAboveLevel = {},
                                 )
                                 6 -> CocinaScreen(
-                                    ui,
+                                    ui = ui,
                                     onBack = {},
                                     onOpenReceta = {},
                                     onToggleFound = {},
-                                    onToggleFavorite = {},
-                                    onOpenAboveLevel = {},
+                                    onToggleCertified = { _, _ -> },
                                 )
                                 7, 8 -> CodesScreen(seen = emptyList(), redeemed = emptySet(), onSeen = {}, onRedeemed = { _, _ -> })
-                                9 -> WeatherScreen("CL", "America/Santiago", onRegion = { _, _, _ -> })
+                                9 -> WeatherScreen(
+                                    countryId = "CL",
+                                    zoneId = "America/Santiago",
+                                    onRegion = { _, _, _ -> },
+                                )
                                 10 -> androidx.compose.runtime.key(guideTab.intValue) {
                                     GuideScreen(
-                                        ui,
-                                        {},
-                                        {},
-                                        {},
-                                        { _, _ -> },
-                                        { _, _, _, _ -> },
+                                        ui = ui,
+                                        onOpenAnimal = {},
+                                        onOpenDex = {},
+                                        onToggleFound = {},
+                                        onToggleCertified = { _, _ -> },
+                                        onAddAnimal = { _, _, _, _ -> },
                                         initialTab = guideTab.intValue,
                                         onSaveDexFilters = { _, _ -> },
                                     )
                                 }
-                                else -> HomeScreen(ui, onOpen = {})
+                                else -> HomeScreen(ui = ui, onOpen = {})
                             }
                         }
                     }
@@ -308,55 +314,79 @@ class ScreenGrabTest {
                 Box(Modifier.fillMaxSize().background(Cream)) {
                     androidx.compose.runtime.key(step.intValue) {
                         when (step.intValue) {
-                            0 -> HobbyHubScreen(lowLevelUi) {}
+                            0 -> HobbyHubScreen(onOpen = {})
                             1 -> HuertoScreen(
-                                plantedUi,
+                                ui = plantedUi,
                                 onBack = {},
                                 onOpenSiembra = {},
                                 onOpenFlor = {},
                                 onToggleSiembraFound = {},
+                                onToggleSiembraCertified = { _, _ -> },
                                 onToggleFlorFound = {},
+                                onToggleFlorCertified = { _, _ -> },
                                 onCancelCrop = {},
-                                onOpenAboveLevel = {},
                             )
                             2 -> HuertoScreen(
-                                plantedUi,
+                                ui = plantedUi,
                                 onBack = {},
                                 onOpenSiembra = {},
                                 onOpenFlor = {},
                                 onToggleSiembraFound = {},
+                                onToggleSiembraCertified = { _, _ -> },
                                 onToggleFlorFound = {},
+                                onToggleFlorCertified = { _, _ -> },
                                 onCancelCrop = {},
-                                onOpenAboveLevel = {},
                                 initialTab = 1,
                             )
                             3 -> CocinaScreen(
-                                plantedUi,
+                                ui = plantedUi,
                                 onBack = {},
                                 onOpenReceta = {},
                                 onToggleFound = {},
-                                onToggleFavorite = {},
-                                onOpenAboveLevel = {},
+                                onToggleCertified = { _, _ -> },
                             )
                             4 -> SiembraDetailScreen(
-                                siembra, recetas, true, plantedUi.activeCrops.single(),
-                                {}, {}, {}, {},
+                                entry = siembra,
+                                recetas = recetas,
+                                found = true,
+                                certified = false,
+                                activeCrop = plantedUi.activeCrops.single(),
+                                onBack = {},
+                                onToggleFound = {},
+                                onToggleCertified = {},
+                                onPlant = {},
+                                onOpenReceta = {},
                             )
-                            5 -> FlorDetailScreen(flores.single(), true, {}, {})
+                            5 -> FlorDetailScreen(
+                                entry = flores.single(),
+                                found = true,
+                                certified = false,
+                                onBack = {},
+                                onToggleFound = {},
+                                onToggleCertified = {},
+                            )
                             6 -> RecetaDetailScreen(
-                                recetas.single(), listOf(siembra), false, true,
-                                {}, {}, {}, {},
+                                entry = recetas.single(),
+                                siembras = listOf(siembra),
+                                recetas = recetas,
+                                found = false,
+                                certified = true,
+                                onBack = {},
+                                onToggleFound = {},
+                                onToggleCertified = {},
+                                onOpenSiembra = {},
+                                onOpenReceta = {},
                             )
                             else -> HuertoScreen(
-                                lowLevelUi,
+                                ui = lowLevelUi,
                                 onBack = {},
                                 onOpenSiembra = {},
                                 onOpenFlor = {},
                                 onToggleSiembraFound = {},
+                                onToggleSiembraCertified = { _, _ -> },
                                 onToggleFlorFound = {},
+                                onToggleFlorCertified = { _, _ -> },
                                 onCancelCrop = {},
-                                onOpenAboveLevel = {},
-                                onlyAboveLevel = true,
                             )
                         }
                     }
@@ -371,7 +401,7 @@ class ScreenGrabTest {
             4 to ("105-ficha-siembra" to "Tomate"),
             5 to ("105-ficha-flor" to "Rosa"),
             6 to ("105-ficha-receta" to "Ensalada"),
-            7 to ("105-huerto-filtro-nivel" to "más nivel"),
+            7 to ("105-huerto-filtro-nivel" to "Nivel"),
         )
         shots.forEach { (value, shot) ->
             go(step, value)
@@ -390,11 +420,32 @@ class ScreenGrabTest {
     private fun ScreenAt(index: Int, ui: GuideUi) {
         androidx.compose.runtime.key(index) {
             when (index) {
-                0 -> WelcomeScreen(PlayerProfile(countryId = "CL", zoneId = "America/Santiago"), {}, {}, {})
-                1 -> HomeScreen(ui, onOpen = {})
-                2 -> GuideScreen(ui, {}, {}, {}, { _, _ -> }, { _, _, _, _ -> }, initialTab = 0)
-                3 -> WeatherScreen("CL", "America/Santiago", onRegion = { _, _, _ -> })
-                else -> HobbiesScreen(ui.hobbies, { _, _, _, _ -> })
+                0 -> WelcomeScreen(
+                    initial = PlayerProfile(countryId = "CL", zoneId = "America/Santiago"),
+                    onContinue = {},
+                    onPrivacy = {},
+                    onTerms = {},
+                )
+                1 -> HomeScreen(ui = ui, onOpen = {})
+                2 -> GuideScreen(
+                    ui = ui,
+                    onOpenAnimal = {},
+                    onOpenDex = {},
+                    onToggleFound = {},
+                    onToggleCertified = { _, _ -> },
+                    onAddAnimal = { _, _, _, _ -> },
+                    initialTab = 0,
+                    onSaveDexFilters = { _, _ -> },
+                )
+                3 -> WeatherScreen(
+                    countryId = "CL",
+                    zoneId = "America/Santiago",
+                    onRegion = { _, _, _ -> },
+                )
+                else -> HobbiesScreen(
+                    hobbies = ui.hobbies,
+                    onChange = { _, _, _, _ -> },
+                )
             }
         }
     }
@@ -441,26 +492,36 @@ class ScreenGrabTest {
             GuiaTheme {
                 androidx.compose.runtime.key(step.intValue) {
                     when (step.intValue) {
-                        0 -> HomeScreen(ui, onOpen = {})
+                        0 -> HomeScreen(ui = ui, onOpen = {})
                         1 -> GuideScreen(
-                            ui,
-                            {},
-                            {},
-                            {},
-                            { _, _ -> },
-                            { _, _, _, _ -> },
+                            ui = ui,
+                            onOpenAnimal = {},
+                            onOpenDex = {},
+                            onToggleFound = {},
+                            onToggleCertified = { _, _ -> },
+                            onAddAnimal = { _, _, _, _ -> },
                             guideLaunch = GuideLaunch(onlyNow = true),
                             onSaveDexFilters = { _, _ -> },
                         )
-                        2 -> CodesScreen(seen = listOf("PARTE2"), redeemed = emptySet(), onSeen = {}, onRedeemed = { _, _ -> })
-                        3 -> WeatherScreen("CL", "America/Santiago", onRegion = { _, _, _ -> }, onOpenEventCreatures = {})
+                        2 -> CodesScreen(
+                            seen = listOf("PARTE2"),
+                            redeemed = emptySet(),
+                            onSeen = {},
+                            onRedeemed = { _, _ -> },
+                        )
+                        3 -> WeatherScreen(
+                            countryId = "CL",
+                            zoneId = "America/Santiago",
+                            onRegion = { _, _, _ -> },
+                            onOpenEventCreatures = {},
+                        )
                         else -> GuideScreen(
-                            ui,
-                            {},
-                            {},
-                            {},
-                            { _, _ -> },
-                            { _, _, _, _ -> },
+                            ui = ui,
+                            onOpenAnimal = {},
+                            onOpenDex = {},
+                            onToggleFound = {},
+                            onToggleCertified = { _, _ -> },
+                            onAddAnimal = { _, _, _, _ -> },
                             guideLaunch = GuideLaunch(registered = "no"),
                             onSaveDexFilters = { _, _ -> },
                         )

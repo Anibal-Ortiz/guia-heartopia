@@ -55,6 +55,7 @@ import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.ui.SearchDrafts
 import com.guiaheartopia.app.ui.components.AficionesImage
 import com.guiaheartopia.app.ui.components.CreatureZoomDialog
+import com.guiaheartopia.app.ui.components.DraftSearchField
 import com.guiaheartopia.app.ui.components.IngredientImage
 import com.guiaheartopia.app.ui.components.LabelValue
 import com.guiaheartopia.app.ui.components.PillTabs
@@ -70,6 +71,8 @@ import com.guiaheartopia.app.ui.theme.Ink
 import com.guiaheartopia.app.ui.theme.Muted
 
 private val CocinaTabs = listOf("Platos", "Ingredientes")
+private const val RECETA_DRAFT_KEY = "cocina:recetas"
+private const val ING_DRAFT_KEY = "cocina:ingredientes"
 
 @Composable
 fun CocinaScreen(
@@ -88,10 +91,15 @@ fun CocinaScreen(
     }
     var tab by rememberSaveable { mutableIntStateOf(0) }
     var selectedIngredient by rememberSaveable { mutableStateOf<String?>(null) }
-    var queryField by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(TextFieldValue(SearchDrafts.read("cocina") ?: ""))
+    // Estados y borradores independientes: escribir en Platos no afecta a Ingredientes.
+    var recetaQueryField by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue(SearchDrafts.read(RECETA_DRAFT_KEY) ?: ""))
     }
-    val query = queryField.text
+    var ingQueryField by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue(SearchDrafts.read(ING_DRAFT_KEY) ?: ""))
+    }
+    val query = recetaQueryField.text
+    val ingQuery = ingQueryField.text
     var filtro by rememberSaveable { mutableStateOf("Todas") }
     val filtros = remember(bundle) {
         val eventos = bundle.recetas.mapNotNull { it.evento }.distinct().sorted()
@@ -149,7 +157,7 @@ fun CocinaScreen(
         ingredientCatalog.firstOrNull { it.key == key }
     }
     val filteredIng = if (selectedIngredientRef == null) {
-        ingredientCatalog.filter { query.isBlank() || TextMatch.contains(it.displayName, query) }
+        ingredientCatalog.filter { ingQuery.isBlank() || TextMatch.contains(it.displayName, ingQuery) }
     } else {
         emptyList()
     }
@@ -181,15 +189,14 @@ fun CocinaScreen(
         }
         if (tab == 0) {
             item(key = "search") {
-                OutlinedTextField(
-                    value = queryField,
+                DraftSearchField(
+                    value = recetaQueryField,
                     onValueChange = {
-                        queryField = it
-                        SearchDrafts.write("cocina", it.text)
+                        recetaQueryField = it
+                        SearchDrafts.write(RECETA_DRAFT_KEY, it.text)
                     },
-                    placeholder = { Text("Buscar por nombre...") },
+                    placeholder = "Buscar por nombre...",
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
                 )
             }
             item(key = "header") {
@@ -272,15 +279,14 @@ fun CocinaScreen(
                 }
             } else {
                 item(key = "search-ing") {
-                    OutlinedTextField(
-                        value = queryField,
+                    DraftSearchField(
+                        value = ingQueryField,
                         onValueChange = {
-                            queryField = it
-                            SearchDrafts.write("cocina", it.text)
+                            ingQueryField = it
+                            SearchDrafts.write(ING_DRAFT_KEY, it.text)
                         },
-                        placeholder = { Text("Buscar ingrediente...") },
+                        placeholder = "Buscar ingrediente...",
                         modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
                     )
                 }
                 items(filteredIng, key = { it.key }) { ref ->

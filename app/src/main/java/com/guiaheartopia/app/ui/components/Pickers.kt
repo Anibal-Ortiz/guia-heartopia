@@ -18,6 +18,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.ui.theme.Paper
 
@@ -30,7 +34,15 @@ fun PickerField(
     modifier: Modifier = Modifier,
 ) {
     var open by remember { mutableStateOf(false) }
-    Column(modifier.fillMaxWidth().clickable { open = true }) {
+    Column(
+        modifier
+            .fillMaxWidth()
+            .clickable { open = true }
+            .semantics {
+                role = Role.Button
+                contentDescription = "$label: $value. Tocar para elegir."
+            },
+    ) {
         Text(label, style = MaterialTheme.typography.labelMedium)
         Text(
             value,

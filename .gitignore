@@ -3,6 +3,8 @@
 .idea/
 .DS_Store
 local.properties
+keystore.properties
+CREDENCIALES-UPLOAD.txt
 app/generated-release-manifest/
 build/
 captures/

@@ -1,6 +1,7 @@
 package com.guiaheartopia.app.data
 
 import android.content.Context
+import com.guiaheartopia.app.domain.CatalogLabels
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -28,6 +29,7 @@ object PhotoCredits {
     const val PATH = "catalog/creditos.json"
 
     val sectionOrder = listOf("Peces", "Aves", "Insectos", "Fauna")
+    private val cachedById = ContentCache.Slot<Map<String, PhotoCreditEntry>>()
 
     fun load(context: Context): PhotoCreditsFile? {
         val bytes = AndroidContentLibrary(context).effectiveBytes(PATH) ?: return null
@@ -37,12 +39,11 @@ object PhotoCredits {
     }
 
     fun byId(context: Context): Map<String, PhotoCreditEntry> =
-        load(context)?.entries?.associateBy { it.id }.orEmpty()
+        cachedById.get(ContentCache.key(context)) {
+            load(context)?.entries?.associateBy { it.id }.orEmpty()
+        }
 
-    fun sectionLabel(category: String): String = when (category) {
-        "Pájaros" -> "Aves"
-        else -> category
-    }
+    fun sectionLabel(category: String): String = CatalogLabels.category(category)
 
     fun grouped(entries: List<PhotoCreditEntry>): List<Pair<String, List<PhotoCreditEntry>>> {
         val bySection = entries.groupBy { sectionLabel(it.category.ifBlank { "Fauna" }) }

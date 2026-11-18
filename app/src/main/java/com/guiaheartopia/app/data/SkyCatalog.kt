@@ -11,6 +11,9 @@ import java.time.LocalTime
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
+/** Alias público: el modelo vive en domain, la ruta antigua sigue funcionando. */
+typealias SkyTable = com.guiaheartopia.app.domain.SkyTable
+
 @Serializable
 data class SkyFile(
     val reviewedOn: String = "",
@@ -38,51 +41,73 @@ data class SkySlotFile(
 
 object SkyCatalog {
     private val json = Json { ignoreUnknownKeys = true }
+    private val cached = ContentCache.Slot<SkyTable>()
 
-    fun load(context: Context): SkyTable {
+    /** Caché invalidada automáticamente cuando cambia la revisión del contenido. */
+    fun load(context: Context): SkyTable =
+        cached.get(ContentCache.key(context)) { loadUncached(context) }
+
+    /** Fuerza una recarga en la próxima lectura. */
+    fun invalidate() = cached.clear()
+
+    private fun loadUncached(context: Context): SkyTable {
         val tables = ArrayList<SkyTable>()
         val bundled = context.assets.list("calendar").orEmpty()
             .filter { it.startsWith("clima-") && it.endsWith(".json") }
             .sorted()
         bundled.forEach { name ->
-            context.assets.open("calendar/$name").bufferedReader().use { reader ->
-                tables += fromJson(reader.readText())
-            }
+            val raw = runCatching {
+                context.assets.open("calendar/$name").bufferedReader().use { it.readText() }
+            }.getOrNull() ?: return@forEach
+            fromJsonOrNull(raw)?.let { tables += it }
         }
         val overlayDir = File(AndroidContentStore.liveDir(context), "files/calendar")
         overlayDir.listFiles()
             ?.filter { it.isFile && it.name.startsWith("clima-") && it.name.endsWith(".json") }
             ?.sortedBy { it.name }
-            ?.forEach { file -> tables += fromJson(file.readText()) }
+            ?.forEach { file ->
+                val raw = runCatching { file.readText() }.getOrNull() ?: return@forEach
+                fromJsonOrNull(raw)?.let { tables += it }
+            }
         if (tables.isEmpty()) return SkyTable("", "", emptyMap())
         return mergeSkyTables(tables)
     }
 
-    fun fromJson(raw: String): SkyTable {
+    /** API pública: un archivo corrupto devuelve una tabla vacía sin lanzar. */
+    fun fromJson(raw: String): SkyTable =
+        fromJsonOrNull(raw) ?: SkyTable("", "", emptyMap())
+
+    /** Nunca lanza: un archivo corrupto se omite y se conservan los demás días. */
+    private fun fromJsonOrNull(raw: String): SkyTable? = runCatching {
         val file = json.decodeFromString(SkyFile.serializer(), raw)
-        val days = file.days.map { day ->
-            SkyDay(
-                date = LocalDate.parse(day.date),
-                slots = day.slots.map { slot ->
-                    SkySlot(
-                        start = LocalTime.parse(slot.start),
-                        end = if (slot.end == "24:00") LocalTime.MIDNIGHT else LocalTime.parse(slot.end),
-                        kind = SkyKind.entries.firstOrNull { it.name.equals(slot.kind, ignoreCase = true) }
-                            ?: kindOf(slot.kind),
-                        status = when (slot.status) {
-                            "acuerdo", "incluido" -> SkyStatus.ACUERDO
-                            else -> SkyStatus.SIN_DATOS
-                        },
-                        place = slot.place,
-                        special = slot.special,
-                        detail = slot.label,
-                        rawKind = slot.kind,
-                    )
-                },
-            )
+        val days = file.days.mapNotNull { day ->
+            val date = runCatching { LocalDate.parse(day.date) }.getOrNull() ?: return@mapNotNull null
+            val slots = day.slots.mapNotNull { slot ->
+                val start = runCatching { LocalTime.parse(slot.start) }.getOrNull() ?: return@mapNotNull null
+                val endLocal = if (slot.end == "24:00") {
+                    LocalTime.MIDNIGHT
+                } else {
+                    runCatching { LocalTime.parse(slot.end) }.getOrNull() ?: return@mapNotNull null
+                }
+                SkySlot(
+                    start = start,
+                    end = endLocal,
+                    kind = SkyKind.entries.firstOrNull { it.name.equals(slot.kind, ignoreCase = true) }
+                        ?: kindOf(slot.kind),
+                    status = when (slot.status) {
+                        "acuerdo", "incluido" -> SkyStatus.ACUERDO
+                        else -> SkyStatus.SIN_DATOS
+                    },
+                    place = slot.place,
+                    special = slot.special,
+                    detail = slot.label,
+                    rawKind = slot.kind,
+                )
+            }
+            SkyDay(date = date, slots = slots)
         }
-        return SkyTable(file.reviewedOn, file.patch, days.associateBy { it.date })
-    }
+        SkyTable(file.reviewedOn, file.patch, days.associateBy { it.date })
+    }.getOrNull()
 
     private fun kindOf(raw: String): SkyKind = when (raw) {
         "despejado" -> SkyKind.DESPEJADO
@@ -97,19 +122,5 @@ object SkyCatalog {
         "calor" -> SkyKind.CALOR
         "petalos" -> SkyKind.PETALOS
         else -> SkyKind.SIN_DATOS
-    }
-}
-
-data class SkyTable(
-    val reviewedOn: String,
-    val patch: String,
-    val days: Map<LocalDate, SkyDay>,
-) {
-    fun on(date: LocalDate): SkyDay? = days[date]
-
-    fun reviewLabel(): String {
-        val parts = reviewedOn.split("-")
-        val shown = if (parts.size == 3) "${parts[2]}/${parts[1]}/${parts[0]}" else reviewedOn
-        return "Clima revisado el $shown; puede cambiar con actualizaciones del juego"
     }
 }

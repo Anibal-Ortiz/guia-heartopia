@@ -2,7 +2,7 @@
 
 Política de privacidad (URL de la ficha): https://anibalortizdev.github.io/guia-heartopia-contenido/
 
-Contacto: primero010102@gmail.com
+Contacto: anibalortiz.dev@gmail.com
 
 ## Nombre (máximo 30)
 
@@ -38,4 +38,4 @@ No hay cuenta de usuario.
 
 Política de privacidad: https://anibalortizdev.github.io/guia-heartopia-contenido/
 
-Contacto: primero010102@gmail.com
+Contacto: anibalortiz.dev@gmail.com

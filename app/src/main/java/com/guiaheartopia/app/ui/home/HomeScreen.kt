@@ -38,15 +38,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -76,7 +78,9 @@ import com.guiaheartopia.app.ui.components.PixelButton
 import com.guiaheartopia.app.ui.components.PixelCard
 import com.guiaheartopia.app.ui.components.PixelProgress
 import com.guiaheartopia.app.ui.components.SoftCheck
+import com.guiaheartopia.app.ui.components.rememberMinuteTick
 import com.guiaheartopia.app.ui.weather.ClimateSkyBar
+import com.guiaheartopia.app.ui.theme.Cream
 import com.guiaheartopia.app.ui.theme.DarkCard
 import com.guiaheartopia.app.ui.theme.Green
 import com.guiaheartopia.app.ui.theme.GreenDark
@@ -88,6 +92,7 @@ import com.guiaheartopia.app.ui.theme.HoneyTint
 import com.guiaheartopia.app.ui.theme.Ink
 import com.guiaheartopia.app.ui.theme.Line
 import com.guiaheartopia.app.ui.theme.Muted
+import com.guiaheartopia.app.ui.theme.OnImageText
 import com.guiaheartopia.app.ui.theme.Orange
 import com.guiaheartopia.app.ui.theme.Paper
 import com.guiaheartopia.app.ui.theme.PaperSubtle
@@ -101,6 +106,15 @@ import com.guiaheartopia.app.ui.theme.Yellow
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZonedDateTime
+
+private data class DexColumnData(
+    val category: String,
+    val emoji: String,
+    val showCertified: Boolean,
+    val found: Int,
+    val total: Int,
+    val certified: Int,
+)
 
 @Composable
 fun HomeScreen(
@@ -118,13 +132,17 @@ fun HomeScreen(
     val aficiones = remember(revision) { com.guiaheartopia.app.data.AficionesCatalog.load(context) }
     val sky = remember(revision) { com.guiaheartopia.app.data.SkyCatalog.load(context) }
     val zone = DexSchedule.zoneOf(ui.profile.zoneId)
-    val nowInstant = Instant.now()
-    val available = catalog.count { SkyWeather.availableNow(it.schedule, it.weather, nowInstant, sky, zone) }
-    val byCategory = catalog.groupBy { it.category }
-    val today = LocalDate.now(zone)
-    val climateDay = SkyWeatherGameDay.serverDawnLocalDate(nowInstant, zone)
-    val climateLines = SkyWeatherGameDay.compactLinesForGameDay(sky, climateDay, zone)
-    val spot = ResourceCalendar.on(today)
+    val nowInstant = rememberMinuteTick()
+    val available = remember(catalog, sky, zone, nowInstant) {
+        catalog.count { SkyWeather.availableNow(it.schedule, it.weather, nowInstant, sky, zone) }
+    }
+    val byCategory = remember(catalog) { catalog.groupBy { it.category } }
+    val today = remember(zone, nowInstant) { LocalDate.now(zone) }
+    val climateDay = remember(nowInstant, zone) { SkyWeatherGameDay.serverDawnLocalDate(nowInstant, zone) }
+    val climateLines = remember(sky, climateDay, zone) {
+        SkyWeatherGameDay.compactLinesForGameDay(sky, climateDay, zone)
+    }
+    val spot = remember(today) { ResourceCalendar.on(today) }
     val codesRaw = remember(revision) {
         com.guiaheartopia.app.data.AndroidContentLibrary(context)
             .effectiveBytes(RedeemCodes.PATH)
@@ -139,12 +157,17 @@ fun HomeScreen(
             .effectiveBytes("calendar/eventos.json")
             ?.decodeToString(),
     ) }
-    val activeSeason = remember(eventsDoc, zone) {
-        ReminderPlan.activeSeasons(eventsDoc, zone, ZonedDateTime.now(zone)).firstOrNull()
+    val activeSeason = remember(eventsDoc, zone, nowInstant) {
+        ReminderPlan.activeSeasons(eventsDoc, zone, nowInstant.atZone(zone)).firstOrNull()
     }
-    val avatarFile = remember(ui.profile.avatarJpegBase64) {
+    // restore() escribe en disco: va en un efecto, nunca en la fase de composición.
+    var avatarJpeg by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(ui.profile.avatarJpegBase64) {
         AvatarStore.restore(context, ui.profile.avatarJpegBase64)
-        AvatarStore.file(context).takeIf { ui.profile.avatarJpegBase64 != null && it.isFile }
+        avatarJpeg = ui.profile.avatarJpegBase64
+    }
+    val avatarFile = remember(avatarJpeg) {
+        AvatarStore.file(context).takeIf { avatarJpeg != null && it.isFile }
     }
     var avatarMenu by remember { mutableStateOf(false) }
     val pickAvatar = rememberLauncherForActivityResult(PickVisualMedia()) { uri ->
@@ -289,10 +312,12 @@ fun HomeScreen(
         // Live Game Time Widget
         GameTimeCard(zone.id)
 
-        val totalItems = catalog.size
-        val totalFound = catalog.count { it.id in ui.found }
-        val collectionPercent = if (totalItems > 0) (totalFound * 100 / totalItems) else 0
-        val certifiedTotal = catalog.count { it.id in ui.certified }
+        val totalItems = remember(catalog) { catalog.size }
+        val totalFound = remember(catalog, ui.found) { catalog.count { it.id in ui.found } }
+        val collectionPercent = remember(totalItems, totalFound) {
+            if (totalItems > 0) (totalFound * 100 / totalItems) else 0
+        }
+        val certifiedTotal = remember(catalog, ui.certified) { catalog.count { it.id in ui.certified } }
 
         PixelCard(modifier = Modifier.testTag("coleccion"), container = Paper) {
             Row(
@@ -371,6 +396,17 @@ fun HomeScreen(
             val siembraIds = remember(aficiones) { aficiones.siembras.map { it.id }.toSet() }
             val florIds = remember(aficiones) { aficiones.flores.map { it.id }.toSet() }
             val recetaIds = remember(aficiones) { aficiones.recetas.map { it.id }.toSet() }
+            val dexColumns = remember(byCategory, ui.found, ui.certified) {
+                listOf(
+                    Triple("Peces", "🐟", true),
+                    Triple("Pájaros", "🐦", true),
+                    Triple("Insectos", "🐛", true),
+                ).map { (cat, icon, cert) ->
+                    val items = byCategory[cat].orEmpty()
+                    val tally = CatalogMarks.tally(cat, items.map { it.id }, ui.found, ui.certified)
+                    DexColumnData(cat, icon, cert, tally.found, tally.total, tally.certified)
+                }
+            }
             Column(
                 Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -381,20 +417,14 @@ fun HomeScreen(
                         .height(IntrinsicSize.Max),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
-                    listOf(
-                        Triple("Peces", "🐟", true),
-                        Triple("Pájaros", "🐦", true),
-                        Triple("Insectos", "🐛", true),
-                    ).forEach { (cat, icon, cert) ->
-                        val items = byCategory[cat].orEmpty()
-                        val tally = CatalogMarks.tally(cat, items.map { it.id }, ui.found, ui.certified)
+                    dexColumns.forEach { col ->
                         CollectionColumn(
-                            emoji = icon,
-                            name = CatalogLabels.category(cat),
-                            captured = tally.found,
-                            total = tally.total,
-                            certified = if (cert) tally.certified else null,
-                            onClick = { onOpen("guide/categoria/$cat") },
+                            emoji = col.emoji,
+                            name = CatalogLabels.category(col.category),
+                            captured = col.found,
+                            total = col.total,
+                            certified = if (col.showCertified) col.certified else null,
+                            onClick = { onOpen("guide/categoria/${col.category}") },
                         )
                     }
                 }
@@ -543,7 +573,7 @@ private fun GreetingHeroBanner(
             .fillMaxWidth()
             .height(168.dp)
             .clip(RoundedCornerShape(18.dp))
-            .background(Color(0xFFF7EFDB)),
+            .background(Cream),
     ) {
         androidx.compose.foundation.Image(
             painter = androidx.compose.ui.res.painterResource(com.guiaheartopia.app.R.drawable.header_inicio),
@@ -567,7 +597,7 @@ private fun GreetingHeroBanner(
                 Text(
                     todayLabel,
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                    color = Ink,
+                    color = OnImageText,
                 )
             }
             avatar()
@@ -581,33 +611,32 @@ private fun SingleLineShrinkingGreeting(
     minFontSize: TextUnit = 13.sp,
 ) {
     val baseSize = MaterialTheme.typography.titleLarge.fontSize
+    val baseStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.ExtraBold)
+    val measurer = rememberTextMeasurer()
+    val density = LocalDensity.current
     BoxWithConstraints(Modifier.fillMaxWidth()) {
-        val maxW = maxWidth
-        var fontSize by remember(greeting, maxW) { mutableStateOf(baseSize) }
-        var settled by remember(greeting, maxW) { mutableStateOf(false) }
-        LaunchedEffect(greeting, maxW) {
-            fontSize = baseSize
-            settled = false
+        val maxWidthPx = with(density) { maxWidth.toPx() }
+        // Se mide una sola vez por (texto, ancho) con búsqueda binaria, en vez de reducir
+        // 0.5 sp en cada onTextLayout (muchas recomposiciones para textos largos).
+        val fontSize = remember(greeting, baseSize, minFontSize, maxWidthPx, baseStyle) {
+            var low = minFontSize.value
+            var high = baseSize.value
+            repeat(10) {
+                val mid = (low + high) / 2f
+                val width = measurer.measure(
+                    text = AnnotatedString(greeting),
+                    style = baseStyle.copy(fontSize = mid.sp),
+                ).size.width
+                if (width <= maxWidthPx) low = mid else high = mid
+            }
+            low.sp
         }
         Text(
             greeting,
-            style = MaterialTheme.typography.titleLarge.copy(
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = fontSize,
-            ),
-            color = Ink,
+            style = baseStyle.copy(fontSize = fontSize),
+            color = OnImageText,
             maxLines = 1,
             softWrap = false,
-            overflow = TextOverflow.Clip,
-            onTextLayout = { layout ->
-                if (!settled) {
-                    if (layout.didOverflowWidth && fontSize > minFontSize) {
-                        fontSize = (fontSize.value - 0.5f).sp
-                    } else {
-                        settled = true
-                    }
-                }
-            },
         )
     }
 }

@@ -20,26 +20,32 @@ class ReminderAlarmReceiver : BroadcastReceiver() {
         val app = context.applicationContext
         val pending = goAsync()
         try {
-            if (Build.VERSION.SDK_INT >= 33) {
-                val granted = ContextCompat.checkSelfPermission(
+            val granted = Build.VERSION.SDK_INT < 33 ||
+                ContextCompat.checkSelfPermission(
                     app,
                     android.Manifest.permission.POST_NOTIFICATIONS,
                 ) == PackageManager.PERMISSION_GRANTED
-                if (!granted) {
-                    ReminderScheduler.markPosted(app, id)
-                    return
+            if (granted) {
+                try {
+                    ReminderNotifications.show(app, title, body, id)
+                } catch (_: Throwable) {
+                    // No bloquear la reprogramación si el sistema rechaza el aviso.
                 }
             }
-            ReminderNotifications.show(app, title, body, id)
             ReminderScheduler.markPosted(app, id)
-            val request = OneTimeWorkRequestBuilder<ReminderRescheduleWorker>().build()
-            WorkManager.getInstance(app).enqueueUniqueWork(
-                "recordatorios-tras-alarma",
-                ExistingWorkPolicy.REPLACE,
-                request,
-            )
         } finally {
-            pending.finish()
+            // La reprogramación es común: también se encola sin POST_NOTIFICATIONS
+            // o si mostrar el aviso falló, para no perder los próximos avisos.
+            try {
+                val request = OneTimeWorkRequestBuilder<ReminderRescheduleWorker>().build()
+                WorkManager.getInstance(app).enqueueUniqueWork(
+                    "recordatorios-tras-alarma",
+                    ExistingWorkPolicy.REPLACE,
+                    request,
+                )
+            } finally {
+                pending.finish()
+            }
         }
     }
 

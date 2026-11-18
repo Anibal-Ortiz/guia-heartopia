@@ -33,7 +33,7 @@ import com.guiaheartopia.app.ui.theme.Line
 @Composable
 fun rememberAficionesModel(imagen: String?): Any? {
     val context = LocalContext.current
-    return remember(imagen) {
+    return remember(imagen, context) {
         AficionesImagePaths.candidates(imagen).firstNotNullOfOrNull { path ->
             AndroidContentStore.overlayFile(context, path)
                 ?: if (assetExists(context, path)) "file:///android_asset/$path" else null

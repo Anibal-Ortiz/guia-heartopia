@@ -12,9 +12,11 @@ import com.guiaheartopia.app.domain.ContentDownloadProgress
 import com.guiaheartopia.app.domain.ContentSyncResult
 import com.guiaheartopia.app.domain.checkOk
 import com.guiaheartopia.app.domain.ContentUpdatePolicy
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 object ContentSignals {
     private val ticks = MutableStateFlow(0)
@@ -22,12 +24,15 @@ object ContentSignals {
     private val failed = MutableStateFlow(false)
     private val downloading = MutableStateFlow(false)
     private val downloads = MutableStateFlow<ContentDownloadProgress?>(null)
-    private var seenVersion = -1
+    private val _syncResults = MutableSharedFlow<ContentSyncResult>(replay = 1)
 
     fun flow(): StateFlow<Int> = ticks
 
     /** Se incrementa cuando la verificación terminó bien (APPLIED / UNCHANGED / OLDER). */
     fun checkOkTicks(): StateFlow<Int> = checkOkTicks
+
+    /** Sincronización de contenido que terminó bien; los avisos deben reaccionar a este flujo. */
+    fun syncResults(): SharedFlow<ContentSyncResult> = _syncResults.asSharedFlow()
 
     /** Persiste hasta que una búsqueda termine correctamente. */
     fun failed(): StateFlow<Boolean> = failed
@@ -51,13 +56,18 @@ object ContentSignals {
 
     /** Refresca la UI al instante. Se llama en cada apertura, no implica que haya cambios. */
     fun note(context: Context) {
-        seenVersion = AndroidContentStore.installedVersion(context)
+        ContentCache.invalidate()
         ticks.value = ticks.value + 1
     }
 
     /** Enciende el check del badge cuando la búsqueda terminó correctamente. */
     fun noteCheckOk() {
         checkOkTicks.value = checkOkTicks.value + 1
+    }
+
+    /** Publica un resultado de sincronización correcto para quien reprograme avisos. */
+    fun emitSyncResult(result: ContentSyncResult) {
+        _syncResults.tryEmit(result)
     }
 }
 
@@ -98,8 +108,10 @@ class ContentUpdateWorker(
         }
         ContentSignals.setFailed(!report.result.checkOk)
         if (report.result == ContentSyncResult.APPLIED || report.result == ContentSyncResult.UNCHANGED) {
-            val profile = GuideRepository(applicationContext).snapshots.first().profile
-            com.guiaheartopia.app.reminders.ReminderScheduler.sync(applicationContext, profile)
+            // Antes se llamaba a ReminderScheduler.sync por nombre cualificado desde data.
+            // Ahora se publica el evento; el módulo de reminders debe suscribirse a
+            // ContentSignals.syncResults() y reaccionar con el PlayerProfile actual.
+            ContentSignals.emitSyncResult(report.result)
         }
         return Result.success()
     }

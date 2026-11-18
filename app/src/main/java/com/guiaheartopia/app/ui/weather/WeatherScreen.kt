@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -39,6 +40,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.domain.SkyWeatherGameDay
@@ -59,6 +61,7 @@ import com.guiaheartopia.app.ui.theme.GreenSoft
 import com.guiaheartopia.app.ui.theme.Honey
 import com.guiaheartopia.app.ui.theme.Ink
 import com.guiaheartopia.app.ui.theme.Line
+import com.guiaheartopia.app.ui.theme.LocalAppPalette
 import com.guiaheartopia.app.ui.theme.Orange
 import com.guiaheartopia.app.ui.theme.Paper
 import com.guiaheartopia.app.ui.theme.Sky
@@ -75,6 +78,22 @@ private enum class WeatherFilter(val label: String) {
     LIULIU("Liuliu"),
     WEATHER("Con clima"),
 }
+
+/** Una celda del mes ya derivada: la composición solo la dibuja. */
+private data class CellData(
+    val date: LocalDate?,
+    val dayNumber: Int,
+    val liuliu: String?,
+    val flurita: String?,
+    val isToday: Boolean,
+    val isSelected: Boolean,
+    val hasEvent: Boolean,
+    val bg: Color,
+    val borderStroke: Dp,
+    val borderColor: Color,
+    val numberColor: Color,
+    val numberBold: Boolean,
+)
 
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -266,60 +285,79 @@ private fun MonthGrid(
     eventDays: Set<LocalDate> = emptySet(),
     onSelect: (LocalDate) -> Unit,
 ) {
-    val first = month.atDay(1)
-    val lead = (first.dayOfWeek.value + 6) % 7
-    val cells = lead + month.lengthOfMonth()
-    val rows = (cells + 6) / 7
+    // Se calcula una sola vez por mes/selección/filtro/paleta en vez de resolver cada celda
+    // (recursos + colores) en cada recomposición. La paleta entra en las keys para que el
+    // cambio de tema renueve los colores cacheados.
+    val cellPalette = LocalAppPalette.current
+    val cells = remember(month, today, selected, eventDays, filter, cellPalette) {
+        val first = month.atDay(1)
+        val lead = (first.dayOfWeek.value + 6) % 7
+        val total = ((lead + month.lengthOfMonth() + 6) / 7) * 7
+        (0 until total).map { index ->
+            val dayNumber = index - lead + 1
+            if (dayNumber !in 1..month.lengthOfMonth()) {
+                CellData(null, 0, null, null, false, false, false, cellPalette.paper, 1.dp, cellPalette.line, cellPalette.ink, false)
+            } else {
+                val date = month.atDay(dayNumber)
+                val data = ResourceCalendar.on(date)
+                val isToday = date == today
+                val isSelected = selected == date
+                val hasEvent = date in eventDays
+                CellData(
+                    date = date,
+                    dayNumber = dayNumber,
+                    liuliu = if (filter != WeatherFilter.FLURITA) data.liuliu?.let(::shortSpot) else null,
+                    flurita = if (filter != WeatherFilter.LIULIU) data.flurita?.let(::shortSpot) else null,
+                    isToday = isToday,
+                    isSelected = isSelected,
+                    hasEvent = hasEvent,
+                    bg = when {
+                        isSelected -> cellPalette.greenSoft
+                        isToday -> cellPalette.honeySoft
+                        else -> cellPalette.paper
+                    },
+                    borderStroke = if (isToday || isSelected) 2.dp else 1.dp,
+                    borderColor = when {
+                        isSelected -> cellPalette.green
+                        isToday -> cellPalette.honey
+                        hasEvent -> cellPalette.orange
+                        else -> cellPalette.line
+                    },
+                    numberColor = if (isSelected) cellPalette.green else cellPalette.ink,
+                    numberBold = isToday || isSelected,
+                )
+            }
+        }
+    }
+    val rows = cells.size / 7
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         for (row in 0 until rows) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                 for (col in 0 until 7) {
-                    val index = row * 7 + col
-                    val dayNumber = index - lead + 1
-                    if (dayNumber !in 1..month.lengthOfMonth()) {
+                    val cell = cells[row * 7 + col]
+                    val date = cell.date
+                    if (date == null) {
                         Box(Modifier.weight(1f).aspectRatio(0.78f))
                     } else {
-                        val date = month.atDay(dayNumber)
-                        val data = ResourceCalendar.on(date)
-                        val isToday = date == today
-                        val isSelected = selected == date
-                        val hasEvent = date in eventDays
-                        val bg = when {
-                            isSelected -> GreenSoft
-                            isToday -> com.guiaheartopia.app.ui.theme.HoneySoft
-                            else -> Paper
-                        }
-                        val borderStroke = when {
-                            isToday -> 2.dp
-                            isSelected -> 2.dp
-                            else -> 1.dp
-                        }
-                        val borderColor = when {
-                            isSelected -> Green
-                            isToday -> Honey
-                            hasEvent -> Orange
-                            else -> com.guiaheartopia.app.ui.theme.Line
-                        }
-
                         Box(
                             Modifier
                                 .weight(1f)
                                 .aspectRatio(0.64f)
                                 .clip(RoundedCornerShape(10.dp))
-                                .border(borderStroke, borderColor, RoundedCornerShape(10.dp))
-                                .background(bg)
+                                .border(cell.borderStroke, cell.borderColor, RoundedCornerShape(10.dp))
+                                .background(cell.bg)
                                 .clickable { onSelect(date) }
                                 .padding(3.dp),
                         ) {
                             Text(
-                                "$dayNumber",
+                                "${cell.dayNumber}",
                                 style = MaterialTheme.typography.labelSmall.copy(
-                                    fontWeight = if (isToday || isSelected) androidx.compose.ui.text.font.FontWeight.Bold else androidx.compose.ui.text.font.FontWeight.Medium,
+                                    fontWeight = if (cell.numberBold) androidx.compose.ui.text.font.FontWeight.Bold else androidx.compose.ui.text.font.FontWeight.Medium,
                                 ),
-                                color = if (isSelected) Green else Ink,
+                                color = cell.numberColor,
                             )
                             ClimateSkyBar(sky, date, zone, Modifier.align(Alignment.Center).fillMaxWidth().height(16.dp))
-                            if (hasEvent) {
+                            if (cell.hasEvent) {
                                 Text(
                                     "●",
                                     modifier = Modifier.align(Alignment.TopEnd),
@@ -328,11 +366,11 @@ private fun MonthGrid(
                                 )
                             }
                             Column(Modifier.align(Alignment.BottomCenter)) {
-                                if (filter != WeatherFilter.FLURITA && data.liuliu != null) {
-                                    Text(shortSpot(data.liuliu), color = Green, style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                                cell.liuliu?.let {
+                                    Text(it, color = Green, style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
                                 }
-                                if (filter != WeatherFilter.LIULIU && data.flurita != null) {
-                                    Text(shortSpot(data.flurita), color = Orange, style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                                cell.flurita?.let {
+                                    Text(it, color = Orange, style = MaterialTheme.typography.labelSmall, fontSize = 9.sp, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
                                 }
                             }
                         }
@@ -437,6 +475,7 @@ fun ClimateSkyBar(
     }
 }
 
+@Composable
 private fun skyColor(kind: SkyKind): Color = when (kind.climateDisplay()) {
     SkyKind.LLUVIA -> Color(0xFF7EB6D6)
     SkyKind.ARCOIRIS -> Color(0xFFD7B4E8)
@@ -459,17 +498,20 @@ private fun Legend() {
 
 @Composable
 fun WeatherGlyph(kind: WeatherKind, modifier: Modifier = Modifier) {
+    val glyphInk = Ink
+    val glyphHoney = Honey
+    val glyphSky = Sky
     Canvas(
         modifier
             .clip(RoundedCornerShape(8.dp))
             .border(1.dp, com.guiaheartopia.app.ui.theme.Line, RoundedCornerShape(8.dp))
             .background(Paper),
     ) {
-        val ink = Ink
+        val ink = glyphInk
         val w = size.minDimension
         when (kind) {
             WeatherKind.SUN -> {
-                drawCircle(Honey, w * 0.22f, center)
+                drawCircle(glyphHoney, w * 0.22f, center)
                 for (i in 0 until 8) {
                     val a = i * 45.0 * kotlin.math.PI / 180.0
                     drawLine(
@@ -482,25 +524,25 @@ fun WeatherGlyph(kind: WeatherKind, modifier: Modifier = Modifier) {
                 }
             }
             WeatherKind.RAIN -> {
-                drawCircle(Sky, w * 0.22f, Offset(center.x, center.y - w * 0.1f))
-                drawLine(Sky, Offset(center.x - w * 0.15f, center.y + w * 0.15f), Offset(center.x - w * 0.25f, center.y + w * 0.4f), 3f)
-                drawLine(Sky, Offset(center.x + w * 0.1f, center.y + w * 0.12f), Offset(center.x, center.y + w * 0.42f), 3f)
+                drawCircle(glyphSky, w * 0.22f, Offset(center.x, center.y - w * 0.1f))
+                drawLine(glyphSky, Offset(center.x - w * 0.15f, center.y + w * 0.15f), Offset(center.x - w * 0.25f, center.y + w * 0.4f), 3f)
+                drawLine(glyphSky, Offset(center.x + w * 0.1f, center.y + w * 0.12f), Offset(center.x, center.y + w * 0.42f), 3f)
             }
             WeatherKind.CLOUD -> drawCircle(Color(0xFFD9E2EC), w * 0.28f, center)
             WeatherKind.SNOW -> {
                 drawLine(Color.White, Offset(center.x, center.y - w * 0.35f), Offset(center.x, center.y + w * 0.35f), 3f)
                 drawLine(Color.White, Offset(center.x - w * 0.3f, center.y), Offset(center.x + w * 0.3f, center.y), 3f)
-                drawCircle(Sky, w * 0.08f, center)
+                drawCircle(glyphSky, w * 0.08f, center)
             }
             WeatherKind.STORM -> {
-                drawLine(Honey, Offset(center.x - w * 0.1f, center.y - w * 0.35f), Offset(center.x + w * 0.05f, center.y), 4f)
-                drawLine(Honey, Offset(center.x + w * 0.05f, center.y), Offset(center.x - w * 0.15f, center.y + w * 0.4f), 4f)
+                drawLine(glyphHoney, Offset(center.x - w * 0.1f, center.y - w * 0.35f), Offset(center.x + w * 0.05f, center.y), 4f)
+                drawLine(glyphHoney, Offset(center.x + w * 0.05f, center.y), Offset(center.x - w * 0.15f, center.y + w * 0.4f), 4f)
             }
             WeatherKind.FOG -> {
                 drawLine(Color(0xFFB7C4CE), Offset(w * 0.15f, center.y - w * 0.15f), Offset(w * 0.85f, center.y - w * 0.15f), 3f)
                 drawLine(Color(0xFFB7C4CE), Offset(w * 0.2f, center.y + w * 0.1f), Offset(w * 0.8f, center.y + w * 0.1f), 3f)
             }
-            WeatherKind.UNVERIFIED -> drawCircle(Honey, w * 0.12f, center)
+            WeatherKind.UNVERIFIED -> drawCircle(glyphHoney, w * 0.12f, center)
         }
     }
 }

@@ -8,7 +8,7 @@ La app se publica con **Play App Signing**:
 2. Elige que **Google genere y custodie la clave de firma de la app**. Esa clave no está en este repositorio ni en el ordenador de compilación. Es la que firma lo que Play entrega a los teléfonos.
 3. Sube el Android App Bundle firmado con la **clave de subida** (upload key). Play comprueba esa firma y vuelve a firmar el paquete con la clave de la app.
 
-La variante `release` de Gradle usa, en este orden: una keystore indicada en `local.properties` (`RELEASE_STORE_FILE`, `RELEASE_STORE_PASSWORD`, `RELEASE_KEY_ALIAS`, `RELEASE_KEY_PASSWORD`); si no hay, la clave de subida en el directorio personal `~/.wikifan-heartopia/`; si tampoco, una keystore de prueba local. El bundle que se entrega para Play está firmado con la clave de subida.
+La variante `release` de Gradle usa, en este orden: una keystore indicada en `local.properties` (`RELEASE_STORE_FILE`, `RELEASE_STORE_PASSWORD`, `RELEASE_KEY_ALIAS`, `RELEASE_KEY_PASSWORD`); si no hay, la clave de subida en `~/.wikifan-heartopia/`; si tampoco, la distro en `~/.wikifan-heartopia/release.jks` con sus secretos `DISTRO_*`. **Si no hay ningún secreto de firma, la compilación release falla**: ya no se cae silenciosamente a la keystore de debug. Solo para una prueba local no publicable se puede forzar con `-PallowDebugSignedRelease=true`. El bundle que se entrega para Play debe estar firmado con la clave de subida.
 
 ## Por qué hay que respaldarla
 

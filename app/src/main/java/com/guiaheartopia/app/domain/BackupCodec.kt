@@ -1,5 +1,6 @@
 package com.guiaheartopia.app.domain
 
+import java.time.ZoneId
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -18,6 +19,7 @@ sealed class ImportResult {
 object BackupCodec {
     const val FORMAT = 1
     const val APP = "guia-heartopia"
+    private const val MAX_RAW_CHARS = 5 * 1024 * 1024
 
     private val json = Json {
         ignoreUnknownKeys = true
@@ -29,6 +31,9 @@ object BackupCodec {
         json.encodeToString(BackupEnvelope.serializer(), BackupEnvelope(FORMAT, APP, snapshot))
 
     fun import(raw: String): ImportResult {
+        if (raw.length > MAX_RAW_CHARS) {
+            return ImportResult.Invalid("El respaldo es demasiado grande.")
+        }
         val envelope = try {
             json.decodeFromString(BackupEnvelope.serializer(), raw)
         } catch (_: Exception) {
@@ -38,9 +43,18 @@ object BackupCodec {
         if (envelope.format != FORMAT) {
             return ImportResult.Invalid("Versión de respaldo ${envelope.format}. Esta app lee la versión $FORMAT.")
         }
-        if (envelope.snapshot.profile.name.isBlank() && !envelope.snapshot.profile.onboarded) {
+        val profile = envelope.snapshot.profile
+        if (profile.name.isBlank() && !profile.onboarded) {
             return ImportResult.Invalid("El respaldo no trae un perfil utilizable.")
         }
-        return ImportResult.Ok(envelope.snapshot.copy(profile = envelope.snapshot.profile.copy(onboarded = true)))
+        // Un zoneId inventado no debe crashear la app al importar.
+        val safeProfile = runCatching { ZoneId.of(profile.zoneId) }
+            .fold(
+                onSuccess = { profile },
+                onFailure = { profile.copy(zoneId = ZoneId.systemDefault().id) },
+            )
+        return ImportResult.Ok(
+            envelope.snapshot.copy(profile = safeProfile.copy(onboarded = true)),
+        )
     }
 }

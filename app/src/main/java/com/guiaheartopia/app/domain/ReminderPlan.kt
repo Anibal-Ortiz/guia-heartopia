@@ -2,9 +2,11 @@ package com.guiaheartopia.app.domain
 
 import java.time.DayOfWeek
 import java.time.Duration
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -33,7 +35,7 @@ data class CalendarEventRow(
 
 @Serializable
 data class EventosDocument(
-    val zonaFuente: String = "Etc/GMT+5",
+    val zonaFuente: String = WeatherSource.ZONE_ID,
     val servidor: String = "",
     val eventos: List<RemoteEvent> = emptyList(),
 )
@@ -55,14 +57,13 @@ data class RemoteEvent(
 )
 
 /**
- * Avisos de las próximas 48 h. El calendario de clima usa reloj de servidor
- * ([climateSourceZone], America / Etc/GMT+5); solo avisa lluvia, arcoíris y meteoritos,
- * 30 min antes del inicio en hora local del usuario. Los eventos usan
+ * Avisos de las próximas 48 h. El calendario de clima declara `reloj-local`: sus
+ * horas son hora civil de la zona elegida por el jugador. Solo avisa lluvia,
+ * arcoíris y meteoritos, 30 min antes del inicio. Los eventos usan
  * [EventosDocument.zonaFuente] y java.time para convertir a la zona del usuario.
  */
 object ReminderPlan {
     val horizon: Duration = Duration.ofHours(48)
-    val climateSourceZone: ZoneId = ZoneId.of("Etc/GMT+5")
     private val clock: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
     private val json = Json { ignoreUnknownKeys = true }
     private val weekdays = mapOf(
@@ -82,8 +83,10 @@ object ReminderPlan {
         viewerZone: ZoneId,
         now: ZonedDateTime,
         within: Duration = horizon,
-        sourceZone: ZoneId = climateSourceZone,
+        sourceZone: ZoneId? = null,
     ): List<PlannedNotice> {
+        // El JSON de clima es hora civil de la zona elegida, no UTC.
+        val source = sourceZone ?: WeatherSource.zoneFor(viewerZone)
         val until = now.plus(within)
         val spans = ArrayList<ClimateSpan>()
         val first = now.toLocalDate().minusDays(1)
@@ -92,7 +95,7 @@ object ReminderPlan {
             if (day.date.isBefore(first) || day.date.isAfter(last)) continue
             for (slot in day.slots) {
                 if (!alertsClimate(slot)) continue
-                val (start, end) = serverRange(day.date, slot, sourceZone, viewerZone)
+                val (start, end) = serverRange(day.date, slot, source, viewerZone)
                 if (!end.toInstant().isAfter(now.toInstant())) continue
                 if (!start.toInstant().isBefore(until.plusMinutes(30).toInstant())) continue
                 spans += ClimateSpan(alertLabel(slot), start, end)
@@ -126,7 +129,7 @@ object ReminderPlan {
     }
 
     fun sourceZone(document: EventosDocument?): ZoneId? {
-        val name = document?.zonaFuente?.takeIf { it.isNotBlank() } ?: "Etc/GMT+5"
+        val name = document?.zonaFuente?.takeIf { it.isNotBlank() } ?: WeatherSource.ZONE_ID
         return runCatching { ZoneId.of(name) }.getOrNull()
     }
 
@@ -140,6 +143,8 @@ object ReminderPlan {
         now: ZonedDateTime,
         within: Duration = horizon,
     ): List<PlannedNotice> {
+        // Los avisos de eventos solo se generan si el usuario los activó.
+        if (!prefs.eventsEnabled) return emptyList()
         val source = sourceZone(document) ?: return emptyList()
         val events = document?.eventos.orEmpty()
         val until = now.plus(within)
@@ -162,8 +167,8 @@ object ReminderPlan {
         val source = sourceZone(document) ?: return emptyList()
         return document?.eventos.orEmpty().mapNotNull { event ->
             if (event.tipo != "temporada" || event.nombre.isBlank()) return@mapNotNull null
-            val start = parseStamp(event.inicio)?.atZone(source)?.withZoneSameInstant(user)
-            val end = parseStamp(event.fin)?.atZone(source)?.withZoneSameInstant(user)
+            val start = parseStamp(event.inicio, source)?.atZone(source)?.withZoneSameInstant(user)
+            val end = parseStamp(event.fin, source)?.atZone(source)?.withZoneSameInstant(user)
             if (start == null) return@mapNotNull null
             if (now.toInstant().isBefore(start.toInstant())) return@mapNotNull null
             if (end != null && !now.toInstant().isBefore(end.toInstant())) return@mapNotNull null
@@ -210,8 +215,8 @@ object ReminderPlan {
         val days = LinkedHashSet<LocalDate>()
         for (event in document?.eventos.orEmpty()) {
             if (event.tipo != "temporada") continue
-            val start = parseStamp(event.inicio)?.toLocalDate() ?: continue
-            val end = parseStamp(event.fin)?.toLocalDate() ?: start
+            val start = parseStamp(event.inicio, source)?.toLocalDate() ?: continue
+            val end = parseStamp(event.fin, source)?.toLocalDate() ?: start
             val (from, to) = EventTime.localSpan(start, end, source, user)
             var day = from
             while (!day.isAfter(to)) {
@@ -223,8 +228,8 @@ object ReminderPlan {
     }
 
     fun formatEventSpan(event: RemoteEvent, user: ZoneId, source: ZoneId): String? {
-        val start = parseStamp(event.inicio)?.atZone(source)?.withZoneSameInstant(user) ?: return null
-        val end = parseStamp(event.fin)?.atZone(source)?.withZoneSameInstant(user)
+        val start = parseStamp(event.inicio, source)?.atZone(source)?.withZoneSameInstant(user) ?: return null
+        val end = parseStamp(event.fin, source)?.atZone(source)?.withZoneSameInstant(user)
         val fmt = DateTimeFormatter.ofPattern("d MMM yyyy HH:mm", Locale.forLanguageTag("es"))
         return if (end != null) {
             "${start.format(fmt)} – ${end.format(fmt)}"
@@ -258,8 +263,8 @@ object ReminderPlan {
         val weekly = event.repeticion.equals("semanal", ignoreCase = true)
         val allowed = event.dias.mapNotNull { weekdays[it.lowercase(Locale.ROOT)] }.toSet()
         if (weekly && allowed.isEmpty()) return emptyList()
-        val windowStart = parseStamp(event.inicio)?.atZone(source)
-        val windowEnd = parseStamp(event.fin)?.atZone(source)
+        val windowStart = parseStamp(event.inicio, source)?.atZone(source)
+        val windowEnd = parseStamp(event.fin, source)?.atZone(source)
         val from = now.withZoneSameInstant(source).toLocalDate().minusDays(1)
         val last = until.withZoneSameInstant(source).toLocalDate().plusDays(1)
         val out = ArrayList<PlannedNotice>()
@@ -267,7 +272,7 @@ object ReminderPlan {
         while (!date.isAfter(last)) {
             if (!weekly || date.dayOfWeek in allowed) {
                 for (hour in event.horas) {
-                    val time = runCatching { LocalTime.parse(hour) }.getOrNull() ?: continue
+                    val time = parseClock(hour) ?: continue
                     val at = ZonedDateTime.of(date, time, source)
                     if (windowStart != null && at.toInstant().isBefore(windowStart.toInstant())) continue
                     if (windowEnd != null && at.toInstant().isAfter(windowEnd.toInstant())) continue
@@ -296,8 +301,8 @@ object ReminderPlan {
         until: ZonedDateTime,
     ): List<PlannedNotice> {
         val out = ArrayList<PlannedNotice>()
-        val start = parseStamp(event.inicio)?.atZone(source)?.withZoneSameInstant(user)
-        val end = parseStamp(event.fin)?.atZone(source)?.withZoneSameInstant(user)
+        val start = parseStamp(event.inicio, source)?.atZone(source)?.withZoneSameInstant(user)
+        val end = parseStamp(event.fin, source)?.atZone(source)?.withZoneSameInstant(user)
         if (start != null && inWindow(start, now, until)) {
             out += PlannedNotice(
                 id = ReminderIds.seasonStart(event.id),
@@ -336,10 +341,22 @@ object ReminderPlan {
                 }
             }
 
-    private fun parseStamp(raw: String?): LocalDateTime? {
+    /**
+     * Acepta fecha, fecha+hora local, Instant e OffsetDateTime. Los valores con
+     * desfase se convierten a la zona de origen antes de quedarse con la hora civil.
+     */
+    private fun parseStamp(raw: String?, source: ZoneId = WeatherSource.zone): LocalDateTime? {
         if (raw.isNullOrBlank()) return null
         return runCatching { LocalDateTime.parse(raw) }.getOrNull()
             ?: runCatching { LocalDate.parse(raw).atStartOfDay() }.getOrNull()
+            ?: runCatching { OffsetDateTime.parse(raw).atZoneSameInstant(source).toLocalDateTime() }.getOrNull()
+            ?: runCatching { Instant.parse(raw).atZone(source).toLocalDateTime() }.getOrNull()
+    }
+
+    /** Hora del archivo; "24:00" significa medianoche del día siguiente. */
+    private fun parseClock(raw: String): LocalTime? = when (raw.trim()) {
+        "24:00", "24:00:00" -> LocalTime.MIDNIGHT
+        else -> runCatching { LocalTime.parse(raw.trim()) }.getOrNull()
     }
 
     fun alertsClimate(slot: SkySlot): Boolean {

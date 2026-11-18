@@ -45,6 +45,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -54,6 +55,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.guiaheartopia.app.ui.theme.CardLine
 import com.guiaheartopia.app.ui.theme.Dark
 import com.guiaheartopia.app.ui.theme.DarkCard
 import com.guiaheartopia.app.ui.theme.Green
@@ -74,11 +76,19 @@ fun PixelCard(
     container: Color = Paper,
     shape: RoundedCornerShape = RoundedCornerShape(12.dp),
     elevation: Dp = 0.dp,
-    borderColor: Color = Color(0xFFD6C8AA),
+    borderColor: Color = CardLine,
     category: String? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    NotebookCard(category = category, modifier = modifier, content = content)
+    NotebookCard(
+        category = category,
+        modifier = modifier,
+        container = container,
+        shape = shape,
+        elevation = elevation,
+        borderColor = borderColor,
+        content = content,
+    )
 }
 
 @Composable
@@ -91,6 +101,7 @@ fun PixelButton(
     outlined: Boolean = false,
     enabled: Boolean = true,
     icon: @Composable (() -> Unit)? = null,
+    contentDescription: String? = null,
 ) {
     val shape = RoundedCornerShape(16.dp)
     val bg = if (outlined) Paper else container
@@ -110,6 +121,10 @@ fun PixelButton(
                 enabled = enabled,
                 onClick = onClick,
             )
+            .semantics {
+                role = Role.Button
+                this.contentDescription = contentDescription ?: text
+            }
             .padding(horizontal = 20.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
