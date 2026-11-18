@@ -162,6 +162,7 @@ private fun SiembrasTab(
 ) {
     var sortByLevel by rememberSaveable { mutableStateOf(false) }
     var onlyConseguidas by rememberSaveable { mutableStateOf<Boolean?>(null) }
+    var onlyCertificadas by rememberSaveable { mutableStateOf<Boolean?>(null) }
     val catalogMax = remember(siembras) { LevelFilter.maximum(siembras.map { it.nivelSiembra }) ?: 0 }
     var chosenLevel by rememberSaveable { mutableIntStateOf(-1) }
     val levelCap = if (chosenLevel < 0) null else chosenLevel.coerceAtMost(catalogMax)
@@ -173,7 +174,12 @@ private fun SiembrasTab(
             false -> entry.id !in found
             else -> true
         }
-        levelOk && markOk
+        val certOk = when (onlyCertificadas) {
+            true -> entry.id in certified
+            false -> entry.id !in certified
+            else -> true
+        }
+        levelOk && markOk && certOk
     }
     val sorted = if (sortByLevel) {
         filtered.sortedWith(compareBy({ it.nivelSiembra }, { it.nombre }))
@@ -189,6 +195,8 @@ private fun SiembrasTab(
         onSort = { sortByLevel = !sortByLevel },
         onlyConseguidas = onlyConseguidas,
         onConseguidas = { onlyConseguidas = it },
+        onlyCertificadas = onlyCertificadas,
+        onCertificadas = { onlyCertificadas = it },
     )
     LevelDropdown(selected = levelCap, maximum = catalogMax, onSelect = { chosenLevel = it ?: -1 })
 
@@ -218,6 +226,7 @@ private fun FloresTab(
 ) {
     var sortByLevel by rememberSaveable { mutableStateOf(false) }
     var onlyConseguidas by rememberSaveable { mutableStateOf<Boolean?>(null) }
+    var onlyCertificadas by rememberSaveable { mutableStateOf<Boolean?>(null) }
     val catalogMax = remember(flores) { LevelFilter.maximum(flores.map { it.nivelSiembra }) ?: 0 }
     var chosenLevel by rememberSaveable { mutableIntStateOf(-1) }
     val levelCap = if (chosenLevel < 0) null else chosenLevel.coerceAtMost(catalogMax)
@@ -229,7 +238,12 @@ private fun FloresTab(
             false -> entry.id !in found
             else -> true
         }
-        levelOk && markOk
+        val certOk = when (onlyCertificadas) {
+            true -> entry.id in certified
+            false -> entry.id !in certified
+            else -> true
+        }
+        levelOk && markOk && certOk
     }
     val sorted = if (sortByLevel) {
         filtered.sortedWith(compareBy({ it.nivelSiembra ?: 99 }, { it.nombre }))
@@ -246,6 +260,8 @@ private fun FloresTab(
         onSort = { sortByLevel = !sortByLevel },
         onlyConseguidas = onlyConseguidas,
         onConseguidas = { onlyConseguidas = it },
+        onlyCertificadas = onlyCertificadas,
+        onCertificadas = { onlyCertificadas = it },
     )
     if (catalogMax > 0) {
         LevelDropdown(selected = levelCap, maximum = catalogMax, onSelect = { chosenLevel = it ?: -1 })

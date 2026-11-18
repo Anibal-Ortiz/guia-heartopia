@@ -1,5 +1,6 @@
 package com.guiaheartopia.app.ui.guide
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,17 +23,23 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -46,8 +53,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -90,7 +100,7 @@ import com.guiaheartopia.app.ui.SearchDrafts
 import com.guiaheartopia.app.ui.components.CertificadoMarkIcon
 import com.guiaheartopia.app.ui.components.ConseguidoMarkIcon
 import com.guiaheartopia.app.ui.components.MarkIconButton
-import com.guiaheartopia.app.ui.components.NoCertificableMarkIcon
+import com.guiaheartopia.app.ui.components.NoCertificableMarkButton
 import com.guiaheartopia.app.ui.components.ClearSkyIcon
 import com.guiaheartopia.app.ui.components.CozyGuideIcon
 import com.guiaheartopia.app.ui.components.CreatureGlyph
@@ -132,6 +142,64 @@ import java.time.Instant
 import java.time.ZoneId
 
 private val Tabs = GuideSections.dexCategories.map { CatalogLabels.category(it) }
+
+/**
+ * Iconos locales equivalentes a `Icons.Rounded.FilterList` / `Icons.Rounded.Info`.
+ * El proyecto no incluye `material-icons-core`/`extended`, así que se definen aquí los trazos
+ * oficiales de Material para no añadir dependencias ni tocar los archivos de build protegidos.
+ */
+private val FilterListRoundedIcon: ImageVector = ImageVector.Builder(
+    name = "FilterListRounded",
+    defaultWidth = 24.dp,
+    defaultHeight = 24.dp,
+    viewportWidth = 24f,
+    viewportHeight = 24f,
+).apply {
+    path(fill = SolidColor(Color.Black)) {
+        moveTo(10f, 18f)
+        lineTo(14f, 18f)
+        lineTo(14f, 16f)
+        lineTo(10f, 16f)
+        close()
+        moveTo(3f, 6f)
+        lineTo(21f, 6f)
+        lineTo(21f, 8f)
+        lineTo(3f, 8f)
+        close()
+        moveTo(6f, 13f)
+        lineTo(18f, 13f)
+        lineTo(18f, 11f)
+        lineTo(6f, 11f)
+        close()
+    }
+}.build()
+
+private val InfoRoundedIcon: ImageVector = ImageVector.Builder(
+    name = "InfoRounded",
+    defaultWidth = 24.dp,
+    defaultHeight = 24.dp,
+    viewportWidth = 24f,
+    viewportHeight = 24f,
+).apply {
+    path(fill = SolidColor(Color.Black)) {
+        moveTo(12f, 2f)
+        curveTo(6.48f, 2f, 2f, 6.48f, 2f, 12f)
+        curveTo(2f, 17.52f, 6.48f, 22f, 12f, 22f)
+        curveTo(17.52f, 22f, 22f, 17.52f, 22f, 12f)
+        curveTo(22f, 6.48f, 17.52f, 2f, 12f, 2f)
+        close()
+        moveTo(13f, 17f)
+        lineTo(11f, 17f)
+        lineTo(11f, 11f)
+        lineTo(13f, 11f)
+        close()
+        moveTo(13f, 9f)
+        lineTo(11f, 9f)
+        lineTo(11f, 7f)
+        lineTo(13f, 7f)
+        close()
+    }
+}.build()
 
 @Composable
 fun GuideScreen(
@@ -199,14 +267,18 @@ private fun AnimalsTab(
         (!onlySighted || animal.id in ui.sighted) &&
             TextMatch.contains(animal.name, query)
     }
+    val nameSuggestions = remember(ui.animals) {
+        ui.animals.map { it.name }.distinct().sorted()
+    }
 
     GuideSearchField(
         query = query,
         onQueryChange = { query = it },
-        placeholder = "Buscar animal por nombre...",
+        placeholder = "Buscar animal...",
         leadingIcon = "🔍",
         draftKey = "guide:animals",
         shape = RoundedCornerShape(16.dp),
+        suggestions = nameSuggestions,
     )
 
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -305,7 +377,7 @@ private fun AnimalsTab(
 }
 
 /**
- * Campo de búsqueda con estado local síncrono.
+ * Campo de búsqueda con estado local síncrono y autocompletado opcional.
  *
  * El `value` externo puede llegar con retraso (p. ej. tras guardarlo en DataStore), lo que
  * reiniciaba la selección del cursor en cada tecla y, al escribir rápido (p. ej. "caracol"),
@@ -313,7 +385,11 @@ private fun AnimalsTab(
  * sincroniza con el estado persistido: vive en un borrador en memoria ([SearchDrafts]) que es
  * la única fuente de verdad y sobrevive a recomposiciones o recreaciones de la pantalla.
  * El valor externo solo se usa al abrir el buscador por primera vez.
+ *
+ * [suggestions] acota las predicciones al catálogo que se esté viendo (peces, insectos, aves…)
+ * o a las ubicaciones presentes en ese catálogo, según el campo.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun GuideSearchField(
     query: String,
@@ -323,10 +399,16 @@ private fun GuideSearchField(
     draftKey: String,
     modifier: Modifier = Modifier.fillMaxWidth(),
     shape: RoundedCornerShape = RoundedCornerShape(14.dp),
+    dense: Boolean = false,
+    resetToken: Int = 0,
+    suggestions: List<String> = emptyList(),
 ) {
     val focusManager = LocalFocusManager.current
-    var textFieldValue by remember(draftKey) {
-        val initial = SearchDrafts.read(draftKey) ?: query
+    // Estado síncrono: el TextFieldValue vive en memoria y nunca espera al estado persistido.
+    // `resetToken` permite limpiar el campo desde fuera (p. ej. "Limpiar filtros") sin
+    // reintroducir el salto de cursor al escribir.
+    var textFieldValue by remember(draftKey, resetToken) {
+        val initial = if (resetToken > 0) query else (SearchDrafts.read(draftKey) ?: query)
         mutableStateOf(
             TextFieldValue(
                 text = initial,
@@ -334,39 +416,86 @@ private fun GuideSearchField(
             ),
         )
     }
+    var allowSuggestions by remember(draftKey, resetToken) { mutableStateOf(false) }
 
-    OutlinedTextField(
-        value = textFieldValue,
-        onValueChange = { newValue ->
-            textFieldValue = newValue
-            SearchDrafts.write(draftKey, newValue.text)
-            onQueryChange(newValue.text)
-        },
-        placeholder = { Text(placeholder) },
+    val matches = remember(textFieldValue.text, suggestions) {
+        val typed = textFieldValue.text.trim()
+        if (typed.isEmpty() || suggestions.isEmpty()) {
+            emptyList()
+        } else {
+            suggestions.filter { TextMatch.contains(it, typed) }.distinct().take(6)
+        }
+    }
+    val showSuggestions = allowSuggestions && matches.isNotEmpty()
+
+    ExposedDropdownMenuBox(
+        expanded = showSuggestions,
+        onExpandedChange = { allowSuggestions = it },
         modifier = modifier,
-        shape = shape,
-        leadingIcon = { Text(leadingIcon, fontSize = 15.sp) },
-        trailingIcon = {
-            if (textFieldValue.text.isNotEmpty()) {
-                IconButton(
-                    onClick = {
-                        textFieldValue = TextFieldValue("")
-                        SearchDrafts.write(draftKey, "")
-                        onQueryChange("")
-                    },
-                    modifier = Modifier.semantics { contentDescription = "Limpiar búsqueda" },
-                ) {
-                    Text("✕", fontSize = 15.sp, color = Ink.copy(alpha = 0.7f))
+    ) {
+        OutlinedTextField(
+            value = textFieldValue,
+            onValueChange = { newValue ->
+                textFieldValue = newValue
+                SearchDrafts.write(draftKey, newValue.text)
+                onQueryChange(newValue.text)
+                allowSuggestions = true
+            },
+            placeholder = {
+                Text(
+                    placeholder,
+                    style = if (dense) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodyLarge,
+                )
+            },
+            modifier = Modifier
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable)
+                .fillMaxWidth(),
+            shape = shape,
+            leadingIcon = { Text(leadingIcon, fontSize = 15.sp) },
+            trailingIcon = {
+                if (textFieldValue.text.isNotEmpty()) {
+                    IconButton(
+                        onClick = {
+                            textFieldValue = TextFieldValue("")
+                            SearchDrafts.write(draftKey, "")
+                            onQueryChange("")
+                            allowSuggestions = false
+                        },
+                        modifier = Modifier.semantics { contentDescription = "Limpiar búsqueda" },
+                    ) {
+                        Text("✕", fontSize = 15.sp, color = Ink.copy(alpha = 0.7f))
+                    }
                 }
+            },
+            singleLine = true,
+            // Se deja la altura natural del componente: forzar 48 dp recortaba el texto de
+            // bodyLarge (24 sp de línea + padding). En los campos compactos se usa bodyMedium.
+            textStyle = if (dense) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodyLarge,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+            keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
+        )
+
+        ExposedDropdownMenu(
+            expanded = showSuggestions,
+            onDismissRequest = { allowSuggestions = false },
+            modifier = Modifier.heightIn(max = 280.dp),
+        ) {
+            matches.forEach { suggestion ->
+                DropdownMenuItem(
+                    text = { Text(suggestion, style = MaterialTheme.typography.bodyMedium) },
+                    onClick = {
+                        textFieldValue = TextFieldValue(suggestion, TextRange(suggestion.length))
+                        SearchDrafts.write(draftKey, suggestion)
+                        onQueryChange(suggestion)
+                        allowSuggestions = false
+                        focusManager.clearFocus()
+                    },
+                )
             }
-        },
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
-    )
+        }
+    }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun DexTab(
     category: String,
@@ -415,6 +544,74 @@ private fun DexTab(
     val categoryAll = remember(all, category) { all.filter { it.category == category } }
     val capturedCount = categoryAll.count { it.id in ui.found }
 
+    var filtrosExpandidos by rememberSaveable(category) { mutableStateOf(false) }
+    var showLegend by remember { mutableStateOf(false) }
+    var placeResetToken by remember(category) { mutableIntStateOf(0) }
+
+    // La leyenda del diálogo incluye siempre los tres climas canónicos.
+    val weatherKeys = remember(all, category) {
+        (all.filter { it.category == category }.flatMap { it.weather } +
+            listOf("Sunny", "Rainy", "Rainbow")).distinct()
+    }
+
+    // Predicciones acotadas al catálogo visible: nombres de esta categoría y sus ubicaciones.
+    val nameSuggestions = remember(categoryAll) {
+        categoryAll.map { it.name }.distinct().sorted()
+    }
+    val placeSuggestions = remember(categoryAll) {
+        categoryAll
+            .flatMap { it.location }
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .distinct()
+            .sorted()
+    }
+
+    fun weatherLabel(key: String): String = when (key) {
+        "Sunny" -> "☀️ Despejado"
+        "Rainy" -> "🌧️ Lluvia"
+        "Rainbow" -> "🌈 Arcoíris"
+        else -> "Todos"
+    }
+
+    fun clearPlace() {
+        placeQuery = ""
+        SearchDrafts.clear("dex:$category:place")
+        placeResetToken++
+        onSaveDexFilters(category, stored.copy(place = ""))
+    }
+
+    fun clearFilters() {
+        placeQuery = ""
+        SearchDrafts.clear("dex:$category:place")
+        placeResetToken++
+        onSaveDexFilters(
+            category,
+            stored.copy(
+                place = "",
+                weather = "Todos",
+                onlyNow = false,
+                registered = "todos",
+                certified = "todos",
+                sortByLevel = false,
+                chosenLevel = -1,
+                eventFocus = "",
+            ),
+        )
+    }
+
+    val placeActive = placeQuery.isNotBlank()
+    val weatherActive = filters.weather != "Todos"
+    val nowActive = filters.onlyNow
+    val sortActive = filters.sortByLevel
+    val registeredActive = filters.registered != "todos"
+    val certifiedActive = filters.certified != "todos"
+    val levelActive = filters.chosenLevel >= 0
+    val activeFilterCount = listOf(
+        placeActive, weatherActive, nowActive, sortActive,
+        registeredActive, certifiedActive, levelActive,
+    ).count { it }
+
     fun eventBoost(entry: DexEntry): Boolean =
         activeSeasons.any { season -> dexEntryMatchesEvent(entry, season.id, season.name) }
 
@@ -453,17 +650,35 @@ private fun DexTab(
             .thenBy { it.name.lowercase() },
     )
 
-    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                "$capturedCount/${categoryAll.size} capturadas",
-                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                color = Ink,
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
+                Text(
+                    "$capturedCount/${categoryAll.size} capturadas",
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                    color = Ink,
+                )
+                IconButton(
+                    onClick = { showLegend = true },
+                    modifier = Modifier
+                        .size(32.dp)
+                        .semantics { contentDescription = "Guía de símbolos" },
+                ) {
+                    Icon(
+                        InfoRoundedIcon,
+                        contentDescription = null,
+                        tint = GreenDark,
+                        modifier = Modifier.size(18.dp),
+                    )
+                }
+            }
             Text(
                 "Franja actual: ${DexSchedule.titled(current.slot)}",
                 style = MaterialTheme.typography.bodySmall,
@@ -471,118 +686,240 @@ private fun DexTab(
             )
         }
 
-        GuideSearchField(
-            query = nameQuery,
-            onQueryChange = {
-                nameQuery = it
-                onSaveDexFilters(category, stored.copy(query = it))
-            },
-            placeholder = "Buscar por nombre en español...",
-            leadingIcon = "🔍",
-            draftKey = "dex:$category:name",
-        )
-
-        GuideSearchField(
-            query = placeQuery,
-            onQueryChange = {
-                placeQuery = it
-                onSaveDexFilters(category, stored.copy(place = it))
-            },
-            placeholder = "Filtrar por ubicación...",
-            leadingIcon = "📍",
-            draftKey = "dex:$category:place",
-        )
-
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            val weatherChips = listOf(
-                "Todos" to "Todos",
-                "Sunny" to "☀️ Despejado",
-                "Rainy" to "🌧️ Lluvia",
-                "Rainbow" to "🌈 Arcoíris",
+        // Barra compacta de una sola fila: búsqueda por nombre + acceso a filtros.
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            GuideSearchField(
+                query = nameQuery,
+                onQueryChange = {
+                    nameQuery = it
+                    onSaveDexFilters(category, stored.copy(query = it))
+                },
+                placeholder = "Buscar por nombre...",
+                leadingIcon = "🔍",
+                draftKey = "dex:$category:name",
+                modifier = Modifier.weight(1f),
+                dense = true,
+                suggestions = nameSuggestions,
             )
-            weatherChips.forEach { (key, label) ->
-                FilterChip(
-                    selected = filters.weather == key,
-                    onClick = { onSaveDexFilters(category, stored.copy(weather = key)) },
-                    label = { Text(label) },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = HoneySoft,
-                        selectedLabelColor = Ink,
-                    ),
-                )
+            FilterChip(
+                selected = filtrosExpandidos || activeFilterCount > 0,
+                onClick = { filtrosExpandidos = !filtrosExpandidos },
+                label = {
+                    Text(
+                        if (activeFilterCount > 0) "Filtros ($activeFilterCount)" else "Filtros",
+                        style = MaterialTheme.typography.labelMedium,
+                    )
+                },
+                leadingIcon = {
+                    Icon(
+                        FilterListRoundedIcon,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                    )
+                },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = GreenSoft,
+                    selectedLabelColor = GreenDark,
+                ),
+            )
+        }
+
+        if (!filtrosExpandidos && activeFilterCount > 0) {
+            LazyRow(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                if (placeActive) {
+                    item { RemovableFilterChip("📍 $placeQuery", ::clearPlace) }
+                }
+                if (weatherActive) {
+                    item {
+                        RemovableFilterChip(weatherLabel(filters.weather)) {
+                            onSaveDexFilters(category, stored.copy(weather = "Todos"))
+                        }
+                    }
+                }
+                if (nowActive) {
+                    item {
+                        RemovableFilterChip("Disponible ahora") {
+                            onSaveDexFilters(category, stored.copy(onlyNow = false))
+                        }
+                    }
+                }
+                if (sortActive) {
+                    item {
+                        RemovableFilterChip("Orden: nivel") {
+                            onSaveDexFilters(category, stored.copy(sortByLevel = false))
+                        }
+                    }
+                }
+                if (registeredActive) {
+                    item {
+                        RemovableFilterChip(
+                            if (filters.registered == "si") "✓ Registrados" else "○ Sin registrar",
+                        ) { onSaveDexFilters(category, stored.copy(registered = "todos")) }
+                    }
+                }
+                if (certifiedActive) {
+                    item {
+                        RemovableFilterChip(
+                            if (filters.certified == "si") "Certificados" else "No certificados",
+                        ) { onSaveDexFilters(category, stored.copy(certified = "todos")) }
+                    }
+                }
+                if (levelActive) {
+                    item {
+                        RemovableFilterChip("Nivel $levelCap") {
+                            onSaveDexFilters(category, stored.copy(chosenLevel = -1))
+                        }
+                    }
+                }
             }
+        }
 
-            FilterChip(
-                selected = filters.sortByLevel,
-                onClick = { onSaveDexFilters(category, stored.copy(sortByLevel = !filters.sortByLevel)) },
-                label = { Text(if (filters.sortByLevel) "Orden: nivel" else "Orden: nombre") },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = HoneySoft,
-                    selectedLabelColor = Ink,
-                ),
-            )
-
-            FilterChip(
-                selected = filters.onlyNow,
-                onClick = { onSaveDexFilters(category, stored.copy(onlyNow = !filters.onlyNow)) },
-                label = { Text("Disponible ahora") },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = GreenSoft,
-                    selectedLabelColor = GreenDark,
-                ),
-            )
-
-            FilterChip(
-                selected = filters.registered == "si",
-                onClick = {
-                    val next = if (filters.registered == "si") "todos" else "si"
-                    onSaveDexFilters(category, stored.copy(registered = next))
-                },
-                label = { Text("✓ Registrados") },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = GreenSoft,
-                    selectedLabelColor = GreenDark,
-                ),
-            )
-
-            FilterChip(
-                selected = filters.registered == "no",
-                onClick = {
-                    val next = if (filters.registered == "no") "todos" else "no"
-                    onSaveDexFilters(category, stored.copy(registered = next))
-                },
-                label = { Text("○ Sin registrar") },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = PaperSubtle,
-                    selectedLabelColor = Ink,
-                ),
-            )
-
-            if (canCertify) {
-                FilterChip(
-                    selected = filters.certified == "si",
-                    onClick = {
-                        val next = if (filters.certified == "si") "todos" else "si"
-                        onSaveDexFilters(category, stored.copy(certified = next))
+        AnimatedVisibility(visible = filtrosExpandidos) {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                GuideSearchField(
+                    query = placeQuery,
+                    onQueryChange = {
+                        placeQuery = it
+                        onSaveDexFilters(category, stored.copy(place = it))
                     },
-                    label = { Text("Certificados") },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = HoneySoft,
-                        selectedLabelColor = Ink,
-                    ),
+                    placeholder = "Filtrar por ubicación...",
+                    leadingIcon = "📍",
+                    draftKey = "dex:$category:place",
+                    dense = true,
+                    resetToken = placeResetToken,
+                    suggestions = placeSuggestions,
                 )
-                FilterChip(
-                    selected = filters.certified == "no",
-                    onClick = {
-                        val next = if (filters.certified == "no") "todos" else "no"
-                        onSaveDexFilters(category, stored.copy(certified = next))
-                    },
-                    label = { Text("No certificados") },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = PaperSubtle,
-                        selectedLabelColor = Ink,
-                    ),
-                )
+
+                LazyRow(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    items(listOf("Todos", "Sunny", "Rainy", "Rainbow")) { key ->
+                        FilterChip(
+                            selected = filters.weather == key,
+                            onClick = { onSaveDexFilters(category, stored.copy(weather = key)) },
+                            label = { Text(weatherLabel(key)) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = HoneySoft,
+                                selectedLabelColor = Ink,
+                            ),
+                        )
+                    }
+                }
+
+                LazyRow(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    item {
+                        FilterChip(
+                            selected = filters.sortByLevel,
+                            onClick = { onSaveDexFilters(category, stored.copy(sortByLevel = !filters.sortByLevel)) },
+                            label = { Text(if (filters.sortByLevel) "Orden: nivel" else "Orden: nombre") },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = HoneySoft,
+                                selectedLabelColor = Ink,
+                            ),
+                        )
+                    }
+                    item {
+                        FilterChip(
+                            selected = filters.onlyNow,
+                            onClick = { onSaveDexFilters(category, stored.copy(onlyNow = !filters.onlyNow)) },
+                            label = { Text("Disponible ahora") },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = GreenSoft,
+                                selectedLabelColor = GreenDark,
+                            ),
+                        )
+                    }
+                    item {
+                        FilterChip(
+                            selected = filters.registered == "si",
+                            onClick = {
+                                val next = if (filters.registered == "si") "todos" else "si"
+                                onSaveDexFilters(category, stored.copy(registered = next))
+                            },
+                            label = { Text("✓ Registrados") },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = GreenSoft,
+                                selectedLabelColor = GreenDark,
+                            ),
+                        )
+                    }
+                    item {
+                        FilterChip(
+                            selected = filters.registered == "no",
+                            onClick = {
+                                val next = if (filters.registered == "no") "todos" else "no"
+                                onSaveDexFilters(category, stored.copy(registered = next))
+                            },
+                            label = { Text("○ Sin registrar") },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = PaperSubtle,
+                                selectedLabelColor = Ink,
+                            ),
+                        )
+                    }
+                    if (canCertify) {
+                        item {
+                            FilterChip(
+                                selected = filters.certified == "si",
+                                onClick = {
+                                    val next = if (filters.certified == "si") "todos" else "si"
+                                    onSaveDexFilters(category, stored.copy(certified = next))
+                                },
+                                label = { Text("Certificados") },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = HoneySoft,
+                                    selectedLabelColor = Ink,
+                                ),
+                            )
+                        }
+                        item {
+                            FilterChip(
+                                selected = filters.certified == "no",
+                                onClick = {
+                                    val next = if (filters.certified == "no") "todos" else "no"
+                                    onSaveDexFilters(category, stored.copy(certified = next))
+                                },
+                                label = { Text("No certificados") },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = PaperSubtle,
+                                    selectedLabelColor = Ink,
+                                ),
+                            )
+                        }
+                    }
+                }
+
+                if (activeFilterCount > 0) {
+                    TextButton(
+                        onClick = ::clearFilters,
+                        modifier = Modifier.height(28.dp),
+                    ) {
+                        Text(
+                            "Limpiar filtros",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Muted,
+                        )
+                    }
+                }
+
+                if (catalogMax != null) {
+                    LevelDropdown(
+                        selected = levelCap,
+                        maximum = catalogMax,
+                        onSelect = { level -> onSaveDexFilters(category, stored.copy(chosenLevel = level ?: -1)) },
+                    )
+                }
             }
         }
 
@@ -591,20 +928,6 @@ private fun DexTab(
                 "${items.size} en esta lista",
                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                 color = Muted,
-            )
-        }
-
-        // Guía / Leyenda visual de horarios y climas
-        val weatherKeys = remember(all, category) {
-            val present = all.filter { it.category == category }.flatMap { it.weather }.distinct()
-            if (present.isEmpty()) listOf("Sunny", "Rainy", "Rainbow") else present
-        }
-        ScheduleWeatherLegend(weatherKeys)
-        if (catalogMax != null) {
-            LevelDropdown(
-                selected = levelCap,
-                maximum = catalogMax,
-                onSelect = { level -> onSaveDexFilters(category, stored.copy(chosenLevel = level ?: -1)) },
             )
         }
     }
@@ -626,6 +949,33 @@ private fun DexTab(
             onOpen = { onOpen(entry.id) },
             onToggleFound = { onToggleFound(entry.id) },
             onToggleCertified = { onToggleCertified(entry.id, entry.category) },
+        )
+    }
+
+    if (showLegend) {
+        AlertDialog(
+            onDismissRequest = { showLegend = false },
+            title = {
+                Text(
+                    "Guía de símbolos",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    color = Ink,
+                )
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    LegendItem("🌅", "Amanecer")
+                    LegendItem("☀️", "Día")
+                    LegendItem("🌤️", "Tarde")
+                    LegendItem("🌆", "Noche")
+                    weatherKeys.distinct().forEach { key -> LegendWeather(key) }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showLegend = false }) {
+                    Text("Entendido", color = GreenDark)
+                }
+            },
         )
     }
 }
@@ -792,13 +1142,7 @@ fun DexDetailScreen(
                     onClick = onToggleCertified,
                 ) { CertificadoMarkIcon(on = certified) }
             } else if (CatalogMarks.certifiable(entry.category)) {
-                MarkIconButton(
-                    on = false,
-                    description = "No certificable",
-                    onClick = null,
-                ) {
-                    NoCertificableMarkIcon()
-                }
+                NoCertificableMarkButton()
             }
         }
 
@@ -927,43 +1271,25 @@ fun AnimalDetailScreen(
 // Componentes visuales para Horarios, Clima y Leyenda
 // ---------------------------------------------------------
 
-@OptIn(ExperimentalLayoutApi::class)
+/** Chip delgado con una × para quitar un filtro activo mientras el panel está plegado. */
 @Composable
-private fun ScheduleWeatherLegend(weatherKeys: List<String>) {
-    Column(
+private fun RemovableFilterChip(label: String, onRemove: () -> Unit) {
+    Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .background(PaperSubtle)
-            .border(1.dp, Line, RoundedCornerShape(14.dp))
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp),
+            .clip(RoundedCornerShape(12.dp))
+            .background(GreenSoft)
+            .clickable(onClick = onRemove)
+            .padding(horizontal = 8.dp, vertical = 4.dp)
+            .semantics { contentDescription = "Quitar filtro $label" },
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            Text("💡", fontSize = 12.sp)
-            Text(
-                "Guía de símbolos:",
-                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                color = Ink,
-            )
-        }
-
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            LegendItem("🌅", "Amanecer")
-            LegendItem("☀️", "Día")
-            LegendItem("🌤️", "Tarde")
-            LegendItem("🌆", "Noche")
-            weatherKeys.distinct().forEach { key ->
-                LegendWeather(key)
-            }
-        }
+        Text(label, style = MaterialTheme.typography.labelSmall, color = GreenDark)
+        Text(
+            "×",
+            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+            color = GreenDark,
+        )
     }
 }
 
@@ -989,7 +1315,7 @@ internal fun LevelDropdown(
             label = { Text("Nivel") },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier
-                .menuAnchor()
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
                 .fillMaxWidth(),
             shape = RoundedCornerShape(14.dp),
         )
@@ -1114,13 +1440,7 @@ private fun DexCreatureCard(
                     onClick = onToggleCertified,
                 ) { CertificadoMarkIcon(on = certified) }
             } else if (CatalogMarks.certifiable(entry.category)) {
-                MarkIconButton(
-                    on = false,
-                    description = "No certificable",
-                    onClick = null,
-                ) {
-                    NoCertificableMarkIcon()
-                }
+                NoCertificableMarkButton()
             }
         }
     }

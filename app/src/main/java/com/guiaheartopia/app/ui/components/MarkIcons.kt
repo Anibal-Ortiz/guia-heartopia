@@ -1,5 +1,6 @@
 package com.guiaheartopia.app.ui.components
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -8,9 +9,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -24,6 +33,7 @@ import com.guiaheartopia.app.ui.theme.Ink
 import com.guiaheartopia.app.ui.theme.Line
 import com.guiaheartopia.app.ui.theme.Ochre
 import com.guiaheartopia.app.ui.theme.Paper
+import kotlinx.coroutines.delay
 
 @Composable
 fun ConseguidoMarkIcon(on: Boolean, modifier: Modifier = Modifier, size: Dp = 26.dp) {
@@ -44,12 +54,51 @@ fun CertificadoMarkIcon(on: Boolean, modifier: Modifier = Modifier, size: Dp = 2
 }
 
 @Composable
-fun NoCertificableMarkIcon(modifier: Modifier = Modifier, size: Dp = 26.dp) {
+fun NoCertificableMarkIcon(
+    modifier: Modifier = Modifier,
+    size: Dp = 26.dp,
+    tint: Color? = null,
+) {
     Image(
         painter = painterResource(R.drawable.ic_marca_no_certificable),
         contentDescription = null,
         modifier = modifier.size(size),
+        colorFilter = tint?.let { ColorFilter.tint(it) },
     )
+}
+
+/**
+ * Variante no certificable que SÍ responde al toque: consume el clic (para que la tarjeta
+ * padre no abra la ficha), destella en rojo un instante y muestra un aviso breve.
+ */
+@Composable
+fun NoCertificableMarkButton(modifier: Modifier = Modifier, size: Dp = 26.dp) {
+    val context = LocalContext.current
+    var flash by remember { mutableStateOf(false) }
+
+    LaunchedEffect(flash) {
+        if (flash) {
+            delay(700)
+            flash = false
+        }
+    }
+
+    val alertRed = Color(0xFFC62828)
+    Box(
+        modifier = modifier
+            .size(48.dp)
+            .clip(CircleShape)
+            .background(if (flash) Color(0xFFFFEBEE) else Paper)
+            .border(width = 1.dp, color = if (flash) alertRed else Line, shape = CircleShape)
+            .clickable {
+                flash = true
+                Toast.makeText(context, "No es certificable", Toast.LENGTH_SHORT).show()
+            }
+            .clearAndSetSemantics { contentDescription = "No certificable" },
+        contentAlignment = Alignment.Center,
+    ) {
+        NoCertificableMarkIcon(size = size, tint = if (flash) alertRed else null)
+    }
 }
 
 @Composable

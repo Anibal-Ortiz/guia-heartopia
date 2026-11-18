@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.sp
 import com.guiaheartopia.app.ui.components.CertificadoMarkIcon
 import com.guiaheartopia.app.ui.components.ConseguidoMarkIcon
 import com.guiaheartopia.app.ui.components.MarkIconButton
-import com.guiaheartopia.app.ui.components.NoCertificableMarkIcon
+import com.guiaheartopia.app.ui.components.NoCertificableMarkButton
 import com.guiaheartopia.app.ui.theme.GreenDark
 import com.guiaheartopia.app.ui.theme.GreenSoft
 import com.guiaheartopia.app.ui.theme.HoneySoft
@@ -161,13 +161,7 @@ fun AficionCertifyRow(
         if (certifiable) {
             CertificadoToggle(certified, onToggleCertified)
         } else {
-            MarkIconButton(
-                on = false,
-                description = "No certificable",
-                onClick = null,
-            ) {
-                NoCertificableMarkIcon()
-            }
+            NoCertificableMarkButton()
         }
     }
 }
