@@ -38,6 +38,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.data.AficionesCatalog
+import com.guiaheartopia.app.data.HeartodexCatalog
 import com.guiaheartopia.app.domain.AficionesContent
 import com.guiaheartopia.app.domain.AficionesMarks
 import com.guiaheartopia.app.domain.CocinaIngredienteLine
@@ -102,11 +103,22 @@ fun CocinaScreen(
     val catalogMax = remember(bundle) { LevelFilter.maximum(bundle.recetas.map { it.nivelCocina }) ?: 0 }
     var chosenLevel by rememberSaveable { mutableIntStateOf(-1) }
     val levelCap = if (chosenLevel < 0) null else chosenLevel.coerceAtMost(catalogMax)
-    val ingredientCatalog = remember(bundle) {
-        CocinaIngredients.catalogUnique(bundle.recetas, bundle.siembras)
+    val pecesNombres = remember(revision) {
+        HeartodexCatalog.load(context)
+            .filter { it.category.equals("Peces", ignoreCase = true) }
+            .map { it.name }
+            .toSet()
+    }
+    val ingredientCatalog = remember(bundle, pecesNombres) {
+        CocinaIngredients.catalogUnique(
+            recetas = bundle.recetas,
+            siembras = bundle.siembras,
+            flores = bundle.flores,
+            pecesNombres = pecesNombres,
+        )
     }
 
-  val filteredRecetas = bundle.recetas.filter { entry ->
+    val filteredRecetas = bundle.recetas.filter { entry ->
         val searchOk = query.isBlank() || TextMatch.contains(entry.nombre, query)
         val filtroOk = when (filtro) {
             "Todas" -> true

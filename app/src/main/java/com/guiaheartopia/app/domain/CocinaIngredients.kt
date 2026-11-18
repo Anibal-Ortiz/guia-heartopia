@@ -15,6 +15,9 @@ data class CocinaIngredienteLine(
 )
 
 object CocinaIngredients {
+    // Comodines que designan peces pero no son entradas concretas del catálogo.
+    private val pecesGenericos = setOf("cualquier pez")
+
     fun linesForReceta(
         entry: RecetaEntry,
         siembras: List<SiembraEntry>,
@@ -36,14 +39,42 @@ object CocinaIngredients {
         return out
     }
 
+    /**
+     * Catálogo mostrado en la pestaña "Ingredientes" de Cocina.
+     *
+     * Solo incluye ingredientes que NO son platos, peces ni parte del huerto
+     * (siembras/flores). Las recetas referencian platos con `idReceta` y
+     * cultivos con `idSiembra`; esas referencias se descartan. Además, un
+     * ingrediente declarado solo por nombre se descarta si ese nombre coincide
+     * con un pez, plato, siembra o flor —incluidos comodines como «Cualquier
+     * Pez»—, para que no se cuele ninguno de esos catálogos como si fuera un
+     * ingrediente suelto.
+     *
+     * `linesForReceta` se deja intacto: el detalle de una receta sí debe mostrar
+     * todos sus ingredientes, incluidos los que son platos o del huerto.
+     */
     fun catalogUnique(
         recetas: List<RecetaEntry>,
         siembras: List<SiembraEntry>,
+        flores: List<FlorEntry> = emptyList(),
+        pecesNombres: Set<String> = emptySet(),
     ): List<CocinaIngredienteRef> {
+        val nombresExcluidos = (recetas.map { it.nombre } +
+            siembras.map { it.nombre } +
+            flores.flatMap { flor -> listOf(flor.nombre) + flor.variantes.mapNotNull { it.nombre } } +
+            pecesNombres +
+            pecesGenericos)
+            .filter { it.isNotBlank() }
+            .map { it.trim().lowercase() }
+            .toSet()
+
         val map = LinkedHashMap<String, CocinaIngredienteRef>()
         recetas.forEach { receta ->
             linesForReceta(receta, siembras, recetas).forEach { line ->
-                map.putIfAbsent(line.ref.key, line.ref)
+                val ref = line.ref
+                if (ref.idReceta != null || ref.idSiembra != null) return@forEach
+                if (ref.displayName.trim().lowercase() in nombresExcluidos) return@forEach
+                map.putIfAbsent(ref.key, ref)
             }
         }
         return map.values.sortedBy { it.displayName.lowercase() }

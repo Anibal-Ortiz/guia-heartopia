@@ -55,7 +55,6 @@ import coil3.request.ImageRequest
 import com.guiaheartopia.app.data.AvatarStore
 import com.guiaheartopia.app.domain.CatalogLabels
 import com.guiaheartopia.app.domain.CatalogMarks
-import com.guiaheartopia.app.domain.Countries
 import com.guiaheartopia.app.domain.RedeemCodes
 import com.guiaheartopia.app.domain.ReminderPlan
 import com.guiaheartopia.app.ui.components.CertificadoMarkIcon
@@ -113,7 +112,6 @@ fun HomeScreen(
     onPickAvatar: (Uri) -> Unit = {},
     onClearAvatar: () -> Unit = {},
 ) {
-    val country = Countries.byId(ui.profile.countryId)
     val context = androidx.compose.ui.platform.LocalContext.current
     val revision = com.guiaheartopia.app.ui.contentRevision()
     val catalog = remember(revision) { com.guiaheartopia.app.data.HeartodexCatalog.load(context) }
@@ -163,20 +161,7 @@ fun HomeScreen(
         GreetingHeroBanner(
             greeting = ui.greeting,
             todayLabel = ui.todayLabel.replaceFirstChar { it.titlecase() },
-        )
-        PixelCard(container = PaperSubtle, elevation = 1.dp) {
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        "Hoy en Heartopia",
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        color = Ink,
-                    )
-                }
+            avatar = {
                 Box(
                     Modifier
                         .size(56.dp)
@@ -198,20 +183,8 @@ fun HomeScreen(
                         CozyHomeIcon(tint = GreenDark, size = 30.dp, filled = true)
                     }
                 }
-            }
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                Text("📍", fontSize = 12.sp)
-                Text(
-                    "${country.name} · ${Countries.label(ui.profile.countryId, ui.profile.zoneId, ui.profile.regionKey)}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Muted,
-                )
-            }
-        }
+            },
+        )
 
         if (avatarMenu) {
             AlertDialog(
@@ -560,7 +533,11 @@ fun HomeScreen(
 }
 
 @Composable
-private fun GreetingHeroBanner(greeting: String, todayLabel: String) {
+private fun GreetingHeroBanner(
+    greeting: String,
+    todayLabel: String,
+    avatar: @Composable () -> Unit,
+) {
     Box(
         Modifier
             .fillMaxWidth()
@@ -574,19 +551,26 @@ private fun GreetingHeroBanner(greeting: String, todayLabel: String) {
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(),
         )
-        Column(
+        Row(
             Modifier
                 .align(Alignment.TopStart)
                 .padding(16.dp)
                 .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            SingleLineShrinkingGreeting(greeting)
-            Text(
-                todayLabel,
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                color = Ink,
-            )
+            Column(
+                Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                SingleLineShrinkingGreeting(greeting)
+                Text(
+                    todayLabel,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                    color = Ink,
+                )
+            }
+            avatar()
         }
     }
 }
