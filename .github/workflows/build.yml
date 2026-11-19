@@ -1,0 +1,45 @@
+name: Verificar
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verificar y lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Obtener el código
+        uses: actions/checkout@v7
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Configurar Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Instalar plataforma 37 y Build-Tools
+        run: sdkmanager --install "platforms;android-37" "build-tools;36.0.0" "build-tools;37.0.0"
+
+      - name: Dar permisos de ejecución a Gradle
+        run: chmod +x ./gradlew
+
+      - name: Verificar manifiesto de release
+        run: ./gradlew :app:verifyReleaseManifest --console=plain
+
+      - name: Lint
+        run: ./gradlew :app:lintDebug --console=plain
