@@ -24,7 +24,7 @@ import com.guiaheartopia.app.domain.CreatureAppearing
 import com.guiaheartopia.app.domain.CreatureWindowAlarm
 import com.guiaheartopia.app.domain.DexCategoryFilters
 import com.guiaheartopia.app.domain.DexSchedule
-import com.guiaheartopia.app.data.HeartodexCatalog
+import com.guiaheartopia.app.data.CreatureCatalog
 import com.guiaheartopia.app.data.SkyCatalog
 import com.guiaheartopia.app.domain.HobbyProgress
 import com.guiaheartopia.app.domain.PlayerProfile
@@ -285,7 +285,7 @@ class GuideViewModel(
         viewModelScope.launch {
             val context = appContext
             if (context != null) {
-                val entry = HeartodexCatalog.load(context).firstOrNull { it.id == id }
+                val entry = CreatureCatalog.load(context).firstOrNull { it.id == id }
                 if (entry != null && !CatalogMarks.certifiable(entry)) return@launch
             }
             repository.update { snap ->
@@ -463,7 +463,7 @@ class GuideViewModel(
             val profile = repository.snapshots.first().profile
             val zone = DexSchedule.zoneOf(profile.zoneId)
             val sky = SkyCatalog.load(context)
-            val entry = HeartodexCatalog.load(context).firstOrNull { it.id == creatureId } ?: return@launch
+            val entry = CreatureCatalog.load(context).firstOrNull { it.id == creatureId } ?: return@launch
             val next = CreatureAppearing.nextWindow(entry.schedule, entry.weather, sky, zone) ?: return@launch
             val alarm = CreatureWindowAlarm(
                 creatureId = creatureId,

@@ -128,7 +128,7 @@ fun HomeScreen(
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val revision = com.guiaheartopia.app.ui.contentRevision()
-    val catalog = remember(revision) { com.guiaheartopia.app.data.HeartodexCatalog.load(context) }
+    val catalog = remember(revision) { com.guiaheartopia.app.data.CreatureCatalog.load(context) }
     val aficiones = remember(revision) { com.guiaheartopia.app.data.AficionesCatalog.load(context) }
     val sky = remember(revision) { com.guiaheartopia.app.data.SkyCatalog.load(context) }
     val zone = DexSchedule.zoneOf(ui.profile.zoneId)

@@ -2,7 +2,7 @@ package com.guiaheartopia.app.domain
 
 import kotlinx.serialization.Serializable
 
-/** Ficha del heartodex. Modelo de dominio (expuesto como `data.DexEntry` por typealias). */
+/** Ficha del catálogo de criaturas. Modelo de dominio (expuesto como `data.DexEntry` por typealias). */
 @Serializable
 data class DexEntry(
     val id: String,
@@ -17,7 +17,7 @@ data class DexEntry(
     val shadow: String? = null,
     val imageUrl: String = "",
     val description: String = "",
-    val source: String = "heartodex",
+    val source: String = "",
     val sourceUrl: String = "",
     val extractedOn: String = "",
 )

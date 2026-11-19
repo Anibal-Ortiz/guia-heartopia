@@ -88,7 +88,7 @@ Sube otra vez los archivos que cambiaron, sobre todo `manifest.json` y `content/
 
 ### Un pez nuevo
 
-1. Abre `app/src/main/assets/catalog/heartodex.json`.
+1. Abre `app/src/main/assets/catalog/creatures.json`.
 2. Copia una ficha de pez completa (desde una `{` hasta la `}` que cierra esa ficha).
 3. Cámbiale el `id` (no puede repetirse) y el `name`.
 4. Deja `imageUrl` si ya existe, pero no añadas un dibujo del juego. Sin archivo de imagen, la app muestra el ícono de la categoría.

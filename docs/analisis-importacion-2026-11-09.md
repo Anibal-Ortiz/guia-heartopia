@@ -17,7 +17,7 @@ Frente a v0.5.1 el delta es el mismo salvo `colors.xml` y `themes.xml`, que coin
 - Navegación inferior igual: Inicio, Rutina, Guía, Píxel, Aficiones. Ajustes sigue en la barra superior. Créditos siguen solo en Ajustes.
 - Inicio se rediseñó: saludo, país, tramo de juego, colección por categoría (130 peces, 114 pájaros, 106 insectos, 11 fauna), flurita, Liuliu y accesos a Guía, Clima y Aficiones. Ya no abre Mapa, Rutina ni Píxel desde ahí. El menú «Hobbies» de `main` pasa a «Aficiones».
 - Guía, clima (Mes / Semana / Lista), rutina, píxel, aficiones y ajustes siguen. «Ahora» y «Disponible ahora» siguen usando horario y, si hay dato, clima (`SkyWeather.availableNow`).
-- Catálogo: los 361 ids y el resto de campos no cambian. Solo se añade `imageUrl`. Las 361 fichas apuntan a `https://www.heartodex.com/...webp`. Coil 3.2.0 las carga en runtime; si la URL está vacía, queda el glifo vectorial. `tools/merge_images.py` arma esas URLs y no descarga bytes.
+- Catálogo: los 361 ids y el resto de campos no cambian. Solo se añade `imageUrl`. Las fichas apuntan a rutas `asset:catalog/images/...webp`. Coil 3.2.0 carga las imágenes del paquete publicado; si no hay archivo, queda el glifo vectorial.
 - Los animales de ejemplo también reciben URL remota. El horario UTC de criaturas en `DexSchedule` ya coincidía con la referencia confirmada (Noche 05–11, Amanecer 11–17, Día 17–23, Tarde 23–05 UTC; Chile UTC−3 el 2026-11-06: 02–08 / 08–14 / 14–20 / 20–02). Tras esta revisión se alinearon comentarios, leyenda de la guía y pruebas. Etiquetas de clima del catálogo: Soleado → Despejado, Lluvioso → Lluvia.
 - Respaldo compatible: campos nuevos con valor por defecto, `ignoreUnknownKeys = true`, mismos ids.
 
@@ -28,7 +28,7 @@ No se eliminaron. `MapScreen` y la ruta `map` siguen. El botón «Mapa» de la g
 ## Riesgos, sin corregir
 
 1. Calendario de clima y franjas de criaturas son independientes (clima en bloques 00/06/12/18 UTC). `SkyWeatherTest` en la línea 52 sigue usando mediodía UTC como si fuera el tramo «Day» del catálogo; a las 12:00 UTC el tramo de criatura es Amanecer (11:00–17:00 UTC). Ese fallo es ajeno a la corrección de documentación de horarios.
-2. Créditos desactualizados. Ajustes sigue diciendo que no se copiaron imágenes, pero la app pide 361 imágenes de heartodex por red. Eso choca con la decisión previa de no usar esas imágenes. No se añadieron ni se quitaron en este import.
+2. Créditos desactualizados. Ajustes sigue diciendo que no se copiaron imágenes, pero la app pedía 361 imágenes por red. Eso choca con la decisión previa de no usar esas imágenes. No se añadieron ni se quitaron en este import.
 3. Si la red falla, `CreatureImage` no vuelve al glifo: el glifo solo aparece con URL vacía.
 4. La fauna de ejemplo sigue rotulada Soleado / Lluvioso, mientras el catálogo dice Despejado / Lluvia.
 5. `gradle/gradle-daemon-jvm.properties` pide JDK 25 (Foojay). Esta compilación usó el JDK 21 ya instalado.

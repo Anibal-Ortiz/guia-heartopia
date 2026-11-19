@@ -38,7 +38,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.data.AficionesCatalog
-import com.guiaheartopia.app.data.HeartodexCatalog
+import com.guiaheartopia.app.data.CreatureCatalog
 import com.guiaheartopia.app.domain.AficionesContent
 import com.guiaheartopia.app.domain.AficionesMarks
 import com.guiaheartopia.app.domain.CocinaIngredienteLine
@@ -112,7 +112,7 @@ fun CocinaScreen(
     var chosenLevel by rememberSaveable { mutableIntStateOf(-1) }
     val levelCap = if (chosenLevel < 0) null else chosenLevel.coerceAtMost(catalogMax)
     val pecesNombres = remember(revision) {
-        HeartodexCatalog.load(context)
+        CreatureCatalog.load(context)
             .filter { it.category.equals("Peces", ignoreCase = true) }
             .map { it.name }
             .toSet()

@@ -57,7 +57,7 @@ object SampleWeather {
             name = "Hora del servidor (UTC)",
             zoneId = "UTC",
             note = "Si el calendario trae tramos, están en UTC y se convierten a la zona IANA elegida. " +
-                "Heartodex no publica el clima por fecha: el archivo actual no trae días.",
+                "El archivo de clima incluido no trae tramos por fecha: se usa el paquete publicado.",
         ),
     )
 

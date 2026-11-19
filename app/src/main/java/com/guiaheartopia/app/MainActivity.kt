@@ -784,7 +784,7 @@ private fun AppScaffold(
                 val context = androidx.compose.ui.platform.LocalContext.current
                 val revision = com.guiaheartopia.app.ui.contentRevision()
                 val item = androidx.compose.runtime.remember(id, revision) {
-                    com.guiaheartopia.app.data.HeartodexCatalog.load(context).firstOrNull { it.id == id }
+                    com.guiaheartopia.app.data.CreatureCatalog.load(context).firstOrNull { it.id == id }
                 }
                 if (item == null) {
                     TextButton(onClick = { nav.popBackStack() }) { Text("Volver") }

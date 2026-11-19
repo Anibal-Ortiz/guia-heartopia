@@ -15,7 +15,7 @@ data class DexFile(
     val entries: List<DexEntry> = emptyList(),
 )
 
-object HeartodexCatalog {
+object CreatureCatalog {
     private val json = Json { ignoreUnknownKeys = true }
     private val cached = ContentCache.Slot<List<DexEntry>>()
 
@@ -27,12 +27,11 @@ object HeartodexCatalog {
 
     private fun loadUncached(context: Context): List<DexEntry> {
         val base = runCatching {
-            context.assets.open("catalog/heartodex.json").bufferedReader().use { reader ->
+            context.assets.open("catalog/creatures.json").bufferedReader().use { reader ->
                 json.decodeFromString(DexFile.serializer(), reader.readText()).entries
             }
         }.getOrDefault(emptyList())
         val overlay = AndroidContentStore.overlayFile(context, "catalog/creatures.json")
-            ?: AndroidContentStore.overlayFile(context, "catalog/heartodex.json")
             ?: return base
         val extra = runCatching {
             json.decodeFromString(DexFile.serializer(), overlay.readText()).entries

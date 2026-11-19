@@ -5,11 +5,10 @@ import com.guiaheartopia.app.domain.Marks as SharedMarks
 
 object CatalogMarks {
     /**
-     * Heartodex etiqueta criaturas del juego base con etiquetas de mecánica ("Pesca marina",
+     * Las criaturas del juego base llevan etiquetas de mecánica ("Pesca marina",
      * "Atraer Bichos", "Cola de Sirena", "Nido de las Aves", río/lago/mar, común…). El contenido
      * de la app las guarda en el campo `event`, pero NO son eventos de duración limitada:
      * esas criaturas sí son certificables. Solo se excluyen los eventos reales.
-     * Lista tomada de `excludedCategories` en el código de heartodex.com ( Noviembre 2026 ).
      */
     private val BaseGameTags: Set<String> = listOf(
         "común", "comun", "common", "comum",

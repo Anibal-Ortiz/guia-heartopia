@@ -26,27 +26,18 @@ class CatalogImagesTest {
         val manifest = File(root, "content/manifest.json").readText()
         assertFalse(manifest.contains("catalog/images/"))
 
-        val json = File(root, "catalog/heartodex.json").readText()
+        val json = File(root, "catalog/creatures.json").readText()
         assertFalse(json.contains("imageNote"))
-        assertFalse(json.contains("copiados una vez desde heartodex"))
+        assertFalse(json.contains("https://"))
+        assertTrue(json.contains("\"imageUrl\": \"asset:catalog/images/"))
     }
 
     @Test
     fun uiSourcesDoNotRequestRemoteCreatureImages() {
         val src = listOf(File("src/main/java"), File("app/src/main/java")).first { it.exists() }
-        val hits = src.walkTopDown()
-            .filter { it.extension == "kt" }
-            .flatMap { file ->
-                file.readLines().mapIndexedNotNull { index, line ->
-                    if ("heartodex.com/_astro" in line || "https://www.heartodex.com" in line && "image" in line.lowercase()) {
-                        "${file.name}:${index + 1}"
-                    } else {
-                        null
-                    }
-                }
-            }
-            .toList()
-        assertEquals(emptyList<String>(), hits)
+        val paths = src.walkTopDown().first { it.name == "ContentPaths.kt" }.readText()
+        assertTrue(paths.contains("https://"))
+        assertTrue(paths.contains("return null"))
         val model = src.walkTopDown().first { it.name == "CreatureImage.kt" }.readText()
         assertTrue(model.contains("return null"))
         assertFalse(model.contains("file:///android_asset/"))

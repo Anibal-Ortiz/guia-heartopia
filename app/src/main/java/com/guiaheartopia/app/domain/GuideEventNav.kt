@@ -2,7 +2,7 @@ package com.guiaheartopia.app.domain
 
 import com.guiaheartopia.app.data.ContentCache
 import com.guiaheartopia.app.data.DexEntry
-import com.guiaheartopia.app.data.HeartodexCatalog
+import com.guiaheartopia.app.data.CreatureCatalog
 
 object GuideEventNav {
     private val cachedTab = ContentCache.Slot<Int>()
@@ -48,7 +48,7 @@ object GuideEventNav {
                 .effectiveBytes("calendar/eventos.json")
                 ?.decodeToString()
             val events = ReminderPlan.parseEvents(raw)
-            val catalog = HeartodexCatalog.load(context)
+            val catalog = CreatureCatalog.load(context)
             dexTabIndex(events, catalog, eventKey)
         }
     }

@@ -226,7 +226,7 @@ fun CalendarEvents(
         ReminderPlan.parseEvents(raw)
     }
     val catalog = androidx.compose.runtime.remember(revision) {
-        com.guiaheartopia.app.data.HeartodexCatalog.load(context)
+        com.guiaheartopia.app.data.CreatureCatalog.load(context)
     }
     val now = java.time.ZonedDateTime.now(zone)
     val rows = androidx.compose.runtime.remember(doc, zone) {

@@ -47,8 +47,8 @@ class SpanishCatalogTest {
 
     private fun load(): DexFile {
         val file = listOf(
-            File("src/main/assets/catalog/heartodex.json"),
-            File("app/src/main/assets/catalog/heartodex.json"),
+            File("src/main/assets/catalog/creatures.json"),
+            File("app/src/main/assets/catalog/creatures.json"),
         ).first { it.exists() }
         return json.decodeFromString(DexFile.serializer(), file.readText())
     }

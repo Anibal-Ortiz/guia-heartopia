@@ -1,7 +1,5 @@
 {
-  "source": "https://www.heartodex.com/",
-  "extractedOn": "2026-11-07",
-  "terms": "https://www.heartodex.com/en/terms/",
+  "extractedOn": "",
   "note": "Fichas con datos de aparición. El texto breve que muestra la app está escrito para esta guía. El nombre en inglés queda en nameEn para la búsqueda. Nivel y sombra solo si la tarjeta los trae.",
   "entries": [
     {
@@ -24,9 +22,9 @@
         "Rainy"
       ],
       "event": "Encuentros misteriosos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-blue-sea-angel.webp"
@@ -52,9 +50,9 @@
         "Rainy"
       ],
       "event": "Encuentros misteriosos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-green-sea-angel.webp"
@@ -79,9 +77,9 @@
         "Rainy"
       ],
       "event": "Encuentros misteriosos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-golden-cuttlefish.webp"
@@ -107,9 +105,9 @@
         "Rainy"
       ],
       "event": "Encuentros misteriosos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-purple-sea-angel.webp"
@@ -134,9 +132,9 @@
         "Rainy"
       ],
       "event": "Encuentros misteriosos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-pharaoh-cuttlefish.webp"
@@ -161,9 +159,9 @@
         "Rainy"
       ],
       "event": "Encuentros misteriosos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-spineless-cuttlefish.webp"
@@ -188,9 +186,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-schneider.webp"
@@ -215,9 +213,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-common-bleak.webp"
@@ -242,9 +240,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-barbel.webp"
@@ -269,9 +267,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-common-chub.webp"
@@ -296,9 +294,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-oriental-shrimp.webp"
@@ -323,9 +321,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-common-prawn.webp"
@@ -350,9 +348,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-crucian-carp.webp"
@@ -377,9 +375,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-common-whitefish.webp"
@@ -404,9 +402,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-sea-stickleback.webp"
@@ -431,9 +429,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-scad.webp"
@@ -458,9 +456,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
       "imageUrl": "asset:catalog/images/fish-skipjack-tuna.webp"
@@ -485,9 +483,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-spined-loach.webp"
@@ -512,9 +510,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-sea-bass.webp"
@@ -539,9 +537,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-european-perch.webp"
@@ -566,9 +564,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-streber.webp"
@@ -593,9 +591,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-minnow.webp"
@@ -620,9 +618,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
       "imageUrl": "asset:catalog/images/fish-beltfish.webp"
@@ -647,9 +645,9 @@
         "Rainy"
       ],
       "event": "Pesca marina",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Dorado",
       "imageUrl": "asset:catalog/images/fish-striped-red-mullet.webp"
@@ -674,9 +672,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-sardine.webp"
@@ -701,9 +699,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-tench.webp"
@@ -727,9 +725,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-seahorse.webp"
@@ -754,9 +752,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-european-smelt.webp"
@@ -781,9 +779,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-false-scad.webp"
@@ -807,9 +805,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-largemouth-bass.webp"
@@ -834,9 +832,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-stone-loach.webp"
@@ -861,9 +859,9 @@
         "Rainy"
       ],
       "event": "Pesca marina",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "shadow": "Dorado",
       "imageUrl": "asset:catalog/images/fish-anglerfish.webp"
@@ -888,9 +886,9 @@
         "Rainy"
       ],
       "event": "Pesca marina",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-common-octopus.webp"
@@ -915,9 +913,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-atlantic-pygmy-octopus.webp"
@@ -942,9 +940,9 @@
         "Rainy"
       ],
       "event": "Pesca marina",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-turbot.webp"
@@ -969,9 +967,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-hermit-crab.webp"
@@ -995,9 +993,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-european-crayfish.webp"
@@ -1021,9 +1019,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-zander.webp"
@@ -1046,9 +1044,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-ruffe.webp"
@@ -1072,9 +1070,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-mud-sunfish.webp"
@@ -1099,9 +1097,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-clownfish.webp"
@@ -1126,9 +1124,9 @@
         "Rainy"
       ],
       "event": "Cola de Sirena",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "shadow": "Azul",
       "imageUrl": "asset:catalog/images/fish-edible-frog.webp"
@@ -1152,9 +1150,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-atlantic-salmon.webp"
@@ -1179,9 +1177,9 @@
         "Rainy"
       ],
       "event": "Cola de Sirena",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "shadow": "Azul",
       "imageUrl": "asset:catalog/images/fish-tilapia.webp"
@@ -1206,9 +1204,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-river-crab.webp"
@@ -1230,9 +1228,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-common-carp.webp"
@@ -1256,9 +1254,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "shadow": "Grande",
       "imageUrl": "asset:catalog/images/fish-butterfly-koi.webp"
@@ -1281,9 +1279,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "shadow": "Grande",
       "imageUrl": "asset:catalog/images/fish-burbot.webp"
@@ -1307,9 +1305,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-mussel.webp"
@@ -1332,9 +1330,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-goby.webp"
@@ -1359,9 +1357,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-red-bellied-piranha.webp"
@@ -1384,9 +1382,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-european-plaice.webp"
@@ -1411,9 +1409,9 @@
         "Rainy"
       ],
       "event": "Cola de Sirena",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "shadow": "Azul",
       "imageUrl": "asset:catalog/images/fish-rabbit-fish.webp"
@@ -1437,9 +1435,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-tadpole.webp"
@@ -1464,9 +1462,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 5,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-freshwater-blenny.webp"
@@ -1488,9 +1486,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 5,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-atlantic-mackerel.webp"
@@ -1515,9 +1513,9 @@
         "Rainy"
       ],
       "event": "Pesca marina",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 5,
       "shadow": "Dorado",
       "imageUrl": "asset:catalog/images/fish-european-flying-squid.webp"
@@ -1540,9 +1538,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 5,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-european-lobster.webp"
@@ -1567,9 +1565,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 5,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-common-rudd.webp"
@@ -1591,9 +1589,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 5,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-trout.webp"
@@ -1616,9 +1614,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 6,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-large-pearl-mussel.webp"
@@ -1641,9 +1639,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 6,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-puffer-fish.webp"
@@ -1666,9 +1664,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 6,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-tub-gurnard.webp"
@@ -1691,9 +1689,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 6,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-chum-salmon.webp"
@@ -1718,9 +1716,9 @@
         "Rainy"
       ],
       "event": "Pesca marina",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 6,
       "shadow": "Grande",
       "imageUrl": "asset:catalog/images/fish-nursehound.webp"
@@ -1745,9 +1743,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 6,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-grayling.webp"
@@ -1769,9 +1767,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 7,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-european-eel.webp"
@@ -1793,9 +1791,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 7,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-blackspot-seabream.webp"
@@ -1818,9 +1816,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 7,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-mediterranean-killifish.webp"
@@ -1844,9 +1842,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 7,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-three-spined-stickleback.webp"
@@ -1869,9 +1867,9 @@
         "Rainy"
       ],
       "event": "Pesca marina",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 7,
       "shadow": "Dorado",
       "imageUrl": "asset:catalog/images/fish-giant-oarfish.webp"
@@ -1894,9 +1892,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 7,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-mottled-sculpin.webp"
@@ -1918,9 +1916,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 8,
       "shadow": "Grande",
       "imageUrl": "asset:catalog/images/fish-king-crab.webp"
@@ -1943,9 +1941,9 @@
         "Rainbow"
       ],
       "event": "Pesca marina",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 8,
       "shadow": "Dorado",
       "imageUrl": "asset:catalog/images/fish-golden-king-crab.webp"
@@ -1968,9 +1966,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 8,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-blue-european-crayfish.webp"
@@ -1993,9 +1991,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 8,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-haddock.webp"
@@ -2018,9 +2016,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 8,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-goldfish.webp"
@@ -2042,9 +2040,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 8,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-european-mudminnow.webp"
@@ -2065,9 +2063,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 9,
       "shadow": "Grande",
       "imageUrl": "asset:catalog/images/fish-bluefin-tuna.webp"
@@ -2089,9 +2087,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 9,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-northern-pike.webp"
@@ -2114,9 +2112,9 @@
         "Rainy"
       ],
       "event": "Pesca marina",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 9,
       "shadow": "Dorado",
       "imageUrl": "asset:catalog/images/fish-moonfish.webp"
@@ -2139,9 +2137,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 9,
       "shadow": "Grande",
       "imageUrl": "asset:catalog/images/fish-ocean-sunfish.webp"
@@ -2164,9 +2162,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 9,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-pumpkinseed.webp"
@@ -2188,9 +2186,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 9,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-huchen.webp"
@@ -2211,9 +2209,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 10,
       "shadow": "Grande",
       "imageUrl": "asset:catalog/images/fish-swordfish.webp"
@@ -2235,9 +2233,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 10,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-wels-catfish.webp"
@@ -2259,9 +2257,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 10,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-bluegill.webp"
@@ -2282,9 +2280,9 @@
         "Rainbow"
       ],
       "event": "Pesca marina",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 10,
       "shadow": "Dorado",
       "imageUrl": "asset:catalog/images/fish-shortfin-mako-shark.webp"
@@ -2305,9 +2303,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 10,
       "shadow": "Grande",
       "imageUrl": "asset:catalog/images/fish-smooth-hammerhead.webp"
@@ -2329,9 +2327,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 10,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-arctic-char.webp"
@@ -2353,9 +2351,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 11,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-asian-arowana.webp"
@@ -2377,9 +2375,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 11,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-blackspot-sergeant.webp"
@@ -2402,9 +2400,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 11,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-lionhead.webp"
@@ -2427,9 +2425,9 @@
         "Sunny"
       ],
       "event": "Pesca marina",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 11,
       "shadow": "Dorado",
       "imageUrl": "asset:catalog/images/fish-whale-shark.webp"
@@ -2450,9 +2448,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 12,
       "shadow": "Grande",
       "imageUrl": "asset:catalog/images/fish-mahi-mahi.webp"
@@ -2475,9 +2473,9 @@
         "Rainy"
       ],
       "event": "Pesca marina",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 12,
       "shadow": "Dorado",
       "imageUrl": "asset:catalog/images/fish-moon-jelly.webp"
@@ -2498,9 +2496,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 12,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-angelfish.webp"
@@ -2522,9 +2520,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 12,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-pink-betta.webp"
@@ -2545,9 +2543,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 12,
       "shadow": "Grande",
       "imageUrl": "asset:catalog/images/fish-green-sea-turtle.webp"
@@ -2570,9 +2568,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 13,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-white-faced-surgeonfish.webp"
@@ -2594,9 +2592,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 13,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-lionfish.webp"
@@ -2619,9 +2617,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 14,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-blue-and-yellow-wrasse.webp"
@@ -2643,9 +2641,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 14,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-azure-demoiselle.webp"
@@ -2670,9 +2668,9 @@
         "Rainy"
       ],
       "event": "Búsqueda de ballenas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-japanese-flying-squid.webp"
@@ -2697,9 +2695,9 @@
         "Rainy"
       ],
       "event": "Búsqueda de ballenas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-firefly-squid.webp"
@@ -2724,9 +2722,9 @@
         "Rainy"
       ],
       "event": "Búsqueda de ballenas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-sea-slug.webp"
@@ -2751,9 +2749,9 @@
         "Rainy"
       ],
       "event": "Búsqueda de ballenas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-mandarin-fish.webp"
@@ -2778,9 +2776,9 @@
         "Rainy"
       ],
       "event": "Búsqueda de ballenas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-oliver-ridley-turtle.webp"
@@ -2805,9 +2803,9 @@
         "Rainy"
       ],
       "event": "Búsqueda de ballenas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-flatback-turtle.webp"
@@ -2832,9 +2830,9 @@
         "Rainy"
       ],
       "event": "Búsqueda de ballenas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-scallop.webp"
@@ -2859,9 +2857,9 @@
         "Rainy"
       ],
       "event": "Eco Ancestral",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
       "imageUrl": "asset:catalog/images/fish-golden-garfish.webp"
@@ -2886,9 +2884,9 @@
         "Rainy"
       ],
       "event": "Eco Ancestral",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
       "imageUrl": "asset:catalog/images/fish-pale-gold-garfish.webp"
@@ -2913,9 +2911,9 @@
         "Rainy"
       ],
       "event": "Eco Ancestral",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
       "imageUrl": "asset:catalog/images/fish-brown-garfish.webp"
@@ -2940,9 +2938,9 @@
         "Rainy"
       ],
       "event": "Eco Ancestral",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
       "imageUrl": "asset:catalog/images/fish-black-garfish.webp"
@@ -2967,9 +2965,9 @@
         "Rainy"
       ],
       "event": "Eco Ancestral",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
       "imageUrl": "asset:catalog/images/fish-silver-garfish.webp"
@@ -2994,9 +2992,9 @@
         "Rainy"
       ],
       "event": "Mercado de ensamblaje",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-blue-brick-clownfish.webp"
@@ -3021,9 +3019,9 @@
         "Rainy"
       ],
       "event": "Mercado de ensamblaje",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-colorful-brick-clownfish.webp"
@@ -3048,9 +3046,9 @@
         "Rainy"
       ],
       "event": "Mercado de ensamblaje",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-purple-brick-clownfish.webp"
@@ -3075,9 +3073,9 @@
         "Rainy"
       ],
       "event": "Mercado de ensamblaje",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-red-brick-clownfish.webp"
@@ -3102,9 +3100,9 @@
         "Rainy"
       ],
       "event": "Mercado de ensamblaje",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-green-brick-clownfish.webp"
@@ -3129,9 +3127,9 @@
         "Rainy"
       ],
       "event": "Sombras Oníricas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
       "imageUrl": "asset:catalog/images/fish-director-common-octopus-w-cinnamon-hat.webp"
@@ -3156,9 +3154,9 @@
         "Rainy"
       ],
       "event": "Sombras Oníricas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
       "imageUrl": "asset:catalog/images/fish-director-common-octopus-w-patterned-hat.webp"
@@ -3183,9 +3181,9 @@
         "Rainy"
       ],
       "event": "Sombras Oníricas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-director-pygmy-octopus-w-cyan-hat.webp"
@@ -3210,9 +3208,9 @@
         "Rainy"
       ],
       "event": "Sombras Oníricas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-director-pygmy-octopus-w-navy-hat.webp"
@@ -3237,9 +3235,9 @@
         "Rainy"
       ],
       "event": "Sombras Oníricas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-director-pygmy-octopus-w-brown-hat.webp"
@@ -3265,9 +3263,9 @@
         "Rainy"
       ],
       "event": "Temporada de hielo y nieve",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
       "imageUrl": "asset:catalog/images/fish-frostspore-seahorse.webp"
@@ -3293,9 +3291,9 @@
         "Rainy"
       ],
       "event": "Temporada de hielo y nieve",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
       "imageUrl": "asset:catalog/images/fish-frostspore-king-crab.webp"
@@ -3321,9 +3319,9 @@
         "Rainy"
       ],
       "event": "Temporada de hielo y nieve",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
       "imageUrl": "asset:catalog/images/fish-frostspore-puffer-fish.webp"
@@ -3349,9 +3347,9 @@
         "Rainy"
       ],
       "event": "Temporada de hielo y nieve",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
       "imageUrl": "asset:catalog/images/fish-frostspore-ocean-sunfish.webp"
@@ -3376,9 +3374,9 @@
         "Rainy"
       ],
       "event": "Temporada de hielo y nieve",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/peces/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
       "imageUrl": "asset:catalog/images/fish-frostspore-whale-shark.webp"
@@ -3401,9 +3399,9 @@
         "Rainy"
       ],
       "event": "Encuentros misteriosos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-long-toothed-fruit-bat.webp"
     },
@@ -3425,9 +3423,9 @@
         "Rainy"
       ],
       "event": "Encuentros misteriosos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-northern-white-faced-owl.webp"
     },
@@ -3449,9 +3447,9 @@
         "Rainy"
       ],
       "event": "Encuentros misteriosos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-palau-scops-owl.webp"
     },
@@ -3473,9 +3471,9 @@
         "Rainy"
       ],
       "event": "Encuentros misteriosos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-eastern-screech-owl.webp"
     },
@@ -3499,9 +3497,9 @@
         "Rainy"
       ],
       "event": "Encuentros misteriosos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-pumpkin-raven.webp"
     },
@@ -3525,9 +3523,9 @@
         "Rainy"
       ],
       "event": "Encuentros misteriosos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-strawberry-raven.webp"
     },
@@ -3551,9 +3549,9 @@
         "Rainy"
       ],
       "event": "Encuentros misteriosos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-mandarin-raven.webp"
     },
@@ -3577,9 +3575,9 @@
         "Rainy"
       ],
       "event": "Encuentros misteriosos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-apple-raven.webp"
     },
@@ -3603,9 +3601,9 @@
         "Rainy"
       ],
       "event": "Encuentros misteriosos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-truffle-raven.webp"
     },
@@ -3627,9 +3625,9 @@
         "Rainy"
       ],
       "event": "Encuentros misteriosos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-honduran-white-bat.webp"
     },
@@ -3651,9 +3649,9 @@
         "Rainy"
       ],
       "event": "Encuentros misteriosos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-tanzanian-woolly-bat.webp"
     },
@@ -3677,9 +3675,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-mallard.webp"
     },
@@ -3706,9 +3704,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-bearded-reedling.webp"
     },
@@ -3732,9 +3730,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-eurasian-bullfinch.webp"
     },
@@ -3759,9 +3757,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-eurasian-wren.webp"
     },
@@ -3787,9 +3785,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-pied-imperial-pigeon.webp"
     },
@@ -3813,9 +3811,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-greater-flamingo.webp"
     },
@@ -3839,9 +3837,9 @@
         "Rainy"
       ],
       "event": "Nido de las Aves",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-blue-and-yellow-macaw.webp"
     },
@@ -3865,9 +3863,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-long-tailed-tit.webp"
     },
@@ -3893,9 +3891,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-wonga-pigeon.webp"
     },
@@ -3919,9 +3917,9 @@
         "Rainy"
       ],
       "event": "Nido de las Aves",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-blue-peafowl.webp"
     },
@@ -3945,9 +3943,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-european-robin.webp"
     },
@@ -3971,9 +3969,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-eurasian-collared-dove.webp"
     },
@@ -3997,9 +3995,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-pink-necked-green-pigeon.webp"
     },
@@ -4023,9 +4021,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "imageUrl": "asset:catalog/images/bird-woodchat-shrike.webp"
     },
@@ -4050,9 +4048,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "imageUrl": "asset:catalog/images/bird-great-tit.webp"
     },
@@ -4076,9 +4074,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "imageUrl": "asset:catalog/images/bird-seagull.webp"
     },
@@ -4103,9 +4101,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "imageUrl": "asset:catalog/images/bird-eurasian-nuthatch.webp"
     },
@@ -4129,9 +4127,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "imageUrl": "asset:catalog/images/bird-stock-dove.webp"
     },
@@ -4155,9 +4153,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "imageUrl": "asset:catalog/images/bird-eurasian-chaffinch.webp"
     },
@@ -4181,9 +4179,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "imageUrl": "asset:catalog/images/bird-eurasian-wigeon.webp"
     },
@@ -4207,9 +4205,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "imageUrl": "asset:catalog/images/bird-european-shag.webp"
     },
@@ -4233,9 +4231,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "imageUrl": "asset:catalog/images/bird-double-barred-finch.webp"
     },
@@ -4259,9 +4257,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "imageUrl": "asset:catalog/images/bird-king-eider.webp"
     },
@@ -4285,9 +4283,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "imageUrl": "asset:catalog/images/bird-audouins-gull.webp"
     },
@@ -4311,9 +4309,9 @@
         "Rainy"
       ],
       "event": "Nido de las Aves",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "imageUrl": "asset:catalog/images/bird-red-and-green-macaw.webp"
     },
@@ -4337,9 +4335,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "imageUrl": "asset:catalog/images/bird-silver-throated-tit.webp"
     },
@@ -4363,9 +4361,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "imageUrl": "asset:catalog/images/bird-eurasian-golden-oriole.webp"
     },
@@ -4389,9 +4387,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "imageUrl": "asset:catalog/images/bird-ruddy-shelduck.webp"
     },
@@ -4415,9 +4413,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "imageUrl": "asset:catalog/images/bird-pine-grosbeak.webp"
     },
@@ -4441,9 +4439,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "imageUrl": "asset:catalog/images/bird-lady-amherst-pheasant.webp"
     },
@@ -4467,9 +4465,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "imageUrl": "asset:catalog/images/bird-white-wagtail.webp"
     },
@@ -4493,9 +4491,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "imageUrl": "asset:catalog/images/bird-regent-bowerbird.webp"
     },
@@ -4519,9 +4517,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "imageUrl": "asset:catalog/images/bird-przevalskis-parrotbill.webp"
     },
@@ -4545,9 +4543,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "imageUrl": "asset:catalog/images/bird-smew.webp"
     },
@@ -4571,9 +4569,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "imageUrl": "asset:catalog/images/bird-wallaces-fruit-dove.webp"
     },
@@ -4596,9 +4594,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 5,
       "imageUrl": "asset:catalog/images/bird-european-bee-eater.webp"
     },
@@ -4622,9 +4620,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 5,
       "imageUrl": "asset:catalog/images/bird-brown-noddy.webp"
     },
@@ -4647,9 +4645,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 5,
       "imageUrl": "asset:catalog/images/bird-lesser-flamingo.webp"
     },
@@ -4672,9 +4670,9 @@
         "Sunny"
       ],
       "event": "Nido de las Aves",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 5,
       "imageUrl": "asset:catalog/images/bird-great-green-macaw.webp"
     },
@@ -4699,9 +4697,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 5,
       "imageUrl": "asset:catalog/images/bird-african-olive-pigeon.webp"
     },
@@ -4726,9 +4724,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 5,
       "imageUrl": "asset:catalog/images/bird-yellow-bellied-flycatcher.webp"
     },
@@ -4752,9 +4750,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 6,
       "imageUrl": "asset:catalog/images/bird-long-eared-owl.webp"
     },
@@ -4779,9 +4777,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 6,
       "imageUrl": "asset:catalog/images/bird-red-faced-cormorant.webp"
     },
@@ -4806,9 +4804,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 6,
       "imageUrl": "asset:catalog/images/bird-cinnamon-ground-dove.webp"
     },
@@ -4833,9 +4831,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 6,
       "imageUrl": "asset:catalog/images/bird-hawfinch.webp"
     },
@@ -4858,9 +4856,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 7,
       "imageUrl": "asset:catalog/images/bird-common-kestrel.webp"
     },
@@ -4883,9 +4881,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 7,
       "imageUrl": "asset:catalog/images/bird-tern.webp"
     },
@@ -4908,9 +4906,9 @@
         "Rainy"
       ],
       "event": "Nido de las Aves",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 7,
       "imageUrl": "asset:catalog/images/bird-lears-macaw.webp"
     },
@@ -4935,9 +4933,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 7,
       "imageUrl": "asset:catalog/images/bird-azure-tit.webp"
     },
@@ -4961,9 +4959,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 7,
       "imageUrl": "asset:catalog/images/bird-jambu-fruit-dove.webp"
     },
@@ -4987,9 +4985,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 8,
       "imageUrl": "asset:catalog/images/bird-peregrine-falcon.webp"
     },
@@ -5012,9 +5010,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 8,
       "imageUrl": "asset:catalog/images/bird-eastern-bluebird.webp"
     },
@@ -5039,9 +5037,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 8,
       "imageUrl": "asset:catalog/images/bird-pink-pigeon.webp"
     },
@@ -5065,9 +5063,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 8,
       "imageUrl": "asset:catalog/images/bird-redpoll.webp"
     },
@@ -5092,9 +5090,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 9,
       "imageUrl": "asset:catalog/images/bird-imperial-shag.webp"
     },
@@ -5116,9 +5114,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 9,
       "imageUrl": "asset:catalog/images/bird-american-flamingo.webp"
     },
@@ -5141,9 +5139,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 9,
       "imageUrl": "asset:catalog/images/bird-white-headed-duck.webp"
     },
@@ -5167,9 +5165,9 @@
         "Rainy"
       ],
       "event": "Nido de las Aves",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 9,
       "imageUrl": "asset:catalog/images/bird-green-peafowl.webp"
     },
@@ -5191,9 +5189,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 9,
       "imageUrl": "asset:catalog/images/bird-paradise-tanager.webp"
     },
@@ -5216,9 +5214,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 10,
       "imageUrl": "asset:catalog/images/bird-eagle-owl.webp"
     },
@@ -5240,9 +5238,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 10,
       "imageUrl": "asset:catalog/images/bird-azores-bullfinch.webp"
     },
@@ -5267,9 +5265,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 10,
       "imageUrl": "asset:catalog/images/bird-amur-falcon.webp"
     },
@@ -5291,9 +5289,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 10,
       "imageUrl": "asset:catalog/images/bird-verditer-flycatcher.webp"
     },
@@ -5315,9 +5313,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 11,
       "imageUrl": "asset:catalog/images/bird-baikal-teal.webp"
     },
@@ -5339,9 +5337,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 11,
       "imageUrl": "asset:catalog/images/bird-inca-tern.webp"
     },
@@ -5365,9 +5363,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 11,
       "imageUrl": "asset:catalog/images/bird-violet-backed-starling.webp"
     },
@@ -5389,9 +5387,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 11,
       "imageUrl": "asset:catalog/images/bird-blue-headed-quail-dove.webp"
     },
@@ -5415,9 +5413,9 @@
         "Rainy"
       ],
       "event": "Nido de las Aves",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 11,
       "imageUrl": "asset:catalog/images/bird-white-peafowl.webp"
     },
@@ -5439,9 +5437,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 12,
       "imageUrl": "asset:catalog/images/bird-snowy-owl.webp"
     },
@@ -5463,9 +5461,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 12,
       "imageUrl": "asset:catalog/images/bird-red-browed-finch.webp"
     },
@@ -5487,9 +5485,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 12,
       "imageUrl": "asset:catalog/images/bird-atlantic-puffin.webp"
     },
@@ -5512,9 +5510,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 12,
       "imageUrl": "asset:catalog/images/bird-blue-footed-booby.webp"
     },
@@ -5537,9 +5535,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 13,
       "imageUrl": "asset:catalog/images/bird-whooper-swan.webp"
     },
@@ -5562,9 +5560,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 13,
       "imageUrl": "asset:catalog/images/bird-black-swan.webp"
     },
@@ -5588,9 +5586,9 @@
         "Rainy"
       ],
       "event": "Nido de las Aves",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 13,
       "imageUrl": "asset:catalog/images/bird-black-peafowl.webp"
     },
@@ -5613,9 +5611,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 14,
       "imageUrl": "asset:catalog/images/bird-black-stork.webp"
     },
@@ -5637,9 +5635,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 14,
       "imageUrl": "asset:catalog/images/bird-spectacled-owl.webp"
     },
@@ -5663,9 +5661,9 @@
         "Rainy"
       ],
       "event": "Búsqueda de ballenas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-wandering-albatross.webp"
     },
@@ -5689,9 +5687,9 @@
         "Rainy"
       ],
       "event": "Búsqueda de ballenas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-grey-mantled-albatross.webp"
     },
@@ -5715,9 +5713,9 @@
         "Rainy"
       ],
       "event": "Búsqueda de ballenas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-white-spoonbill.webp"
     },
@@ -5741,9 +5739,9 @@
         "Rainy"
       ],
       "event": "Búsqueda de ballenas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-roseate-spoonbill.webp"
     },
@@ -5767,9 +5765,9 @@
         "Rainy"
       ],
       "event": "Búsqueda de ballenas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-white-winged-tern.webp"
     },
@@ -5795,9 +5793,9 @@
         "Rainy"
       ],
       "event": "Búsqueda de ballenas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-pomarine-skua.webp"
     },
@@ -5821,9 +5819,9 @@
         "Rainy"
       ],
       "event": "Eco Ancestral",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-blue-hoopoe.webp"
     },
@@ -5847,9 +5845,9 @@
         "Rainy"
       ],
       "event": "Eco Ancestral",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-colorful-hoopoe.webp"
     },
@@ -5873,9 +5871,9 @@
         "Rainy"
       ],
       "event": "Eco Ancestral",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-orange-hoopoe.webp"
     },
@@ -5899,9 +5897,9 @@
         "Rainy"
       ],
       "event": "Eco Ancestral",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-red-hoopoe.webp"
     },
@@ -5925,9 +5923,9 @@
         "Rainy"
       ],
       "event": "Eco Ancestral",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-green-hoopoe.webp"
     },
@@ -5951,9 +5949,9 @@
         "Rainy"
       ],
       "event": "Mercado de ensamblaje",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-blue-brick-sparrow.webp"
     },
@@ -5977,9 +5975,9 @@
         "Rainy"
       ],
       "event": "Mercado de ensamblaje",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-purple-brick-sparrow.webp"
     },
@@ -6003,9 +6001,9 @@
         "Rainy"
       ],
       "event": "Mercado de ensamblaje",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-colorful-brick-sparrow.webp"
     },
@@ -6029,9 +6027,9 @@
         "Rainy"
       ],
       "event": "Mercado de ensamblaje",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-pink-brick-sparrow.webp"
     },
@@ -6055,9 +6053,9 @@
         "Rainy"
       ],
       "event": "Mercado de ensamblaje",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-green-brick-sparrow.webp"
     },
@@ -6082,9 +6080,9 @@
         "Rainy"
       ],
       "event": "Sombras Oníricas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-blue-suit-dove.webp"
     },
@@ -6109,9 +6107,9 @@
         "Rainy"
       ],
       "event": "Sombras Oníricas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-gray-suit-dove.webp"
     },
@@ -6135,9 +6133,9 @@
         "Rainy"
       ],
       "event": "Sombras Oníricas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-striped-suit-dove.webp"
     },
@@ -6162,9 +6160,9 @@
         "Rainy"
       ],
       "event": "Sombras Oníricas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-red-suit-dove.webp"
     },
@@ -6189,9 +6187,9 @@
         "Rainy"
       ],
       "event": "Sombras Oníricas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-green-suit-dove.webp"
     },
@@ -6216,9 +6214,9 @@
         "Rainy"
       ],
       "event": "Temporada de hielo y nieve",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-winter-mallard.webp"
     },
@@ -6243,9 +6241,9 @@
         "Rainy"
       ],
       "event": "Temporada de hielo y nieve",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-winter-greater-flamingo.webp"
     },
@@ -6269,9 +6267,9 @@
         "Rainy"
       ],
       "event": "Temporada de hielo y nieve",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-winter-mandarin-duck.webp"
     },
@@ -6296,9 +6294,9 @@
         "Rainy"
       ],
       "event": "Temporada de hielo y nieve",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-winter-smew.webp"
     },
@@ -6323,9 +6321,9 @@
         "Rainy"
       ],
       "event": "Temporada de hielo y nieve",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/aves/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/bird-winter-eurasian-wigeon.webp"
     },
@@ -6349,9 +6347,9 @@
         "Rainy"
       ],
       "event": "Encuentros misteriosos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-pumpkin-dung-beetle.webp"
     },
@@ -6375,9 +6373,9 @@
         "Rainy"
       ],
       "event": "Encuentros misteriosos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-strawberry-dung-beetle.webp"
     },
@@ -6401,9 +6399,9 @@
         "Rainy"
       ],
       "event": "Encuentros misteriosos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-mandarin-dung-beetle.webp"
     },
@@ -6427,9 +6425,9 @@
         "Rainy"
       ],
       "event": "Encuentros misteriosos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-shiitake-dung-beetle.webp"
     },
@@ -6453,9 +6451,9 @@
         "Rainy"
       ],
       "event": "Encuentros misteriosos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-truffle-dung-beetle.webp"
     },
@@ -6480,9 +6478,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-cabbage-white.webp"
     },
@@ -6507,9 +6505,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-large-red-damselfly.webp"
     },
@@ -6533,9 +6531,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-european-firebug.webp"
     },
@@ -6559,9 +6557,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-asparagus-beetle.webp"
     },
@@ -6585,9 +6583,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-gold-grasshopper.webp"
     },
@@ -6611,9 +6609,9 @@
         "Rainy"
       ],
       "event": "Atraer Bichos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-apollo.webp"
     },
@@ -6637,9 +6635,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-orange-tip.webp"
     },
@@ -6663,9 +6661,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-common-brimstone.webp"
     },
@@ -6691,9 +6689,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-old-world-swallowtail.webp"
     },
@@ -6717,9 +6715,9 @@
         "Rainy"
       ],
       "event": "Atraer Bichos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-postman-butterfly.webp"
     },
@@ -6743,9 +6741,9 @@
         "Rainy"
       ],
       "event": "Atraer Bichos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-sulkowskys-morpho.webp"
     },
@@ -6769,9 +6767,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "imageUrl": "asset:catalog/images/insect-bumblebee.webp"
     },
@@ -6798,9 +6796,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "imageUrl": "asset:catalog/images/insect-green-tiger-beetle.webp"
     },
@@ -6825,9 +6823,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "imageUrl": "asset:catalog/images/insect-wasp-beetle.webp"
     },
@@ -6850,9 +6848,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "imageUrl": "asset:catalog/images/insect-amethyst-flower-beetle.webp"
     },
@@ -6877,9 +6875,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "imageUrl": "asset:catalog/images/insect-siberian-grasshopper.webp"
     },
@@ -6902,9 +6900,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "imageUrl": "asset:catalog/images/insect-four-spotted-skimmer.webp"
     },
@@ -6931,9 +6929,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "imageUrl": "asset:catalog/images/insect-common-blue-butterfly.webp"
     },
@@ -6956,9 +6954,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 2,
       "imageUrl": "asset:catalog/images/insect-seven-spotted-ladybug.webp"
     },
@@ -6981,9 +6979,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "imageUrl": "asset:catalog/images/insect-waroona-cuckoo-bee.webp"
     },
@@ -7010,9 +7008,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "imageUrl": "asset:catalog/images/insect-fire-colored-beetle.webp"
     },
@@ -7036,9 +7034,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "imageUrl": "asset:catalog/images/insect-ant.webp"
     },
@@ -7061,9 +7059,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "imageUrl": "asset:catalog/images/insect-rajah-brookes-birdwing.webp"
     },
@@ -7085,9 +7083,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "imageUrl": "asset:catalog/images/insect-purple-emperor.webp"
     },
@@ -7109,9 +7107,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "imageUrl": "asset:catalog/images/insect-mini-moon-moth.webp"
     },
@@ -7135,9 +7133,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "imageUrl": "asset:catalog/images/insect-katydid.webp"
     },
@@ -7161,9 +7159,9 @@
         "Rainy"
       ],
       "event": "Atraer Bichos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 3,
       "imageUrl": "asset:catalog/images/insect-pink-katydid.webp"
     },
@@ -7186,9 +7184,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "imageUrl": "asset:catalog/images/insect-cicada.webp"
     },
@@ -7210,9 +7208,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "imageUrl": "asset:catalog/images/insect-large-banded-grasshopper.webp"
     },
@@ -7235,9 +7233,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "imageUrl": "asset:catalog/images/insect-common-whitetail.webp"
     },
@@ -7259,9 +7257,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "imageUrl": "asset:catalog/images/insect-mediterranean-mantis.webp"
     },
@@ -7283,9 +7281,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "imageUrl": "asset:catalog/images/insect-beautiful-leopard.webp"
     },
@@ -7308,9 +7306,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 4,
       "imageUrl": "asset:catalog/images/insect-four-spotted-ladybug.webp"
     },
@@ -7333,9 +7331,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 5,
       "imageUrl": "asset:catalog/images/insect-splay-footed-carpenter.webp"
     },
@@ -7357,9 +7355,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 5,
       "imageUrl": "asset:catalog/images/insect-alpine-longhorn-beetle.webp"
     },
@@ -7382,9 +7380,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 5,
       "imageUrl": "asset:catalog/images/insect-giant-asian-mantis.webp"
     },
@@ -7406,9 +7404,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 5,
       "imageUrl": "asset:catalog/images/insect-mourning-cloak.webp"
     },
@@ -7431,9 +7429,9 @@
         "Sunny"
       ],
       "event": "Atraer Bichos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 5,
       "imageUrl": "asset:catalog/images/insect-white-witch.webp"
     },
@@ -7457,9 +7455,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 5,
       "imageUrl": "asset:catalog/images/insect-peacock-butterfly.webp"
     },
@@ -7482,9 +7480,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 5,
       "imageUrl": "asset:catalog/images/insect-asian-lady-beetle.webp"
     },
@@ -7507,9 +7505,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 6,
       "imageUrl": "asset:catalog/images/insect-beautiful-demoiselle.webp"
     },
@@ -7531,9 +7529,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 6,
       "imageUrl": "asset:catalog/images/insect-blue-shieldbug.webp"
     },
@@ -7555,9 +7553,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 6,
       "imageUrl": "asset:catalog/images/insect-silver-jewel-scarab.webp"
     },
@@ -7579,9 +7577,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 6,
       "imageUrl": "asset:catalog/images/insect-stag-beetle.webp"
     },
@@ -7603,9 +7601,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 6,
       "imageUrl": "asset:catalog/images/insect-green-birdwing.webp"
     },
@@ -7626,9 +7624,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 7,
       "imageUrl": "asset:catalog/images/insect-golden-jewel-scarab.webp"
     },
@@ -7649,9 +7647,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 7,
       "imageUrl": "asset:catalog/images/insect-elegant-flower-beetle.webp"
     },
@@ -7674,9 +7672,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 7,
       "imageUrl": "asset:catalog/images/insect-minotaur-beetle.webp"
     },
@@ -7697,9 +7695,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 7,
       "imageUrl": "asset:catalog/images/insect-crimson-marsh-glider.webp"
     },
@@ -7721,9 +7719,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 7,
       "imageUrl": "asset:catalog/images/insect-blue-morpho.webp"
     },
@@ -7746,9 +7744,9 @@
         "Rainy"
       ],
       "event": "Atraer Bichos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 7,
       "imageUrl": "asset:catalog/images/insect-chestnut-tiger.webp"
     },
@@ -7769,9 +7767,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 8,
       "imageUrl": "asset:catalog/images/insect-picasso-bug.webp"
     },
@@ -7792,9 +7790,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 8,
       "imageUrl": "asset:catalog/images/insect-horned-beetle.webp"
     },
@@ -7815,9 +7813,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 8,
       "imageUrl": "asset:catalog/images/insect-spanish-moon-moth.webp"
     },
@@ -7838,9 +7836,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 8,
       "imageUrl": "asset:catalog/images/insect-comet-moth.webp"
     },
@@ -7860,9 +7858,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 9,
       "imageUrl": "asset:catalog/images/insect-cerulean-carpenter.webp"
     },
@@ -7887,9 +7885,9 @@
         "Rainy"
       ],
       "event": "Atraer Bichos",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 9,
       "imageUrl": "asset:catalog/images/insect-rainbow-stag-beetle.webp"
     },
@@ -7910,9 +7908,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 9,
       "imageUrl": "asset:catalog/images/insect-golden-stag-beetle.webp"
     },
@@ -7933,9 +7931,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 9,
       "imageUrl": "asset:catalog/images/insect-conehead-mantis.webp"
     },
@@ -7956,9 +7954,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 9,
       "imageUrl": "asset:catalog/images/insect-mother-of-pearl.webp"
     },
@@ -7980,9 +7978,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 10,
       "imageUrl": "asset:catalog/images/insect-hercules-beetle.webp"
     },
@@ -8002,9 +8000,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 10,
       "imageUrl": "asset:catalog/images/insect-sunset-morpho.webp"
     },
@@ -8024,9 +8022,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 10,
       "imageUrl": "asset:catalog/images/insect-morpho-helena.webp"
     },
@@ -8047,9 +8045,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 10,
       "imageUrl": "asset:catalog/images/insect-bagworm-moth.webp"
     },
@@ -8070,9 +8068,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 11,
       "imageUrl": "asset:catalog/images/insect-atlas-beetle.webp"
     },
@@ -8093,9 +8091,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 11,
       "imageUrl": "asset:catalog/images/insect-orchid-mantis.webp"
     },
@@ -8116,9 +8114,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 11,
       "imageUrl": "asset:catalog/images/insect-queen-alexandras-birdwing.webp"
     },
@@ -8138,9 +8136,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 11,
       "imageUrl": "asset:catalog/images/insect-greater-asian-lady-beetle.webp"
     },
@@ -8160,9 +8158,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 12,
       "imageUrl": "asset:catalog/images/insect-goliath-beetle.webp"
     },
@@ -8183,9 +8181,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 12,
       "imageUrl": "asset:catalog/images/insect-red-milkweed-locust.webp"
     },
@@ -8205,9 +8203,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 12,
       "imageUrl": "asset:catalog/images/insect-flamer-skimmer.webp"
     },
@@ -8229,9 +8227,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 12,
       "imageUrl": "asset:catalog/images/insect-purple-spotted-swallowtail.webp"
     },
@@ -8251,9 +8249,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 13,
       "imageUrl": "asset:catalog/images/insect-scarce-morpho.webp"
     },
@@ -8274,9 +8272,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 13,
       "imageUrl": "asset:catalog/images/insect-green-metalwing.webp"
     },
@@ -8299,9 +8297,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 14,
       "imageUrl": "asset:catalog/images/insect-green-snail.webp"
     },
@@ -8321,9 +8319,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 14,
       "imageUrl": "asset:catalog/images/insect-glasswing-butterfly.webp"
     },
@@ -8347,9 +8345,9 @@
         "Rainy"
       ],
       "event": "Búsqueda de ballenas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-white-banded-erebus-moth.webp"
     },
@@ -8373,9 +8371,9 @@
         "Rainy"
       ],
       "event": "Búsqueda de ballenas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-blue-milkweed-beetle.webp"
     },
@@ -8399,9 +8397,9 @@
         "Rainy"
       ],
       "event": "Búsqueda de ballenas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-agrias-butterfly.webp"
     },
@@ -8425,9 +8423,9 @@
         "Rainy"
       ],
       "event": "Búsqueda de ballenas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-morpho-luna.webp"
     },
@@ -8451,9 +8449,9 @@
         "Rainy"
       ],
       "event": "Búsqueda de ballenas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-green-flower-chafer.webp"
     },
@@ -8477,9 +8475,9 @@
         "Rainy"
       ],
       "event": "Eco Ancestral",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-brown-rhinoceros-beetle.webp"
     },
@@ -8503,9 +8501,9 @@
         "Rainy"
       ],
       "event": "Eco Ancestral",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-iridescent-rhinoceros-beetle.webp"
     },
@@ -8529,9 +8527,9 @@
         "Rainy"
       ],
       "event": "Eco Ancestral",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-grey-horned-firefly.webp"
     },
@@ -8555,9 +8553,9 @@
         "Rainy"
       ],
       "event": "Eco Ancestral",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-purple-horned-firefly.webp"
     },
@@ -8581,9 +8579,9 @@
         "Rainy"
       ],
       "event": "Eco Ancestral",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-pink-horned-firefly.webp"
     },
@@ -8607,9 +8605,9 @@
         "Rainy"
       ],
       "event": "Mercado de ensamblaje",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-yellow-brick-large-red-damselfly.webp"
     },
@@ -8633,9 +8631,9 @@
         "Rainy"
       ],
       "event": "Mercado de ensamblaje",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-blue-brick-large-red-damselfly.webp"
     },
@@ -8659,9 +8657,9 @@
         "Rainy"
       ],
       "event": "Mercado de ensamblaje",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-purple-brick-large-red-damselfly.webp"
     },
@@ -8685,9 +8683,9 @@
         "Rainy"
       ],
       "event": "Mercado de ensamblaje",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-colorful-brick-large-red-damselfly.webp"
     },
@@ -8711,9 +8709,9 @@
         "Rainy"
       ],
       "event": "Mercado de ensamblaje",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-pink-brick-large-red-damselfly.webp"
     },
@@ -8737,9 +8735,9 @@
         "Rainy"
       ],
       "event": "Sombras Oníricas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-golden-script-supervisor-bumblebee.webp"
     },
@@ -8763,9 +8761,9 @@
         "Rainy"
       ],
       "event": "Sombras Oníricas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-purple-script-supervisor-bumblebee.webp"
     },
@@ -8789,9 +8787,9 @@
         "Rainy"
       ],
       "event": "Sombras Oníricas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-red-script-supervisor-bumblebee.webp"
     },
@@ -8815,9 +8813,9 @@
         "Rainy"
       ],
       "event": "Sombras Oníricas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-pink-script-supervisor-bumblebee.webp"
     },
@@ -8841,9 +8839,9 @@
         "Rainy"
       ],
       "event": "Sombras Oníricas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-green-script-supervisor-bumblebee.webp"
     },
@@ -8868,9 +8866,9 @@
         "Rainy"
       ],
       "event": "Temporada de hielo y nieve",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-frostspore-queen-alexandras-birdwing.webp"
     },
@@ -8894,9 +8892,9 @@
         "Rainy"
       ],
       "event": "Temporada de hielo y nieve",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-frostspore-postman-butterfly.webp"
     },
@@ -8921,9 +8919,9 @@
         "Rainy"
       ],
       "event": "Temporada de hielo y nieve",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-frostspore-purple-spotted-swallowtail.webp"
     },
@@ -8949,9 +8947,9 @@
         "Rainy"
       ],
       "event": "Temporada de hielo y nieve",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-frostspore-mother-of-pearl.webp"
     },
@@ -8978,9 +8976,9 @@
         "Rainy"
       ],
       "event": "Temporada de hielo y nieve",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/insectos/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "level": 1,
       "imageUrl": "asset:catalog/images/insect-frostspore-sulkowskys-morpho.webp"
     },
@@ -8997,9 +8995,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/animales-salvajes/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "imageUrl": "asset:catalog/images/wildlife-alpaca.webp"
     },
     {
@@ -9017,9 +9015,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/animales-salvajes/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "imageUrl": "asset:catalog/images/wildlife-capybara.webp"
     },
     {
@@ -9035,9 +9033,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/animales-salvajes/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "imageUrl": "asset:catalog/images/wildlife-sika-deer.webp"
     },
     {
@@ -9053,9 +9051,9 @@
         "Sunny"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/animales-salvajes/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "imageUrl": "asset:catalog/images/wildlife-bunny.webp"
     },
     {
@@ -9071,9 +9069,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/animales-salvajes/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "imageUrl": "asset:catalog/images/wildlife-ferret.webp"
     },
     {
@@ -9089,9 +9087,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/animales-salvajes/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "imageUrl": "asset:catalog/images/wildlife-sea-otter.webp"
     },
     {
@@ -9107,9 +9105,9 @@
         "Rainy"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/animales-salvajes/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "imageUrl": "asset:catalog/images/wildlife-panda.webp"
     },
     {
@@ -9127,9 +9125,9 @@
         "Rainbow"
       ],
       "event": null,
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/animales-salvajes/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "imageUrl": "asset:catalog/images/wildlife-fox.webp"
     },
     {
@@ -9145,9 +9143,9 @@
         "Sunny"
       ],
       "event": "Búsqueda de ballenas",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/animales-salvajes/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "imageUrl": "asset:catalog/images/wildlife-dolphin.webp"
     },
     {
@@ -9163,9 +9161,9 @@
         "Sunny"
       ],
       "event": "Maltese",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/animales-salvajes/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "imageUrl": "asset:catalog/images/wildlife-maltese.webp"
     },
     {
@@ -9181,9 +9179,9 @@
         "Rainy"
       ],
       "event": "Temporada de hielo y nieve",
-      "source": "heartodex",
-      "sourceUrl": "https://www.heartodex.com/animales-salvajes/",
-      "extractedOn": "2026-11-07",
+      "source": "",
+      "sourceUrl": "",
+      "extractedOn": "",
       "imageUrl": "asset:catalog/images/wildlife-penguin.webp"
     }
   ]

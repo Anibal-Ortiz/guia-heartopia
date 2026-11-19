@@ -20,7 +20,7 @@ class ResourceCalendarTest {
     }
 
     @Test
-    fun decemberIsMissingOnHeartodex() {
+    fun decemberHasNoDailyData() {
         val day = ResourceCalendar.on(LocalDate.of(2026, 12, 1))
         assertEquals(DayCertainty.SIN_DATOS, day.certainty)
         assertNull(day.liuliu)

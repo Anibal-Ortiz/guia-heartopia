@@ -208,7 +208,7 @@ fun SettingsScreen(
             Text("Créditos y fuentes", style = MaterialTheme.typography.titleMedium)
             Text(VerifiedCatalog.SPOT_SOURCES, style = MaterialTheme.typography.bodyMedium)
             Text(
-                "Peces, aves, insectos y fauna salen de las páginas índice en español de heartodex, leídas el 7 de noviembre de 2026. El índice no trae precio ni cebo. Nivel y sombra se muestran solo cuando la tarjeta los incluye. El texto breve de cada ficha está escrito para esta app.",
+                "Peces, aves, insectos y fauna: nombres, lugares, horarios y niveles recopilados para esta guía. El índice no trae precio ni cebo. Nivel y sombra se muestran solo cuando la ficha los incluye. El texto breve de cada ficha está escrito para esta app.",
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(
@@ -217,7 +217,7 @@ fun SettingsScreen(
             )
             PixelButton(text = "Créditos de las fotos", onClick = onPhotoCredits, outlined = true)
             Text(
-                "Liuliu y la fluorita de noviembre 2026 salen de heartodex (ubicación diaria). Diciembre no está día a día en esa página: se muestra Sin datos.",
+                "Liuliu y la fluorita de noviembre de 2026 siguen el ciclo diario publicado por Tidebell. Diciembre no está día a día en la fuente: se muestra Sin datos.",
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(

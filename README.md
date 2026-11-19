@@ -15,11 +15,11 @@ Versión **1.1.0** (`versionCode` 43, `versionName` 1.1.0).
 
 ### Histórico resumido
 
-- 0.5.1: clima de noviembre y diciembre de 2026 en cuatro tramos, cruzado entre Tidebell y heartodex; conversión con `java.time` y horario de verano.
+- 0.5.1: clima de noviembre y diciembre de 2026 en cuatro tramos, cruzado entre fuentes de la comunidad; conversión con `java.time` y horario de verano.
 - 0.5.0: calendario de noviembre y diciembre estimado con ciclo de 50 días; iconos dibujados por la app.
-- 0.4.1: nombres, lugares, climas y horarios del catálogo desde páginas índice en español de heartodex; el nombre en inglés solo sirve para buscar.
+- 0.4.1: nombres, lugares, climas y horarios del catálogo recopilados para esta guía; el nombre en inglés solo sirve para buscar.
 - 0.4.0: tramos del juego en UTC fijo, mostrados en la zona elegida.
-- 0.3.0: importación de catálogo desde heartodex (extracción 2026-11-06), sin scraping de fichas individuales.
+- 0.3.0: catálogo inicial de criaturas (extracción 2026-11-06), sin scraping de fichas individuales.
 - 0.2.0: interfaz con Plus Jakarta Sans (OFL); se dejó el estilo pixelado para la herramienta de cuadrícula.
 - 0.1.0: primera versión, con bienvenida, rutina, guía, clima y referencia de pixel art.
 
@@ -139,7 +139,7 @@ Si no hay secretos de firma, `bundleRelease`/`assembleRelease` **fallan**; solo 
 - Clima, servidor de origen, lugares y aparición de flurita y Liuliu.
 - Niveles oficiales de aficiones, si el juego los tiene.
 
-El país y la zona se eligen en la bienvenida y en Ajustes; el calendario usa esa misma selección y no pide permiso de ubicación. Las fuentes citadas en el histórico son heartodex y Tidebell; «flurita» y «Liuliu» no se corrigen porque no hay fuente oficial que fije su nombre en español, lugar u horario.
+El país y la zona se eligen en la bienvenida y en Ajustes; el calendario usa esa misma selección y no pide permiso de ubicación. Las fuentes citadas en el histórico son Tidebell y otras guías de la comunidad; «flurita» y «Liuliu» no se corrigen porque no hay fuente oficial que fije su nombre en español, lugar u horario.
 
 ## Estructura
 

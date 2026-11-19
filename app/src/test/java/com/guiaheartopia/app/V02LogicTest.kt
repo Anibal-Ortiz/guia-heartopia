@@ -80,17 +80,17 @@ class V02LogicTest {
     }
 
     @Test
-    fun heartodexAssetHasTheFourCategories() {
+    fun creatureAssetHasTheFourCategories() {
         val file = listOf(
-            File("src/main/assets/catalog/heartodex.json"),
-            File("app/src/main/assets/catalog/heartodex.json"),
+            File("src/main/assets/catalog/creatures.json"),
+            File("app/src/main/assets/catalog/creatures.json"),
         ).first { it.exists() }
         val text = file.readText()
         assertTrue(text.contains("\"category\": \"Peces\""))
         assertTrue(text.contains("\"category\": \"Pájaros\""))
         assertTrue(text.contains("\"category\": \"Insectos\""))
         assertTrue(text.contains("\"category\": \"Fauna\""))
-        assertTrue(text.contains("heartodex"))
+        assertTrue(text.contains("\"source\": \"\""))
     }
 
     @Test

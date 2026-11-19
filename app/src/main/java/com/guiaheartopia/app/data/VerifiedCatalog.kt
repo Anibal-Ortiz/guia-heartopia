@@ -11,10 +11,10 @@ import java.time.LocalDate
  * El nombre en español de cada comida es una glosa, no un texto oficial del cliente.
  * Los comederos no coinciden entre Polygon, Dexerto, heartopiawiki.com y heartopiawiki.org.
  *
- * flurita / Liuliu en noviembre 2026: Tidebell y heartodex coinciden día a día.
- * Tidebell llama al recurso «Roaming Oak» y «Fluorite Mine». heartodex habla de
- * «Liuliu Oak» y «Flawless Fluorite». No hay ficha oficial en español que unifique
- * «Liuliu» con el roble, así que el lugar se muestra y el nombre se deja como en la petición.
+ * flurita / Liuliu en noviembre 2026: Tidebell publica el ciclo diario de 50 días.
+ * Tidebell llama al recurso «Roaming Oak» y «Fluorite Mine». No hay ficha oficial en
+ * español que unifique «Liuliu» con el roble, así que el lugar se muestra y el nombre
+ * se deja como en la petición.
  */
 object VerifiedCatalog {
     const val EXTRACTED = "2026-11-06"
@@ -24,8 +24,8 @@ object VerifiedCatalog {
             "y heartopia.noobgo.com/animals. Consultados en noviembre 2026."
 
     const val SPOT_SOURCES =
-        "Liuliu y fluorita de noviembre 2026: heartodex.com/ubicacion-diaria, consulta del 9 de noviembre de 2026. " +
-            "Diciembre de 2026 no trae los días en esa página."
+        "Liuliu y fluorita de noviembre de 2026: Tidebell (tidebell.com/oak-and-fluorite), " +
+            "ciclo de 50 días consultado en noviembre de 2026. Diciembre se marca como estimado."
 
     val events: List<GameEvent> = emptyList()
 

@@ -54,11 +54,17 @@ def creatures_payload(raw: bytes) -> bytes:
     data = json.loads(raw)
     data.pop("imageNote", None)
     data.pop("imageBundledOn", None)
+    data.pop("source", None)
     data.pop("terms", None)
+    if "extractedOn" in data:
+        data["extractedOn"] = ""
     data["note"] = (
         "Fichas con datos de aparición. Ubicación, horario, clima y nivel van en los datos de cada ficha."
     )
     for entry in data.get("entries", []):
+        for key in ("source", "sourceUrl", "extractedOn"):
+            if key in entry:
+                entry[key] = ""
         description = str(entry.get("description") or "").strip()
         if not description or is_filler(description):
             entry.pop("description", None)
@@ -69,11 +75,8 @@ def creatures_payload(raw: bytes) -> bytes:
 
 def collect(source: Path, include_images: bool) -> list[tuple[str, bytes]]:
     creatures = source / "catalog" / "creatures.json"
-    heartodex = source / "catalog" / "heartodex.json"
     if creatures.is_file():
         raw_creatures = creatures.read_bytes()
-    elif heartodex.is_file():
-        raw_creatures = heartodex.read_bytes()
     else:
         raise SystemExit(f"No está el catálogo en {source / 'catalog'}")
 

@@ -516,7 +516,7 @@ private fun DexTab(
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val revision = com.guiaheartopia.app.ui.contentRevision()
-    val all = remember(revision) { com.guiaheartopia.app.data.HeartodexCatalog.load(context) }
+    val all = remember(revision) { com.guiaheartopia.app.data.CreatureCatalog.load(context) }
     val sky = remember(revision) { SkyCatalog.load(context) }
     val zone = DexSchedule.zoneOf(ui.profile.zoneId)
     val instant = rememberMinuteTick()
