@@ -199,8 +199,6 @@ fun SettingsScreen(
             ReminderBlock(profile.reminders, onReminders)
         }
         BackupBlock(onExport, onImport)
-        PixelButton("Política de privacidad", onClick = onPrivacy, outlined = true)
-        PixelButton("Términos", onClick = onTerms, outlined = true)
         com.guiaheartopia.app.ui.components.TwigDivider(1)
         PixelCard {
             Text("Créditos y fuentes", style = MaterialTheme.typography.titleMedium)
@@ -229,6 +227,20 @@ fun SettingsScreen(
                 "Las comidas de la fauna coinciden en tres guías y aquí están en español. La letra de la interfaz es Plus Jakarta Sans, licencia OFL.",
                 style = MaterialTheme.typography.bodyMedium,
             )
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                PixelButton(
+                    "Política de privacidad",
+                    onClick = onPrivacy,
+                    outlined = true,
+                    modifier = Modifier.weight(1f),
+                )
+                PixelButton(
+                    "Términos",
+                    onClick = onTerms,
+                    outlined = true,
+                    modifier = Modifier.weight(1f),
+                )
+            }
         }
         Text("Versión ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})", style = MaterialTheme.typography.bodySmall)
     }

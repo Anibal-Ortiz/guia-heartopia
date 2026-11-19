@@ -211,7 +211,7 @@ class MainActivity : ComponentActivity() {
                     if (event == Lifecycle.Event.ON_RESUME) {
                         vm.refreshDay()
                         // Buscar actualizaciones en cada apertura de la app (sin intervalo de 12 h).
-                        checkContentUpdates()
+                        checkContentUpdates(force = true)
                         ContentSignals.note(this@MainActivity)
                     }
                 }
