@@ -33,7 +33,7 @@ jobs:
         uses: android-actions/setup-android@v4
 
       - name: Instalar plataforma 37 y Build-Tools
-        run: sdkmanager --install "platforms;android-37" "build-tools;36.0.0" "build-tools;37.0.0"
+        run: sdkmanager --install "platforms;android-37.0" "build-tools;36.0.0" "build-tools;37.0.0"
 
       - name: Dar permisos de ejecución a Gradle
         run: chmod +x ./gradlew

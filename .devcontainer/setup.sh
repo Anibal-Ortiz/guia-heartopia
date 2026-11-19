@@ -26,7 +26,7 @@ fi
 yes | "$CMDLINE" --sdk_root="$SDK" --licenses >/dev/null 2>&1 || true
 "$CMDLINE" --sdk_root="$SDK" --install \
   "platform-tools" \
-  "platforms;android-37" \
+  "platforms;android-37.0" \
   "build-tools;36.0.0" \
   "build-tools;37.0.0"
 
