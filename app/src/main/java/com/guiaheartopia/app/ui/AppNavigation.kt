@@ -15,7 +15,7 @@ object AppNavigation {
 
     fun tabForRoute(route: String?): String? = when {
         route == null || route == "settings" || route.startsWith("settings/") ||
-            route == "map" || route == "photo-credits" -> null
+            route == "photo-credits" -> null
         route == HOME_ROUTE || route.startsWith("home") -> HOME_ROUTE
         route == "codigos" || route.startsWith("codigos/") -> "codigos"
         route == "calendar" || route.startsWith("calendar") || route == "weather" -> "calendar"
