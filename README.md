@@ -157,3 +157,4 @@ app/src/main/res/xml        reglas de copia de seguridad y FileProvider
 ```
 
 La persistencia es DataStore Preferences. El contenido remoto se guarda en el almacenamiento interno de la app.
+> Flujo probado desde OpenCode Mobile.
