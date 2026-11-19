@@ -43,3 +43,14 @@ jobs:
 
       - name: Lint
         run: ./gradlew :app:lintDebug --console=plain
+
+      - name: Compilar APK debug
+        run: ./gradlew :app:assembleDebug --console=plain
+
+      - name: Subir APK debug
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk-debug
+          path: app/build/outputs/apk/debug/*.apk
+          retention-days: 1
+          if-no-files-found: error

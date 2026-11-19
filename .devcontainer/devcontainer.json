@@ -1,0 +1,18 @@
+{
+  // Entorno para GitHub Codespaces: JDK 17 + Android SDK + OpenCode CLI.
+  // Todo se instala desde setup.sh para que sobreviva a un "Rebuild Container"
+  // (GitHub borra lo que esté fuera de /workspaces al reconstruir).
+  "name": "Guia Heartopia - Android + OpenCode",
+  "image": "mcr.microsoft.com/devcontainers/java:17",
+
+  "containerEnv": {
+    "ANDROID_HOME": "/home/vscode/android-sdk",
+    "ANDROID_SDK_ROOT": "/home/vscode/android-sdk",
+    "PATH": "/home/vscode/.opencode/bin:/home/vscode/android-sdk/cmdline-tools/latest/bin:/home/vscode/android-sdk/platform-tools:${containerEnv:PATH}"
+  },
+
+  "updateContentCommand": "bash ${containerWorkspaceFolder}/.devcontainer/setup.sh",
+  "postStartCommand": "bash ${containerWorkspaceFolder}/.devcontainer/setup.sh",
+
+  "remoteUser": "vscode"
+}
