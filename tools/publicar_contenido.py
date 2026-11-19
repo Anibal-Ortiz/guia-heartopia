@@ -73,10 +73,15 @@ def creatures_payload(raw: bytes) -> bytes:
     return (json.dumps(data, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
 
 
+def text_bytes(path: Path) -> bytes:
+    """LF siempre: en Windows git guarda LF aunque el checkout tenga CRLF."""
+    return path.read_bytes().replace(b"\r\n", b"\n")
+
+
 def collect(source: Path, include_images: bool) -> list[tuple[str, bytes]]:
     creatures = source / "catalog" / "creatures.json"
     if creatures.is_file():
-        raw_creatures = creatures.read_bytes()
+        raw_creatures = text_bytes(creatures)
     else:
         raise SystemExit(f"No está el catálogo en {source / 'catalog'}")
 
@@ -85,9 +90,20 @@ def collect(source: Path, include_images: bool) -> list[tuple[str, bytes]]:
         raise SystemExit(f"No hay clima en {source / 'calendar'}")
 
     files: list[tuple[str, bytes]] = [("catalog/creatures.json", creatures_payload(raw_creatures))]
-    files.extend((f"calendar/{item.name}", item.read_bytes()) for item in calendar)
+    files.extend((f"calendar/{item.name}", text_bytes(item)) for item in calendar)
     codes = source / "codes" / "codigos.json"
-    files.append(("codes/codigos.json", codes.read_bytes() if codes.is_file() else b"[]\n"))
+    files.append(("codes/codigos.json", text_bytes(codes) if codes.is_file() else b"[]\n"))
+    # El resto del paquete también debe viajar en el manifiesto.
+    for relative in (
+        "calendar/eventos.json",
+        "catalog/CREDITOS.md",
+        "huerto/siembras.json",
+        "huerto/flores.json",
+        "cocina/recetas.json",
+    ):
+        extra = source / relative
+        if extra.is_file():
+            files.append((relative, text_bytes(extra)))
     if include_images:
         images = sorted((source / "catalog" / "images").glob("*.webp"))
         if not images:
