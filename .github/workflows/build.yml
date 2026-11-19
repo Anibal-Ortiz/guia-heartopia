@@ -54,3 +54,66 @@ jobs:
           path: app/build/outputs/apk/debug/*.apk
           retention-days: 1
           if-no-files-found: error
+
+  # AAB firmado: se lanza a mano desde Actions > "Verificar" > Run workflow.
+  # Los secretos viven en GitHub, nunca en el repositorio.
+  bundle_release:
+    name: AAB firmado (release)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      UPLOAD_KEYSTORE_BASE64: ${{ secrets.UPLOAD_KEYSTORE_BASE64 }}
+      UPLOAD_STORE_PASSWORD: ${{ secrets.UPLOAD_STORE_PASSWORD }}
+      UPLOAD_KEY_ALIAS: ${{ secrets.UPLOAD_KEY_ALIAS }}
+      UPLOAD_KEY_PASSWORD: ${{ secrets.UPLOAD_KEY_PASSWORD }}
+    steps:
+      - name: Obtener el código
+        uses: actions/checkout@v7
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: Configurar Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Instalar plataforma 37 y Build-Tools
+        run: sdkmanager --install "platforms;android-37.0" "build-tools;36.0.0" "build-tools;37.0.0"
+
+      - name: Dar permisos de ejecución a Gradle
+        run: chmod +x ./gradlew
+
+      - name: Aviso si faltan secretos de firma
+        if: env.UPLOAD_KEYSTORE_BASE64 == ''
+        run: echo "::warning::No hay secrets de firma; no se generará el AAB"
+
+      - name: Preparar keystore de upload
+        if: env.UPLOAD_KEYSTORE_BASE64 != ''
+        run: |
+          mkdir -p "$HOME/.wikifan-heartopia"
+          printf '%s' "$UPLOAD_KEYSTORE_BASE64" | base64 --decode > "$HOME/.wikifan-heartopia/upload-key.jks"
+          chmod 600 "$HOME/.wikifan-heartopia/upload-key.jks"
+          cat > "$HOME/.wikifan-heartopia/upload.properties" <<EOF
+          storeFile=upload-key.jks
+          storePassword=$UPLOAD_STORE_PASSWORD
+          keyAlias=$UPLOAD_KEY_ALIAS
+          keyPassword=$UPLOAD_KEY_PASSWORD
+          EOF
+          chmod 600 "$HOME/.wikifan-heartopia/upload.properties"
+
+      - name: Compilar AAB firmado
+        if: env.UPLOAD_KEYSTORE_BASE64 != ''
+        run: ./gradlew :app:bundleRelease --console=plain
+
+      - name: Subir AAB firmado
+        if: env.UPLOAD_KEYSTORE_BASE64 != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: aab-release
+          path: app/build/outputs/bundle/release/*.aab
+          retention-days: 7
+          if-no-files-found: error
