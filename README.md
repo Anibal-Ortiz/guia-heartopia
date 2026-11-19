@@ -2,7 +2,7 @@
 
 Guía companion **no oficial** para Heartopia. No está afiliada a los creadores ni a los editores del juego: no controla la partida, no pulsa la pantalla y no promete que los datos de terceros sean oficiales.
 
-Versión **1.1.0** (`versionCode` 43, `versionName` 1.1.0).
+Versión **1.1.1** (`versionCode` 44, `versionName` 1.1.1).
 
 ## Qué hay en esta versión
 
@@ -42,7 +42,7 @@ cp local.properties.example local.properties
 ./gradlew :app:assembleDebug --console=plain
 ```
 
-El APK queda en `app/build/outputs/apk/debug/` (con el nombre derivado de `appVersion`, por ejemplo `Guia-Heartopia-1.1.0-debug.apk`).
+El APK queda en `app/build/outputs/apk/debug/` (con el nombre derivado de `appVersion`, por ejemplo `Guia-Heartopia-1.1.1-debug.apk`).
 
 ```bash
 adb install -r app/build/outputs/apk/debug/<apk-generado>.apk
