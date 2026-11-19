@@ -85,9 +85,6 @@ def collect(source: Path, include_images: bool) -> list[tuple[str, bytes]]:
         raise SystemExit(f"No hay clima en {source / 'calendar'}")
 
     files: list[tuple[str, bytes]] = [("catalog/creatures.json", creatures_payload(raw_creatures))]
-    creditos = source / "catalog" / "creditos.json"
-    if creditos.is_file():
-        files.append(("catalog/creditos.json", creditos.read_bytes()))
     files.extend((f"calendar/{item.name}", item.read_bytes()) for item in calendar)
     codes = source / "codes" / "codigos.json"
     files.append(("codes/codigos.json", codes.read_bytes() if codes.is_file() else b"[]\n"))

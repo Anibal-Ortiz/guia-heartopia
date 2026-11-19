@@ -6,6 +6,7 @@ package com.guiaheartopia.app.domain
  */
 object CreatureImagePaths {
     fun candidates(imageUrl: String?, id: String = ""): List<String> {
+        if (!ContentPaths.IMAGES_ENABLED) return emptyList()
         val primary = normalize(imageUrl)
         val extra = mutableListOf<String>()
         if (id.isNotBlank()) {

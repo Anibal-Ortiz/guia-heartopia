@@ -109,9 +109,7 @@ import com.guiaheartopia.app.ui.components.CreatureZoomDialog
 import com.guiaheartopia.app.ui.components.EmptyStateCard
 import com.guiaheartopia.app.ui.components.rememberCreatureModel
 import com.guiaheartopia.app.ui.components.rememberMinuteTick
-import com.guiaheartopia.app.data.PhotoCredits
 import com.guiaheartopia.app.ui.components.CreatureImage
-import com.guiaheartopia.app.ui.settings.PhotoCreditCaption
 import com.guiaheartopia.app.ui.components.LabelValue
 import com.guiaheartopia.app.ui.components.SectionBanner
 import com.guiaheartopia.app.ui.components.NowBadge
@@ -1034,9 +1032,6 @@ fun DexDetailScreen(
         sky,
         zone,
     )
-    val photoCredit = remember(revision, entry.id) {
-        PhotoCredits.byId(detailContext)[entry.id]
-    }
     val imageModel = rememberCreatureModel(entry.imageUrl, entry.id)
     var zoom by remember { mutableStateOf(false) }
 
@@ -1076,12 +1071,6 @@ fun DexDetailScreen(
                         shapeRadius = 20.dp,
                         onClick = { zoom = true },
                     )
-                    photoCredit?.let { credit ->
-                        PhotoCreditCaption(
-                            credit,
-                            modifier = Modifier.padding(top = 4.dp).width(92.dp),
-                        )
-                    }
                 }
                 Column(Modifier.weight(1f)) {
                     Text(entry.name, style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold))

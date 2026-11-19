@@ -144,7 +144,7 @@ class ContentSyncTest {
         val merged = mergeCreatures(parseCreatures(base), parseCreatures(library.overlayBytes("catalog/creatures.json")!!))
         assertEquals(listOf("trucha", "atun"), merged.map { it.id })
         assertEquals("Atún nuevo", merged.first { it.id == "atun" }.name)
-        assertTrue(library.overlayBytes("catalog/creditos.json") == null)
+        assertTrue(library.overlayBytes("codes/codigos.json") == null)
     }
 
     @Test
@@ -177,7 +177,7 @@ class ContentSyncTest {
         val parsed = ContentPackage.parseManifest(File(root, "content/manifest.json").readText())
         assertNotNull(parsed)
         assertTrue(parsed!!.contentVersion >= 1)
-        listOf("catalog/creatures.json", "catalog/creditos.json", "calendar/clima-2026.json", "codes/codigos.json").forEach { path ->
+        listOf("catalog/creatures.json", "calendar/clima-2026.json", "codes/codigos.json").forEach { path ->
             val entry = parsed.files.first { it.path == path }
             val bytes = File(root, path).readBytes()
             assertEquals(bytes.size.toLong(), entry.size)

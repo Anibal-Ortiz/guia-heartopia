@@ -109,8 +109,8 @@ import com.guiaheartopia.app.ui.guide.AnimalDetailScreen
 import com.guiaheartopia.app.ui.guide.GuideScreen
 import com.guiaheartopia.app.ui.hobbies.HobbiesScreen
 import com.guiaheartopia.app.ui.home.HomeScreen
-import com.guiaheartopia.app.ui.legal.LegalScreen
 import com.guiaheartopia.app.ui.legal.openPrivacyPolicy
+import com.guiaheartopia.app.ui.legal.openTerms
 import com.guiaheartopia.app.ui.AppNavigation
 import com.guiaheartopia.app.ui.NavigationPolicy
 import com.guiaheartopia.app.ui.settings.SettingsScreen
@@ -240,13 +240,9 @@ class MainActivity : ComponentActivity() {
                 val paperBrush = remember(paper) {
                     ShaderBrush(ImageShader(paper, TileMode.Repeated, TileMode.Repeated))
                 }
-                var legal by remember { mutableStateOf<String?>(null) }
-                // La política se abre en la web (es la registrada en Play/AdMob y se
-                // puede actualizar sin publicar un APK). Si no hay navegador, se
-                // muestra la copia incluida en la app.
-                val openPrivacy: () -> Unit = {
-                    if (!openPrivacyPolicy(this@MainActivity)) legal = "privacidad"
-                }
+                // Política y términos se abren en la web: se actualizan sin publicar un APK.
+                val openPrivacy: () -> Unit = { openPrivacyPolicy(this@MainActivity) }
+                val openTerms: () -> Unit = { openTerms(this@MainActivity) }
                 Box(
                     Modifier
                         .fillMaxSize()
@@ -255,19 +251,12 @@ class MainActivity : ComponentActivity() {
                 ) {
                 when {
                     !ui.ready -> Box(Modifier.fillMaxSize())
-                    legal != null -> Box(Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
-                        LegalScreen(
-                            asset = if (legal == "terminos") "legal/terminos.md" else "legal/privacidad.md",
-                            title = if (legal == "terminos") "Términos" else "Privacidad",
-                            onBack = { legal = null },
-                        )
-                    }
                     !ui.profile.onboarded -> Box(Modifier.windowInsetsPadding(WindowInsets.safeDrawing)) {
                         WelcomeScreen(
                             initial = ui.profile,
                             onContinue = vm::completeOnboarding,
                             onPrivacy = openPrivacy,
-                            onTerms = { legal = "terminos" },
+                            onTerms = openTerms,
                         )
                     }
                     else -> AppScaffold(
@@ -279,7 +268,7 @@ class MainActivity : ComponentActivity() {
                         adsStatus = ads.state.status,
                         privacyOptions = ads.state.privacyOptionsRequired,
                         onPrivacy = openPrivacy,
-                        onTerms = { legal = "terminos" },
+                        onTerms = openTerms,
                         onAdPrivacy = ads::showPrivacyOptions,
                         onRetryContent = { checkContentUpdates(force = true) },
                         themeMode = themeMode,
@@ -835,7 +824,6 @@ private fun AppScaffold(
                     onReminders = vm::saveReminders,
                     onExport = vm::exportBackup,
                     onImport = vm::importBackup,
-                    onPhotoCredits = { nav.navigate("photo-credits") },
                     scrollToReminders = true,
                     adFreeUntilMillis = adRewards.adFreeUntilMillis,
                     onWatchAdFree = watchAdFree,
@@ -857,14 +845,10 @@ private fun AppScaffold(
                     onReminders = vm::saveReminders,
                     onExport = vm::exportBackup,
                     onImport = vm::importBackup,
-                    onPhotoCredits = { nav.navigate("photo-credits") },
                     adFreeUntilMillis = adRewards.adFreeUntilMillis,
                     onWatchAdFree = watchAdFree,
                     onRetryAds = ads::retryConsent,
                 )
-            }
-            composable("photo-credits") {
-                com.guiaheartopia.app.ui.settings.PhotoCreditsScreen(onBack = { nav.popBackStack() })
             }
             composable(
                 "animal/{id}",

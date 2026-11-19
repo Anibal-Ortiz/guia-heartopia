@@ -29,7 +29,7 @@ class CatalogImagesTest {
         val json = File(root, "catalog/creatures.json").readText()
         assertFalse(json.contains("imageNote"))
         assertFalse(json.contains("https://"))
-        assertTrue(json.contains("\"imageUrl\": \"asset:catalog/images/"))
+        assertTrue(json.contains("\"imageUrl\": \"\""))
     }
 
     @Test

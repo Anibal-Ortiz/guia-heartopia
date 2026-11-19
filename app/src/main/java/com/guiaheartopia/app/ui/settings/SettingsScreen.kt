@@ -94,7 +94,6 @@ fun SettingsScreen(
     onReminders: (ReminderPrefs) -> Unit,
     onExport: ((String) -> Unit) -> Unit,
     onImport: (String, (ImportResult) -> Unit) -> Unit,
-    onPhotoCredits: () -> Unit,
     scrollToReminders: Boolean = false,
     adFreeUntilMillis: Long = 0L,
     onWatchAdFree: () -> Unit = {},
@@ -125,7 +124,6 @@ fun SettingsScreen(
         )
         Text(stringResource(R.string.app_full_name), style = MaterialTheme.typography.titleMedium)
         Text(StoreCopy.UNOFFICIAL, style = MaterialTheme.typography.bodyMedium)
-        PixelButton("Política de privacidad", onClick = onPrivacy, outlined = true)
         ContentUpdateCard()
         PixelCard {
             Text("Horarios", style = MaterialTheme.typography.titleMedium)
@@ -212,10 +210,9 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(
-                "Las fotos son de especies reales, con licencias libres (CC BY, CC0 o dominio público), tomadas de Wikimedia Commons e iNaturalist. Las criaturas inventadas del juego usan la foto de su especie base.",
+                "Las imágenes de la guía se generan para esta app. Mientras se publican las nuevas, las fichas muestran un dibujo genérico.",
                 style = MaterialTheme.typography.bodyMedium,
             )
-            PixelButton(text = "Créditos de las fotos", onClick = onPhotoCredits, outlined = true)
             Text(
                 "Liuliu y la fluorita de noviembre de 2026 siguen el ciclo diario publicado por Tidebell. Diciembre no está día a día en la fuente: se muestra Sin datos.",
                 style = MaterialTheme.typography.bodyMedium,

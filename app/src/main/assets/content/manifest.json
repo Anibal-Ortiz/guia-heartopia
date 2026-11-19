@@ -1,17 +1,12 @@
 {
-  "contentVersion": 11,
+  "contentVersion": 14,
   "minAppVersionCode": 44,
   "publishedOn": "2026-11-19",
   "files": [
     {
       "path": "catalog/creatures.json",
-      "size": 211211,
-      "sha256": "7a59d68f1daebf0fe068d35b252848d0662ce51e12a4ff72e7e24ee0380531ab"
-    },
-    {
-      "path": "catalog/creditos.json",
-      "size": 127243,
-      "sha256": "96ee374a953d3c43ac4561bcf3c45595cd0662ed4f70eaf4540f9d1597a8b21c"
+      "size": 194132,
+      "sha256": "4619725cd73747fc143f16ad6cdcd901f794c89f0662a5b737af285259e76434"
     },
     {
       "path": "calendar/clima-2026.json",

@@ -27,7 +27,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-blue-sea-angel.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-green-sea-angel",
@@ -55,7 +55,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-green-sea-angel.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-golden-cuttlefish",
@@ -82,7 +82,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-golden-cuttlefish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-purple-sea-angel",
@@ -110,7 +110,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-purple-sea-angel.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-pharaoh-cuttlefish",
@@ -137,7 +137,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-pharaoh-cuttlefish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-spineless-cuttlefish",
@@ -164,7 +164,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-spineless-cuttlefish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-schneider",
@@ -191,7 +191,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-schneider.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-common-bleak",
@@ -218,7 +218,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-common-bleak.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-barbel",
@@ -245,7 +245,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-barbel.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-common-chub",
@@ -272,7 +272,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-common-chub.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-oriental-shrimp",
@@ -299,7 +299,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-oriental-shrimp.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-common-prawn",
@@ -326,7 +326,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-common-prawn.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-crucian-carp",
@@ -353,7 +353,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-crucian-carp.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-common-whitefish",
@@ -380,7 +380,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-common-whitefish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-sea-stickleback",
@@ -407,7 +407,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-sea-stickleback.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-scad",
@@ -434,7 +434,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-scad.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-skipjack-tuna",
@@ -461,7 +461,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
-      "imageUrl": "asset:catalog/images/fish-skipjack-tuna.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-spined-loach",
@@ -488,7 +488,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-spined-loach.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-sea-bass",
@@ -515,7 +515,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-sea-bass.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-european-perch",
@@ -542,7 +542,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-european-perch.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-streber",
@@ -569,7 +569,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-streber.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-minnow",
@@ -596,7 +596,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-minnow.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-beltfish",
@@ -623,7 +623,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
-      "imageUrl": "asset:catalog/images/fish-beltfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-striped-red-mullet",
@@ -650,7 +650,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Dorado",
-      "imageUrl": "asset:catalog/images/fish-striped-red-mullet.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-sardine",
@@ -677,7 +677,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-sardine.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-tench",
@@ -704,7 +704,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-tench.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-seahorse",
@@ -730,7 +730,7 @@
       "extractedOn": "",
       "level": 2,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-seahorse.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-european-smelt",
@@ -757,7 +757,7 @@
       "extractedOn": "",
       "level": 2,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-european-smelt.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-false-scad",
@@ -784,7 +784,7 @@
       "extractedOn": "",
       "level": 2,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-false-scad.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-largemouth-bass",
@@ -810,7 +810,7 @@
       "extractedOn": "",
       "level": 2,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-largemouth-bass.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-stone-loach",
@@ -837,7 +837,7 @@
       "extractedOn": "",
       "level": 2,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-stone-loach.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-anglerfish",
@@ -864,7 +864,7 @@
       "extractedOn": "",
       "level": 2,
       "shadow": "Dorado",
-      "imageUrl": "asset:catalog/images/fish-anglerfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-common-octopus",
@@ -891,7 +891,7 @@
       "extractedOn": "",
       "level": 2,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-common-octopus.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-atlantic-pygmy-octopus",
@@ -918,7 +918,7 @@
       "extractedOn": "",
       "level": 2,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-atlantic-pygmy-octopus.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-turbot",
@@ -945,7 +945,7 @@
       "extractedOn": "",
       "level": 2,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-turbot.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-hermit-crab",
@@ -972,7 +972,7 @@
       "extractedOn": "",
       "level": 3,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-hermit-crab.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-european-crayfish",
@@ -998,7 +998,7 @@
       "extractedOn": "",
       "level": 3,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-european-crayfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-zander",
@@ -1024,7 +1024,7 @@
       "extractedOn": "",
       "level": 3,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-zander.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-ruffe",
@@ -1049,7 +1049,7 @@
       "extractedOn": "",
       "level": 3,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-ruffe.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-mud-sunfish",
@@ -1075,7 +1075,7 @@
       "extractedOn": "",
       "level": 3,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-mud-sunfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-clownfish",
@@ -1102,7 +1102,7 @@
       "extractedOn": "",
       "level": 3,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-clownfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-edible-frog",
@@ -1129,7 +1129,7 @@
       "extractedOn": "",
       "level": 3,
       "shadow": "Azul",
-      "imageUrl": "asset:catalog/images/fish-edible-frog.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-atlantic-salmon",
@@ -1155,7 +1155,7 @@
       "extractedOn": "",
       "level": 3,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-atlantic-salmon.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-tilapia",
@@ -1182,7 +1182,7 @@
       "extractedOn": "",
       "level": 3,
       "shadow": "Azul",
-      "imageUrl": "asset:catalog/images/fish-tilapia.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-river-crab",
@@ -1209,7 +1209,7 @@
       "extractedOn": "",
       "level": 4,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-river-crab.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-common-carp",
@@ -1233,7 +1233,7 @@
       "extractedOn": "",
       "level": 4,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-common-carp.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-butterfly-koi",
@@ -1259,7 +1259,7 @@
       "extractedOn": "",
       "level": 4,
       "shadow": "Grande",
-      "imageUrl": "asset:catalog/images/fish-butterfly-koi.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-burbot",
@@ -1284,7 +1284,7 @@
       "extractedOn": "",
       "level": 4,
       "shadow": "Grande",
-      "imageUrl": "asset:catalog/images/fish-burbot.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-mussel",
@@ -1310,7 +1310,7 @@
       "extractedOn": "",
       "level": 4,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-mussel.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-goby",
@@ -1335,7 +1335,7 @@
       "extractedOn": "",
       "level": 4,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-goby.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-red-bellied-piranha",
@@ -1362,7 +1362,7 @@
       "extractedOn": "",
       "level": 4,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-red-bellied-piranha.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-european-plaice",
@@ -1387,7 +1387,7 @@
       "extractedOn": "",
       "level": 4,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-european-plaice.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-rabbit-fish",
@@ -1414,7 +1414,7 @@
       "extractedOn": "",
       "level": 4,
       "shadow": "Azul",
-      "imageUrl": "asset:catalog/images/fish-rabbit-fish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-tadpole",
@@ -1440,7 +1440,7 @@
       "extractedOn": "",
       "level": 4,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-tadpole.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-freshwater-blenny",
@@ -1467,7 +1467,7 @@
       "extractedOn": "",
       "level": 5,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-freshwater-blenny.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-atlantic-mackerel",
@@ -1491,7 +1491,7 @@
       "extractedOn": "",
       "level": 5,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-atlantic-mackerel.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-european-flying-squid",
@@ -1518,7 +1518,7 @@
       "extractedOn": "",
       "level": 5,
       "shadow": "Dorado",
-      "imageUrl": "asset:catalog/images/fish-european-flying-squid.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-european-lobster",
@@ -1543,7 +1543,7 @@
       "extractedOn": "",
       "level": 5,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-european-lobster.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-common-rudd",
@@ -1570,7 +1570,7 @@
       "extractedOn": "",
       "level": 5,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-common-rudd.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-trout",
@@ -1594,7 +1594,7 @@
       "extractedOn": "",
       "level": 5,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-trout.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-large-pearl-mussel",
@@ -1619,7 +1619,7 @@
       "extractedOn": "",
       "level": 6,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-large-pearl-mussel.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-puffer-fish",
@@ -1644,7 +1644,7 @@
       "extractedOn": "",
       "level": 6,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-puffer-fish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-tub-gurnard",
@@ -1669,7 +1669,7 @@
       "extractedOn": "",
       "level": 6,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-tub-gurnard.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-chum-salmon",
@@ -1694,7 +1694,7 @@
       "extractedOn": "",
       "level": 6,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-chum-salmon.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-nursehound",
@@ -1721,7 +1721,7 @@
       "extractedOn": "",
       "level": 6,
       "shadow": "Grande",
-      "imageUrl": "asset:catalog/images/fish-nursehound.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-grayling",
@@ -1748,7 +1748,7 @@
       "extractedOn": "",
       "level": 6,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-grayling.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-european-eel",
@@ -1772,7 +1772,7 @@
       "extractedOn": "",
       "level": 7,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-european-eel.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-blackspot-seabream",
@@ -1796,7 +1796,7 @@
       "extractedOn": "",
       "level": 7,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-blackspot-seabream.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-mediterranean-killifish",
@@ -1821,7 +1821,7 @@
       "extractedOn": "",
       "level": 7,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-mediterranean-killifish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-three-spined-stickleback",
@@ -1847,7 +1847,7 @@
       "extractedOn": "",
       "level": 7,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-three-spined-stickleback.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-giant-oarfish",
@@ -1872,7 +1872,7 @@
       "extractedOn": "",
       "level": 7,
       "shadow": "Dorado",
-      "imageUrl": "asset:catalog/images/fish-giant-oarfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-mottled-sculpin",
@@ -1897,7 +1897,7 @@
       "extractedOn": "",
       "level": 7,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-mottled-sculpin.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-king-crab",
@@ -1921,7 +1921,7 @@
       "extractedOn": "",
       "level": 8,
       "shadow": "Grande",
-      "imageUrl": "asset:catalog/images/fish-king-crab.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-golden-king-crab",
@@ -1946,7 +1946,7 @@
       "extractedOn": "",
       "level": 8,
       "shadow": "Dorado",
-      "imageUrl": "asset:catalog/images/fish-golden-king-crab.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-blue-european-crayfish",
@@ -1971,7 +1971,7 @@
       "extractedOn": "",
       "level": 8,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-blue-european-crayfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-haddock",
@@ -1996,7 +1996,7 @@
       "extractedOn": "",
       "level": 8,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-haddock.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-goldfish",
@@ -2021,7 +2021,7 @@
       "extractedOn": "",
       "level": 8,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-goldfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-european-mudminnow",
@@ -2045,7 +2045,7 @@
       "extractedOn": "",
       "level": 8,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-european-mudminnow.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-bluefin-tuna",
@@ -2068,7 +2068,7 @@
       "extractedOn": "",
       "level": 9,
       "shadow": "Grande",
-      "imageUrl": "asset:catalog/images/fish-bluefin-tuna.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-northern-pike",
@@ -2092,7 +2092,7 @@
       "extractedOn": "",
       "level": 9,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-northern-pike.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-moonfish",
@@ -2117,7 +2117,7 @@
       "extractedOn": "",
       "level": 9,
       "shadow": "Dorado",
-      "imageUrl": "asset:catalog/images/fish-moonfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-ocean-sunfish",
@@ -2142,7 +2142,7 @@
       "extractedOn": "",
       "level": 9,
       "shadow": "Grande",
-      "imageUrl": "asset:catalog/images/fish-ocean-sunfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-pumpkinseed",
@@ -2167,7 +2167,7 @@
       "extractedOn": "",
       "level": 9,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-pumpkinseed.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-huchen",
@@ -2191,7 +2191,7 @@
       "extractedOn": "",
       "level": 9,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-huchen.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-swordfish",
@@ -2214,7 +2214,7 @@
       "extractedOn": "",
       "level": 10,
       "shadow": "Grande",
-      "imageUrl": "asset:catalog/images/fish-swordfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-wels-catfish",
@@ -2238,7 +2238,7 @@
       "extractedOn": "",
       "level": 10,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-wels-catfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-bluegill",
@@ -2262,7 +2262,7 @@
       "extractedOn": "",
       "level": 10,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-bluegill.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-shortfin-mako-shark",
@@ -2285,7 +2285,7 @@
       "extractedOn": "",
       "level": 10,
       "shadow": "Dorado",
-      "imageUrl": "asset:catalog/images/fish-shortfin-mako-shark.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-smooth-hammerhead",
@@ -2308,7 +2308,7 @@
       "extractedOn": "",
       "level": 10,
       "shadow": "Grande",
-      "imageUrl": "asset:catalog/images/fish-smooth-hammerhead.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-arctic-char",
@@ -2332,7 +2332,7 @@
       "extractedOn": "",
       "level": 10,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-arctic-char.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-asian-arowana",
@@ -2356,7 +2356,7 @@
       "extractedOn": "",
       "level": 11,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-asian-arowana.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-blackspot-sergeant",
@@ -2380,7 +2380,7 @@
       "extractedOn": "",
       "level": 11,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-blackspot-sergeant.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-lionhead",
@@ -2405,7 +2405,7 @@
       "extractedOn": "",
       "level": 11,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-lionhead.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-whale-shark",
@@ -2430,7 +2430,7 @@
       "extractedOn": "",
       "level": 11,
       "shadow": "Dorado",
-      "imageUrl": "asset:catalog/images/fish-whale-shark.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-mahi-mahi",
@@ -2453,7 +2453,7 @@
       "extractedOn": "",
       "level": 12,
       "shadow": "Grande",
-      "imageUrl": "asset:catalog/images/fish-mahi-mahi.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-moon-jelly",
@@ -2478,7 +2478,7 @@
       "extractedOn": "",
       "level": 12,
       "shadow": "Dorado",
-      "imageUrl": "asset:catalog/images/fish-moon-jelly.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-angelfish",
@@ -2501,7 +2501,7 @@
       "extractedOn": "",
       "level": 12,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-angelfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-pink-betta",
@@ -2525,7 +2525,7 @@
       "extractedOn": "",
       "level": 12,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-pink-betta.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-green-sea-turtle",
@@ -2548,7 +2548,7 @@
       "extractedOn": "",
       "level": 12,
       "shadow": "Grande",
-      "imageUrl": "asset:catalog/images/fish-green-sea-turtle.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-white-faced-surgeonfish",
@@ -2573,7 +2573,7 @@
       "extractedOn": "",
       "level": 13,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-white-faced-surgeonfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-lionfish",
@@ -2597,7 +2597,7 @@
       "extractedOn": "",
       "level": 13,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-lionfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-blue-and-yellow-wrasse",
@@ -2622,7 +2622,7 @@
       "extractedOn": "",
       "level": 14,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-blue-and-yellow-wrasse.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-azure-demoiselle",
@@ -2646,7 +2646,7 @@
       "extractedOn": "",
       "level": 14,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-azure-demoiselle.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-japanese-flying-squid",
@@ -2673,7 +2673,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-japanese-flying-squid.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-firefly-squid",
@@ -2700,7 +2700,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-firefly-squid.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-sea-slug",
@@ -2727,7 +2727,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-sea-slug.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-mandarin-fish",
@@ -2754,7 +2754,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-mandarin-fish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-oliver-ridley-turtle",
@@ -2781,7 +2781,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-oliver-ridley-turtle.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-flatback-turtle",
@@ -2808,7 +2808,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-flatback-turtle.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-scallop",
@@ -2835,7 +2835,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-scallop.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-golden-garfish",
@@ -2862,7 +2862,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
-      "imageUrl": "asset:catalog/images/fish-golden-garfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-pale-gold-garfish",
@@ -2889,7 +2889,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
-      "imageUrl": "asset:catalog/images/fish-pale-gold-garfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-brown-garfish",
@@ -2916,7 +2916,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
-      "imageUrl": "asset:catalog/images/fish-brown-garfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-black-garfish",
@@ -2943,7 +2943,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
-      "imageUrl": "asset:catalog/images/fish-black-garfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-silver-garfish",
@@ -2970,7 +2970,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
-      "imageUrl": "asset:catalog/images/fish-silver-garfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-blue-brick-clownfish",
@@ -2997,7 +2997,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-blue-brick-clownfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-colorful-brick-clownfish",
@@ -3024,7 +3024,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-colorful-brick-clownfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-purple-brick-clownfish",
@@ -3051,7 +3051,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-purple-brick-clownfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-red-brick-clownfish",
@@ -3078,7 +3078,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-red-brick-clownfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-green-brick-clownfish",
@@ -3105,7 +3105,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-green-brick-clownfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-director-common-octopus-w-cinnamon-hat",
@@ -3132,7 +3132,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
-      "imageUrl": "asset:catalog/images/fish-director-common-octopus-w-cinnamon-hat.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-director-common-octopus-w-patterned-hat",
@@ -3159,7 +3159,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
-      "imageUrl": "asset:catalog/images/fish-director-common-octopus-w-patterned-hat.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-director-pygmy-octopus-w-cyan-hat",
@@ -3186,7 +3186,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-director-pygmy-octopus-w-cyan-hat.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-director-pygmy-octopus-w-navy-hat",
@@ -3213,7 +3213,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-director-pygmy-octopus-w-navy-hat.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-director-pygmy-octopus-w-brown-hat",
@@ -3240,7 +3240,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-director-pygmy-octopus-w-brown-hat.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-frostspore-seahorse",
@@ -3268,7 +3268,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Pequeño",
-      "imageUrl": "asset:catalog/images/fish-frostspore-seahorse.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-frostspore-king-crab",
@@ -3296,7 +3296,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
-      "imageUrl": "asset:catalog/images/fish-frostspore-king-crab.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-frostspore-puffer-fish",
@@ -3324,7 +3324,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Mediano",
-      "imageUrl": "asset:catalog/images/fish-frostspore-puffer-fish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-frostspore-ocean-sunfish",
@@ -3352,7 +3352,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
-      "imageUrl": "asset:catalog/images/fish-frostspore-ocean-sunfish.webp"
+      "imageUrl": ""
     },
     {
       "id": "fish-frostspore-whale-shark",
@@ -3379,7 +3379,7 @@
       "extractedOn": "",
       "level": 1,
       "shadow": "Grande",
-      "imageUrl": "asset:catalog/images/fish-frostspore-whale-shark.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-long-toothed-fruit-bat",
@@ -3403,7 +3403,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-long-toothed-fruit-bat.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-northern-white-faced-owl",
@@ -3427,7 +3427,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-northern-white-faced-owl.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-palau-scops-owl",
@@ -3451,7 +3451,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-palau-scops-owl.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-eastern-screech-owl",
@@ -3475,7 +3475,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-eastern-screech-owl.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-pumpkin-raven",
@@ -3501,7 +3501,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-pumpkin-raven.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-strawberry-raven",
@@ -3527,7 +3527,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-strawberry-raven.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-mandarin-raven",
@@ -3553,7 +3553,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-mandarin-raven.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-apple-raven",
@@ -3579,7 +3579,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-apple-raven.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-truffle-raven",
@@ -3605,7 +3605,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-truffle-raven.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-honduran-white-bat",
@@ -3629,7 +3629,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-honduran-white-bat.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-tanzanian-woolly-bat",
@@ -3653,7 +3653,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-tanzanian-woolly-bat.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-mallard",
@@ -3679,7 +3679,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-mallard.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-bearded-reedling",
@@ -3708,7 +3708,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-bearded-reedling.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-eurasian-bullfinch",
@@ -3734,7 +3734,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-eurasian-bullfinch.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-eurasian-wren",
@@ -3761,7 +3761,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-eurasian-wren.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-pied-imperial-pigeon",
@@ -3789,7 +3789,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-pied-imperial-pigeon.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-greater-flamingo",
@@ -3815,7 +3815,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-greater-flamingo.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-blue-and-yellow-macaw",
@@ -3841,7 +3841,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-blue-and-yellow-macaw.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-long-tailed-tit",
@@ -3867,7 +3867,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-long-tailed-tit.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-wonga-pigeon",
@@ -3895,7 +3895,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-wonga-pigeon.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-blue-peafowl",
@@ -3921,7 +3921,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-blue-peafowl.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-european-robin",
@@ -3947,7 +3947,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-european-robin.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-eurasian-collared-dove",
@@ -3973,7 +3973,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-eurasian-collared-dove.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-pink-necked-green-pigeon",
@@ -3999,7 +3999,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-pink-necked-green-pigeon.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-woodchat-shrike",
@@ -4025,7 +4025,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 2,
-      "imageUrl": "asset:catalog/images/bird-woodchat-shrike.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-great-tit",
@@ -4052,7 +4052,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 2,
-      "imageUrl": "asset:catalog/images/bird-great-tit.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-seagull",
@@ -4078,7 +4078,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 2,
-      "imageUrl": "asset:catalog/images/bird-seagull.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-eurasian-nuthatch",
@@ -4105,7 +4105,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 2,
-      "imageUrl": "asset:catalog/images/bird-eurasian-nuthatch.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-stock-dove",
@@ -4131,7 +4131,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 2,
-      "imageUrl": "asset:catalog/images/bird-stock-dove.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-eurasian-chaffinch",
@@ -4157,7 +4157,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 2,
-      "imageUrl": "asset:catalog/images/bird-eurasian-chaffinch.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-eurasian-wigeon",
@@ -4183,7 +4183,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 2,
-      "imageUrl": "asset:catalog/images/bird-eurasian-wigeon.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-european-shag",
@@ -4209,7 +4209,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 3,
-      "imageUrl": "asset:catalog/images/bird-european-shag.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-double-barred-finch",
@@ -4235,7 +4235,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 3,
-      "imageUrl": "asset:catalog/images/bird-double-barred-finch.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-king-eider",
@@ -4261,7 +4261,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 3,
-      "imageUrl": "asset:catalog/images/bird-king-eider.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-audouins-gull",
@@ -4287,7 +4287,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 3,
-      "imageUrl": "asset:catalog/images/bird-audouins-gull.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-red-and-green-macaw",
@@ -4313,7 +4313,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 3,
-      "imageUrl": "asset:catalog/images/bird-red-and-green-macaw.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-silver-throated-tit",
@@ -4339,7 +4339,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 3,
-      "imageUrl": "asset:catalog/images/bird-silver-throated-tit.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-eurasian-golden-oriole",
@@ -4365,7 +4365,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 3,
-      "imageUrl": "asset:catalog/images/bird-eurasian-golden-oriole.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-ruddy-shelduck",
@@ -4391,7 +4391,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 3,
-      "imageUrl": "asset:catalog/images/bird-ruddy-shelduck.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-pine-grosbeak",
@@ -4417,7 +4417,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 4,
-      "imageUrl": "asset:catalog/images/bird-pine-grosbeak.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-lady-amherst-pheasant",
@@ -4443,7 +4443,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 4,
-      "imageUrl": "asset:catalog/images/bird-lady-amherst-pheasant.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-white-wagtail",
@@ -4469,7 +4469,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 4,
-      "imageUrl": "asset:catalog/images/bird-white-wagtail.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-regent-bowerbird",
@@ -4495,7 +4495,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 4,
-      "imageUrl": "asset:catalog/images/bird-regent-bowerbird.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-przevalskis-parrotbill",
@@ -4521,7 +4521,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 4,
-      "imageUrl": "asset:catalog/images/bird-przevalskis-parrotbill.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-smew",
@@ -4547,7 +4547,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 4,
-      "imageUrl": "asset:catalog/images/bird-smew.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-wallaces-fruit-dove",
@@ -4573,7 +4573,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 4,
-      "imageUrl": "asset:catalog/images/bird-wallaces-fruit-dove.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-european-bee-eater",
@@ -4598,7 +4598,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 5,
-      "imageUrl": "asset:catalog/images/bird-european-bee-eater.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-brown-noddy",
@@ -4624,7 +4624,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 5,
-      "imageUrl": "asset:catalog/images/bird-brown-noddy.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-lesser-flamingo",
@@ -4649,7 +4649,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 5,
-      "imageUrl": "asset:catalog/images/bird-lesser-flamingo.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-great-green-macaw",
@@ -4674,7 +4674,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 5,
-      "imageUrl": "asset:catalog/images/bird-great-green-macaw.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-african-olive-pigeon",
@@ -4701,7 +4701,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 5,
-      "imageUrl": "asset:catalog/images/bird-african-olive-pigeon.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-yellow-bellied-flycatcher",
@@ -4728,7 +4728,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 5,
-      "imageUrl": "asset:catalog/images/bird-yellow-bellied-flycatcher.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-long-eared-owl",
@@ -4754,7 +4754,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 6,
-      "imageUrl": "asset:catalog/images/bird-long-eared-owl.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-red-faced-cormorant",
@@ -4781,7 +4781,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 6,
-      "imageUrl": "asset:catalog/images/bird-red-faced-cormorant.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-cinnamon-ground-dove",
@@ -4808,7 +4808,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 6,
-      "imageUrl": "asset:catalog/images/bird-cinnamon-ground-dove.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-hawfinch",
@@ -4835,7 +4835,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 6,
-      "imageUrl": "asset:catalog/images/bird-hawfinch.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-common-kestrel",
@@ -4860,7 +4860,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 7,
-      "imageUrl": "asset:catalog/images/bird-common-kestrel.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-tern",
@@ -4885,7 +4885,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 7,
-      "imageUrl": "asset:catalog/images/bird-tern.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-lears-macaw",
@@ -4910,7 +4910,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 7,
-      "imageUrl": "asset:catalog/images/bird-lears-macaw.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-azure-tit",
@@ -4937,7 +4937,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 7,
-      "imageUrl": "asset:catalog/images/bird-azure-tit.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-jambu-fruit-dove",
@@ -4963,7 +4963,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 7,
-      "imageUrl": "asset:catalog/images/bird-jambu-fruit-dove.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-peregrine-falcon",
@@ -4989,7 +4989,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 8,
-      "imageUrl": "asset:catalog/images/bird-peregrine-falcon.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-eastern-bluebird",
@@ -5014,7 +5014,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 8,
-      "imageUrl": "asset:catalog/images/bird-eastern-bluebird.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-pink-pigeon",
@@ -5041,7 +5041,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 8,
-      "imageUrl": "asset:catalog/images/bird-pink-pigeon.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-redpoll",
@@ -5067,7 +5067,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 8,
-      "imageUrl": "asset:catalog/images/bird-redpoll.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-imperial-shag",
@@ -5094,7 +5094,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 9,
-      "imageUrl": "asset:catalog/images/bird-imperial-shag.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-american-flamingo",
@@ -5118,7 +5118,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 9,
-      "imageUrl": "asset:catalog/images/bird-american-flamingo.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-white-headed-duck",
@@ -5143,7 +5143,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 9,
-      "imageUrl": "asset:catalog/images/bird-white-headed-duck.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-green-peafowl",
@@ -5169,7 +5169,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 9,
-      "imageUrl": "asset:catalog/images/bird-green-peafowl.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-paradise-tanager",
@@ -5193,7 +5193,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 9,
-      "imageUrl": "asset:catalog/images/bird-paradise-tanager.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-eagle-owl",
@@ -5218,7 +5218,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 10,
-      "imageUrl": "asset:catalog/images/bird-eagle-owl.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-azores-bullfinch",
@@ -5242,7 +5242,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 10,
-      "imageUrl": "asset:catalog/images/bird-azores-bullfinch.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-amur-falcon",
@@ -5269,7 +5269,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 10,
-      "imageUrl": "asset:catalog/images/bird-amur-falcon.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-verditer-flycatcher",
@@ -5293,7 +5293,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 10,
-      "imageUrl": "asset:catalog/images/bird-verditer-flycatcher.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-baikal-teal",
@@ -5317,7 +5317,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 11,
-      "imageUrl": "asset:catalog/images/bird-baikal-teal.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-inca-tern",
@@ -5341,7 +5341,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 11,
-      "imageUrl": "asset:catalog/images/bird-inca-tern.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-violet-backed-starling",
@@ -5367,7 +5367,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 11,
-      "imageUrl": "asset:catalog/images/bird-violet-backed-starling.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-blue-headed-quail-dove",
@@ -5391,7 +5391,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 11,
-      "imageUrl": "asset:catalog/images/bird-blue-headed-quail-dove.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-white-peafowl",
@@ -5417,7 +5417,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 11,
-      "imageUrl": "asset:catalog/images/bird-white-peafowl.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-snowy-owl",
@@ -5441,7 +5441,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 12,
-      "imageUrl": "asset:catalog/images/bird-snowy-owl.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-red-browed-finch",
@@ -5465,7 +5465,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 12,
-      "imageUrl": "asset:catalog/images/bird-red-browed-finch.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-atlantic-puffin",
@@ -5489,7 +5489,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 12,
-      "imageUrl": "asset:catalog/images/bird-atlantic-puffin.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-blue-footed-booby",
@@ -5514,7 +5514,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 12,
-      "imageUrl": "asset:catalog/images/bird-blue-footed-booby.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-whooper-swan",
@@ -5539,7 +5539,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 13,
-      "imageUrl": "asset:catalog/images/bird-whooper-swan.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-black-swan",
@@ -5564,7 +5564,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 13,
-      "imageUrl": "asset:catalog/images/bird-black-swan.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-black-peafowl",
@@ -5590,7 +5590,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 13,
-      "imageUrl": "asset:catalog/images/bird-black-peafowl.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-black-stork",
@@ -5615,7 +5615,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 14,
-      "imageUrl": "asset:catalog/images/bird-black-stork.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-spectacled-owl",
@@ -5639,7 +5639,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 14,
-      "imageUrl": "asset:catalog/images/bird-spectacled-owl.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-wandering-albatross",
@@ -5665,7 +5665,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-wandering-albatross.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-grey-mantled-albatross",
@@ -5691,7 +5691,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-grey-mantled-albatross.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-white-spoonbill",
@@ -5717,7 +5717,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-white-spoonbill.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-roseate-spoonbill",
@@ -5743,7 +5743,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-roseate-spoonbill.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-white-winged-tern",
@@ -5769,7 +5769,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-white-winged-tern.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-pomarine-skua",
@@ -5797,7 +5797,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-pomarine-skua.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-blue-hoopoe",
@@ -5823,7 +5823,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-blue-hoopoe.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-colorful-hoopoe",
@@ -5849,7 +5849,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-colorful-hoopoe.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-orange-hoopoe",
@@ -5875,7 +5875,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-orange-hoopoe.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-red-hoopoe",
@@ -5901,7 +5901,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-red-hoopoe.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-green-hoopoe",
@@ -5927,7 +5927,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-green-hoopoe.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-blue-brick-sparrow",
@@ -5953,7 +5953,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-blue-brick-sparrow.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-purple-brick-sparrow",
@@ -5979,7 +5979,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-purple-brick-sparrow.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-colorful-brick-sparrow",
@@ -6005,7 +6005,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-colorful-brick-sparrow.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-pink-brick-sparrow",
@@ -6031,7 +6031,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-pink-brick-sparrow.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-green-brick-sparrow",
@@ -6057,7 +6057,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-green-brick-sparrow.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-blue-suit-dove",
@@ -6084,7 +6084,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-blue-suit-dove.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-gray-suit-dove",
@@ -6111,7 +6111,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-gray-suit-dove.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-striped-suit-dove",
@@ -6137,7 +6137,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-striped-suit-dove.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-red-suit-dove",
@@ -6164,7 +6164,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-red-suit-dove.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-green-suit-dove",
@@ -6191,7 +6191,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-green-suit-dove.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-winter-mallard",
@@ -6218,7 +6218,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-winter-mallard.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-winter-greater-flamingo",
@@ -6245,7 +6245,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-winter-greater-flamingo.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-winter-mandarin-duck",
@@ -6271,7 +6271,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-winter-mandarin-duck.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-winter-smew",
@@ -6298,7 +6298,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-winter-smew.webp"
+      "imageUrl": ""
     },
     {
       "id": "bird-winter-eurasian-wigeon",
@@ -6325,7 +6325,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/bird-winter-eurasian-wigeon.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-pumpkin-dung-beetle",
@@ -6351,7 +6351,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-pumpkin-dung-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-strawberry-dung-beetle",
@@ -6377,7 +6377,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-strawberry-dung-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-mandarin-dung-beetle",
@@ -6403,7 +6403,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-mandarin-dung-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-shiitake-dung-beetle",
@@ -6429,7 +6429,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-shiitake-dung-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-truffle-dung-beetle",
@@ -6455,7 +6455,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-truffle-dung-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-cabbage-white",
@@ -6482,7 +6482,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-cabbage-white.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-large-red-damselfly",
@@ -6509,7 +6509,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-large-red-damselfly.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-european-firebug",
@@ -6535,7 +6535,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-european-firebug.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-asparagus-beetle",
@@ -6561,7 +6561,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-asparagus-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-gold-grasshopper",
@@ -6587,7 +6587,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-gold-grasshopper.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-apollo",
@@ -6613,7 +6613,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-apollo.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-orange-tip",
@@ -6639,7 +6639,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-orange-tip.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-common-brimstone",
@@ -6665,7 +6665,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-common-brimstone.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-old-world-swallowtail",
@@ -6693,7 +6693,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-old-world-swallowtail.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-postman-butterfly",
@@ -6719,7 +6719,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-postman-butterfly.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-sulkowskys-morpho",
@@ -6745,7 +6745,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-sulkowskys-morpho.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-bumblebee",
@@ -6771,7 +6771,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 2,
-      "imageUrl": "asset:catalog/images/insect-bumblebee.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-green-tiger-beetle",
@@ -6800,7 +6800,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 2,
-      "imageUrl": "asset:catalog/images/insect-green-tiger-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-wasp-beetle",
@@ -6827,7 +6827,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 2,
-      "imageUrl": "asset:catalog/images/insect-wasp-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-amethyst-flower-beetle",
@@ -6852,7 +6852,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 2,
-      "imageUrl": "asset:catalog/images/insect-amethyst-flower-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-siberian-grasshopper",
@@ -6879,7 +6879,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 2,
-      "imageUrl": "asset:catalog/images/insect-siberian-grasshopper.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-four-spotted-skimmer",
@@ -6904,7 +6904,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 2,
-      "imageUrl": "asset:catalog/images/insect-four-spotted-skimmer.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-common-blue-butterfly",
@@ -6933,7 +6933,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 2,
-      "imageUrl": "asset:catalog/images/insect-common-blue-butterfly.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-seven-spotted-ladybug",
@@ -6958,7 +6958,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 2,
-      "imageUrl": "asset:catalog/images/insect-seven-spotted-ladybug.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-waroona-cuckoo-bee",
@@ -6983,7 +6983,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 3,
-      "imageUrl": "asset:catalog/images/insect-waroona-cuckoo-bee.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-fire-colored-beetle",
@@ -7012,7 +7012,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 3,
-      "imageUrl": "asset:catalog/images/insect-fire-colored-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-ant",
@@ -7038,7 +7038,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 3,
-      "imageUrl": "asset:catalog/images/insect-ant.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-rajah-brookes-birdwing",
@@ -7063,7 +7063,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 3,
-      "imageUrl": "asset:catalog/images/insect-rajah-brookes-birdwing.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-purple-emperor",
@@ -7087,7 +7087,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 3,
-      "imageUrl": "asset:catalog/images/insect-purple-emperor.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-mini-moon-moth",
@@ -7111,7 +7111,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 3,
-      "imageUrl": "asset:catalog/images/insect-mini-moon-moth.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-katydid",
@@ -7137,7 +7137,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 3,
-      "imageUrl": "asset:catalog/images/insect-katydid.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-pink-katydid",
@@ -7163,7 +7163,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 3,
-      "imageUrl": "asset:catalog/images/insect-pink-katydid.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-cicada",
@@ -7188,7 +7188,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 4,
-      "imageUrl": "asset:catalog/images/insect-cicada.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-large-banded-grasshopper",
@@ -7212,7 +7212,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 4,
-      "imageUrl": "asset:catalog/images/insect-large-banded-grasshopper.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-common-whitetail",
@@ -7237,7 +7237,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 4,
-      "imageUrl": "asset:catalog/images/insect-common-whitetail.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-mediterranean-mantis",
@@ -7261,7 +7261,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 4,
-      "imageUrl": "asset:catalog/images/insect-mediterranean-mantis.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-beautiful-leopard",
@@ -7285,7 +7285,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 4,
-      "imageUrl": "asset:catalog/images/insect-beautiful-leopard.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-four-spotted-ladybug",
@@ -7310,7 +7310,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 4,
-      "imageUrl": "asset:catalog/images/insect-four-spotted-ladybug.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-splay-footed-carpenter",
@@ -7335,7 +7335,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 5,
-      "imageUrl": "asset:catalog/images/insect-splay-footed-carpenter.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-alpine-longhorn-beetle",
@@ -7359,7 +7359,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 5,
-      "imageUrl": "asset:catalog/images/insect-alpine-longhorn-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-giant-asian-mantis",
@@ -7384,7 +7384,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 5,
-      "imageUrl": "asset:catalog/images/insect-giant-asian-mantis.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-mourning-cloak",
@@ -7408,7 +7408,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 5,
-      "imageUrl": "asset:catalog/images/insect-mourning-cloak.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-white-witch",
@@ -7433,7 +7433,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 5,
-      "imageUrl": "asset:catalog/images/insect-white-witch.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-peacock-butterfly",
@@ -7459,7 +7459,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 5,
-      "imageUrl": "asset:catalog/images/insect-peacock-butterfly.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-asian-lady-beetle",
@@ -7484,7 +7484,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 5,
-      "imageUrl": "asset:catalog/images/insect-asian-lady-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-beautiful-demoiselle",
@@ -7509,7 +7509,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 6,
-      "imageUrl": "asset:catalog/images/insect-beautiful-demoiselle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-blue-shieldbug",
@@ -7533,7 +7533,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 6,
-      "imageUrl": "asset:catalog/images/insect-blue-shieldbug.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-silver-jewel-scarab",
@@ -7557,7 +7557,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 6,
-      "imageUrl": "asset:catalog/images/insect-silver-jewel-scarab.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-stag-beetle",
@@ -7581,7 +7581,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 6,
-      "imageUrl": "asset:catalog/images/insect-stag-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-green-birdwing",
@@ -7605,7 +7605,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 6,
-      "imageUrl": "asset:catalog/images/insect-green-birdwing.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-golden-jewel-scarab",
@@ -7628,7 +7628,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 7,
-      "imageUrl": "asset:catalog/images/insect-golden-jewel-scarab.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-elegant-flower-beetle",
@@ -7651,7 +7651,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 7,
-      "imageUrl": "asset:catalog/images/insect-elegant-flower-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-minotaur-beetle",
@@ -7676,7 +7676,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 7,
-      "imageUrl": "asset:catalog/images/insect-minotaur-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-crimson-marsh-glider",
@@ -7699,7 +7699,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 7,
-      "imageUrl": "asset:catalog/images/insect-crimson-marsh-glider.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-blue-morpho",
@@ -7723,7 +7723,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 7,
-      "imageUrl": "asset:catalog/images/insect-blue-morpho.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-chestnut-tiger",
@@ -7748,7 +7748,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 7,
-      "imageUrl": "asset:catalog/images/insect-chestnut-tiger.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-picasso-bug",
@@ -7771,7 +7771,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 8,
-      "imageUrl": "asset:catalog/images/insect-picasso-bug.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-horned-beetle",
@@ -7794,7 +7794,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 8,
-      "imageUrl": "asset:catalog/images/insect-horned-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-spanish-moon-moth",
@@ -7817,7 +7817,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 8,
-      "imageUrl": "asset:catalog/images/insect-spanish-moon-moth.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-comet-moth",
@@ -7840,7 +7840,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 8,
-      "imageUrl": "asset:catalog/images/insect-comet-moth.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-cerulean-carpenter",
@@ -7862,7 +7862,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 9,
-      "imageUrl": "asset:catalog/images/insect-cerulean-carpenter.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-rainbow-stag-beetle",
@@ -7889,7 +7889,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 9,
-      "imageUrl": "asset:catalog/images/insect-rainbow-stag-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-golden-stag-beetle",
@@ -7912,7 +7912,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 9,
-      "imageUrl": "asset:catalog/images/insect-golden-stag-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-conehead-mantis",
@@ -7935,7 +7935,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 9,
-      "imageUrl": "asset:catalog/images/insect-conehead-mantis.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-mother-of-pearl",
@@ -7958,7 +7958,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 9,
-      "imageUrl": "asset:catalog/images/insect-mother-of-pearl.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-hercules-beetle",
@@ -7982,7 +7982,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 10,
-      "imageUrl": "asset:catalog/images/insect-hercules-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-sunset-morpho",
@@ -8004,7 +8004,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 10,
-      "imageUrl": "asset:catalog/images/insect-sunset-morpho.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-morpho-helena",
@@ -8026,7 +8026,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 10,
-      "imageUrl": "asset:catalog/images/insect-morpho-helena.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-bagworm-moth",
@@ -8049,7 +8049,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 10,
-      "imageUrl": "asset:catalog/images/insect-bagworm-moth.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-atlas-beetle",
@@ -8072,7 +8072,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 11,
-      "imageUrl": "asset:catalog/images/insect-atlas-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-orchid-mantis",
@@ -8095,7 +8095,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 11,
-      "imageUrl": "asset:catalog/images/insect-orchid-mantis.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-queen-alexandras-birdwing",
@@ -8118,7 +8118,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 11,
-      "imageUrl": "asset:catalog/images/insect-queen-alexandras-birdwing.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-greater-asian-lady-beetle",
@@ -8140,7 +8140,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 11,
-      "imageUrl": "asset:catalog/images/insect-greater-asian-lady-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-goliath-beetle",
@@ -8162,7 +8162,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 12,
-      "imageUrl": "asset:catalog/images/insect-goliath-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-red-milkweed-locust",
@@ -8185,7 +8185,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 12,
-      "imageUrl": "asset:catalog/images/insect-red-milkweed-locust.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-flamer-skimmer",
@@ -8207,7 +8207,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 12,
-      "imageUrl": "asset:catalog/images/insect-flamer-skimmer.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-purple-spotted-swallowtail",
@@ -8231,7 +8231,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 12,
-      "imageUrl": "asset:catalog/images/insect-purple-spotted-swallowtail.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-scarce-morpho",
@@ -8253,7 +8253,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 13,
-      "imageUrl": "asset:catalog/images/insect-scarce-morpho.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-green-metalwing",
@@ -8276,7 +8276,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 13,
-      "imageUrl": "asset:catalog/images/insect-green-metalwing.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-green-snail",
@@ -8301,7 +8301,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 14,
-      "imageUrl": "asset:catalog/images/insect-green-snail.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-glasswing-butterfly",
@@ -8323,7 +8323,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 14,
-      "imageUrl": "asset:catalog/images/insect-glasswing-butterfly.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-white-banded-erebus-moth",
@@ -8349,7 +8349,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-white-banded-erebus-moth.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-blue-milkweed-beetle",
@@ -8375,7 +8375,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-blue-milkweed-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-agrias-butterfly",
@@ -8401,7 +8401,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-agrias-butterfly.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-morpho-luna",
@@ -8427,7 +8427,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-morpho-luna.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-green-flower-chafer",
@@ -8453,7 +8453,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-green-flower-chafer.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-brown-rhinoceros-beetle",
@@ -8479,7 +8479,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-brown-rhinoceros-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-iridescent-rhinoceros-beetle",
@@ -8505,7 +8505,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-iridescent-rhinoceros-beetle.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-grey-horned-firefly",
@@ -8531,7 +8531,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-grey-horned-firefly.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-purple-horned-firefly",
@@ -8557,7 +8557,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-purple-horned-firefly.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-pink-horned-firefly",
@@ -8583,7 +8583,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-pink-horned-firefly.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-yellow-brick-large-red-damselfly",
@@ -8609,7 +8609,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-yellow-brick-large-red-damselfly.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-blue-brick-large-red-damselfly",
@@ -8635,7 +8635,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-blue-brick-large-red-damselfly.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-purple-brick-large-red-damselfly",
@@ -8661,7 +8661,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-purple-brick-large-red-damselfly.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-colorful-brick-large-red-damselfly",
@@ -8687,7 +8687,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-colorful-brick-large-red-damselfly.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-pink-brick-large-red-damselfly",
@@ -8713,7 +8713,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-pink-brick-large-red-damselfly.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-golden-script-supervisor-bumblebee",
@@ -8739,7 +8739,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-golden-script-supervisor-bumblebee.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-purple-script-supervisor-bumblebee",
@@ -8765,7 +8765,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-purple-script-supervisor-bumblebee.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-red-script-supervisor-bumblebee",
@@ -8791,7 +8791,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-red-script-supervisor-bumblebee.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-pink-script-supervisor-bumblebee",
@@ -8817,7 +8817,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-pink-script-supervisor-bumblebee.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-green-script-supervisor-bumblebee",
@@ -8843,7 +8843,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-green-script-supervisor-bumblebee.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-frostspore-queen-alexandras-birdwing",
@@ -8870,7 +8870,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-frostspore-queen-alexandras-birdwing.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-frostspore-postman-butterfly",
@@ -8896,7 +8896,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-frostspore-postman-butterfly.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-frostspore-purple-spotted-swallowtail",
@@ -8923,7 +8923,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-frostspore-purple-spotted-swallowtail.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-frostspore-mother-of-pearl",
@@ -8951,7 +8951,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-frostspore-mother-of-pearl.webp"
+      "imageUrl": ""
     },
     {
       "id": "insect-frostspore-sulkowskys-morpho",
@@ -8980,7 +8980,7 @@
       "sourceUrl": "",
       "extractedOn": "",
       "level": 1,
-      "imageUrl": "asset:catalog/images/insect-frostspore-sulkowskys-morpho.webp"
+      "imageUrl": ""
     },
     {
       "id": "wildlife-alpaca",
@@ -8998,7 +8998,7 @@
       "source": "",
       "sourceUrl": "",
       "extractedOn": "",
-      "imageUrl": "asset:catalog/images/wildlife-alpaca.webp"
+      "imageUrl": ""
     },
     {
       "id": "wildlife-capybara",
@@ -9018,7 +9018,7 @@
       "source": "",
       "sourceUrl": "",
       "extractedOn": "",
-      "imageUrl": "asset:catalog/images/wildlife-capybara.webp"
+      "imageUrl": ""
     },
     {
       "id": "wildlife-sika-deer",
@@ -9036,7 +9036,7 @@
       "source": "",
       "sourceUrl": "",
       "extractedOn": "",
-      "imageUrl": "asset:catalog/images/wildlife-sika-deer.webp"
+      "imageUrl": ""
     },
     {
       "id": "wildlife-bunny",
@@ -9054,7 +9054,7 @@
       "source": "",
       "sourceUrl": "",
       "extractedOn": "",
-      "imageUrl": "asset:catalog/images/wildlife-bunny.webp"
+      "imageUrl": ""
     },
     {
       "id": "wildlife-ferret",
@@ -9072,7 +9072,7 @@
       "source": "",
       "sourceUrl": "",
       "extractedOn": "",
-      "imageUrl": "asset:catalog/images/wildlife-ferret.webp"
+      "imageUrl": ""
     },
     {
       "id": "wildlife-sea-otter",
@@ -9090,7 +9090,7 @@
       "source": "",
       "sourceUrl": "",
       "extractedOn": "",
-      "imageUrl": "asset:catalog/images/wildlife-sea-otter.webp"
+      "imageUrl": ""
     },
     {
       "id": "wildlife-panda",
@@ -9108,7 +9108,7 @@
       "source": "",
       "sourceUrl": "",
       "extractedOn": "",
-      "imageUrl": "asset:catalog/images/wildlife-panda.webp"
+      "imageUrl": ""
     },
     {
       "id": "wildlife-fox",
@@ -9128,7 +9128,7 @@
       "source": "",
       "sourceUrl": "",
       "extractedOn": "",
-      "imageUrl": "asset:catalog/images/wildlife-fox.webp"
+      "imageUrl": ""
     },
     {
       "id": "wildlife-dolphin",
@@ -9146,7 +9146,7 @@
       "source": "",
       "sourceUrl": "",
       "extractedOn": "",
-      "imageUrl": "asset:catalog/images/wildlife-dolphin.webp"
+      "imageUrl": ""
     },
     {
       "id": "wildlife-maltese",
@@ -9164,7 +9164,7 @@
       "source": "",
       "sourceUrl": "",
       "extractedOn": "",
-      "imageUrl": "asset:catalog/images/wildlife-maltese.webp"
+      "imageUrl": ""
     },
     {
       "id": "wildlife-penguin",
@@ -9182,7 +9182,7 @@
       "source": "",
       "sourceUrl": "",
       "extractedOn": "",
-      "imageUrl": "asset:catalog/images/wildlife-penguin.webp"
+      "imageUrl": ""
     }
   ]
 }
