@@ -3,10 +3,11 @@ package com.guiaheartopia.app.domain
 /** Normalización común de rutas de imagen locales ( CreatureImagePaths / AficionesImagePaths ). */
 object ContentPaths {
     /**
-     * Las imágenes anteriores ya no se usan: mientras no se publiquen las nuevas,
-     * las fichas muestran el dibujo genérico incluso si quedan archivos descargados.
+     * Las fichas usan las imágenes publicadas en el paquete de contenido
+     * (rutas `catalog/images` con extensión .webp). Si el archivo no está descargado se muestra el
+     * dibujo genérico de la categoría.
      */
-    const val IMAGES_ENABLED = false
+    const val IMAGES_ENABLED = true
 
     fun normalize(raw: String?): String? {
         if (raw.isNullOrBlank()) return null
