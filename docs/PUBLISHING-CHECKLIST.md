@@ -1,6 +1,6 @@
 # Checklist antes de publicar
 
-Estado del proyecto: la app compila (`assembleDebug`), pasa los 163 tests unitarios y `lintDebug` sin errores. La variante release **falla a propósito** si no hay secretos de firma (usa `-PallowDebugSignedRelease=true` solo para una prueba local no publicable).
+Estado del proyecto: la app compila (`assembleDebug`), pasa los 166 tests unitarios y `lintDebug` sin errores. La variante release **falla a propósito** si no hay secretos de firma (usa `-PallowDebugSignedRelease=true` solo para una prueba local no publicable).
 
 ## Ya resuelto en el repositorio / en la web
 
@@ -16,11 +16,11 @@ Estado del proyecto: la app compila (`assembleDebug`), pasa los 163 tests unitar
 ## Pendiente de acción humana (fuera del código)
 
 1. **Mensaje de privacidad UMP.** Crearlo y **publicarlo** en AdMob → *Privacidad y mensajes*, enlazando la política de privacidad. Sin mensaje publicado, el formulario no llega a usuarios del EEE/EE. UU. regulado. Verificar con `UMP_DEBUG_GEOGRAPHY` en debug.
-2. **Política de privacidad.** Ya publicada y con el correo `anibalortiz.dev@gmail.com`. Opcional: sustituir «su desarrollador» por el nombre completo del responsable en `docs/politica-privacidad.md` y en la web.
-3. **Data Safety en Play Console.** Copiar las respuestas de `docs/play-store/formularios.md`: ID de publicidad y datos técnicos recogidos por Google AdMob (terceros), sin backend propio ni analítica propia. Enviar el formulario. La URL de política de la ficha debe ser la misma que abre el botón de la app.
+2. **Política de privacidad.** Publicada la v1.1.0 con el correo `anibalortiz.dev@gmail.com`; **pendiente publicar la v1.1.3**, que añade el apartado «Comentarios y preguntas» (texto local ya actualizado en `docs/politica-privacidad.md`). El repo del sitio de contenido no está clonado en este equipo, así que hay que subir `index.html` allí. Opcional: sustituir «su desarrollador» por el nombre completo del responsable.
+3. **Data Safety en Play Console.** Copiar las respuestas de `docs/play-store/formularios.md`: ID de publicidad y datos técnicos recogidos por Google AdMob (terceros), sin backend propio ni analítica propia. Además, declarar el correo opcional y el contenido del mensaje que envía el menú de comentarios a Google Forms (tercero: Google). Enviar el formulario. La URL de política de la ficha debe ser la misma que abre el botón de la app, y debe estar actualizada a la versión 1.1.3 (20/11/2026), que añade el apartado «Comentarios y preguntas».
 4. **Ficha de AdMob.** Confirmar que el dominio del desarrollador es `anibalortizdev.github.io` para que Play/AdMob encuentren el `app-ads.txt`.
 5. **Secretos de firma.** Tener disponibles (fuera de git) `RELEASE_STORE_*` o `~/.wikifan-heartopia/upload.properties`, y `DISTRO_STORE_PASSWORD` / `DISTRO_KEY_ALIAS` / `DISTRO_KEY_PASSWORD` si se usa la distro. Hacer dos copias de la keystore de subida.
-6. **Versión.** Ya subida a `versionCode` 43 / `appVersion` 1.1.0 en `app/build.gradle.kts`. El nombre del artefacto y el `versionName` se derivan de `appVersion`.
+6. **Versión.** Ya aplicada en `app/build.gradle.kts`: `versionCode` 46 / `appVersion` 1.1.3. El nombre del artefacto y el `versionName` se derivan de `appVersion`.
 7. **Generar el bundle.** `.\gradlew.bat bundleRelease --console=plain` con los secretos anteriores. El output queda en `app/build/outputs/bundle/release/`.
 
 ## Verificación automática disponible

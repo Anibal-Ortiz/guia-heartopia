@@ -2,11 +2,13 @@
 
 Guía companion **no oficial** para Heartopia. No está afiliada a los creadores ni a los editores del juego: no controla la partida, no pulsa la pantalla y no promete que los datos de terceros sean oficiales.
 
-Versión **1.1.2** (`versionCode` 45, `versionName` 1.1.2).
+Versión **1.1.3** (`versionCode` 46, `versionName` 1.1.3).
 
 ## Qué hay en esta versión
 
 - Cuatro pestañas en la barra inferior: **Inicio**, **Aficiones**, **Códigos** y **Calendario**. **Ajustes** se abre desde la barra superior.
+- Menú de **comentarios y preguntas** en la barra superior: envía el mensaje desde la app (sin abrir el correo) a un formulario de Google Forms del desarrollador.
+- Aviso de **actualización disponible en Google Play** con botón que abre la ficha de la app.
 - Catálogos, bichos, peces, recetas, clima y códigos se cargan desde el manifiesto remoto publicado en `https://anibalortizdev.github.io/guia-heartopia-contenido/`. No se copiaron imágenes del juego.
 - Perfil, rutina, avisos y progreso se guardan solo en el dispositivo.
 - Alrededor de **40 pruebas unitarias** (`app/src/test`) más una prueba de UI que necesita dispositivo (`app/src/androidTest`).
@@ -42,7 +44,7 @@ cp local.properties.example local.properties
 ./gradlew :app:assembleDebug --console=plain
 ```
 
-El APK queda en `app/build/outputs/apk/debug/` (con el nombre derivado de `appVersion`, por ejemplo `Guia-Heartopia-1.1.1-debug.apk`).
+El APK queda en `app/build/outputs/apk/debug/` (con el nombre derivado de `appVersion`, por ejemplo `Guia-Heartopia-1.1.3-debug.apk`).
 
 ```bash
 adb install -r app/build/outputs/apk/debug/<apk-generado>.apk

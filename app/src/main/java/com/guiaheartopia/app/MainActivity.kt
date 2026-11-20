@@ -89,6 +89,7 @@ import com.guiaheartopia.app.data.ContentSignals
 import com.guiaheartopia.app.data.ThemeMode
 import com.guiaheartopia.app.data.ThemeModeStore
 import com.guiaheartopia.app.domain.ContentDownloadProgress
+import com.guiaheartopia.app.domain.ContentSyncMessages
 import com.guiaheartopia.app.domain.ContentSyncResult
 import com.guiaheartopia.app.domain.ContentUpdatePolicy
 import com.guiaheartopia.app.domain.checkOk
@@ -105,6 +106,7 @@ import com.guiaheartopia.app.ui.components.CozySunIcon
 import com.guiaheartopia.app.ui.components.WikiFanAppIcon
 import com.guiaheartopia.app.R
 import com.guiaheartopia.app.ui.components.PixelNavBar
+import com.guiaheartopia.app.ui.feedback.FeedbackMenu
 import com.guiaheartopia.app.ui.guide.AnimalDetailScreen
 import com.guiaheartopia.app.ui.guide.GuideScreen
 import com.guiaheartopia.app.ui.hobbies.HobbiesScreen
@@ -114,6 +116,9 @@ import com.guiaheartopia.app.ui.legal.openTerms
 import com.guiaheartopia.app.ui.AppNavigation
 import com.guiaheartopia.app.ui.NavigationPolicy
 import com.guiaheartopia.app.ui.settings.SettingsScreen
+import com.guiaheartopia.app.ui.updates.UpdateAvailableDialog
+import com.guiaheartopia.app.ui.updates.checkPlayUpdate
+import com.guiaheartopia.app.ui.updates.openPlayStore
 import com.guiaheartopia.app.ui.theme.Cream
 import com.guiaheartopia.app.ui.theme.Green
 import com.guiaheartopia.app.ui.theme.GreenSoft
@@ -195,6 +200,13 @@ class MainActivity : ComponentActivity() {
                             ContentSignals.emitSyncResult(report.result)
                         }
                         ContentSignals.setFailed(!report.result.checkOk)
+                        if (!report.result.checkOk) {
+                            Toast.makeText(
+                                this@MainActivity,
+                                ContentSyncMessages.message(report),
+                                Toast.LENGTH_LONG,
+                            ).show()
+                        }
                     } catch (_: Exception) {
                         ContentSignals.setFailed(true)
                     } finally {
@@ -233,6 +245,11 @@ class MainActivity : ComponentActivity() {
                         ReminderScheduler.sync(this@MainActivity, currentProfile.value)
                     }
                 }
+            }
+            // Aviso de versión nueva en Play: se consulta una vez por sesión y se oculta al cerrarlo.
+            var updateAvailable by remember { mutableStateOf(false) }
+            LaunchedEffect(Unit) {
+                checkPlayUpdate(this@MainActivity) { available -> updateAvailable = available }
             }
             GuiaTheme(darkTheme = darkTheme) {
                 val darkUi = darkTheme
@@ -278,6 +295,15 @@ class MainActivity : ComponentActivity() {
                     )
                 }
 
+                if (updateAvailable && ui.ready && ui.profile.onboarded) {
+                    UpdateAvailableDialog(
+                        onDismiss = { updateAvailable = false },
+                        onUpdate = {
+                            openPlayStore(this@MainActivity)
+                            updateAvailable = false
+                        },
+                    )
+                }
             }
         }
     }
@@ -470,6 +496,7 @@ private fun AppScaffold(
                             ThemeMode.DARK -> CozyMoonIcon(tint = Ink, size = 20.dp)
                         }
                     }
+                    FeedbackMenu()
                     Box(
                         modifier = Modifier
                             .testTag("open_settings")

@@ -7,9 +7,12 @@ import org.junit.Test
 
 class CreatureImagePathsTest {
     @Test
-    fun imagesAreDisabledUntilTheNewSetIsPublished() {
+    fun publishedImagesAreUsedAsCandidates() {
         assertEquals(
-            emptyList<String>(),
+            listOf(
+                "catalog/images/wildlife-bunny.webp",
+                "catalog/images/wildlife-wildlife-bunny.webp",
+            ),
             CreatureImagePaths.candidates("asset:catalog/images/wildlife-bunny.webp", "wildlife-bunny"),
         )
     }

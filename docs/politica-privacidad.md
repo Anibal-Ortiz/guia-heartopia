@@ -2,7 +2,7 @@
 
 **WikiFan para Heartopia**  
 Etiqueta del launcher: **WikiFan Heartopia**  
-Versión de la política: 1.1.0 — 18 de noviembre de 2026  
+Versión de la política: 1.1.3 — 20 de noviembre de 2026  
 Contacto: anibalortiz.dev@gmail.com  
 Texto público: https://anibalortizdev.github.io/guia-heartopia-contenido/
 
@@ -14,7 +14,7 @@ La responsabilidad del tratamiento de los datos de esta app es de su desarrollad
 
 ## Qué es esta app
 
-Es una guía para consultar criaturas, peces, recetas, horarios, clima, aficiones y anotaciones propias. No controla el juego, no lee su pantalla y no pulsa nada por ti. No hay cuenta de usuario ni servidor propio que reciba tu información personal.
+Es una guía para consultar criaturas, peces, recetas, horarios, clima, aficiones y anotaciones propias. No controla el juego, no lee su pantalla y no pulsa nada por ti. No hay cuenta de usuario ni servidor propio. Solo si tú decides escribir al desarrollador desde el menú de comentarios, tu mensaje se envía a un servicio de formularios que lo reenvía por correo.
 
 ## Datos que se quedan en el dispositivo
 
@@ -31,9 +31,15 @@ Borrar los datos de la app o desinstalarla sin respaldo elimina esa información
 
 La app puede descargar desde https://anibalortizdev.github.io/guia-heartopia-contenido/ el manifiesto, las fichas, los horarios, el clima y, si se publican, las imágenes. Es una descarga anónima: no envía tu nombre, tu colección ni tu avatar. Los archivos se guardan en caché para no repetir la descarga.
 
+## Comentarios y preguntas
+
+Si usas el menú «Comentarios y preguntas», la app envía por HTTPS el texto que escribas y, solo si lo indicas, el correo que introduzcas para que el desarrollador pueda responderte. El envío va a un formulario de **Google Forms** alojado en la cuenta del desarrollador; la app no abre el correo ni el navegador y no guarda una copia del mensaje en tu dispositivo ni en un servidor propio. Las respuestas quedan en ese formulario, al que solo tiene acceso el desarrollador.
+
+Estos mensajes no se usan para publicidad, no se comparten con otros usuarios y no sirven para seguimiento entre apps. Puedes pedir la rectificación o el borrado de lo que enviaste escribiendo a ese mismo correo.
+
 ## Permisos
 
-- `INTERNET` y `ACCESS_NETWORK_STATE`: contenido público y anuncios.
+- `INTERNET` y `ACCESS_NETWORK_STATE`: contenido público, anuncios y envío de comentarios.
 - `POST_NOTIFICATIONS`: avisos locales, solo si los activas.
 - `RECEIVE_BOOT_COMPLETED` y `WAKE_LOCK`: reprogramar avisos al reiniciar el móvil.
 - `SCHEDULE_EXACT_ALARM`: avisos a la hora exacta (Android 12+).

@@ -663,3 +663,35 @@ fun CozyTicketIcon(
         drawLine(tint, Offset(w * 0.32f, h * 0.52f), Offset(w * 0.56f, h * 0.52f), stroke * 0.7f, cap = StrokeCap.Round)
     }
 }
+
+/** Burbuja de conversación para el menú de comentarios y preguntas. */
+@Composable
+fun CozyChatIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = Color.Unspecified,
+    size: Dp = 20.dp,
+) {
+    Canvas(modifier.size(size)) {
+        val w = this.size.width
+        val h = this.size.height
+        val stroke = 2.dp.toPx()
+        val bubble = Path().apply {
+            moveTo(w * 0.20f, h * 0.20f)
+            lineTo(w * 0.80f, h * 0.20f)
+            quadraticTo(w * 0.86f, h * 0.20f, w * 0.86f, h * 0.28f)
+            lineTo(w * 0.86f, h * 0.62f)
+            quadraticTo(w * 0.86f, h * 0.70f, w * 0.78f, h * 0.70f)
+            lineTo(w * 0.44f, h * 0.70f)
+            lineTo(w * 0.24f, h * 0.86f)
+            lineTo(w * 0.27f, h * 0.68f)
+            lineTo(w * 0.22f, h * 0.68f)
+            quadraticTo(w * 0.14f, h * 0.66f, w * 0.14f, h * 0.58f)
+            lineTo(w * 0.14f, h * 0.28f)
+            quadraticTo(w * 0.14f, h * 0.20f, w * 0.20f, h * 0.20f)
+            close()
+        }
+        drawPath(bubble, tint, style = Stroke(stroke, cap = StrokeCap.Round, join = StrokeJoin.Round))
+        drawLine(tint, Offset(w * 0.32f, h * 0.42f), Offset(w * 0.68f, h * 0.42f), stroke * 0.8f, cap = StrokeCap.Round)
+        drawLine(tint, Offset(w * 0.32f, h * 0.54f), Offset(w * 0.56f, h * 0.54f), stroke * 0.8f, cap = StrokeCap.Round)
+    }
+}

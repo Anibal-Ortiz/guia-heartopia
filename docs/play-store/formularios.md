@@ -54,7 +54,7 @@ Resultado esperado: PEGI 3 / Everyone o similar por el contenido de la guía, **
 
 ## Seguridad de los datos
 
-¿La app recoge o comparte datos de usuario? **Sí**, por el SDK de anuncios de Google. Los apuntes de la guía no salen del teléfono.
+¿La app recoge o comparte datos de usuario? **Sí**: por el SDK de anuncios de Google y, de forma voluntaria, cuando el usuario escribe un comentario o pregunta. Los apuntes de la guía no salen del teléfono.
 
 ### Datos que no salen del teléfono (no los declares como recogidos por el desarrollador)
 
@@ -76,13 +76,22 @@ Marca que **los recogen terceros**, no que esta app tenga un backend propio. No 
 | Ubicación aproximada (la que Google infiere de la IP) | Sí | Sí, con Google | Publicidad | Sí, la envía el SDK al pedir el anuncio |
 | Información del dispositivo (modelo, idioma, versión) | Sí | Sí, con Google | Publicidad y diagnóstico del SDK | Sí |
 
-No declares: ubicación precisa, contactos, fotos, micrófono, archivos, salud, mensajes, historial web propio, ni datos financieros.
+### Datos que envía el usuario al escribir al desarrollador (tercero: Google Forms)
+
+El menú «Comentarios y preguntas» envía por HTTPS lo que el usuario escribe a un formulario de Google Forms alojado en la cuenta del desarrollador. No hay cuenta ni servidor propio; el correo de respuesta es opcional.
+
+| Tipo en el formulario | ¿Se recoge? | ¿Se comparte? | Finalidad | Obligatorio |
+| --- | --- | --- | --- | --- |
+| Dirección de correo electrónico (solo si el usuario la escribe) | Sí | Sí, con Google Forms (Google) para poder responderle | Comunicación / función de la app | No, opcional |
+| Contenido del mensaje (comentario, pregunta o aclaración que escribe el usuario) | Sí | Sí, con Google Forms (Google) | Atención al usuario / función de la app | No, el usuario decide escribir |
+
+No declares: ubicación precisa, contactos, fotos, micrófono, archivos, salud, mensajería entre usuarios, historial web propio, ni datos financieros. Los apuntes y anotaciones de la guía nunca salen del dispositivo.
 
 ### Otras casillas
 
 - ¿Se venden los datos? **No.**
-- ¿El tráfico va cifrado? **Sí** (HTTPS hacia Google y hacia el paquete público de contenido).
-- ¿Los usuarios pueden pedir que se borren? **Sí.** Los datos locales se borran al desinstalar. Los datos de anuncios los gestiona Google (https://policies.google.com/privacy); la app no guarda una copia en un servidor propio.
+- ¿El tráfico va cifrado? **Sí** (HTTPS hacia Google: AdMob, Google Forms y el paquete público de contenido).
+- ¿Los usuarios pueden pedir que se borren? **Sí.** Los datos locales se borran al desinstalar. Los datos de anuncios los gestiona Google (https://policies.google.com/privacy); la app no guarda una copia en un servidor propio. Los mensajes enviados se pueden borrar pidéndolo por correo a anibalortiz.dev@gmail.com.
 - ¿Hay cuenta? **No.** No hace falta un inicio de sesión para borrar datos.
 - Consentimiento en el EEE: formulario UMP antes de pedir anuncios. Si no se puede pedir publicidad, el banner no aparece.
 

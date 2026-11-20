@@ -71,7 +71,11 @@ object AndroidContentStore {
 
     /** Descarga por chunks, con tope y validación de Content-Length. Nunca readBytes() sin límite. */
     fun httpGet(url: String): ByteArray? = try {
-        val connection = (URL(url).openConnection() as HttpURLConnection).apply {
+        // GitHub Pages/CDN puede servir una versión cacheada bajo la misma ruta.
+        // Un query distinto en cada petición fuerza la versión actual del archivo.
+        val separator = if ('?' in url) '&' else '?'
+        val freshUrl = "$url${separator}cb=${System.currentTimeMillis()}"
+        val connection = (URL(freshUrl).openConnection() as HttpURLConnection).apply {
             connectTimeout = 20_000
             readTimeout = 60_000
             instanceFollowRedirects = true

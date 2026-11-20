@@ -27,6 +27,17 @@
     - Cualquier ajuste de responsividad del banner debe mantener el contenedor visible y cumplir políticas de AdMob (sin superposición sobre elementos interactivos).
 - **Archivos protegidos:** No modifiques `build.gradle.kts`, `libs.versions.toml`, `gradle.properties`, `AndroidManifest.xml` ni workflows de `.github/` salvo que se pida explícitamente.
 
+## Publicación de contenido (repo `anibalortizdev/guia-heartopia-contenido`)
+- El sitio `https://anibalortizdev.github.io/guia-heartopia-contenido/` se publica desde el repo **`anibalortizdev/guia-heartopia-contenido`**, rama `main`, con `content/` en la raíz. El repo `Anibal-Ortiz/guia-heartopia-contenido` **no existe**.
+- **`content/manifest.json` debe calcular `size` y `sha256` desde los BLOBS de Git**, no desde los archivos del área de trabajo:
+  ```bash
+  git cat-file -p HEAD:content/<ruta>   # bytes exactos que sirve GitHub Pages
+  ```
+  En Windows, `core.autocrlf` convierte los saltos a CRLF en el disco; si se hashea ese archivo, Pages sirve LF y la app da `VERIFY_FAILED`. Recalcular **todas** las entradas desde blobs antes de subir el manifiesto.
+- GitHub Pages/CDN cachea por ruta: las descargas de la app llevan `?cb=<timestamp>` (ver `AndroidContentStore.httpGet`). Para verificar desde fuera, usar también un query único; tras un push, Pages tarda unos minutos en reflejar el cambio.
+- **Slugs de archivos:** usar siempre `ReminderIds.slug()` para nombrar imágenes de ingredientes. Colapsa `--` en `-` y quita guiones al principio/final: `Dulce (cualquier color)` → `dulce-cualquier-color.webp` (NO `dulce--cualquier-color-.webp`). Un slug mal calculado deja la imagen genérica.
+- Cuando se suban imágenes nuevas, **no tocar `contentVersion`** hasta que se pida explícitamente. Cuando se pida: recalcular hashes desde blobs, subir `contentVersion` y verificar con `?cb=` que Pages devuelve esa versión.
+
 ## Compilación y Verificación (Windows)
 - **Compilar APK Debug:**
   ```powershell

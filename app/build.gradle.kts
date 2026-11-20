@@ -17,7 +17,7 @@ plugins {
 }
 
 /** Única fuente de la versión: nombre de archivo, versionName y artefacto de CI se derivan de ella. */
-val appVersion = "1.1.2"
+val appVersion = "1.1.3"
 
 private val ANDROID_NS = "http://schemas.android.com/apk/res/android"
 private val TOOLS_NS = "http://schemas.android.com/tools"
@@ -217,7 +217,7 @@ android {
         applicationId = "com.guiaheartopia.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 45
+        versionCode = 46
         versionName = appVersion
         buildConfigField(
             "String",
@@ -395,6 +395,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.work.runtime)
     implementation(libs.play.services.ads)
+    implementation(libs.play.app.update.ktx)
     implementation(libs.user.messaging.platform)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
