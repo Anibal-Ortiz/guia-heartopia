@@ -2,7 +2,7 @@
 
 Guía companion **no oficial** para Heartopia. No está afiliada a los creadores ni a los editores del juego: no controla la partida, no pulsa la pantalla y no promete que los datos de terceros sean oficiales.
 
-Versión **1.1.1** (`versionCode` 44, `versionName` 1.1.1).
+Versión **1.1.2** (`versionCode` 45, `versionName` 1.1.2).
 
 ## Qué hay en esta versión
 
