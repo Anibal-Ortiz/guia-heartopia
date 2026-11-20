@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.guiaheartopia.app.domain.DexSchedule
 import com.guiaheartopia.app.domain.SkyWeatherGameDay
-import java.time.Duration
 import java.time.Instant
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -26,6 +25,19 @@ data class AdRewardState(
 }
 
 object AdRewardStore {
+    /** Cada video bonificado suma 3 horas. */
+    const val AD_FREE_PER_VIDEO_HOURS = 3L
+
+    /** Tope acumulable: 12 horas. */
+    const val AD_FREE_MAX_HOURS = 12L
+
+    /** Solo se puede ver otro video mientras queden 9 horas o menos. */
+    const val AD_FREE_ADD_MORE_HOURS = 9L
+
+    const val AD_FREE_PER_VIDEO_MILLIS = AD_FREE_PER_VIDEO_HOURS * 3_600_000L
+    const val AD_FREE_MAX_MILLIS = AD_FREE_MAX_HOURS * 3_600_000L
+    const val AD_FREE_ADD_MORE_THRESHOLD_MILLIS = AD_FREE_ADD_MORE_HOURS * 3_600_000L
+
     private val KEY_AD_FREE = longPreferencesKey("ad_free_until_ms")
     private val KEY_CALENDAR = longPreferencesKey("calendar_until_ms")
 
@@ -38,9 +50,19 @@ object AdRewardStore {
             )
         }
 
-    suspend fun grantAdFreeHours(context: Context, hours: Long = 24) {
-        val until = Instant.now().plus(Duration.ofHours(hours)).toEpochMilli()
-        context.applicationContext.adRewardStore.edit { it[KEY_AD_FREE] = until }
+    /**
+     * Suma horas al beneficio actual. Si ya está activo se acumula sobre su
+     * vencimiento; si no, se cuenta desde ahora. Nunca supera el tope de 12 h.
+     */
+    suspend fun grantAdFreeHours(context: Context, hours: Long = AD_FREE_PER_VIDEO_HOURS) {
+        val now = System.currentTimeMillis()
+        val addMillis = hours * 3_600_000L
+        val maxUntil = now + AD_FREE_MAX_MILLIS
+        context.applicationContext.adRewardStore.edit { prefs ->
+            val current = prefs[KEY_AD_FREE] ?: 0L
+            val base = if (current > now) current else now
+            prefs[KEY_AD_FREE] = (base + addMillis).coerceAtMost(maxUntil)
+        }
     }
 
     suspend fun grantCalendarUntilServerDay(context: Context, zoneId: String, now: Instant = Instant.now()) {
@@ -48,11 +70,23 @@ object AdRewardStore {
         context.applicationContext.adRewardStore.edit { it[KEY_CALENDAR] = until }
     }
 
-    fun remainingLabel(untilMillis: Long): String {
-        val minutes = Duration.between(Instant.now(), Instant.ofEpochMilli(untilMillis)).toMinutes()
-        if (minutes <= 0) return ""
-        val hours = minutes / 60
-        val mins = minutes % 60
-        return if (hours > 0) "${hours} h ${mins} min" else "$mins min"
+    fun remainingMillis(untilMillis: Long, nowMillis: Long = System.currentTimeMillis()): Long =
+        (untilMillis - nowMillis).coerceAtLeast(0L)
+
+    fun canAddMore(remainingMillis: Long): Boolean =
+        remainingMillis <= AD_FREE_ADD_MORE_THRESHOLD_MILLIS
+
+    /** Formato compacto para el contador: «2h 45m» o «3h». */
+    fun formatRemaining(millis: Long): String {
+        val totalMinutes = (millis.coerceAtLeast(0L) + 59_999L) / 60_000L
+        val hours = totalMinutes / 60
+        val minutes = totalMinutes % 60
+        return when {
+            hours > 0 && minutes > 0 -> "${hours}h ${minutes}m"
+            hours > 0 -> "${hours}h"
+            else -> "${minutes}m"
+        }
     }
+
+    fun remainingLabel(untilMillis: Long): String = formatRemaining(remainingMillis(untilMillis))
 }

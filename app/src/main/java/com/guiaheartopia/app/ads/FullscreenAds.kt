@@ -19,10 +19,11 @@ private const val TAG = "GuiaAds"
  * Anuncios a pantalla completa.
  *
  * Modo seguro por defecto: no se carga nada hasta que [preload] recibe un modo
- * consentido (PERSONALIZED o NON_PERSONALIZED). Solo se precarga el intersticial;
- * los recompensados se cargan bajo demanda para no lanzar tres peticiones a la vez.
- * El Activity se mantiene con [WeakReference] y las cargas usan applicationContext;
- * tras [onHostDestroyed] se ignoran todos los callbacks del SDK.
+ * consentido (PERSONALIZED o NON_PERSONALIZED). Se precargan el intersticial y el
+ * recompensado de «sin anuncios»; el del Calendario se carga bajo demanda. Tras
+ * mostrar o fallar un recompensado se precarga el siguiente para poder acumular
+ * varios videos seguidos. El Activity se mantiene con [WeakReference] y las cargas
+ * usan applicationContext; tras [onHostDestroyed] se ignoran los callbacks del SDK.
  */
 class FullscreenAds(activity: Activity) {
     private val appContext: Context = activity.applicationContext
@@ -65,9 +66,9 @@ class FullscreenAds(activity: Activity) {
             (mode == AdsMode.PERSONALIZED || mode == AdsMode.NON_PERSONALIZED)
 
     /**
-     * Precarga ligera e idempotente: únicamente el intersticial. Los recompensados
-     * se cargan cuando se solicitan (ver [showRewardedAdFree] y [showRewardedCalendar]).
-     * Un modo no consentido deja el objeto en modo seguro y limpia la caché.
+     * Precarga idempotente del intersticial y del recompensado de «sin anuncios».
+     * El del Calendario sigue cargándose solo cuando se solicita. Un modo no
+     * consentido deja el objeto en modo seguro y limpia la caché.
      */
     fun preload(mode: AdsMode) {
         lastMode = mode
@@ -79,8 +80,15 @@ class FullscreenAds(activity: Activity) {
             rewardedCalendar = null
             return
         }
-        if (adFree) return
-        loadInterstitial(mode)
+        if (!adFree) loadInterstitial(mode)
+        // También con el beneficio activo: así el botón «+3h» puede sumar otro video.
+        loadRewardedAdFree(mode)
+    }
+
+    /** Reintenta en segundo plano la carga del recompensado de «sin anuncios». */
+    fun preloadRewardedAdFree() {
+        if (destroyed || !consentAllowed) return
+        loadRewardedAdFree(lastMode)
     }
 
     /**

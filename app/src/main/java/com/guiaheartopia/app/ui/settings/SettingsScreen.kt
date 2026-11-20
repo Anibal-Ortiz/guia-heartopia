@@ -76,8 +76,7 @@ import com.guiaheartopia.app.domain.SampleIds
 import com.guiaheartopia.app.domain.ImportResult
 import com.guiaheartopia.app.domain.PlayerProfile
 import com.guiaheartopia.app.domain.ReminderPrefs
-import com.guiaheartopia.app.data.AdRewardStore
-import com.guiaheartopia.app.ui.components.NotebookCard
+import com.guiaheartopia.app.ui.components.AdFreeRewardCard
 import com.guiaheartopia.app.ui.components.PickerField
 import com.guiaheartopia.app.ui.components.PixelButton
 import com.guiaheartopia.app.ui.components.PixelCard
@@ -169,30 +168,10 @@ fun SettingsScreen(
                 PixelButton("Reintentar consentimiento de anuncios", onClick = onRetryAds, outlined = true)
             }
         }
-        NotebookCard {
-            Text(
-                "Ver un video y quitar anuncios por 24 horas",
-                style = MaterialTheme.typography.titleMedium,
-            )
-            val remaining = AdRewardStore.remainingLabel(adFreeUntilMillis)
-            if (remaining.isNotBlank()) {
-                Text(
-                    "Sin banners ni intersticiales. Quedan $remaining.",
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            } else {
-                Text(
-                    "El video quita banners, intersticiales y el video del Calendario durante 24 h.",
-                    style = MaterialTheme.typography.bodySmall,
-                )
-                PixelButton(
-                    "Ver video",
-                    onClick = onWatchAdFree,
-                    outlined = true,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-        }
+        AdFreeRewardCard(
+            untilMillis = adFreeUntilMillis,
+            onWatchAdFree = onWatchAdFree,
+        )
         androidx.compose.foundation.layout.Box(
             Modifier.onGloballyPositioned { remindersY = it.positionInParent().y.toInt() },
         ) {

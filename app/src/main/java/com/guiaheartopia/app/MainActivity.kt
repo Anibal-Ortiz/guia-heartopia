@@ -8,6 +8,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -42,6 +47,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -56,6 +62,9 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.ImageShader
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
@@ -99,6 +108,7 @@ import kotlinx.coroutines.withContext
 import com.guiaheartopia.app.reminders.ReminderScheduler
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.ui.GuideViewModel
+import com.guiaheartopia.app.ui.components.AdFreeStatusChip
 import com.guiaheartopia.app.ui.components.AndroidRobotIcon
 import com.guiaheartopia.app.ui.components.CozyMoonIcon
 import com.guiaheartopia.app.ui.components.CozySettingsIcon
@@ -232,8 +242,21 @@ class MainActivity : ComponentActivity() {
             }
             val ads = rememberAdsState(this, ui.ready && ui.profile.onboarded)
             val adRewards by AdRewardStore.observe(this).collectAsStateWithLifecycle(AdRewardState())
-            LaunchedEffect(adRewards.suppressAds) {
-                ads.setAdFree(adRewards.suppressAds)
+            // Un solo despertar al vencer el beneficio: mantiene banner y navegación
+            // sincronizados sin reevaluar el reloj en toda la pantalla cada 30 s.
+            var adFreeClock by remember { mutableLongStateOf(System.currentTimeMillis()) }
+            LaunchedEffect(adRewards.adFreeUntilMillis) {
+                adFreeClock = System.currentTimeMillis()
+                val wait = adRewards.adFreeUntilMillis - adFreeClock
+                if (wait > 0L) {
+                    delay(wait + 1_000L)
+                    adFreeClock = System.currentTimeMillis()
+                }
+            }
+            val suppressAds = !adRewards.loaded || adRewards.adFreeUntilMillis > adFreeClock
+            val adFreeActive = adRewards.loaded && adRewards.adFreeUntilMillis > adFreeClock
+            LaunchedEffect(suppressAds) {
+                ads.setAdFree(suppressAds)
             }
             LaunchedEffect(ui.profile) {
                 if (ui.ready && ui.profile.onboarded) ReminderScheduler.sync(this@MainActivity, ui.profile)
@@ -281,6 +304,8 @@ class MainActivity : ComponentActivity() {
                         vm = vm,
                         ads = ads,
                         adRewards = adRewards,
+                        adFreeActive = adFreeActive,
+                        suppressAds = suppressAds,
                         adsMode = ads.state.mode,
                         adsStatus = ads.state.status,
                         privacyOptions = ads.state.privacyOptionsRequired,
@@ -316,6 +341,8 @@ private fun AppScaffold(
     vm: GuideViewModel,
     ads: com.guiaheartopia.app.ads.AdsController,
     adRewards: AdRewardState,
+    adFreeActive: Boolean,
+    suppressAds: Boolean,
     adsMode: com.guiaheartopia.app.ads.AdsMode,
     adsStatus: String,
     privacyOptions: Boolean,
@@ -329,7 +356,7 @@ private fun AppScaffold(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val nav = rememberNavController()
-    val showBanner = ads.state.canShowBanner(adRewards.suppressAds)
+    val showBanner = ads.state.canShowBanner(suppressAds)
     var themeFlash by remember { mutableStateOf(false) }
     LaunchedEffect(themeFlash) {
         if (themeFlash) {
@@ -372,17 +399,56 @@ private fun AppScaffold(
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
     val watchAdFree: () -> Unit = {
-        ads.showRewardedAdFree(
-            onReward = { scope.launch { AdRewardStore.grantAdFreeHours(context) } },
-            onUnavailable = {
-                toast("El video no está listo todavía. Prueba en unos segundos.")
-            },
-        )
+        // Comprobación exacta en el momento del toque: el contador del chip se
+        // actualiza cada 30 s y no debe permitir un video que dé menos de 3 h.
+        val remaining = AdRewardStore.remainingMillis(adRewards.adFreeUntilMillis)
+        if (remaining > AdRewardStore.AD_FREE_ADD_MORE_THRESHOLD_MILLIS) {
+            toast("Máximo 12h alcanzado. Podrás sumar otro video cuando queden 9 h o menos.")
+        } else {
+            ads.showRewardedAdFree(
+                onReward = { scope.launch { AdRewardStore.grantAdFreeHours(context) } },
+                onUnavailable = {
+                    toast("No hay otro video listo aún, intenta en unos segundos")
+                    // La carga puede estar en vuelo o haber fallado (no-fill): se
+                    // reintenta en segundo plano para que el siguiente «+3h» esté listo.
+                    ads.preloadRewardedAdFree()
+                    scope.launch {
+                        delay(5_000L)
+                        ads.preloadRewardedAdFree()
+                    }
+                },
+            )
+        }
     }
     val backStack by nav.currentBackStackEntryAsState()
     val route = backStack?.destination?.route
     val tabs = AppNavigation.BottomNavTabs
     val tab = AppNavigation.tabForRoute(route)
+
+    // La fila del chip «Sin ads» se pliega al bajar por cualquier pantalla y
+    // vuelve a mostrarse solo al llegar arriba. La cabecera WikiFan no se mueve.
+    val adFreeBarVisible = remember { mutableStateOf(true) }
+    val adFreeBarScroll = remember {
+        object : NestedScrollConnection {
+            override fun onPostScroll(
+                consumed: Offset,
+                available: Offset,
+                source: NestedScrollSource,
+            ): Offset {
+                if (available.y > 0f && consumed.y == 0f) {
+                    // Desplazamiento hacia abajo sin contenido que consumir:
+                    // la lista ya está en el tope superior.
+                    adFreeBarVisible.value = true
+                } else if (consumed.y < 0f) {
+                    adFreeBarVisible.value = false
+                }
+                return Offset.Zero
+            }
+        }
+    }
+    // Cada pantalla nueva empieza en el tope: el chip debe estar visible.
+    LaunchedEffect(route) { adFreeBarVisible.value = true }
+
     fun navigateBottomTab(dest: String) {
         val policy = NavigationPolicy.onBottomTabSelected(dest)
         fun go() {
@@ -396,7 +462,7 @@ private fun AppScaffold(
             }
         }
         val sameTab = tab == dest
-        if (adRewards.suppressAds || sameTab) {
+        if (suppressAds || sameTab) {
             go()
             return
         }
@@ -415,7 +481,7 @@ private fun AppScaffold(
             return
         }
         val allow = com.guiaheartopia.app.domain.NavInterstitial.allow(
-            adFree = adRewards.adFreeActive,
+            adFree = adFreeActive,
             sameTab = sameTab,
             firstLaunch = com.guiaheartopia.app.ads.NavAdStore.isFirstSession(context),
             nowMillis = System.currentTimeMillis(),
@@ -426,7 +492,7 @@ private fun AppScaffold(
             return
         }
         ads.showInterstitial(
-            adFree = adRewards.adFreeActive,
+            adFree = adFreeActive,
             onDone = { go() },
             onShown = { com.guiaheartopia.app.ads.NavAdStore.markShown(context) },
         )
@@ -436,7 +502,7 @@ private fun AppScaffold(
         containerColor = androidx.compose.ui.graphics.Color.Transparent,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .windowInsetsPadding(
@@ -444,70 +510,91 @@ private fun AppScaffold(
                             .union(WindowInsets.displayCutout)
                             .only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
                     )
-                    .border(width = 1.dp, color = Line)
-                    .padding(horizontal = 16.dp, vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
+                    .border(width = 1.dp, color = Line),
             ) {
                 Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    WikiFanAppIcon(Modifier.size(36.dp))
-                    Column {
-                        Text(
-                            stringResource(R.string.app_name),
-                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.ExtraBold),
-                            color = Ink,
-                            maxLines = 2,
-                        )
-                        Text(
-                            "Hecha por fans",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Muted,
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    ) {
+                        WikiFanAppIcon(Modifier.size(36.dp))
+                        Column {
+                            Text(
+                                stringResource(R.string.app_name),
+                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.ExtraBold),
+                                color = Ink,
+                                maxLines = 2,
+                            )
+                            Text(
+                                "Hecha por fans",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Muted,
+                            )
+                        }
+                        ContentSyncBadge(
+                            busy = contentBusy || contentProgress != null,
+                            percent = contentPercent(contentProgress),
+                            done = contentDone,
+                            failed = contentFailed,
+                            onRetry = onRetryContent,
                         )
                     }
-                    ContentSyncBadge(
-                        busy = contentBusy || contentProgress != null,
-                        percent = contentPercent(contentProgress),
-                        done = contentDone,
-                        failed = contentFailed,
-                        onRetry = onRetryContent,
-                    )
-                }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .testTag("theme_toggle")
-                            .size(38.dp)
-                            .clip(CircleShape)
-                            .background(if (themeFlash) GreenSoft else PaperSubtle)
-                            .border(1.dp, if (themeFlash) Green else Line, CircleShape)
-                            .clickable { cycleTheme() }
-                            .semantics { contentDescription = "Cambiar tema" },
-                        contentAlignment = Alignment.Center,
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
-                        when (themeMode) {
-                            ThemeMode.SYSTEM -> AndroidRobotIcon(tint = Ink, size = 20.dp)
-                            ThemeMode.LIGHT -> CozySunIcon(tint = Ink, size = 20.dp)
-                            ThemeMode.DARK -> CozyMoonIcon(tint = Ink, size = 20.dp)
+                        Box(
+                            modifier = Modifier
+                                .testTag("theme_toggle")
+                                .size(38.dp)
+                                .clip(CircleShape)
+                                .background(if (themeFlash) GreenSoft else PaperSubtle)
+                                .border(1.dp, if (themeFlash) Green else Line, CircleShape)
+                                .clickable { cycleTheme() }
+                                .semantics { contentDescription = "Cambiar tema" },
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            when (themeMode) {
+                                ThemeMode.SYSTEM -> AndroidRobotIcon(tint = Ink, size = 20.dp)
+                                ThemeMode.LIGHT -> CozySunIcon(tint = Ink, size = 20.dp)
+                                ThemeMode.DARK -> CozyMoonIcon(tint = Ink, size = 20.dp)
+                            }
+                        }
+                        FeedbackMenu()
+                        Box(
+                            modifier = Modifier
+                                .testTag("open_settings")
+                                .size(38.dp)
+                                .clip(CircleShape)
+                                .background(PaperSubtle)
+                                .border(1.dp, Line, CircleShape)
+                                .clickable { nav.navigate("settings") },
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            CozySettingsIcon(tint = Ink, size = 18.dp)
                         }
                     }
-                    FeedbackMenu()
-                    Box(
+                }
+                AnimatedVisibility(
+                    visible = adRewards.loaded && adFreeBarVisible.value,
+                    enter = expandVertically() + fadeIn(),
+                    exit = shrinkVertically() + fadeOut(),
+                ) {
+                    Row(
                         modifier = Modifier
-                            .testTag("open_settings")
-                            .size(38.dp)
-                            .clip(CircleShape)
-                            .background(PaperSubtle)
-                            .border(1.dp, Line, CircleShape)
-                            .clickable { nav.navigate("settings") },
-                        contentAlignment = Alignment.Center,
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
                     ) {
-                        CozySettingsIcon(tint = Ink, size = 18.dp)
+                        AdFreeStatusChip(
+                            untilMillis = adRewards.adFreeUntilMillis,
+                            onWatchAdFree = watchAdFree,
+                        )
                     }
                 }
             }
@@ -550,6 +637,7 @@ private fun AppScaffold(
             navController = nav,
             startDestination = "home",
             modifier = Modifier
+                .nestedScroll(adFreeBarScroll)
                 .padding(padding)
                 .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
         ) {
@@ -558,7 +646,7 @@ private fun AppScaffold(
                     ui = ui,
                     onOpen = { dest -> nav.navigate(dest) },
                     onDismissReminderPrompt = vm::dismissReminderPrompt,
-                    adFreeActive = adRewards.adFreeActive,
+                    adFreeActive = adFreeActive,
                     onWatchAdFree = watchAdFree,
                     onPickAvatar = vm::saveAvatar,
                     onClearAvatar = vm::clearAvatar,

@@ -323,6 +323,11 @@ class AdsController(
         fullscreen.showRewardedAdFree(onReward, onUnavailable)
     }
 
+    /** Deja listo el siguiente video bonificado para acumular horas seguidas. */
+    fun preloadRewardedAdFree() {
+        fullscreen.preloadRewardedAdFree()
+    }
+
     fun showRewardedCalendar(onReward: () -> Unit, onUnavailable: () -> Unit) {
         fullscreen.showRewardedCalendar(onReward, onUnavailable)
     }

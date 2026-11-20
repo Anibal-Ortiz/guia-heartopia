@@ -2,7 +2,7 @@ package com.guiaheartopia.app.domain
 
 /**
  * Un intersticial solo al cambiar de pestaña, nunca en el primer inicio,
- * nunca con el beneficio de 24 h y nunca antes del intervalo mínimo.
+ * nunca con el beneficio «sin anuncios» activo y nunca antes del intervalo mínimo.
  */
 object NavInterstitial {
     const val MIN_GAP_MILLIS = 120_000L

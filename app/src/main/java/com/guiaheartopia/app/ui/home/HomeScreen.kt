@@ -541,8 +541,12 @@ fun HomeScreen(
 
         if (!adFreeActive) {
             NotebookCard {
+                Text(
+                    "Cada video elimina los anuncios por 3 horas (acumulable hasta 12 horas).",
+                    style = MaterialTheme.typography.bodySmall,
+                )
                 PixelButton(
-                    "Quitar anuncios 24 h con un video",
+                    "Ver video · +3h sin anuncios",
                     onClick = onWatchAdFree,
                     outlined = true,
                     modifier = Modifier.fillMaxWidth(),
