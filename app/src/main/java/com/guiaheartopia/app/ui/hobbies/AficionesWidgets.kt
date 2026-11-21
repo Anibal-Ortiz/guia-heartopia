@@ -131,21 +131,23 @@ fun StarPriceRow(
 }
 
 @Composable
-fun ConseguidoToggle(on: Boolean, onToggle: () -> Unit) {
+fun ConseguidoToggle(on: Boolean, onToggle: () -> Unit, compact: Boolean = false) {
     MarkIconButton(
         on = on,
         description = if (on) "Quitar conseguido" else "Marcar como conseguido",
         onClick = onToggle,
-    ) { ConseguidoMarkIcon(on = on) }
+        buttonSize = if (compact) 36.dp else 48.dp,
+    ) { ConseguidoMarkIcon(on = on, size = if (compact) 20.dp else 26.dp) }
 }
 
 @Composable
-fun CertificadoToggle(on: Boolean, onToggle: () -> Unit) {
+fun CertificadoToggle(on: Boolean, onToggle: () -> Unit, compact: Boolean = false) {
     MarkIconButton(
         on = on,
         description = if (on) "Quitar certificado" else "Marcar como certificado",
         onClick = onToggle,
-    ) { CertificadoMarkIcon(on = on) }
+        buttonSize = if (compact) 36.dp else 48.dp,
+    ) { CertificadoMarkIcon(on = on, size = if (compact) 20.dp else 26.dp) }
 }
 
 @Composable
@@ -155,14 +157,26 @@ fun AficionCertifyRow(
     certifiable: Boolean,
     onToggleFound: () -> Unit,
     onToggleCertified: () -> Unit,
+    compact: Boolean = false,
+    vertical: Boolean = false,
 ) {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-        ConseguidoToggle(found, onToggleFound)
+    val gap = if (compact) 6.dp else 8.dp
+    val marks: @Composable () -> Unit = {
+        ConseguidoToggle(found, onToggleFound, compact)
         if (certifiable) {
-            CertificadoToggle(certified, onToggleCertified)
+            CertificadoToggle(certified, onToggleCertified, compact)
         } else {
-            NoCertificableMarkButton()
+            NoCertificableMarkButton(size = if (compact) 20.dp else 26.dp, buttonSize = if (compact) 36.dp else 48.dp)
         }
+    }
+    if (vertical) {
+        Column(
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.spacedBy(gap),
+            content = { marks() },
+        )
+    } else {
+        Row(horizontalArrangement = Arrangement.spacedBy(gap), verticalAlignment = Alignment.CenterVertically, content = { marks() })
     }
 }
 

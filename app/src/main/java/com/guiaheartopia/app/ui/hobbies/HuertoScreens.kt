@@ -446,45 +446,55 @@ private fun SiembraCard(
     PixelCard(Modifier.clickable(onClick = onOpen).fillMaxWidth(), category = "Siembra") {
         Row(
             Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            AficionesImage(
-                imagen = entry.imagen,
-                sectionLabel = "Siembra",
-                size = 72.dp,
-                contentDescription = ImageZoom.enlargedDescription(entry.nombre),
-                onClick = { if (model != null) zoom = true },
-            )
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(entry.nombre, style = MaterialTheme.typography.titleMedium, color = Ink)
-                Text("Nivel ${entry.nivelSiembra}", style = MaterialTheme.typography.bodySmall, color = Muted)
-                entry.precioSemilla?.let {
-                    Text("Semilla $it", style = MaterialTheme.typography.bodySmall, color = Muted)
+            // 70 % del ancho para la ficha (imagen + texto), 30 % para los botones.
+            Row(
+                Modifier.weight(0.7f),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                AficionesImage(
+                    imagen = entry.imagen,
+                    sectionLabel = "Siembra",
+                    size = 64.dp,
+                    contentDescription = ImageZoom.enlargedDescription(entry.nombre),
+                    onClick = { if (model != null) zoom = true },
+                )
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(entry.nombre, style = MaterialTheme.typography.titleMedium, color = Ink)
+                    Text("Nivel ${entry.nivelSiembra}", style = MaterialTheme.typography.bodySmall, color = Muted)
+                    entry.precioSemilla?.let {
+                        Text("Semilla $it", style = MaterialTheme.typography.bodySmall, color = Muted)
+                    }
+                    if (entry.tiempoCrecimientoMinutos > 0) {
+                        Text(
+                            AficionesContent.formatGrowthMinutes(entry.tiempoCrecimientoMinutos),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = GreenDark,
+                        )
+                    }
+                    if (entry.precioVentaEstrellas.isNotEmpty()) {
+                        Text(
+                            "Venta ★1: ${entry.precioVentaEstrellas.first()}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Muted,
+                        )
+                    }
+                    entry.evento?.let { Text("Evento: $it", style = MaterialTheme.typography.bodySmall, color = Muted) }
                 }
-                if (entry.tiempoCrecimientoMinutos > 0) {
-                    Text(
-                        AficionesContent.formatGrowthMinutes(entry.tiempoCrecimientoMinutos),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = GreenDark,
-                    )
-                }
-                if (entry.precioVentaEstrellas.isNotEmpty()) {
-                    Text(
-                        "Venta ★1: ${entry.precioVentaEstrellas.first()}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Muted,
-                    )
-                }
-                entry.evento?.let { Text("Evento: $it", style = MaterialTheme.typography.bodySmall, color = Muted) }
             }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                // Botón de alarma a la IZQUIERDA de la marca de obtención.
-                // Campana tachada (🔕) cuando ya hay alarma; misma campana pero mayor tamaño.
+            // Los botones se apilan en esa columna estrecha: alarma, conseguido y certificado.
+            Column(
+                Modifier.weight(0.3f),
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
                 if (entry.tiempoCrecimientoMinutos > 0) {
                     Box(
                         modifier = Modifier
-                            .size(48.dp)
+                            .size(36.dp)
                             .clip(RoundedCornerShape(999.dp))
                             .background(if (activeCrop != null) GreenSoft else Paper)
                             .border(1.dp, if (activeCrop != null) GreenTint else Line, RoundedCornerShape(999.dp))
@@ -505,7 +515,7 @@ private fun SiembraCard(
                             ),
                             contentDescription = null,
                             contentScale = ContentScale.Fit,
-                            modifier = Modifier.size(40.dp),
+                            modifier = Modifier.size(28.dp),
                         )
                     }
                 }
@@ -515,6 +525,8 @@ private fun SiembraCard(
                     certifiable = certifiable,
                     onToggleFound = onToggleFound,
                     onToggleCertified = onToggleCertified,
+                    compact = true,
+                    vertical = true,
                 )
             }
         }
@@ -546,35 +558,46 @@ private fun FlorCard(
     PixelCard(Modifier.clickable(onClick = onOpen).fillMaxWidth(), category = entry.nombre) {
         Row(
             Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            AficionesImage(
-                imagen = entry.imagen,
-                sectionLabel = entry.nombre,
-                size = 72.dp,
-                contentDescription = ImageZoom.enlargedDescription(entry.nombre),
-                onClick = { if (model != null) zoom = true },
-            )
-            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(entry.nombre, style = MaterialTheme.typography.titleMedium, color = Ink)
-                entry.nivelSiembra?.let { Text("Nivel $it", style = MaterialTheme.typography.bodySmall, color = Muted) }
-                entry.precioSemilla?.let { Text("Semilla $it", style = MaterialTheme.typography.bodySmall, color = Muted) }
-                entry.tiempoCrecimientoMinutos?.let {
-                    Text(
-                        AficionesContent.formatGrowthMinutes(it),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = GreenDark,
-                    )
+            // Mismo reparto 70/30 que en las siembras.
+            Row(
+                Modifier.weight(0.7f),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                AficionesImage(
+                    imagen = entry.imagen,
+                    sectionLabel = entry.nombre,
+                    size = 64.dp,
+                    contentDescription = ImageZoom.enlargedDescription(entry.nombre),
+                    onClick = { if (model != null) zoom = true },
+                )
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(entry.nombre, style = MaterialTheme.typography.titleMedium, color = Ink)
+                    entry.nivelSiembra?.let { Text("Nivel $it", style = MaterialTheme.typography.bodySmall, color = Muted) }
+                    entry.precioSemilla?.let { Text("Semilla $it", style = MaterialTheme.typography.bodySmall, color = Muted) }
+                    entry.tiempoCrecimientoMinutos?.let {
+                        Text(
+                            AficionesContent.formatGrowthMinutes(it),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = GreenDark,
+                        )
+                    }
                 }
             }
-            AficionCertifyRow(
-                found = found,
-                certified = certified,
-                certifiable = certifiable,
-                onToggleFound = onToggleFound,
-                onToggleCertified = onToggleCertified,
-            )
+            Column(Modifier.weight(0.3f), horizontalAlignment = Alignment.End) {
+                AficionCertifyRow(
+                    found = found,
+                    certified = certified,
+                    certifiable = certifiable,
+                    onToggleFound = onToggleFound,
+                    onToggleCertified = onToggleCertified,
+                    compact = true,
+                    vertical = true,
+                )
+            }
         }
     }
 }

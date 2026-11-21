@@ -73,7 +73,11 @@ fun NoCertificableMarkIcon(
  * padre no abra la ficha), destella en rojo un instante y muestra un aviso breve.
  */
 @Composable
-fun NoCertificableMarkButton(modifier: Modifier = Modifier, size: Dp = 26.dp) {
+fun NoCertificableMarkButton(
+    modifier: Modifier = Modifier,
+    size: Dp = 26.dp,
+    buttonSize: Dp = 48.dp,
+) {
     val context = LocalContext.current
     var flash by remember { mutableStateOf(false) }
 
@@ -87,7 +91,7 @@ fun NoCertificableMarkButton(modifier: Modifier = Modifier, size: Dp = 26.dp) {
     val alertRed = AlertRed
     Box(
         modifier = modifier
-            .size(48.dp)
+            .size(buttonSize)
             .clip(CircleShape)
             .background(if (flash) AlertSoft else Paper)
             .border(width = 1.dp, color = if (flash) alertRed else Line, shape = CircleShape)
@@ -111,12 +115,13 @@ fun MarkIconButton(
     description: String,
     onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    buttonSize: Dp = 48.dp,
     icon: @Composable () -> Unit,
 ) {
     val clickable = if (onClick == null) Modifier else Modifier.clickable(onClick = onClick)
     Box(
         modifier
-            .size(48.dp)
+            .size(buttonSize)
             .clip(CircleShape)
             .background(if (on) HoneySoft else Paper)
             .border(width = if (on) 2.dp else 1.dp, color = if (on) Ochre else Line, shape = CircleShape)
