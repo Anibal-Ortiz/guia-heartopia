@@ -35,8 +35,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.data.AdRewardStore
-import com.guiaheartopia.app.ui.theme.AlertRed
-import com.guiaheartopia.app.ui.theme.AlertSoft
 import com.guiaheartopia.app.ui.theme.Green
 import com.guiaheartopia.app.ui.theme.GreenDark
 import com.guiaheartopia.app.ui.theme.GreenSoft
@@ -153,39 +151,17 @@ fun AdFreeStatusChip(
 /**
  * Cápsula de las alarmas de siembra: copia de [AdFreeStatusChip] con sus propios
  * textos y su propio beneficio (3 h por video, acumulable hasta 12 h).
- * [alert] es el aviso temporal que se muestra al tocar una alarma bloqueada.
  */
 @Composable
 fun AlarmAdStatusChip(
     untilMillis: Long,
     onWatchAlarmAd: () -> Unit,
-    alert: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     val remaining = rememberAdFreeRemainingMillis(untilMillis)
     val active = remaining > 0L
     val canAddMore = AdRewardStore.canAddCropAlarmMore(remaining)
     val shape = RoundedCornerShape(999.dp)
-
-    if (alert) {
-        Row(
-            modifier = modifier
-                .clip(shape)
-                .background(AlertSoft)
-                .border(1.dp, AlertRed, shape)
-                .padding(horizontal = 12.dp, vertical = 6.dp)
-                .semantics { contentDescription = "Debes ver un anuncio para activar las alarmas" },
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = "Debes ver un anuncio para activar las alarmas",
-                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
-                color = AlertRed,
-                maxLines = 2,
-            )
-        }
-        return
-    }
 
     val background = if (active) GreenSoft else PaperSubtle
     val border = if (active) GreenTint else Line

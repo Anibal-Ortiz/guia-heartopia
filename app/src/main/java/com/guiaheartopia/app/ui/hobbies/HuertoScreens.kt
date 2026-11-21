@@ -1,5 +1,6 @@
 package com.guiaheartopia.app.ui.hobbies
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -13,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -121,15 +123,6 @@ fun HuertoScreen(
     // Búsqueda por nombre (misma experiencia que bichos/peces)
     var query by rememberSaveable { mutableStateOf("") }
 
-    // Aviso temporal en la cápsula al tocar una alarma sin beneficio activo.
-    var alarmHint by remember { mutableStateOf(false) }
-    LaunchedEffect(alarmHint) {
-        if (alarmHint) {
-            delay(1_500L)
-            alarmHint = false
-        }
-    }
-
     // Estado de la lista de siembras: permite saltar a una siembra desde la cápsula
     val siembrasListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -187,23 +180,20 @@ fun HuertoScreen(
             enter = expandVertically() + fadeIn(),
             exit = shrinkVertically() + fadeOut(),
         ) {
-            Row(
+            FlowRow(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 AlarmAdStatusChip(
                     untilMillis = cropAlarmUntilMillis,
                     onWatchAlarmAd = onWatchAlarmAd,
-                    alert = alarmHint,
-                    modifier = Modifier.weight(1f, fill = false),
                 )
                 if (ui.activeCrops.isNotEmpty()) {
                     ActiveCropsPanel(
                         crops = ui.activeCrops,
                         siembras = bundle.siembras,
                         onCropClick = onCropClick,
-                        modifier = Modifier.weight(1f, fill = false),
                     )
                 }
             }
@@ -225,8 +215,11 @@ fun HuertoScreen(
                 onToggleCertified = onToggleSiembraCertified,
                 cropAlarmUnlocked = cropAlarmUnlocked,
                 onAlarmLocked = {
-                    alarmHint = true
-                    alarmVisible = true
+                    Toast.makeText(
+                        context,
+                        "Debes ver un vídeo para activar las alarmas de siembra",
+                        Toast.LENGTH_SHORT,
+                    ).show()
                 },
                 modifier = Modifier.weight(1f),
             )
@@ -275,14 +268,14 @@ private fun ActiveCropsPanel(
     if (active.isEmpty()) return
     val siembraById = remember(siembras) { siembras.associateBy { it.id } }
     val shape = RoundedCornerShape(999.dp)
-    Row(
+    FlowRow(
         modifier = modifier
             .clip(shape)
             .background(GreenSoft)
             .border(1.dp, GreenTint, shape)
             .padding(start = 9.dp, end = 9.dp, top = 5.dp, bottom = 5.dp),
-        verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         active.forEach { crop ->
             val remaining = (crop.readyAtEpochMilli - now).coerceAtLeast(0)
