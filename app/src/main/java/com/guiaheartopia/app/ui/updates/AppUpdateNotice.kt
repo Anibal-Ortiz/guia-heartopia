@@ -14,6 +14,7 @@ import com.google.android.play.core.install.model.UpdateAvailability
 private const val PACKAGE_NAME = "com.guiaheartopia.app"
 private const val PLAY_URL = "https://play.google.com/store/apps/details?id=$PACKAGE_NAME"
 private const val MARKET_URL = "market://details?id=$PACKAGE_NAME"
+private const val PLAY_STORE_PACKAGE = "com.android.vending"
 
 /**
  * Consulta a Google Play si hay una versión nueva. Si la consulta falla (debug instalado a mano,
@@ -32,9 +33,14 @@ fun checkPlayUpdate(context: Context, onResult: (Boolean) -> Unit) {
     }
 }
 
-/** Abre la ficha de la app en Google Play (o el navegador si no hay app de Play instalada). */
+/**
+ * Abre la ficha de la app en Google Play (o el navegador si no hay app de Play instalada).
+ * Fijamos el paquete de Play Store para que un `market://` no lo capture la tienda del
+ * fabricante (Galaxy Store, AppGallery, Mi GetApps, ...), que también registra ese esquema.
+ */
 fun openPlayStore(context: Context) {
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(MARKET_URL))
+        .setPackage(PLAY_STORE_PACKAGE)
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     val opened = try {
         context.startActivity(intent)
