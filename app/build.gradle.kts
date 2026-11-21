@@ -290,6 +290,9 @@ android {
 
     buildTypes {
         debug {
+            // Package distinto para instalar el debug junto a la versión de Play Store.
+            // El manifiesto usa ${applicationId} para las authorities, así que se adaptan solas.
+            applicationIdSuffix = ".test"
             // ID oficiales de prueba de Google. Solo esta variante.
             buildConfigField("String", "ADMOB_APP_ID", "\"$testAdMobApp\"")
             buildConfigField("String", "ADMOB_BANNER_UNIT_ID", "\"$testAdMobBanner\"")
