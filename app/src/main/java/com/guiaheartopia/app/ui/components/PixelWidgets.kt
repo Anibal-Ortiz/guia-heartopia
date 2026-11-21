@@ -219,11 +219,13 @@ fun PillTabs(
     tabs: List<String>,
     selected: Int,
     modifier: Modifier = Modifier,
+    fillWidth: Boolean = true,
+    compact: Boolean = false,
     onSelect: (Int) -> Unit,
 ) {
     Row(
         modifier
-            .fillMaxWidth()
+            .then(if (fillWidth) Modifier.fillMaxWidth() else Modifier)
             .horizontalScroll(rememberScrollState()),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -256,7 +258,10 @@ fun PillTabs(
                 }
                 Text(
                     label,
-                    modifier = Modifier.padding(horizontal = 18.dp, vertical = 8.dp),
+                    modifier = Modifier.padding(
+                        horizontal = if (compact) 10.dp else 18.dp,
+                        vertical = 8.dp,
+                    ),
                     style = MaterialTheme.typography.labelMedium.copy(
                         fontWeight = if (on) FontWeight.Bold else FontWeight.SemiBold,
                     ),
@@ -364,13 +369,20 @@ fun PixelNavBar(
 
 @Composable
 fun LineNavIcon(icon: NavIcon, tint: Color, filled: Boolean = false) {
-    when (icon) {
-        NavIcon.HOME -> CozyHomeIcon(tint = tint, size = 22.dp, filled = filled)
-        NavIcon.GUIDE -> CozyGuideIcon(tint = tint, size = 22.dp, filled = filled)
-        NavIcon.CALENDAR -> CozyCalendarIcon(tint = tint, size = 22.dp, filled = filled)
-        NavIcon.HOBBIES -> CozyHobbiesIcon(tint = tint, size = 22.dp, filled = filled)
-        NavIcon.CODES -> CozyTicketIcon(tint = tint, size = 22.dp, filled = filled)
+    val res = when (icon) {
+        NavIcon.HOME -> com.guiaheartopia.app.R.drawable.ic_nav_home
+        NavIcon.GUIDE -> com.guiaheartopia.app.R.drawable.ic_nav_hobbies
+        NavIcon.CALENDAR -> com.guiaheartopia.app.R.drawable.ic_nav_calendar
+        NavIcon.HOBBIES -> com.guiaheartopia.app.R.drawable.ic_nav_hobbies
+        NavIcon.CODES -> com.guiaheartopia.app.R.drawable.ic_nav_codes
     }
+    androidx.compose.foundation.Image(
+        painter = androidx.compose.ui.res.painterResource(res),
+        contentDescription = null,
+        modifier = Modifier.size(if (filled) 34.dp else 32.dp),
+        contentScale = androidx.compose.ui.layout.ContentScale.Fit,
+        alpha = if (filled) 1f else 0.55f,
+    )
 }
 
 @Composable

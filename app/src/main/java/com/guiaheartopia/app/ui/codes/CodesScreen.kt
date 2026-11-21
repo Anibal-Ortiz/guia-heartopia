@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -30,6 +32,7 @@ import com.guiaheartopia.app.domain.RedeemCodes
 import com.guiaheartopia.app.ui.components.EmptyStateCard
 import com.guiaheartopia.app.ui.components.PixelButton
 import com.guiaheartopia.app.ui.components.PixelCard
+import com.guiaheartopia.app.ui.components.SectionBanner
 import com.guiaheartopia.app.ui.contentRevision
 import com.guiaheartopia.app.ui.theme.Ink
 import com.guiaheartopia.app.ui.theme.Muted
@@ -61,18 +64,24 @@ fun CodesScreen(
         if (next.toSet() != seen.toSet()) onSeen(next)
     }
     var showExpired by rememberSaveable { mutableStateOf(false) }
+    Column(Modifier.fillMaxSize()) {
+    Box(Modifier.graphicsLayer { clip = false }.padding(16.dp)) {
+        SectionBanner(
+            image = com.guiaheartopia.app.R.drawable.header_codigos,
+            title = "Códigos",
+            subtitle = "Canjea tus recompensas",
+            imageOffsetY = 96.dp,
+            imageScale = 2.2f,
+        )
+    }
     Column(
         Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
+            .weight(1f)
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text(
-            "Códigos",
-            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.ExtraBold),
-            color = Ink,
-        )
         Text("Vigentes", style = MaterialTheme.typography.titleMedium, color = Ink)
         if (active.isEmpty()) {
             EmptyStateCard(
@@ -109,6 +118,7 @@ fun CodesScreen(
                 }
             }
         }
+    }
     }
 }
 

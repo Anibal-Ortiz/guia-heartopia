@@ -228,13 +228,13 @@ fun GuideScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         // Cabecera fija; la lista del catálogo se desplaza sola (LazyColumn con keys).
-        if (onBack != null) {
-            androidx.compose.material3.TextButton(onClick = onBack) { Text("Atrás") }
-        }
         SectionBanner(
             image = com.guiaheartopia.app.R.drawable.header_guia,
             title = "Naturaleza",
             subtitle = "Peces, aves, insectos y fauna",
+            onBack = onBack,
+            imageOffsetY = 96.dp,
+            imageScale = 2.2f,
         )
 
         PillTabs(Tabs, tab) { tab = it }
@@ -396,7 +396,7 @@ private fun AnimalsTab(
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun GuideSearchField(
+fun GuideSearchField(
     query: String,
     onQueryChange: (String) -> Unit,
     placeholder: String,

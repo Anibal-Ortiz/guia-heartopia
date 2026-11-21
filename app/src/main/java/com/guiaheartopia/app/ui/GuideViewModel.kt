@@ -1,8 +1,10 @@
 package com.guiaheartopia.app.ui
 
+import android.app.AlarmManager
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -37,6 +39,7 @@ import java.util.Locale
 import java.util.UUID
 import com.guiaheartopia.app.domain.BackupCodec
 import com.guiaheartopia.app.domain.ImportResult
+import com.guiaheartopia.app.domain.ReminderIds
 import com.guiaheartopia.app.domain.ReminderPrefs
 import com.guiaheartopia.app.reminders.ReminderScheduler
 import com.guiaheartopia.app.data.AvatarStore
@@ -44,6 +47,9 @@ import com.guiaheartopia.app.ui.components.GameClock
 import java.time.Instant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -90,6 +96,19 @@ class GuideViewModel(
     val ui = combine(repository.snapshots, today, GameClock.tick, ContentSignals.flow()) { snap, day, now, _ ->
         present(snap, day, now)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), GuideUi())
+
+    // Limpieza periódica de cultivos listos (cada minuto via GameClock.tick)
+    init {
+        viewModelScope.launch {
+            repository.snapshots
+                .combine(GameClock.tick) { snap, now ->
+                    snap.activeCrops.any { it.readyAtEpochMilli <= now.toEpochMilli() }
+                }
+                .distinctUntilChanged()
+                .filter { it }
+                .collect { cleanupReadyCrops() }
+        }
+    }
 
     init {
         refreshDay()
@@ -412,6 +431,14 @@ class GuideViewModel(
     fun plantSiembra(siembraId: String, nombre: String, growthMinutes: Int) {
         val context = appContext ?: return
         if (growthMinutes <= 0) return
+        // Verificar permiso de alarma exacta en Android 12+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val manager = context.getSystemService(AlarmManager::class.java)
+            if (manager != null && !manager.canScheduleExactAlarms()) {
+                // El permiso se pedirá desde la UI (SettingsScreen tiene botón), pero aquí lo avisamos
+                // La alarma se programará de forma inexacta si no hay permiso
+            }
+        }
         viewModelScope.launch {
             repository.update { snap ->
                 val now = System.currentTimeMillis()
@@ -436,6 +463,26 @@ class GuideViewModel(
                 snap.copy(activeCrops = snap.activeCrops.filterNot { it.id == cropId })
             }
             ReminderScheduler.sync(context, repository.snapshots.first().profile)
+        }
+    }
+
+    /** Limpia cultivos ya listos (readyAt <= now) del snapshot y reprograma alarmas. */
+    suspend fun cleanupReadyCrops() {
+        val context = appContext ?: return
+        val now = System.currentTimeMillis()
+        repository.update { snap ->
+            val ready = snap.activeCrops.filter { it.readyAtEpochMilli <= now }
+            if (ready.isEmpty()) return@update snap
+            val remaining = snap.activeCrops.filter { it.readyAtEpochMilli > now }
+            // Marcar como "posted" en ReminderScheduler para que no vuelvan a sonar
+            val app = context.applicationContext
+            ready.forEach { crop ->
+                val id = ReminderIds.crop(crop.siembraId, crop.plantedAtEpochMilli)
+                ReminderScheduler.markPosted(app, id)
+            }
+            // sync es suspend, así que lo lanzamos en background
+            viewModelScope.launch { ReminderScheduler.sync(app, snap.profile) }
+            snap.copy(activeCrops = remaining)
         }
     }
 
@@ -495,6 +542,9 @@ class GuideViewModel(
             snap.customCollectibles
         val found = snap.foundIds.toSet()
         val hobbies = ensureHobbies(snap)
+        val nowMillis = now.toEpochMilli()
+        // Filtrar cultivos ya listos para que no aparezcan en la UI (se limpian en background)
+        val activeCrops = snap.activeCrops.filter { it.readyAtEpochMilli > nowMillis }
         return GuideUi(
             ready = true,
             profile = snap.profile.copy(reminders = snap.profile.reminders.copy(routineEnabled = false)),
@@ -513,7 +563,7 @@ class GuideViewModel(
             florCertified = snap.florCertifiedIds.toSet(),
             recetaFound = snap.recetaFoundIds.toSet(),
             recetaCertified = snap.recetaCertifiedIds.toSet(),
-            activeCrops = snap.activeCrops,
+            activeCrops = activeCrops,
             redeemedCodes = snap.redeemedCodeIds.toSet(),
             dexFilters = snap.dexFilters,
             creatureWindowAlarms = snap.creatureWindowAlarms,

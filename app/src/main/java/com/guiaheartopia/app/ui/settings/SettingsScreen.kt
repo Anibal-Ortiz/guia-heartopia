@@ -38,6 +38,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -109,18 +110,24 @@ fun SettingsScreen(
             scroll.animateScrollTo((remindersY - 24).coerceAtLeast(0))
         }
     }
-    Column(
-        Modifier
-            .fillMaxSize()
-            .verticalScroll(scroll)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        com.guiaheartopia.app.ui.components.SectionBanner(
-            image = com.guiaheartopia.app.R.drawable.header_aficiones,
-            title = "Ajustes",
-            subtitle = "Contenido, anuncios y créditos",
-        )
+    Column(Modifier.fillMaxSize()) {
+        androidx.compose.foundation.layout.Box(Modifier.graphicsLayer { clip = false }.padding(16.dp)) {
+            com.guiaheartopia.app.ui.components.SectionBanner(
+                image = com.guiaheartopia.app.R.drawable.header_ajustes,
+                title = "Ajustes",
+                subtitle = "Contenido, anuncios y créditos",
+                imageOffsetY = 96.dp,
+                imageScale = 2.35f,
+            )
+        }
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .verticalScroll(scroll)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
         Text(stringResource(R.string.app_full_name), style = MaterialTheme.typography.titleMedium)
         Text(StoreCopy.UNOFFICIAL, style = MaterialTheme.typography.bodyMedium)
         ContentUpdateCard()
@@ -222,6 +229,7 @@ fun SettingsScreen(
             }
         }
         Text("Versión ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})", style = MaterialTheme.typography.bodySmall)
+        }
     }
 }
 

@@ -70,7 +70,11 @@ fun FeedbackMenu() {
             .semantics { contentDescription = "Comentarios y preguntas" },
         contentAlignment = Alignment.Center,
     ) {
-        CozyChatIcon(tint = Ink, size = 18.dp)
+        androidx.compose.foundation.Image(
+            painter = androidx.compose.ui.res.painterResource(com.guiaheartopia.app.R.drawable.ic_feedback),
+            contentDescription = null,
+            modifier = Modifier.size(30.dp),
+        )
     }
 
     if (showDialog) {

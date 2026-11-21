@@ -695,3 +695,39 @@ fun CozyChatIcon(
         drawLine(tint, Offset(w * 0.32f, h * 0.54f), Offset(w * 0.56f, h * 0.54f), stroke * 0.8f, cap = StrokeCap.Round)
     }
 }
+
+/**
+ * Reloj para el aviso de cultivo. `off` dibuja una raya diagonal (alarma ya activa).
+ */
+@Composable
+fun CozyClockIcon(
+    modifier: Modifier = Modifier,
+    tint: Color = Color.Unspecified,
+    size: Dp = 24.dp,
+    off: Boolean = false,
+) {
+    Canvas(modifier.size(size)) {
+        val w = this.size.width
+        val h = this.size.height
+        val cx = w * 0.5f
+        val cy = h * 0.52f
+        val r = w * 0.34f
+        val stroke = 2.dp.toPx()
+        // Círculo del reloj
+        drawCircle(tint, r, Offset(cx, cy), style = Stroke(stroke))
+        // Manecillas: hora (arriba) y minuto (derecha)
+        drawLine(tint, Offset(cx, cy), Offset(cx, cy - r * 0.55f), stroke, cap = StrokeCap.Round)
+        drawLine(tint, Offset(cx, cy), Offset(cx + r * 0.6f, cy), stroke * 0.85f, cap = StrokeCap.Round)
+        // Raya diagonal cuando la alarma ya está puesta
+        if (off) {
+            val m = stroke * 1.1f
+            drawLine(
+                tint,
+                Offset(w * 0.14f, h * 0.86f),
+                Offset(w * 0.86f, h * 0.14f),
+                m,
+                cap = StrokeCap.Round,
+            )
+        }
+    }
+}

@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
@@ -30,10 +31,22 @@ object GameClock {
         }
     }.stateIn(scope, SharingStarted.Eagerly, Instant.now())
 
+    /** Tick cada 5 segundos para contadores de cultivos (más fluido). */
+    val tick5s: StateFlow<Instant> = flow {
+        while (true) {
+            emit(Instant.now())
+            delay(5_000L)
+        }
+    }.stateIn(scope, SharingStarted.Eagerly, Instant.now())
+
     /** Valor actual sin necesidad de estar en composición (útil en ViewModels). */
     fun now(): Instant = tick.value
 }
 
-/** Suscribe la composición al tick compartido y devuelve el instante vigente. */
+/** Suscribe la composición al tick compartido (1 min) y devuelve el instante vigente. */
 @Composable
 fun rememberMinuteTick(): Instant = GameClock.tick.collectAsState().value
+
+/** Suscribe la composición al tick de 5 segundos para contadores fluidos. */
+@Composable
+fun remember5SecondTick(): Instant = GameClock.tick5s.collectAsState().value

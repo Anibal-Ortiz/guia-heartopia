@@ -560,11 +560,16 @@ private fun AppScaffold(
                                 .semantics { contentDescription = "Cambiar tema" },
                             contentAlignment = Alignment.Center,
                         ) {
-                            when (themeMode) {
-                                ThemeMode.SYSTEM -> AndroidRobotIcon(tint = Ink, size = 20.dp)
-                                ThemeMode.LIGHT -> CozySunIcon(tint = Ink, size = 20.dp)
-                                ThemeMode.DARK -> CozyMoonIcon(tint = Ink, size = 20.dp)
+                            val themeIcon = when (themeMode) {
+                                ThemeMode.SYSTEM -> com.guiaheartopia.app.R.drawable.ic_theme_system
+                                ThemeMode.LIGHT -> com.guiaheartopia.app.R.drawable.ic_theme_sun
+                                ThemeMode.DARK -> com.guiaheartopia.app.R.drawable.ic_theme_moon
                             }
+                            androidx.compose.foundation.Image(
+                                painter = androidx.compose.ui.res.painterResource(themeIcon),
+                                contentDescription = null,
+                                modifier = Modifier.size(32.dp),
+                            )
                         }
                         FeedbackMenu()
                         Box(
@@ -577,7 +582,11 @@ private fun AppScaffold(
                                 .clickable { nav.navigate("settings") },
                             contentAlignment = Alignment.Center,
                         ) {
-                            CozySettingsIcon(tint = Ink, size = 18.dp)
+                            androidx.compose.foundation.Image(
+                                painter = androidx.compose.ui.res.painterResource(com.guiaheartopia.app.R.drawable.ic_settings),
+                                contentDescription = null,
+                                modifier = Modifier.size(30.dp),
+                            )
                         }
                     }
                 }
@@ -650,6 +659,7 @@ private fun AppScaffold(
                     onWatchAdFree = watchAdFree,
                     onPickAvatar = vm::saveAvatar,
                     onClearAvatar = vm::clearAvatar,
+                    onCancelCrop = vm::cancelCrop,
                 )
             }
             composable("aficiones") {
@@ -675,6 +685,7 @@ private fun AppScaffold(
                     onToggleFlorFound = vm::toggleFlorFound,
                     onToggleFlorCertified = vm::toggleFlorCertified,
                     onCancelCrop = vm::cancelCrop,
+                    onPlant = { id, nombre, minutos -> vm.plantSiembra(id, nombre, minutos) },
                 )
             }
             composable("huerto/flores") {
@@ -688,6 +699,7 @@ private fun AppScaffold(
                     onToggleFlorFound = vm::toggleFlorFound,
                     onToggleFlorCertified = vm::toggleFlorCertified,
                     onCancelCrop = vm::cancelCrop,
+                    onPlant = { id, nombre, minutos -> vm.plantSiembra(id, nombre, minutos) },
                     initialTab = 1,
                 )
             }

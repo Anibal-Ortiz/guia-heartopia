@@ -32,6 +32,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
@@ -168,19 +169,22 @@ fun CocinaScreen(
         emptyList()
     }
 
+    Column(Modifier.fillMaxSize()) {
+    Box(Modifier.graphicsLayer { clip = false }.padding(16.dp)) {
+        SectionBanner(
+            image = com.guiaheartopia.app.R.drawable.header_cocina,
+            title = "Cocina",
+            subtitle = "${bundle.recetas.size} recetas",
+            onBack = onBack,
+            imageOffsetY = 110.dp,
+            imageScale = 2.2f,
+        )
+    }
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxWidth().weight(1f),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        item(key = "back") { TextButton(onClick = onBack) { Text("Atrás") } }
-        item(key = "banner") {
-            SectionBanner(
-                image = com.guiaheartopia.app.R.drawable.header_aficiones,
-                title = "Cocina",
-                subtitle = "${bundle.recetas.size} recetas",
-            )
-        }
         item(key = "tabs") {
             PillTabs(CocinaTabs, tab) {
                 tab = it
@@ -296,6 +300,7 @@ fun CocinaScreen(
                 }
             }
         }
+    }
     }
 }
 

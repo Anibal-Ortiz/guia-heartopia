@@ -7,15 +7,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,6 +27,8 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.Dp
@@ -103,27 +108,43 @@ fun SectionBanner(
     subtitle: String,
     modifier: Modifier = Modifier,
     bleed: Dp = 16.dp,
+    compact: Boolean = false,
+    onBack: (() -> Unit)? = null,
+    imageOffsetY: Dp = 0.dp,
+    imageScale: Float = 2.6f,
 ) {
     Box(
         modifier
             .bleed(bleed)
-            .heightIn(min = 132.dp)
+            .heightIn(min = if (compact) 92.dp else 132.dp)
             .background(Cream),
     ) {
-        Image(
-            painter = painterResource(image),
-            contentDescription = null,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .fillMaxWidth(0.42f)
-                .heightIn(max = 96.dp),
-            contentScale = ContentScale.Fit,
-            alignment = Alignment.BottomEnd,
-        )
+        // Imagen al DOBLE de tamaño: escalada ×2 desde la esquina inferior derecha.
+        // Sin clip: la imagen puede sobresalir hacia arriba sin recortarse.
+        Box(Modifier.matchParentSize()) {
+            Image(
+                painter = painterResource(image),
+                contentDescription = null,
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .offset(y = imageOffsetY)
+                    .fillMaxHeight()
+                    .fillMaxWidth(if (compact) 0.62f else 0.7f)
+                    .graphicsLayer {
+                        // Escalado mayor para que, aunque se baje con imageOffsetY,
+                        // la imagen siga sobresaliendo por encima del banner.
+                        scaleX = imageScale
+                        scaleY = imageScale
+                        transformOrigin = TransformOrigin(1f, 1f) // ancla abajo-derecha
+                    },
+                contentScale = ContentScale.Fit,
+                alignment = Alignment.BottomEnd,
+            )
+        }
         Column(
             Modifier
                 .align(Alignment.TopStart)
-                .fillMaxWidth(0.78f)
+                .fillMaxWidth(if (compact) 0.72f else 0.78f)
                 .background(
                     Brush.horizontalGradient(
                         listOf(
@@ -133,17 +154,31 @@ fun SectionBanner(
                         ),
                     ),
                 )
-                .padding(start = 16.dp, top = 14.dp, end = 12.dp, bottom = 16.dp),
+                .padding(
+                    start = 16.dp,
+                    top = if (compact) 6.dp else 8.dp,
+                    end = 12.dp,
+                    bottom = if (compact) 10.dp else 16.dp,
+                ),
         ) {
+            // Botón Atrás integrado en la cabecera (sin fila propia)
+            if (onBack != null) {
+                TextButton(
+                    onClick = onBack,
+                    contentPadding = PaddingValues(0.dp),
+                ) {
+                    Text("Atrás", style = MaterialTheme.typography.labelMedium)
+                }
+            }
             Text(
                 title,
-                style = MaterialTheme.typography.headlineSmall,
+                style = if (compact) MaterialTheme.typography.titleLarge else MaterialTheme.typography.headlineSmall,
                 color = Ink,
                 softWrap = true,
             )
             Text(
                 subtitle,
-                style = MaterialTheme.typography.bodyMedium,
+                style = if (compact) MaterialTheme.typography.bodySmall else MaterialTheme.typography.bodyMedium,
                 color = BannerSubtitle,
                 softWrap = true,
             )

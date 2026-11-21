@@ -54,13 +54,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
+import com.guiaheartopia.app.data.AficionesCatalog
 import com.guiaheartopia.app.data.AvatarStore
+import com.guiaheartopia.app.domain.ActiveCrop
+import com.guiaheartopia.app.domain.AficionesContent
 import com.guiaheartopia.app.domain.CatalogLabels
 import com.guiaheartopia.app.domain.CatalogMarks
 import com.guiaheartopia.app.domain.RedeemCodes
 import com.guiaheartopia.app.domain.ReminderPlan
+import com.guiaheartopia.app.domain.SiembraEntry
+import com.guiaheartopia.app.ui.components.AficionesImage
 import com.guiaheartopia.app.ui.components.CertificadoMarkIcon
 import com.guiaheartopia.app.ui.components.ConseguidoMarkIcon
+import com.guiaheartopia.app.ui.components.remember5SecondTick
 import com.guiaheartopia.app.domain.DexSchedule
 import com.guiaheartopia.app.domain.ResourceCalendar
 import com.guiaheartopia.app.domain.SkyWeather
@@ -125,6 +131,7 @@ fun HomeScreen(
     onWatchAdFree: () -> Unit = {},
     onPickAvatar: (Uri) -> Unit = {},
     onClearAvatar: () -> Unit = {},
+    onCancelCrop: (String) -> Unit = {},
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val revision = com.guiaheartopia.app.ui.contentRevision()
@@ -296,6 +303,65 @@ fun HomeScreen(
                     onClick = { onOpen("settings/recordatorios") },
                     modifier = Modifier.fillMaxWidth(),
                 )
+            }
+        }
+
+        // Panel compacto de cultivos activos (solo los que no están listos) - clickable para ir a Huerto
+        val nowMillis5s = remember5SecondTick().toEpochMilli()
+        val activeCrops = ui.activeCrops.filter { it.readyAtEpochMilli > nowMillis5s }
+        if (activeCrops.isNotEmpty()) {
+            val aficiones = remember(revision) { AficionesCatalog.load(context) }
+            val siembraById = remember(aficiones) { aficiones.siembras.associateBy { it.id } }
+            PixelCard(
+                container = Paper,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp)
+                    .clickable { onOpen("huerto") }
+                    .semantics { contentDescription = "Ver cultivos en huerto" }
+            ) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    Text("🌱 Cultivos en curso", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold), color = Muted)
+                }
+                Spacer(Modifier.height(4.dp))
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    activeCrops.forEach { crop ->
+                        val remaining = (crop.readyAtEpochMilli - nowMillis5s).coerceAtLeast(0)
+                        val label = AficionesContent.formatGrowthMinutes((remaining / 60_000).toInt())
+                        val siembra = siembraById[crop.siembraId]
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Miniatura de la siembra (como la planta genérica)
+                            if (siembra != null) {
+                                AficionesImage(
+                                    imagen = siembra.imagen,
+                                    sectionLabel = "Siembra",
+                                    size = 40.dp,
+                                    shapeRadius = 8.dp,
+                                    contentDescription = crop.nombre,
+                                )
+                            }
+                            Column(Modifier.weight(1f)) {
+                                Text(crop.nombre, style = MaterialTheme.typography.bodyMedium, color = Ink)
+                                Text("Listo en $label", style = MaterialTheme.typography.labelSmall, color = GreenDark)
+                            }
+                            // X para cancelar esta alarma (consuma el click, no navega)
+                            Box(
+                                modifier = Modifier
+                                    .size(28.dp)
+                                    .clip(CircleShape)
+                                    .clickable { onCancelCrop(crop.id) }
+                                    .semantics { contentDescription = "Cancelar aviso de ${crop.nombre}" },
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Text("×", style = MaterialTheme.typography.titleMedium, color = Muted)
+                            }
+                        }
+                    }
+                }
             }
         }
 

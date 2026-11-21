@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
@@ -66,21 +67,24 @@ fun HobbiesScreen(
     onChange: (id: String, level: Int?, max: Int?, note: String?) -> Unit,
     onBack: (() -> Unit)? = null,
 ) {
-    Column(
-        Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        if (onBack != null) {
-            TextButton(onClick = onBack) { Text("Atrás") }
+    Column(Modifier.fillMaxSize()) {
+        Box(Modifier.graphicsLayer { clip = false }.padding(16.dp)) {
+            com.guiaheartopia.app.ui.components.SectionBanner(
+                image = com.guiaheartopia.app.R.drawable.header_niveles,
+                title = "Niveles",
+                subtitle = "Tus oficios, con su tope",
+                onBack = onBack,
+                imageOffsetY = 128.dp,
+            )
         }
-        com.guiaheartopia.app.ui.components.SectionBanner(
-            image = com.guiaheartopia.app.R.drawable.header_aficiones,
-            title = "Niveles",
-            subtitle = "Tus oficios, con su tope",
-        )
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
         Text(
             "Cinco oficios fijos. Cada uno guarda tu nivel y una nota.",
             style = MaterialTheme.typography.bodySmall,
@@ -93,6 +97,7 @@ fun HobbiesScreen(
         }
 
         Spacer(Modifier.height(8.dp))
+        }
     }
 }
 

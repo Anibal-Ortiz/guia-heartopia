@@ -82,13 +82,19 @@ object ReminderScheduler {
         val expired = notices.filter { !it.fireAt.isAfter(now) }
         val stillPosted = posted.toMutableSet()
         expired.forEach { stillPosted += it.id }
-        val diff = ReminderSync.plan(previous, stillPosted, future)
-        diff.cancel.forEach { ReminderAlarms.cancel(app, it) }
-        diff.enqueue.forEach { ReminderAlarms.schedule(app, it) }
-        val stillWanted = future.map { it.id }.toSet()
+
+        // Reprogramar SIEMPRE todas las alarmas futuras. AlarmManager.setExact con el
+        // mismo requestCode sobrescribe la alarma previa, así que es idempotente.
+        // Esto recupera alarmas perdidas tras force-stop/reinicio: el set ENQUEUED
+        // persiste pero el AlarmManager se vacía, y `keep` solía impedir re-agendarlas.
+        val wantedFutureIds = future.map { it.id }.toSet()
+        val toCancel = (previous - wantedFutureIds) - stillPosted
+        toCancel.forEach { ReminderAlarms.cancel(app, it) }
+        future.forEach { ReminderAlarms.schedule(app, it) }
+
         store.edit()
-            .putStringSet(ENQUEUED, diff.keep + diff.enqueue.map { it.id })
-            .putStringSet(POSTED, stillPosted.intersect(stillWanted + expired.map { it.id }.toSet()))
+            .putStringSet(ENQUEUED, wantedFutureIds)
+            .putStringSet(POSTED, stillPosted.intersect(wantedFutureIds + expired.map { it.id }.toSet()))
             .apply()
     }
 

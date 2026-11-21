@@ -1,7 +1,17 @@
 package com.guiaheartopia.app.ui.hobbies
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -10,8 +20,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -22,23 +35,32 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.guiaheartopia.app.data.AficionesCatalog
 import com.guiaheartopia.app.domain.ActiveCrop
 import com.guiaheartopia.app.domain.AficionesContent
 import com.guiaheartopia.app.domain.AficionesMarks
-import com.guiaheartopia.app.domain.CreatureAvailability
 import com.guiaheartopia.app.domain.FlorEntry
-import com.guiaheartopia.app.domain.LevelFilter
 import com.guiaheartopia.app.domain.RecetaEntry
 import com.guiaheartopia.app.domain.SiembraEntry
+import com.guiaheartopia.app.domain.TextMatch
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.domain.ImageZoom
 import com.guiaheartopia.app.ui.components.AficionesImage
@@ -46,19 +68,22 @@ import com.guiaheartopia.app.ui.components.ComingSoonCard
 import com.guiaheartopia.app.ui.components.CreatureZoomDialog
 import com.guiaheartopia.app.ui.components.EmptyStateCard
 import com.guiaheartopia.app.ui.components.LabelValue
+import com.guiaheartopia.app.ui.components.remember5SecondTick
 import com.guiaheartopia.app.ui.components.rememberAficionesModel
-import com.guiaheartopia.app.ui.components.rememberMinuteTick
-import com.guiaheartopia.app.ui.guide.LevelDropdown
 import com.guiaheartopia.app.ui.components.PillTabs
 import com.guiaheartopia.app.ui.components.PixelButton
 import com.guiaheartopia.app.ui.components.PixelCard
 import com.guiaheartopia.app.ui.components.SectionBanner
 import com.guiaheartopia.app.ui.contentRevision
+import com.guiaheartopia.app.ui.guide.GuideSearchField
 import com.guiaheartopia.app.ui.theme.GreenDark
 import com.guiaheartopia.app.ui.theme.GreenSoft
+import com.guiaheartopia.app.ui.theme.GreenTint
 import com.guiaheartopia.app.ui.theme.Ink
+import com.guiaheartopia.app.ui.theme.Line
 import com.guiaheartopia.app.ui.theme.Muted
-import java.time.Instant
+import com.guiaheartopia.app.ui.theme.Paper
+import kotlinx.coroutines.launch
 
 private val HuertoTabs = listOf("Siembras", "Flores")
 
@@ -73,6 +98,7 @@ fun HuertoScreen(
     onToggleFlorFound: (String) -> Unit,
     onToggleFlorCertified: (String, Boolean) -> Unit,
     onCancelCrop: (String) -> Unit,
+    onPlant: (String, String, Int) -> Unit,
     initialTab: Int = 0,
 ) {
     val context = LocalContext.current
@@ -84,20 +110,73 @@ fun HuertoScreen(
         return
     }
 
+    // Búsqueda por nombre (misma experiencia que bichos/peces)
+    var query by rememberSaveable { mutableStateOf("") }
+
+    // Estado de la lista de siembras: permite saltar a una siembra desde la cápsula
+    val siembrasListState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+    val onCropClick: (String) -> Unit = { siembraId ->
+        tab = 0 // asegurar pestaña Siembras
+        scope.launch {
+            // El item 0 es el buscador, así que sumamos 1 al índice de la siembra
+            val index = bundle.siembras
+                .filter { TextMatch.contains(it.nombre, query) }
+                .sortedBy { it.nombre }
+                .indexOfFirst { it.id == siembraId }
+            if (index >= 0) siembrasListState.animateScrollToItem(index + 1)
+        }
+    }
+
+    // Mismo comportamiento que el chip «Sin ads»: se pliega al bajar y vuelve
+    // a mostrarse solo al llegar arriba.
+    var alarmVisible by remember { mutableStateOf(true) }
+    val alarmScroll = remember {
+        object : NestedScrollConnection {
+            override fun onPostScroll(
+                consumed: Offset,
+                available: Offset,
+                source: NestedScrollSource,
+            ): Offset {
+                if (available.y > 0f && consumed.y == 0f) {
+                    // Lista en el tope superior: mostrar
+                    alarmVisible = true
+                } else if (consumed.y < 0f) {
+                    // Bajando: ocultar
+                    alarmVisible = false
+                }
+                return Offset.Zero
+            }
+        }
+    }
+
     Column(
         Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp)
+            .nestedScroll(alarmScroll),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        TextButton(onClick = onBack) { Text("Atrás") }
         SectionBanner(
-            image = com.guiaheartopia.app.R.drawable.header_aficiones,
+            image = com.guiaheartopia.app.R.drawable.header_huerto,
             title = "Huerto",
             subtitle = "Siembras y flores",
+            compact = true,
+            onBack = onBack,
+            imageOffsetY = 96.dp,
         )
-        if (ui.activeCrops.isNotEmpty()) {
-            ActiveCropsPanel(ui.activeCrops, onCancelCrop)
+        AnimatedVisibility(
+            visible = alarmVisible,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut(),
+        ) {
+            if (ui.activeCrops.isNotEmpty()) {
+                ActiveCropsPanel(
+                    crops = ui.activeCrops,
+                    siembras = bundle.siembras,
+                    onCropClick = onCropClick,
+                )
+            }
         }
         PillTabs(HuertoTabs, tab) { tab = it }
         when (tab) {
@@ -105,7 +184,13 @@ fun HuertoScreen(
                 siembras = bundle.siembras,
                 found = ui.huertoFound,
                 certified = ui.huertoCertified,
+                activeCrops = ui.activeCrops,
+                listState = siembrasListState,
+                query = query,
+                onQueryChange = { query = it },
                 onOpen = onOpenSiembra,
+                onPlant = onPlant,
+                onCancelCrop = onCancelCrop,
                 onToggleFound = onToggleSiembraFound,
                 onToggleCertified = onToggleSiembraCertified,
                 modifier = Modifier.weight(1f),
@@ -114,6 +199,8 @@ fun HuertoScreen(
                 flores = bundle.flores,
                 found = ui.florFound,
                 certified = ui.florCertified,
+                query = query,
+                onQueryChange = { query = it },
                 onOpen = onOpenFlor,
                 onToggleFound = onToggleFlorFound,
                 onToggleCertified = onToggleFlorCertified,
@@ -137,20 +224,57 @@ fun ProntoScreen(title: String, subtitle: String, onBack: () -> Unit) {
     }
 }
 
+/**
+ * Píldora verde idéntica al chip «Sin ads»: una mini figura de cada cultivo y
+ * su tiempo restante, sin palabras. Se pliega al bajar por la pantalla.
+ */
 @Composable
-private fun ActiveCropsPanel(crops: List<ActiveCrop>, onCancel: (String) -> Unit) {
-    val now = rememberMinuteTick().toEpochMilli()
-    PixelCard(category = "Siembra") {
-        Text("Cultivos en curso", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold))
-        crops.forEach { crop ->
+private fun ActiveCropsPanel(
+    crops: List<ActiveCrop>,
+    siembras: List<SiembraEntry>,
+    onCropClick: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val now = remember5SecondTick().toEpochMilli()
+    val active = crops.filter { it.readyAtEpochMilli > now }
+    if (active.isEmpty()) return
+    val siembraById = remember(siembras) { siembras.associateBy { it.id } }
+    val shape = RoundedCornerShape(999.dp)
+    Row(
+        modifier = modifier
+            .clip(shape)
+            .background(GreenSoft)
+            .border(1.dp, GreenTint, shape)
+            .padding(start = 9.dp, end = 9.dp, top = 5.dp, bottom = 5.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        active.forEach { crop ->
             val remaining = (crop.readyAtEpochMilli - now).coerceAtLeast(0)
             val label = AficionesContent.formatGrowthMinutes((remaining / 60_000).toInt())
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Column {
-                    Text(crop.nombre, style = MaterialTheme.typography.bodyLarge, color = Ink)
-                    Text("Listo en $label", style = MaterialTheme.typography.bodySmall, color = GreenDark)
+            val siembra = siembraById[crop.siembraId]
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                // Mini figura del cultivo: al tocarla hace scroll hasta la siembra (sin abrir detalle)
+                if (siembra != null) {
+                    AficionesImage(
+                        imagen = siembra.imagen,
+                        sectionLabel = "Siembra",
+                        size = 22.dp,
+                        shapeRadius = 6.dp,
+                        contentDescription = "Ir a ${crop.nombre} en la lista",
+                        onClick = { onCropClick(crop.siembraId) },
+                    )
                 }
-                TextButton(onClick = { onCancel(crop.id) }) { Text("Cancelar") }
+                // Tiempo restante, en verde y sin palabras
+                Text(
+                    label,
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                    color = GreenDark,
+                    maxLines = 1,
+                )
             }
         }
     }
@@ -161,57 +285,42 @@ private fun SiembrasTab(
     siembras: List<SiembraEntry>,
     found: Set<String>,
     certified: Set<String>,
+    activeCrops: List<ActiveCrop>,
+    listState: LazyListState,
+    query: String,
+    onQueryChange: (String) -> Unit,
     onOpen: (String) -> Unit,
+    onPlant: (String, String, Int) -> Unit,
+    onCancelCrop: (String) -> Unit,
     onToggleFound: (String) -> Unit,
     onToggleCertified: (String, Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var sortByLevel by rememberSaveable { mutableStateOf(false) }
-    var onlyConseguidas by rememberSaveable { mutableStateOf<Boolean?>(null) }
-    var onlyCertificadas by rememberSaveable { mutableStateOf<Boolean?>(null) }
-    val catalogMax = remember(siembras) { LevelFilter.maximum(siembras.map { it.nivelSiembra }) ?: 0 }
-    var chosenLevel by rememberSaveable { mutableIntStateOf(-1) }
-    val levelCap = if (chosenLevel < 0) null else chosenLevel.coerceAtMost(catalogMax)
-
-    val filtered = siembras.filter { entry ->
-        val levelOk = CreatureAvailability.levelAllowed(entry.nivelSiembra, levelCap)
-        val markOk = when (onlyConseguidas) {
-            true -> entry.id in found
-            false -> entry.id !in found
-            else -> true
-        }
-        val certOk = when (onlyCertificadas) {
-            true -> entry.id in certified
-            false -> entry.id !in certified
-            else -> true
-        }
-        levelOk && markOk && certOk
-    }
-    val sorted = if (sortByLevel) {
-        filtered.sortedWith(compareBy({ it.nivelSiembra }, { it.nombre }))
-    } else {
-        filtered.sortedBy { it.nombre }
-    }
-    val grouped = sorted.groupBy { it.nivelSiembra }.toSortedMap()
+    val nameSuggestions = remember(siembras) { siembras.map { it.nombre }.distinct().sorted() }
+    val sorted = siembras
+        .filter { TextMatch.contains(it.nombre, query) }
+        .sortedBy { it.nombre }
+    val cropBySiembra = remember(activeCrops) { activeCrops.associateBy { it.siembraId } }
 
     LazyColumn(
+        state = listState,
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(bottom = 16.dp),
     ) {
-        item(key = "cabecera") {
+        // Buscador como item: se desplaza con la lista y se oculta al bajar (como bichos)
+        item(key = "buscador") {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                AficionesListHeader(
-                    found = found.size,
-                    total = siembras.size,
-                    sortByLevel = sortByLevel,
-                    onSort = { sortByLevel = !sortByLevel },
-                    onlyConseguidas = onlyConseguidas,
-                    onConseguidas = { onlyConseguidas = it },
-                    onlyCertificadas = onlyCertificadas,
-                    onCertificadas = { onlyCertificadas = it },
+                GuideSearchField(
+                    query = query,
+                    onQueryChange = onQueryChange,
+                    placeholder = "Buscar siembra...",
+                    leadingIcon = "🔍",
+                    draftKey = "huerto:siembras:name",
+                    shape = RoundedCornerShape(14.dp),
+                    dense = true,
+                    suggestions = nameSuggestions,
                 )
-                LevelDropdown(selected = levelCap, maximum = catalogMax, onSelect = { chosenLevel = it ?: -1 })
             }
         }
         if (sorted.isEmpty()) {
@@ -221,26 +330,30 @@ private fun SiembrasTab(
                     message = if (siembras.isEmpty()) {
                         "Las siembras aparecerán cuando se publique el catálogo."
                     } else {
-                        "Ninguna siembra coincide con los filtros."
+                        "Ninguna siembra coincide con la búsqueda."
                     },
                     icon = if (siembras.isEmpty()) "🌱" else "🔍",
                 )
             }
         }
-        grouped.forEach { (level, entries) ->
-            item(key = "nivel:$level") {
-                Text("Nivel $level", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold), color = Muted)
-            }
-            items(entries, key = { it.id }) { entry ->
-                SiembraCard(
-                    entry,
-                    found = entry.id in found,
-                    certified = entry.id in certified,
-                    onOpen = { onOpen(entry.id) },
-                    onToggleFound = { onToggleFound(entry.id) },
-                    onToggleCertified = { onToggleCertified(entry.id, AficionesMarks.certifiableSiembra(entry)) },
-                )
-            }
+        items(sorted, key = { it.id }) { entry ->
+            SiembraCard(
+                entry,
+                found = entry.id in found,
+                certified = entry.id in certified,
+                activeCrop = cropBySiembra[entry.id],
+                onOpen = { onOpen(entry.id) },
+                onToggleAlarm = {
+                    val crop = cropBySiembra[entry.id]
+                    if (crop != null) {
+                        onCancelCrop(crop.id)
+                    } else {
+                        onPlant(entry.id, entry.nombre, entry.tiempoCrecimientoMinutos)
+                    }
+                },
+                onToggleFound = { onToggleFound(entry.id) },
+                onToggleCertified = { onToggleCertified(entry.id, AficionesMarks.certifiableSiembra(entry)) },
+            )
         }
     }
 }
@@ -250,61 +363,35 @@ private fun FloresTab(
     flores: List<FlorEntry>,
     found: Set<String>,
     certified: Set<String>,
+    query: String,
+    onQueryChange: (String) -> Unit,
     onOpen: (String) -> Unit,
     onToggleFound: (String) -> Unit,
     onToggleCertified: (String, Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var sortByLevel by rememberSaveable { mutableStateOf(false) }
-    var onlyConseguidas by rememberSaveable { mutableStateOf<Boolean?>(null) }
-    var onlyCertificadas by rememberSaveable { mutableStateOf<Boolean?>(null) }
-    val catalogMax = remember(flores) { LevelFilter.maximum(flores.map { it.nivelSiembra }) ?: 0 }
-    var chosenLevel by rememberSaveable { mutableIntStateOf(-1) }
-    val levelCap = if (chosenLevel < 0) null else chosenLevel.coerceAtMost(catalogMax)
-
-    val filtered = flores.filter { entry ->
-        val levelOk = CreatureAvailability.levelAllowed(entry.nivelSiembra, levelCap)
-        val markOk = when (onlyConseguidas) {
-            true -> entry.id in found
-            false -> entry.id !in found
-            else -> true
-        }
-        val certOk = when (onlyCertificadas) {
-            true -> entry.id in certified
-            false -> entry.id !in certified
-            else -> true
-        }
-        levelOk && markOk && certOk
-    }
-    val sorted = if (sortByLevel) {
-        filtered.sortedWith(compareBy({ it.nivelSiembra ?: 99 }, { it.nombre }))
-    } else {
-        filtered.sortedBy { it.nombre }
-    }
-    val withLevel = sorted.filter { it.nivelSiembra != null }.groupBy { it.nivelSiembra!! }.toSortedMap()
-    val sinNivel = sorted.filter { it.nivelSiembra == null }
+    val nameSuggestions = remember(flores) { flores.map { it.nombre }.distinct().sorted() }
+    val sorted = flores
+        .filter { TextMatch.contains(it.nombre, query) }
+        .sortedBy { it.nombre }
 
     LazyColumn(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(bottom = 16.dp),
     ) {
-        item(key = "cabecera") {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                AficionesListHeader(
-                    found = found.size,
-                    total = flores.size,
-                    sortByLevel = sortByLevel,
-                    onSort = { sortByLevel = !sortByLevel },
-                    onlyConseguidas = onlyConseguidas,
-                    onConseguidas = { onlyConseguidas = it },
-                    onlyCertificadas = onlyCertificadas,
-                    onCertificadas = { onlyCertificadas = it },
-                )
-                if (catalogMax > 0) {
-                    LevelDropdown(selected = levelCap, maximum = catalogMax, onSelect = { chosenLevel = it ?: -1 })
-                }
-            }
+        // Buscador como item: se desplaza con la lista y se oculta al bajar (como bichos)
+        item(key = "buscador") {
+            GuideSearchField(
+                query = query,
+                onQueryChange = onQueryChange,
+                placeholder = "Buscar flor...",
+                leadingIcon = "🔍",
+                draftKey = "huerto:flores:name",
+                shape = RoundedCornerShape(14.dp),
+                dense = true,
+                suggestions = nameSuggestions,
+            )
         }
         if (sorted.isEmpty()) {
             item(key = "vacio") {
@@ -313,41 +400,21 @@ private fun FloresTab(
                     message = if (flores.isEmpty()) {
                         "Las flores aparecerán cuando se publique el catálogo."
                     } else {
-                        "Ninguna flor coincide con los filtros."
+                        "Ninguna flor coincide con la búsqueda."
                     },
                     icon = if (flores.isEmpty()) "🌱" else "🔍",
                 )
             }
         }
-        withLevel.forEach { (level, entries) ->
-            item(key = "nivel:$level") {
-                Text("Nivel $level", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold), color = Muted)
-            }
-            items(entries, key = { it.id }) { entry ->
-                FlorCard(
-                    entry,
-                    found = entry.id in found,
-                    certified = entry.id in certified,
-                    onOpen = { onOpen(entry.id) },
-                    onToggleFound = { onToggleFound(entry.id) },
-                    onToggleCertified = { onToggleCertified(entry.id, AficionesMarks.certifiableFlor(entry)) },
-                )
-            }
-        }
-        if (sinNivel.isNotEmpty()) {
-            item(key = "sin-nivel") {
-                Text("Sin nivel", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold), color = Muted)
-            }
-            items(sinNivel, key = { it.id }) { entry ->
-                FlorCard(
-                    entry,
-                    found = entry.id in found,
-                    certified = entry.id in certified,
-                    onOpen = { onOpen(entry.id) },
-                    onToggleFound = { onToggleFound(entry.id) },
-                    onToggleCertified = { onToggleCertified(entry.id, AficionesMarks.certifiableFlor(entry)) },
-                )
-            }
+        items(sorted, key = { it.id }) { entry ->
+            FlorCard(
+                entry,
+                found = entry.id in found,
+                certified = entry.id in certified,
+                onOpen = { onOpen(entry.id) },
+                onToggleFound = { onToggleFound(entry.id) },
+                onToggleCertified = { onToggleCertified(entry.id, AficionesMarks.certifiableFlor(entry)) },
+            )
         }
     }
 }
@@ -357,7 +424,9 @@ private fun SiembraCard(
     entry: SiembraEntry,
     found: Boolean,
     certified: Boolean,
+    activeCrop: ActiveCrop?,
     onOpen: () -> Unit,
+    onToggleAlarm: () -> Unit,
     onToggleFound: () -> Unit,
     onToggleCertified: () -> Unit,
 ) {
@@ -409,7 +478,37 @@ private fun SiembraCard(
                 }
                 entry.evento?.let { Text("Evento: $it", style = MaterialTheme.typography.bodySmall, color = Muted) }
             }
-            Column(horizontalAlignment = Alignment.End) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                // Botón de alarma a la IZQUIERDA de la marca de obtención.
+                // Campana tachada (🔕) cuando ya hay alarma; misma campana pero mayor tamaño.
+                if (entry.tiempoCrecimientoMinutos > 0) {
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(RoundedCornerShape(999.dp))
+                            .background(if (activeCrop != null) GreenSoft else Paper)
+                            .border(1.dp, if (activeCrop != null) GreenTint else Line, RoundedCornerShape(999.dp))
+                            .clickable(onClick = onToggleAlarm)
+                            .semantics {
+                                contentDescription = if (activeCrop != null) {
+                                    "Quitar alarma de ${entry.nombre}"
+                                } else {
+                                    "Poner alarma de ${entry.nombre}"
+                                }
+                            },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Image(
+                            painter = painterResource(
+                                if (activeCrop != null) com.guiaheartopia.app.R.drawable.ic_clock_alarm_off
+                                else com.guiaheartopia.app.R.drawable.ic_clock_alarm,
+                            ),
+                            contentDescription = null,
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier.size(40.dp),
+                        )
+                    }
+                }
                 AficionCertifyRow(
                     found = found,
                     certified = certified,
