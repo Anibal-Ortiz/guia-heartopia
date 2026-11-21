@@ -35,6 +35,8 @@ class FullscreenAds(activity: Activity) {
     private var rewardedAdFreeLoading = false
     private var rewardedCalendar: RewardedAd? = null
     private var rewardedCalendarLoading = false
+    private var rewardedAlarm: RewardedAd? = null
+    private var rewardedAlarmLoading = false
 
     private var adFree = false
     private var destroyed = false
@@ -56,9 +58,11 @@ class FullscreenAds(activity: Activity) {
         interstitial = null
         rewardedAdFree = null
         rewardedCalendar = null
+        rewardedAlarm = null
         interstitialLoading = false
         rewardedAdFreeLoading = false
         rewardedCalendarLoading = false
+        rewardedAlarmLoading = false
     }
 
     private fun canLoad(mode: AdsMode): Boolean =
@@ -78,11 +82,14 @@ class FullscreenAds(activity: Activity) {
             interstitial = null
             rewardedAdFree = null
             rewardedCalendar = null
+            rewardedAlarm = null
             return
         }
         if (!adFree) loadInterstitial(mode)
         // También con el beneficio activo: así el botón «+3h» puede sumar otro video.
         loadRewardedAdFree(mode)
+        // Las alarmas de siembra son independientes del beneficio «sin anuncios».
+        loadRewardedAlarm(mode)
     }
 
     /** Reintenta en segundo plano la carga del recompensado de «sin anuncios». */
@@ -101,6 +108,7 @@ class FullscreenAds(activity: Activity) {
         interstitial = null
         rewardedAdFree = null
         rewardedCalendar = null
+        rewardedAlarm = null
     }
 
     fun showInterstitial(adFree: Boolean, onDismiss: () -> Unit = {}, onShown: () -> Unit = {}) {
@@ -178,6 +186,37 @@ class FullscreenAds(activity: Activity) {
         }
     }
 
+    /**
+     * Video para desbloquear alarmas de siembra. No consulta [adFree]: es un
+     * recompensado solicitado por el usuario y las 3 h de «sin anuncios» no lo
+     * sustituyen ni lo bloquean.
+     */
+    fun showRewardedAlarm(
+        onReward: () -> Unit,
+        onUnavailable: () -> Unit,
+    ) {
+        if (destroyed || !consentAllowed || !AdConfig.hasRewardedAlarm) {
+            onUnavailable()
+            return
+        }
+        val ad = rewardedAlarm
+        if (ad == null) {
+            loadRewardedAlarm(lastMode)
+            onUnavailable()
+            return
+        }
+        showRewarded(ad, onReward, onUnavailable) {
+            rewardedAlarm = null
+            loadRewardedAlarm(lastMode)
+        }
+    }
+
+    /** Reintenta en segundo plano la carga del recompensado de alarmas. */
+    fun preloadRewardedAlarm() {
+        if (destroyed || !consentAllowed) return
+        loadRewardedAlarm(lastMode)
+    }
+
     private fun loadInterstitial(mode: AdsMode) {
         lastMode = mode
         if (!canLoad(mode)) return
@@ -219,6 +258,20 @@ class FullscreenAds(activity: Activity) {
             onLoaded = { rewardedAdFree = it; rewardedAdFreeLoading = false },
             onFailed = { rewardedAdFreeLoading = false },
             label = "rewarded_adfree",
+        )
+    }
+
+    private fun loadRewardedAlarm(mode: AdsMode) {
+        lastMode = mode
+        if (!canLoad(mode) || !AdConfig.hasRewardedAlarm) return
+        loadRewarded(
+            AdConfig.rewardedAlarmUnitId,
+            rewardedAlarmLoading,
+            rewardedAlarm != null,
+            onStart = { rewardedAlarmLoading = true },
+            onLoaded = { rewardedAlarm = it; rewardedAlarmLoading = false },
+            onFailed = { rewardedAlarmLoading = false },
+            label = "rewarded_alarm",
         )
     }
 

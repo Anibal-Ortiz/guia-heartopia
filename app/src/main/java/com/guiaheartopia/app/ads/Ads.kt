@@ -49,9 +49,11 @@ object AdConfig {
     val interstitialUnitId: String = BuildConfig.ADMOB_INTERSTITIAL_UNIT_ID
     val rewardedCalendarUnitId: String = BuildConfig.ADMOB_REWARDED_CALENDAR_UNIT_ID
     val rewardedAdFreeUnitId: String = BuildConfig.ADMOB_REWARDED_ADFREE_UNIT_ID
+    val rewardedAlarmUnitId: String = BuildConfig.ADMOB_REWARDED_ALARM_UNIT_ID
     val hasInterstitial: Boolean = interstitialUnitId.isNotBlank()
     val hasRewardedCalendar: Boolean = rewardedCalendarUnitId.isNotBlank()
     val hasRewardedAdFree: Boolean = rewardedAdFreeUnitId.isNotBlank()
+    val hasRewardedAlarm: Boolean = rewardedAlarmUnitId.isNotBlank()
     val usesGoogleTestIds: Boolean = BuildConfig.ADS_USE_GOOGLE_TEST_IDS
 
     /**
@@ -330,6 +332,15 @@ class AdsController(
 
     fun showRewardedCalendar(onReward: () -> Unit, onUnavailable: () -> Unit) {
         fullscreen.showRewardedCalendar(onReward, onUnavailable)
+    }
+
+    /** Recompensado de alarmas: no se ve afectado por el beneficio «sin anuncios». */
+    fun showRewardedAlarm(onReward: () -> Unit, onUnavailable: () -> Unit) {
+        fullscreen.showRewardedAlarm(onReward, onUnavailable)
+    }
+
+    fun preloadRewardedAlarm() {
+        fullscreen.preloadRewardedAlarm()
     }
 
     /** Solo se inicializa el SDK si UMP permite pedir anuncios. */

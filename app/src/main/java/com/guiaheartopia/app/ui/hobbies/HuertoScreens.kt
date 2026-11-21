@@ -31,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -64,6 +65,7 @@ import com.guiaheartopia.app.domain.TextMatch
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.domain.ImageZoom
 import com.guiaheartopia.app.ui.components.AficionesImage
+import com.guiaheartopia.app.ui.components.AlarmAdStatusChip
 import com.guiaheartopia.app.ui.components.ComingSoonCard
 import com.guiaheartopia.app.ui.components.CreatureZoomDialog
 import com.guiaheartopia.app.ui.components.EmptyStateCard
@@ -76,6 +78,8 @@ import com.guiaheartopia.app.ui.components.PixelCard
 import com.guiaheartopia.app.ui.components.SectionBanner
 import com.guiaheartopia.app.ui.contentRevision
 import com.guiaheartopia.app.ui.guide.GuideSearchField
+import com.guiaheartopia.app.ui.theme.AlertRed
+import com.guiaheartopia.app.ui.theme.AlertSoft
 import com.guiaheartopia.app.ui.theme.GreenDark
 import com.guiaheartopia.app.ui.theme.GreenSoft
 import com.guiaheartopia.app.ui.theme.GreenTint
@@ -83,6 +87,7 @@ import com.guiaheartopia.app.ui.theme.Ink
 import com.guiaheartopia.app.ui.theme.Line
 import com.guiaheartopia.app.ui.theme.Muted
 import com.guiaheartopia.app.ui.theme.Paper
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 private val HuertoTabs = listOf("Siembras", "Flores")
@@ -99,6 +104,9 @@ fun HuertoScreen(
     onToggleFlorCertified: (String, Boolean) -> Unit,
     onCancelCrop: (String) -> Unit,
     onPlant: (String, String, Int) -> Unit,
+    cropAlarmUnlocked: Boolean = false,
+    cropAlarmUntilMillis: Long = 0L,
+    onWatchAlarmAd: () -> Unit = {},
     initialTab: Int = 0,
 ) {
     val context = LocalContext.current
@@ -112,6 +120,15 @@ fun HuertoScreen(
 
     // Búsqueda por nombre (misma experiencia que bichos/peces)
     var query by rememberSaveable { mutableStateOf("") }
+
+    // Aviso temporal en la cápsula al tocar una alarma sin beneficio activo.
+    var alarmHint by remember { mutableStateOf(false) }
+    LaunchedEffect(alarmHint) {
+        if (alarmHint) {
+            delay(1_500L)
+            alarmHint = false
+        }
+    }
 
     // Estado de la lista de siembras: permite saltar a una siembra desde la cápsula
     val siembrasListState = rememberLazyListState()
@@ -170,12 +187,25 @@ fun HuertoScreen(
             enter = expandVertically() + fadeIn(),
             exit = shrinkVertically() + fadeOut(),
         ) {
-            if (ui.activeCrops.isNotEmpty()) {
-                ActiveCropsPanel(
-                    crops = ui.activeCrops,
-                    siembras = bundle.siembras,
-                    onCropClick = onCropClick,
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                AlarmAdStatusChip(
+                    untilMillis = cropAlarmUntilMillis,
+                    onWatchAlarmAd = onWatchAlarmAd,
+                    alert = alarmHint,
+                    modifier = Modifier.weight(1f, fill = false),
                 )
+                if (ui.activeCrops.isNotEmpty()) {
+                    ActiveCropsPanel(
+                        crops = ui.activeCrops,
+                        siembras = bundle.siembras,
+                        onCropClick = onCropClick,
+                        modifier = Modifier.weight(1f, fill = false),
+                    )
+                }
             }
         }
         PillTabs(HuertoTabs, tab) { tab = it }
@@ -193,6 +223,11 @@ fun HuertoScreen(
                 onCancelCrop = onCancelCrop,
                 onToggleFound = onToggleSiembraFound,
                 onToggleCertified = onToggleSiembraCertified,
+                cropAlarmUnlocked = cropAlarmUnlocked,
+                onAlarmLocked = {
+                    alarmHint = true
+                    alarmVisible = true
+                },
                 modifier = Modifier.weight(1f),
             )
             else -> FloresTab(
@@ -294,6 +329,8 @@ private fun SiembrasTab(
     onCancelCrop: (String) -> Unit,
     onToggleFound: (String) -> Unit,
     onToggleCertified: (String, Boolean) -> Unit,
+    cropAlarmUnlocked: Boolean,
+    onAlarmLocked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val nameSuggestions = remember(siembras) { siembras.map { it.nombre }.distinct().sorted() }
@@ -342,13 +379,16 @@ private fun SiembrasTab(
                 found = entry.id in found,
                 certified = entry.id in certified,
                 activeCrop = cropBySiembra[entry.id],
+                alarmUnlocked = cropAlarmUnlocked,
                 onOpen = { onOpen(entry.id) },
                 onToggleAlarm = {
                     val crop = cropBySiembra[entry.id]
                     if (crop != null) {
                         onCancelCrop(crop.id)
-                    } else {
+                    } else if (cropAlarmUnlocked) {
                         onPlant(entry.id, entry.nombre, entry.tiempoCrecimientoMinutos)
+                    } else {
+                        onAlarmLocked()
                     }
                 },
                 onToggleFound = { onToggleFound(entry.id) },
@@ -425,6 +465,7 @@ private fun SiembraCard(
     found: Boolean,
     certified: Boolean,
     activeCrop: ActiveCrop?,
+    alarmUnlocked: Boolean,
     onOpen: () -> Unit,
     onToggleAlarm: () -> Unit,
     onToggleFound: () -> Unit,
@@ -432,6 +473,13 @@ private fun SiembraCard(
 ) {
     val certifiable = AficionesMarks.certifiableSiembra(entry)
     var zoom by remember(entry.id) { mutableStateOf(false) }
+    var alarmFlash by remember(entry.id) { mutableStateOf(false) }
+    LaunchedEffect(alarmFlash) {
+        if (alarmFlash) {
+            delay(1_500L)
+            alarmFlash = false
+        }
+    }
     val model = rememberAficionesModel(entry.imagen)
     if (zoom && model != null) {
         CreatureZoomDialog(
@@ -496,9 +544,16 @@ private fun SiembraCard(
                         modifier = Modifier
                             .size(36.dp)
                             .clip(RoundedCornerShape(999.dp))
-                            .background(if (activeCrop != null) GreenSoft else Paper)
-                            .border(1.dp, if (activeCrop != null) GreenTint else Line, RoundedCornerShape(999.dp))
-                            .clickable(onClick = onToggleAlarm)
+                            .background(if (alarmFlash) AlertSoft else if (activeCrop != null) GreenSoft else Paper)
+                            .border(
+                                1.dp,
+                                if (alarmFlash) AlertRed else if (activeCrop != null) GreenTint else Line,
+                                RoundedCornerShape(999.dp),
+                            )
+                            .clickable {
+                                if (activeCrop == null && !alarmUnlocked) alarmFlash = true
+                                onToggleAlarm()
+                            }
                             .semantics {
                                 contentDescription = if (activeCrop != null) {
                                     "Quitar alarma de ${entry.nombre}"
@@ -612,6 +667,8 @@ fun SiembraDetailScreen(
     onBack: () -> Unit,
     onToggleFound: () -> Unit,
     onToggleCertified: () -> Unit,
+    alarmUnlocked: Boolean = false,
+    onWatchAlarmAd: () -> Unit = {},
     onPlant: () -> Unit,
     onOpenReceta: (String) -> Unit,
 ) {
@@ -685,8 +742,8 @@ fun SiembraDetailScreen(
             if (entry.tiempoCrecimientoMinutos > 0) {
                 if (activeCrop == null) {
                     PixelButton(
-                        text = "Avísame cuando esté lista",
-                        onClick = onPlant,
+                        text = if (alarmUnlocked) "Avísame cuando esté lista" else "Ver vídeo · activar alarma 3h",
+                        onClick = if (alarmUnlocked) onPlant else onWatchAlarmAd,
                         modifier = Modifier.fillMaxWidth(),
                     )
                 } else {

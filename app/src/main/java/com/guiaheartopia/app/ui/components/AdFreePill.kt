@@ -35,6 +35,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.data.AdRewardStore
+import com.guiaheartopia.app.ui.theme.AlertRed
+import com.guiaheartopia.app.ui.theme.AlertSoft
 import com.guiaheartopia.app.ui.theme.Green
 import com.guiaheartopia.app.ui.theme.GreenDark
 import com.guiaheartopia.app.ui.theme.GreenSoft
@@ -149,6 +151,104 @@ fun AdFreeStatusChip(
 }
 
 /**
+ * Cápsula de las alarmas de siembra: copia de [AdFreeStatusChip] con sus propios
+ * textos y su propio beneficio (3 h por video, acumulable hasta 12 h).
+ * [alert] es el aviso temporal que se muestra al tocar una alarma bloqueada.
+ */
+@Composable
+fun AlarmAdStatusChip(
+    untilMillis: Long,
+    onWatchAlarmAd: () -> Unit,
+    alert: Boolean = false,
+    modifier: Modifier = Modifier,
+) {
+    val remaining = rememberAdFreeRemainingMillis(untilMillis)
+    val active = remaining > 0L
+    val canAddMore = AdRewardStore.canAddCropAlarmMore(remaining)
+    val shape = RoundedCornerShape(999.dp)
+
+    if (alert) {
+        Row(
+            modifier = modifier
+                .clip(shape)
+                .background(AlertSoft)
+                .border(1.dp, AlertRed, shape)
+                .padding(horizontal = 12.dp, vertical = 6.dp)
+                .semantics { contentDescription = "Debes ver un anuncio para activar las alarmas" },
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "Debes ver un anuncio para activar las alarmas",
+                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                color = AlertRed,
+                maxLines = 2,
+            )
+        }
+        return
+    }
+
+    val background = if (active) GreenSoft else PaperSubtle
+    val border = if (active) GreenTint else Line
+    val textColor = if (active) GreenDark else Ink
+
+    Row(
+        modifier = modifier
+            .clip(shape)
+            .background(background)
+            .border(1.dp, border, shape)
+            .then(if (active) Modifier else Modifier.clickable(onClick = onWatchAlarmAd))
+            .padding(
+                start = 9.dp,
+                end = if (active && canAddMore) 4.dp else 9.dp,
+                top = 5.dp,
+                bottom = 5.dp,
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        AdFreePlayIcon(tint = textColor, iconSize = 15.dp)
+        Text(
+            text = if (active) {
+                "Alarmas · ${AdRewardStore.formatRemaining(remaining)}"
+            } else {
+                "Alarmas · 3h"
+            },
+            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+            color = textColor,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        if (active) {
+            if (canAddMore) {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(999.dp))
+                        .background(Green)
+                        .clickable(onClick = onWatchAlarmAd)
+                        .padding(horizontal = 8.dp, vertical = 3.dp)
+                        .semantics { contentDescription = "Ver otro video y sumar 3 horas de alarmas" },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        "+3h",
+                        style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.ExtraBold),
+                        color = Color.White,
+                    )
+                }
+            } else {
+                Text(
+                    "Máx. 12h",
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    color = Muted,
+                    maxLines = 1,
+                    modifier = Modifier.semantics { contentDescription = "Máximo 12h alcanzado en alarmas" },
+                )
+            }
+        }
+    }
+}
+
+/**
  * Tarjeta de Ajustes. Comparte el mismo contador y las mismas reglas que el
  * chip de la barra superior.
  */
@@ -170,10 +270,15 @@ fun AdFreeRewardCard(
         )
         if (active) {
             Text(
-                "Sin banners ni intersticiales. Quedan ${AdRewardStore.formatRemaining(remaining)}.",
+                "Sin banners ni intersticiales de navegación. Quedan ${AdRewardStore.formatRemaining(remaining)}.",
                 style = MaterialTheme.typography.bodyMedium,
             )
         }
+        Text(
+            "Los videos para alarmas de siembra siguen disponibles.",
+            style = MaterialTheme.typography.bodySmall,
+            color = Muted,
+        )
         when {
             !active -> PixelButton(
                 "Ver video · +3h",

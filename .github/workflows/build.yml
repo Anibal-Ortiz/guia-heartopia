@@ -73,6 +73,7 @@ jobs:
       ADMOB_INTERSTITIAL_AD_UNIT_ID: ${{ secrets.ADMOB_INTERSTITIAL_AD_UNIT_ID }}
       ADMOB_REWARDED_CALENDAR_AD_UNIT_ID: ${{ secrets.ADMOB_REWARDED_CALENDAR_AD_UNIT_ID }}
       ADMOB_REWARDED_ADFREE_AD_UNIT_ID: ${{ secrets.ADMOB_REWARDED_ADFREE_AD_UNIT_ID }}
+      ADMOB_REWARDED_ALARM_AD_UNIT_ID: ${{ secrets.ADMOB_REWARDED_ALARM_AD_UNIT_ID }}
     steps:
       - name: Obtener el código
         uses: actions/checkout@v7

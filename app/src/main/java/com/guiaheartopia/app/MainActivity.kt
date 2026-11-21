@@ -420,6 +420,29 @@ private fun AppScaffold(
             )
         }
     }
+    // Recompensado de alarmas: mismo esquema que «sin ads», pero con su propio
+    // unit y su propio beneficio. No se ve afectado por adFreeActive.
+    val watchAlarmAd: () -> Unit = {
+        val remaining = AdRewardStore.remainingMillis(adRewards.cropAlarmUntilMillis)
+        if (remaining > AdRewardStore.CROP_ALARM_ADD_MORE_THRESHOLD_MILLIS) {
+            toast("Máximo 12h alcanzado. Podrás sumar otro video cuando queden 9 h o menos.")
+        } else {
+            ads.showRewardedAlarm(
+                onReward = { scope.launch { AdRewardStore.grantCropAlarmHours(context) } },
+                onUnavailable = {
+                    toast("No hay otro video listo aún, intenta en unos segundos")
+                    ads.preloadRewardedAlarm()
+                    scope.launch {
+                        delay(5_000L)
+                        ads.preloadRewardedAlarm()
+                    }
+                },
+            )
+        }
+    }
+    val plantIfUnlocked: (String, String, Int) -> Unit = { id, nombre, minutos ->
+        if (adRewards.cropAlarmUnlocked) vm.plantSiembra(id, nombre, minutos)
+    }
     val backStack by nav.currentBackStackEntryAsState()
     val route = backStack?.destination?.route
     val tabs = AppNavigation.BottomNavTabs
@@ -685,7 +708,10 @@ private fun AppScaffold(
                     onToggleFlorFound = vm::toggleFlorFound,
                     onToggleFlorCertified = vm::toggleFlorCertified,
                     onCancelCrop = vm::cancelCrop,
-                    onPlant = { id, nombre, minutos -> vm.plantSiembra(id, nombre, minutos) },
+                    onPlant = plantIfUnlocked,
+                    cropAlarmUnlocked = adRewards.cropAlarmUnlocked,
+                    cropAlarmUntilMillis = adRewards.cropAlarmUntilMillis,
+                    onWatchAlarmAd = watchAlarmAd,
                 )
             }
             composable("huerto/flores") {
@@ -699,7 +725,10 @@ private fun AppScaffold(
                     onToggleFlorFound = vm::toggleFlorFound,
                     onToggleFlorCertified = vm::toggleFlorCertified,
                     onCancelCrop = vm::cancelCrop,
-                    onPlant = { id, nombre, minutos -> vm.plantSiembra(id, nombre, minutos) },
+                    onPlant = plantIfUnlocked,
+                    cropAlarmUnlocked = adRewards.cropAlarmUnlocked,
+                    cropAlarmUntilMillis = adRewards.cropAlarmUntilMillis,
+                    onWatchAlarmAd = watchAlarmAd,
                     initialTab = 1,
                 )
             }
@@ -832,6 +861,8 @@ private fun AppScaffold(
                         onToggleCertified = {
                             vm.toggleHuertoCertified(siembra.id, com.guiaheartopia.app.domain.AficionesMarks.certifiableSiembra(siembra))
                         },
+                        alarmUnlocked = adRewards.cropAlarmUnlocked,
+                        onWatchAlarmAd = watchAlarmAd,
                         onPlant = { vm.plantSiembra(siembra.id, siembra.nombre, siembra.tiempoCrecimientoMinutos) },
                         onOpenReceta = { nav.navigate("cocina/receta/$it") },
                     )

@@ -108,6 +108,7 @@ val releaseBannerId = secret("ADMOB_BANNER_AD_UNIT_ID")
 val releaseInterstitialId = secret("ADMOB_INTERSTITIAL_AD_UNIT_ID")
 val releaseRewardedCalendarId = secret("ADMOB_REWARDED_CALENDAR_AD_UNIT_ID")
 val releaseRewardedAdFreeId = secret("ADMOB_REWARDED_ADFREE_AD_UNIT_ID")
+val releaseRewardedAlarmId = secret("ADMOB_REWARDED_ALARM_AD_UNIT_ID")
 val releaseAdsReady = releaseAppId.isNotEmpty() && releaseBannerId.isNotEmpty()
 val releaseUseRealAdIds = !admobPlaceholder(releaseAppId) && !admobPlaceholder(releaseBannerId)
 val releaseUseTestAdIds = !releaseUseRealAdIds
@@ -265,6 +266,7 @@ android {
             buildConfigField("String", "ADMOB_INTERSTITIAL_UNIT_ID", "\"$testAdMobInterstitial\"")
             buildConfigField("String", "ADMOB_REWARDED_CALENDAR_UNIT_ID", "\"$testAdMobRewarded\"")
             buildConfigField("String", "ADMOB_REWARDED_ADFREE_UNIT_ID", "\"$testAdMobRewarded\"")
+            buildConfigField("String", "ADMOB_REWARDED_ALARM_UNIT_ID", "\"$testAdMobRewarded\"")
             buildConfigField("boolean", "ADS_ENABLED", "true")
             buildConfigField("boolean", "ADS_USE_GOOGLE_TEST_IDS", "true")
             // En debug los IDs oficiales de prueba cuentan como configurados.
@@ -305,6 +307,11 @@ android {
                 "String",
                 "ADMOB_REWARDED_ADFREE_UNIT_ID",
                 "\"${effectiveAdId(releaseRewardedAdFreeId, testAdMobRewarded, releaseUseTestAdIds).replace("\"", "")}\"",
+            )
+            buildConfigField(
+                "String",
+                "ADMOB_REWARDED_ALARM_UNIT_ID",
+                "\"${effectiveAdId(releaseRewardedAlarmId, testAdMobRewarded, releaseUseTestAdIds).replace("\"", "")}\"",
             )
             buildConfigField("boolean", "ADS_ENABLED", releaseAdsEnabled.toString())
             buildConfigField("boolean", "ADS_USE_GOOGLE_TEST_IDS", releaseUseTestAdIds.toString())
