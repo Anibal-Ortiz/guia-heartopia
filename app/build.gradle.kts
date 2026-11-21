@@ -17,7 +17,7 @@ plugins {
 }
 
 /** Única fuente de la versión: nombre de archivo, versionName y artefacto de CI se derivan de ella. */
-val appVersion = "1.1.5"
+val appVersion = "1.1.6"
 
 private val ANDROID_NS = "http://schemas.android.com/apk/res/android"
 private val TOOLS_NS = "http://schemas.android.com/tools"
@@ -159,6 +159,36 @@ val verifyReleaseManifest = tasks.register("verifyReleaseManifest") {
     }
 }
 
+/**
+ * Barrera para el AAB de Play: falla si el release se construiría con IDs de
+ * demostración de Google o si falta algún unit de AdMob. Solo la invoca el job
+ * que genera el AAB; el job de verificación normal no tiene secretos.
+ */
+val verifyReleaseAdIds = tasks.register("verifyReleaseAdIds") {
+    group = "verification"
+    description = "Falla si faltan secrets de AdMob o el release usaría IDs de prueba."
+    doLast {
+        val required = listOf(
+            "ADMOB_APP_ID" to releaseAppId,
+            "ADMOB_BANNER_AD_UNIT_ID" to releaseBannerId,
+            "ADMOB_INTERSTITIAL_AD_UNIT_ID" to releaseInterstitialId,
+            "ADMOB_REWARDED_CALENDAR_AD_UNIT_ID" to releaseRewardedCalendarId,
+            "ADMOB_REWARDED_ADFREE_AD_UNIT_ID" to releaseRewardedAdFreeId,
+            "ADMOB_REWARDED_ALARM_AD_UNIT_ID" to releaseRewardedAlarmId,
+        )
+        val invalid = required
+            .filter { (_, value) -> value.isBlank() || admobPlaceholder(value) }
+            .map { (name, _) -> name }
+        check(invalid.isEmpty()) {
+            "El release usaría anuncios de prueba o le faltan IDs de AdMob: ${invalid.joinToString()}. " +
+                "Configúralos en GitHub → Settings → Secrets and variables → Actions antes de generar el AAB."
+        }
+        check(!releaseUseTestAdIds) {
+            "El release usaría IDs de demostración de Google. Revisa ADMOB_APP_ID y ADMOB_BANNER_AD_UNIT_ID."
+        }
+    }
+}
+
 val storeFilePath = secret("RELEASE_STORE_FILE")
 val releaseStorePassword = secret("RELEASE_STORE_PASSWORD")
 val releaseKeyAlias = secret("RELEASE_KEY_ALIAS")
@@ -218,7 +248,7 @@ android {
         applicationId = "com.guiaheartopia.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 48
+        versionCode = 49
         versionName = appVersion
         buildConfigField(
             "String",

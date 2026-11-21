@@ -112,6 +112,10 @@ jobs:
           EOF
           chmod 600 "$HOME/.wikifan-heartopia/upload.properties"
 
+      - name: Verificar IDs de AdMob de release
+        if: env.UPLOAD_KEYSTORE_BASE64 != ''
+        run: ./gradlew :app:verifyReleaseAdIds --console=plain
+
       - name: Compilar AAB firmado
         if: env.UPLOAD_KEYSTORE_BASE64 != ''
         run: ./gradlew :app:bundleRelease --console=plain
