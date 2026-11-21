@@ -194,69 +194,73 @@ private fun CodeCard(
                 ),
         )
 
-        Column(Modifier.padding(horizontal = 18.dp, vertical = 14.dp)) {
-            Row(
-                Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
+        Column(Modifier.padding(vertical = 14.dp)) {
+            Column(Modifier.padding(horizontal = 18.dp)) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        "🎟️  CUPÓN DE RECOMPENSA",
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.labelMedium,
+                        color = CouponInk,
+                    )
+                    CouponStatusChip(
+                        text = when {
+                            expired -> "VENCIDO"
+                            redeemed -> "CANJEADO ✓"
+                            else -> "VIGENTE"
+                        },
+                    )
+                }
+
+                Spacer(Modifier.height(10.dp))
+
                 Text(
-                    "🎟️  CUPÓN DE RECOMPENSA",
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = CouponInk,
+                    code.code,
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 30.sp,
+                        color = CouponInk,
+                    ),
                 )
-                CouponStatusChip(
-                    text = when {
-                        expired -> "VENCIDO"
-                        redeemed -> "CANJEADO ✓"
-                        else -> "VIGENTE"
-                    },
-                )
-            }
-
-            Spacer(Modifier.height(10.dp))
-
-            Text(
-                code.code,
-                style = MaterialTheme.typography.headlineSmall.copy(
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 30.sp,
-                    color = CouponInk,
-                ),
-            )
-            if (code.recompensa.isNotBlank()) {
-                Text(code.recompensa, style = MaterialTheme.typography.bodyLarge, color = CouponInk)
-            }
-            whenLabel?.let {
-                Text(it, style = MaterialTheme.typography.bodySmall, color = CouponInk.copy(alpha = 0.8f))
-            }
-            code.fuente?.takeIf { it.isNotBlank() }?.let {
-                Text(it, style = MaterialTheme.typography.bodySmall, color = CouponInk.copy(alpha = 0.7f))
+                if (code.recompensa.isNotBlank()) {
+                    Text(code.recompensa, style = MaterialTheme.typography.bodyLarge, color = CouponInk)
+                }
+                whenLabel?.let {
+                    Text(it, style = MaterialTheme.typography.bodySmall, color = CouponInk.copy(alpha = 0.8f))
+                }
+                code.fuente?.takeIf { it.isNotBlank() }?.let {
+                    Text(it, style = MaterialTheme.typography.bodySmall, color = CouponInk.copy(alpha = 0.7f))
+                }
             }
 
             Spacer(Modifier.height(12.dp))
             CouponPerforation(screenBg = screenBg, edge = edge)
             Spacer(Modifier.height(12.dp))
 
-            // Acciones independientes: copiar nunca cambia el estado de canjeo.
-            CouponButton(
-                text = if (redeemed) "Canjeado ✓ (tocar para desmarcar)" else "Marcar como canjeado",
-                onClick = { onRedeemed(code.code, !redeemed) },
-                filled = true,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Spacer(Modifier.height(8.dp))
-            CouponButton(
-                text = "Copiar código",
-                onClick = {
-                    val clipboard = context.getSystemService(ClipboardManager::class.java)
-                    clipboard.setPrimaryClip(ClipData.newPlainText("código", code.code))
-                    Toast.makeText(context, "Código copiado", Toast.LENGTH_SHORT).show()
-                },
-                filled = false,
-                modifier = Modifier.fillMaxWidth(),
-            )
+            Column(Modifier.padding(horizontal = 18.dp)) {
+                // Acciones independientes: copiar nunca cambia el estado de canjeo.
+                CouponButton(
+                    text = if (redeemed) "Canjeado ✓ (tocar para desmarcar)" else "Marcar como canjeado",
+                    onClick = { onRedeemed(code.code, !redeemed) },
+                    filled = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(Modifier.height(8.dp))
+                CouponButton(
+                    text = "Copiar código",
+                    onClick = {
+                        val clipboard = context.getSystemService(ClipboardManager::class.java)
+                        clipboard.setPrimaryClip(ClipData.newPlainText("código", code.code))
+                        Toast.makeText(context, "Código copiado", Toast.LENGTH_SHORT).show()
+                    },
+                    filled = false,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
         }
     }
 }
@@ -280,7 +284,6 @@ private fun CouponPerforation(screenBg: Color, edge: Color) {
     Canvas(
         Modifier
             .fillMaxWidth()
-            .padding(horizontal = (-18).dp)
             .height(18.dp),
     ) {
         val cy = size.height / 2
