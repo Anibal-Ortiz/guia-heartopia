@@ -39,9 +39,10 @@
 - Cuando se suban imágenes nuevas, **no tocar `contentVersion`** hasta que se pida explícitamente. Cuando se pida: recalcular hashes desde blobs, subir `contentVersion` y verificar con `?cb=` que Pages devuelve esa versión.
 
 ## Compilación y Verificación (Windows)
-- **Compilar APK Debug:**
+- **NO generar APK en local:** el APK/AAB lo produce el workflow de GitHub Actions. En local solo se verifica que el código compile:
   ```powershell
-  .\gradlew.bat assembleDebug --console=plain
+  .\gradlew.bat compileDebugKotlin compileDebugJavaWithJavac --console=plain
   ```
+- Evita `assembleDebug` salvo que se pida explícitamente.
 
 - **Credenciales protegidas:** NUNCA leas, muestres ni modifiques archivos `.jks`, `.keystore`, `keystore.properties` ni `CREDENCIALES-UPLOAD.txt`.
