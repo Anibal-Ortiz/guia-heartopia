@@ -71,6 +71,8 @@ import com.guiaheartopia.app.domain.DexSchedule
 import com.guiaheartopia.app.domain.ResourceCalendar
 import com.guiaheartopia.app.domain.SkyWeather
 import com.guiaheartopia.app.domain.SkyWeatherGameDay
+import com.guiaheartopia.app.domain.SkyKind
+import com.guiaheartopia.app.domain.climateDisplay
 import com.guiaheartopia.app.ui.GuideUi
 import com.guiaheartopia.app.ui.components.CozyCrystalIcon
 import com.guiaheartopia.app.ui.components.CozyGuideIcon
@@ -86,6 +88,9 @@ import com.guiaheartopia.app.ui.components.PixelProgress
 import com.guiaheartopia.app.ui.components.SoftCheck
 import com.guiaheartopia.app.ui.components.rememberMinuteTick
 import com.guiaheartopia.app.ui.weather.ClimateSkyBar
+import com.guiaheartopia.app.ui.weather.WeatherAmbientBackground
+import com.guiaheartopia.app.ui.weather.WeatherBarShimmer
+import com.guiaheartopia.app.ui.weather.WeatherGlyphAnimated
 import com.guiaheartopia.app.ui.theme.Cream
 import com.guiaheartopia.app.ui.theme.DarkCard
 import com.guiaheartopia.app.ui.theme.Green
@@ -366,12 +371,31 @@ fun HomeScreen(
         }
 
         PixelCard(container = Paper) {
-            Text("Clima de hoy", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold))
-            if (climateLines.isEmpty()) {
-                Text("Sin datos de clima para hoy.", style = MaterialTheme.typography.bodyMedium)
-            } else {
-                ClimateSkyBar(sky, climateDay, zone, Modifier.fillMaxWidth().height(20.dp))
-                com.guiaheartopia.app.ui.weather.ClimateDetailList(climateLines, showFrames = false)
+            val currentKind = remember(sky, nowInstant, zone) {
+                SkyWeatherGameDay.conditionAt(sky, nowInstant, zone)
+                    ?.kind?.climateDisplay() ?: SkyKind.SIN_DATOS
+            }
+            Box(Modifier.fillMaxWidth()) {
+                WeatherAmbientBackground(currentKind, Modifier.matchParentSize())
+                Column {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Text("Clima de hoy", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold))
+                        WeatherGlyphAnimated(currentKind, Modifier.size(30.dp))
+                    }
+                    if (climateLines.isEmpty()) {
+                        Text("Sin datos de clima para hoy.", style = MaterialTheme.typography.bodyMedium)
+                    } else {
+                        Box(Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))) {
+                            ClimateSkyBar(sky, climateDay, zone, Modifier.fillMaxWidth().height(20.dp))
+                            WeatherBarShimmer(Modifier.matchParentSize())
+                        }
+                        com.guiaheartopia.app.ui.weather.ClimateDetailList(climateLines, showFrames = false)
+                    }
+                }
             }
         }
 
