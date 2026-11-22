@@ -16,20 +16,30 @@ private const val PLAY_URL = "https://play.google.com/store/apps/details?id=$PAC
 private const val MARKET_URL = "market://details?id=$PACKAGE_NAME"
 private const val PLAY_STORE_PACKAGE = "com.android.vending"
 
+/** Resultado de la consulta de actualización, para poder mostrarlo en la cabecera. */
+enum class PlayUpdateResult { AVAILABLE, UP_TO_DATE, FAILED }
+
 /**
  * Consulta a Google Play si hay una versión nueva. Si la consulta falla (debug instalado a mano,
- * Play Store no disponible, sin red, etc.) simplemente no se muestra el aviso.
+ * Play Store no disponible, sin red, etc.) se reporta [PlayUpdateResult.FAILED] para que la
+ * cabecera pueda ofrecer reintentar.
  */
-fun checkPlayUpdate(context: Context, onResult: (Boolean) -> Unit) {
+fun checkPlayUpdate(context: Context, onResult: (PlayUpdateResult) -> Unit) {
     try {
         AppUpdateManagerFactory.create(context)
             .appUpdateInfo
             .addOnSuccessListener { info ->
-                onResult(info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE)
+                onResult(
+                    if (info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
+                        PlayUpdateResult.AVAILABLE
+                    } else {
+                        PlayUpdateResult.UP_TO_DATE
+                    },
+                )
             }
-            .addOnFailureListener { onResult(false) }
+            .addOnFailureListener { onResult(PlayUpdateResult.FAILED) }
     } catch (_: Exception) {
-        onResult(false)
+        onResult(PlayUpdateResult.FAILED)
     }
 }
 

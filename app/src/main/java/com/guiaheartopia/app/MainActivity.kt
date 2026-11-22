@@ -113,6 +113,8 @@ import com.guiaheartopia.app.ui.components.AndroidRobotIcon
 import com.guiaheartopia.app.ui.components.CozyMoonIcon
 import com.guiaheartopia.app.ui.components.CozySettingsIcon
 import com.guiaheartopia.app.ui.components.CozySunIcon
+import com.guiaheartopia.app.ui.components.UpdateHeaderState
+import com.guiaheartopia.app.ui.components.UpdateStatusIcon
 import com.guiaheartopia.app.ui.components.WikiFanAppIcon
 import com.guiaheartopia.app.R
 import com.guiaheartopia.app.ui.components.PixelNavBar
@@ -127,6 +129,7 @@ import com.guiaheartopia.app.ui.AppNavigation
 import com.guiaheartopia.app.ui.NavigationPolicy
 import com.guiaheartopia.app.ui.settings.SettingsScreen
 import com.guiaheartopia.app.ui.updates.UpdateAvailableDialog
+import com.guiaheartopia.app.ui.updates.PlayUpdateResult
 import com.guiaheartopia.app.ui.updates.checkPlayUpdate
 import com.guiaheartopia.app.ui.updates.openPlayStore
 import com.guiaheartopia.app.ui.theme.Cream
@@ -269,10 +272,25 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
-            // Aviso de versión nueva en Play: se consulta una vez por sesión y se oculta al cerrarlo.
-            var updateAvailable by remember { mutableStateOf(false) }
-            LaunchedEffect(Unit) {
-                checkPlayUpdate(this@MainActivity) { available -> updateAvailable = available }
+            // El check de actualización ocupa el lugar del logo en la cabecera:
+            // comprobando → OK / disponible / fallo (reintentar) → vuelve el logo.
+            var updateStatus by remember { mutableStateOf<UpdateHeaderState?>(UpdateHeaderState.CHECKING) }
+            fun runUpdateCheck() {
+                updateStatus = UpdateHeaderState.CHECKING
+                checkPlayUpdate(this@MainActivity) { result ->
+                    updateStatus = when (result) {
+                        PlayUpdateResult.AVAILABLE -> UpdateHeaderState.AVAILABLE
+                        PlayUpdateResult.UP_TO_DATE -> UpdateHeaderState.OK
+                        PlayUpdateResult.FAILED -> UpdateHeaderState.FAILED
+                    }
+                }
+            }
+            LaunchedEffect(Unit) { runUpdateCheck() }
+            LaunchedEffect(updateStatus) {
+                if (updateStatus == UpdateHeaderState.OK) {
+                    delay(2_500)
+                    updateStatus = null
+                }
             }
             GuiaTheme(darkTheme = darkTheme) {
                 val darkUi = darkTheme
@@ -317,15 +335,17 @@ class MainActivity : ComponentActivity() {
                         onThemeMode = { mode ->
                             lifecycleScope.launch { ThemeModeStore.set(this@MainActivity, mode) }
                         },
+                        updateStatus = updateStatus,
+                        onRetryUpdate = { runUpdateCheck() },
                     )
                 }
 
-                if (updateAvailable && ui.ready && ui.profile.onboarded) {
+                if (updateStatus == UpdateHeaderState.AVAILABLE && ui.ready && ui.profile.onboarded) {
                     UpdateAvailableDialog(
-                        onDismiss = { updateAvailable = false },
+                        onDismiss = { updateStatus = null },
                         onUpdate = {
                             openPlayStore(this@MainActivity)
-                            updateAvailable = false
+                            updateStatus = null
                         },
                     )
                 }
@@ -352,6 +372,8 @@ private fun AppScaffold(
     onRetryContent: () -> Unit,
     themeMode: ThemeMode,
     onThemeMode: (ThemeMode) -> Unit,
+    updateStatus: UpdateHeaderState?,
+    onRetryUpdate: () -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -546,7 +568,27 @@ private fun AppScaffold(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
-                        WikiFanAppIcon(Modifier.size(36.dp))
+                        if (updateStatus == null) {
+                            WikiFanAppIcon(Modifier.size(36.dp))
+                        } else {
+                            val canRetry = updateStatus == UpdateHeaderState.FAILED
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clickable(enabled = canRetry) { onRetryUpdate() }
+                                    .semantics {
+                                        contentDescription = when (updateStatus) {
+                                            UpdateHeaderState.CHECKING -> "Comprobando actualizaciones"
+                                            UpdateHeaderState.OK -> "Sin actualizaciones pendientes"
+                                            UpdateHeaderState.AVAILABLE -> "Actualización disponible"
+                                            UpdateHeaderState.FAILED -> "No se pudo comprobar. Toca para reintentar"
+                                        }
+                                    },
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                UpdateStatusIcon(updateStatus)
+                            }
+                        }
                         Column {
                             Text(
                                 stringResource(R.string.app_name),
