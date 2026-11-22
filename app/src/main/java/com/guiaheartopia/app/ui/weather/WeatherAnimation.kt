@@ -19,6 +19,8 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.domain.SkyKind
+import com.guiaheartopia.app.ui.theme.DarkPalette
+import com.guiaheartopia.app.ui.theme.LocalAppPalette
 import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.sin
@@ -29,6 +31,9 @@ import kotlin.math.sin
  * Todo se dibuja dentro de un [Canvas] con un progress 0..1: la animación no cambia
  * estado en cada frame, así que la home no se recomponde. Las posiciones se derivan
  * de [seed], determinista, para que las partículas no parpadeen.
+ *
+ * Los colores se eligen según el tema activo: en modo oscuro la base es oscura para
+ * que el texto blanco del tema siga siendo legible.
  */
 private const val LOOP_MS = 4200
 private const val TAU = 6.2831853f
@@ -38,18 +43,70 @@ private fun seed(i: Int): Float {
     return x - floor(x)
 }
 
-private fun baseColor(kind: SkyKind): Color = when (kind) {
-    SkyKind.DESPEJADO -> Color(0xFFFFF6DA)
-    SkyKind.LLUVIA -> Color(0xFFE8F4FB)
-    SkyKind.ARCOIRIS -> Color(0xFFF5EDFB)
-    SkyKind.NIEVE -> Color(0xFFEDF7FC)
-    SkyKind.METEORO -> Color(0xFFE9EDF4)
-    else -> Color(0xFFF5F0E6)
+private data class WeatherPalette(
+    val base: Color,
+    val primary: Color,
+    val secondary: Color,
+    val sparkle: Color,
+    val rainbow: List<Color>,
+)
+
+private val LightRainbow = listOf(
+    Color(0xFFE86A6A),
+    Color(0xFFF0A44B),
+    Color(0xFFF3D35B),
+    Color(0xFF77B87C),
+    Color(0xFF6FA8D6),
+    Color(0xFFA78BD1),
+)
+
+private val DarkRainbow = listOf(
+    Color(0xFFFF8F8F),
+    Color(0xFFFFC06A),
+    Color(0xFFFFE781),
+    Color(0xFF9FE0A5),
+    Color(0xFF93C6F0),
+    Color(0xFFC9AEED),
+)
+
+private fun paletteFor(kind: SkyKind, dark: Boolean): WeatherPalette = when (kind) {
+    SkyKind.DESPEJADO -> if (dark) {
+        WeatherPalette(Color(0xFF3B3020), Color(0xFFFFC24D), Color(0xFFFFD98A), Color(0xFFFFE9B0), emptyList())
+    } else {
+        WeatherPalette(Color(0xFFFFF6DA), Color(0xFFE9A62B), Color(0xFFFFD05A), Color.White, emptyList())
+    }
+    SkyKind.LLUVIA -> if (dark) {
+        WeatherPalette(Color(0xFF1F3441), Color(0xFF8FC4E4), Color(0xFF5E7D8F), Color(0xFFC7E4F5), emptyList())
+    } else {
+        WeatherPalette(Color(0xFFE8F4FB), Color(0xFF4E8FB5), Color(0xFF9DB6C6), Color.White, emptyList())
+    }
+    SkyKind.ARCOIRIS -> if (dark) {
+        WeatherPalette(Color(0xFF30283B), Color(0xFFC9AEED), Color(0xFF93C6F0), Color(0xFFF3E4FF), DarkRainbow)
+    } else {
+        WeatherPalette(Color(0xFFF5EDFB), Color(0xFFA78BD1), Color(0xFF6FA8D6), Color.White, LightRainbow)
+    }
+    SkyKind.NIEVE -> if (dark) {
+        WeatherPalette(Color(0xFF24343F), Color(0xFFCFE6F5), Color(0xFF9FC3DB), Color.White, emptyList())
+    } else {
+        WeatherPalette(Color(0xFFEDF7FC), Color(0xFF7FA8C4), Color(0xFF7FA8C4), Color.White, emptyList())
+    }
+    SkyKind.METEORO -> if (dark) {
+        WeatherPalette(Color(0xFF1E2530), Color(0xFFAFC1D6), Color(0xFF7E91A8), Color(0xFFFFD76B), emptyList())
+    } else {
+        WeatherPalette(Color(0xFFE9EDF4), Color(0xFF5B6B7F), Color(0xFF8A9AAD), Color(0xFFFFD76B), emptyList())
+    }
+    else -> if (dark) {
+        WeatherPalette(Color(0xFF2E2924), Color(0xFFC7B79A), Color(0xFFC7B79A), Color(0xFFE8DCC8), emptyList())
+    } else {
+        WeatherPalette(Color(0xFFF5F0E6), Color(0xFFB9A98C), Color(0xFFB9A98C), Color.White, emptyList())
+    }
 }
 
 /** Fondo animado que ocupa toda la tarjeta del clima, sin añadir altura. */
 @Composable
 fun WeatherAmbientBackground(kind: SkyKind, modifier: Modifier = Modifier) {
+    val dark = LocalAppPalette.current === DarkPalette
+    val palette = paletteFor(kind, dark)
     val infinite = rememberInfiniteTransition(label = "weatherAmbient")
     val p by infinite.animateFloat(
         initialValue = 0f,
@@ -58,19 +115,19 @@ fun WeatherAmbientBackground(kind: SkyKind, modifier: Modifier = Modifier) {
         label = "ambientProgress",
     )
     Canvas(modifier) {
-        drawRect(baseColor(kind))
+        drawRect(palette.base)
         when (kind) {
-            SkyKind.DESPEJADO -> drawSunny(p)
-            SkyKind.LLUVIA -> drawRainy(p)
-            SkyKind.ARCOIRIS -> drawRainbow(p)
-            SkyKind.NIEVE -> drawSnowy(p)
-            SkyKind.METEORO -> drawMeteors(p)
-            else -> drawCalm(p)
+            SkyKind.DESPEJADO -> drawSunny(p, palette)
+            SkyKind.LLUVIA -> drawRainy(p, palette)
+            SkyKind.ARCOIRIS -> drawRainbow(p, palette)
+            SkyKind.NIEVE -> drawSnowy(p, palette)
+            SkyKind.METEORO -> drawMeteors(p, palette)
+            else -> drawCalm(p, palette)
         }
     }
 }
 
-private fun DrawScope.drawSunny(p: Float) {
+private fun DrawScope.drawSunny(p: Float, palette: WeatherPalette) {
     val cx = size.width * 0.82f
     val cy = size.height * 0.3f
     val pulse = 1f + 0.12f * sin(p * TAU)
@@ -78,8 +135,8 @@ private fun DrawScope.drawSunny(p: Float) {
     drawCircle(
         brush = Brush.radialGradient(
             colors = listOf(
-                Color(0xFFFFD05A).copy(alpha = 0.45f),
-                Color(0xFFFFD05A).copy(alpha = 0f),
+                palette.secondary.copy(alpha = 0.45f),
+                palette.secondary.copy(alpha = 0f),
             ),
             center = Offset(cx, cy),
             radius = glow,
@@ -93,7 +150,7 @@ private fun DrawScope.drawSunny(p: Float) {
         val inner = size.minDimension * 0.18f
         val outer = size.minDimension * (0.3f + 0.03f * sin(p * TAU + i))
         drawLine(
-            color = Color(0xFFE9A62B).copy(alpha = 0.26f),
+            color = palette.primary.copy(alpha = 0.26f),
             start = Offset(cx + cos(a) * inner, cy + sin(a) * inner),
             end = Offset(cx + cos(a) * outer, cy + sin(a) * outer),
             strokeWidth = 2.dp.toPx(),
@@ -104,15 +161,15 @@ private fun DrawScope.drawSunny(p: Float) {
         val x = seed(i) * size.width
         val y = ((seed(i + 40) + p * 0.35f) % 1f) * size.height
         val alpha = 0.15f + 0.25f * (0.5f + 0.5f * sin(p * TAU * 2 + i))
-        drawCircle(Color.White.copy(alpha = alpha), radius = (1f + seed(i + 60)) * 1.6f, center = Offset(x, y))
+        drawCircle(palette.sparkle.copy(alpha = alpha), radius = (1f + seed(i + 60)) * 1.6f, center = Offset(x, y))
     }
 }
 
-private fun DrawScope.drawRainy(p: Float) {
+private fun DrawScope.drawRainy(p: Float, palette: WeatherPalette) {
     repeat(3) { i ->
         val cx = (((seed(i) + p * 0.22f) % 1.4f) - 0.2f) * size.width
         val cy = size.height * (0.14f + 0.08f * seed(i + 9))
-        drawCloud(cx, cy, size.minDimension * 0.16f, Color(0xFF9DB6C6).copy(alpha = 0.22f))
+        drawCloud(cx, cy, size.minDimension * 0.16f, palette.secondary.copy(alpha = 0.22f))
     }
     repeat(22) { i ->
         val s = seed(i + 100)
@@ -120,7 +177,7 @@ private fun DrawScope.drawRainy(p: Float) {
         val y = ((s + p * speed) % 1f) * size.height
         val x = seed(i + 150) * size.width
         drawLine(
-            Color(0xFF4E8FB5).copy(alpha = 0.20f + 0.18f * s),
+            palette.primary.copy(alpha = 0.20f + 0.18f * s),
             Offset(x, y),
             Offset(x - 2.dp.toPx(), y + size.height * 0.09f),
             strokeWidth = 1.4.dp.toPx(),
@@ -131,7 +188,7 @@ private fun DrawScope.drawRainy(p: Float) {
         val x = seed(i + 200) * size.width
         val alpha = 0.12f + 0.12f * (0.5f + 0.5f * sin(p * TAU + i))
         drawOval(
-            Color(0xFF4E8FB5).copy(alpha = alpha),
+            palette.primary.copy(alpha = alpha),
             topLeft = Offset(x - 8.dp.toPx(), size.height - 4.dp.toPx()),
             size = Size(16.dp.toPx(), 3.dp.toPx()),
         )
@@ -145,17 +202,9 @@ private fun DrawScope.drawCloud(cx: Float, cy: Float, r: Float, color: Color) {
     drawRect(color, topLeft = Offset(cx - r, cy), size = Size(r * 2f, r))
 }
 
-private fun DrawScope.drawRainbow(p: Float) {
-    val colors = listOf(
-        Color(0xFFE86A6A),
-        Color(0xFFF0A44B),
-        Color(0xFFF3D35B),
-        Color(0xFF77B87C),
-        Color(0xFF6FA8D6),
-        Color(0xFFA78BD1),
-    )
+private fun DrawScope.drawRainbow(p: Float, palette: WeatherPalette) {
     val shift = sin(p * TAU) * size.width * 0.03f
-    colors.forEachIndexed { i, color ->
+    palette.rainbow.forEachIndexed { i, color ->
         val r = size.minDimension * 0.28f + i * 6.dp.toPx()
         drawArc(
             color = color.copy(alpha = 0.16f + 0.10f * (0.5f + 0.5f * sin(p * TAU * 2 - i * 0.5f))),
@@ -171,27 +220,27 @@ private fun DrawScope.drawRainbow(p: Float) {
         val phase = (seed(i + 350) + p * 0.4f) % 1f
         val alpha = 0.15f + 0.3f * (1f - phase)
         drawCircle(
-            Color.White.copy(alpha = alpha),
+            palette.sparkle.copy(alpha = alpha),
             radius = 1.4.dp.toPx(),
             center = Offset(seed(i + 300) * size.width, size.height - phase * size.height),
         )
     }
 }
 
-private fun DrawScope.drawSnowy(p: Float) {
+private fun DrawScope.drawSnowy(p: Float, palette: WeatherPalette) {
     repeat(24) { i ->
         val speed = 0.25f + seed(i + 450) * 0.35f
         val y = ((seed(i + 400) + p * speed) % 1f) * size.height
         val x = seed(i + 450) * size.width + sin(p * TAU + i) * 6.dp.toPx()
         drawCircle(
-            Color(0xFF7FA8C4).copy(alpha = 0.25f + 0.25f * seed(i + 400)),
+            palette.primary.copy(alpha = 0.25f + 0.25f * seed(i + 400)),
             radius = (1.2f + seed(i + 400) * 1.8f).dp.toPx(),
             center = Offset(x, y),
         )
     }
 }
 
-private fun DrawScope.drawMeteors(p: Float) {
+private fun DrawScope.drawMeteors(p: Float, palette: WeatherPalette) {
     repeat(5) { i ->
         val s = seed(i + 500)
         val local = (p * 2f + s) % 1f
@@ -201,29 +250,29 @@ private fun DrawScope.drawMeteors(p: Float) {
         val y = s * size.height * 0.6f
         val len = size.width * 0.18f
         drawLine(
-            Color(0xFF5B6B7F).copy(alpha = alpha),
+            palette.primary.copy(alpha = alpha),
             Offset(x, y),
             Offset(x + len, y + len * 0.55f),
             strokeWidth = 2.dp.toPx(),
             cap = StrokeCap.Round,
         )
-        drawCircle(Color(0xFFFFD76B).copy(alpha = alpha), radius = 2.dp.toPx(), center = Offset(x, y))
+        drawCircle(palette.sparkle.copy(alpha = alpha), radius = 2.dp.toPx(), center = Offset(x, y))
     }
     repeat(10) { i ->
         val alpha = 0.1f + 0.18f * (0.5f + 0.5f * sin(p * TAU * 2 + i))
         drawCircle(
-            Color(0xFF8A9AAD).copy(alpha = alpha),
+            palette.secondary.copy(alpha = alpha),
             radius = 1.dp.toPx(),
             center = Offset(seed(i + 600) * size.width, seed(i + 650) * size.height),
         )
     }
 }
 
-private fun DrawScope.drawCalm(p: Float) {
+private fun DrawScope.drawCalm(p: Float, palette: WeatherPalette) {
     repeat(8) { i ->
         val alpha = 0.08f + 0.10f * (0.5f + 0.5f * sin(p * TAU + i))
         drawCircle(
-            Color(0xFFB9A98C).copy(alpha = alpha),
+            palette.primary.copy(alpha = alpha),
             radius = 2.dp.toPx(),
             center = Offset(seed(i + 700) * size.width, seed(i + 750) * size.height),
         )
@@ -233,6 +282,8 @@ private fun DrawScope.drawCalm(p: Float) {
 /** Icono animado que va junto al título "Clima de hoy", dentro de la fila existente. */
 @Composable
 fun WeatherGlyphAnimated(kind: SkyKind, modifier: Modifier = Modifier) {
+    val dark = LocalAppPalette.current === DarkPalette
+    val palette = paletteFor(kind, dark)
     val infinite = rememberInfiniteTransition(label = "weatherGlyph")
     val p by infinite.animateFloat(
         initialValue = 0f,
@@ -243,15 +294,15 @@ fun WeatherGlyphAnimated(kind: SkyKind, modifier: Modifier = Modifier) {
     Canvas(modifier) {
         val r = size.minDimension / 2f
         val c = center
-        drawCircle(baseColor(kind), radius = r, center = c)
-        drawCircle(Color.White.copy(alpha = 0.55f), radius = r, center = c, style = Stroke(width = 1.dp.toPx()))
+        drawCircle(palette.base, radius = r, center = c)
+        drawCircle(palette.primary.copy(alpha = 0.6f), radius = r, center = c, style = Stroke(width = 1.dp.toPx()))
         when (kind) {
             SkyKind.DESPEJADO -> {
-                drawCircle(Color(0xFFFFC24D), radius = r * 0.34f, center = c)
+                drawCircle(palette.secondary, radius = r * 0.34f, center = c)
                 for (i in 0 until 8) {
                     val a = p * TAU + i * TAU / 8f
                     drawLine(
-                        Color(0xFFD68E22),
+                        palette.primary,
                         Offset(c.x + cos(a) * r * 0.5f, c.y + sin(a) * r * 0.5f),
                         Offset(c.x + cos(a) * r * 0.68f, c.y + sin(a) * r * 0.68f),
                         strokeWidth = 1.5.dp.toPx(),
@@ -260,11 +311,11 @@ fun WeatherGlyphAnimated(kind: SkyKind, modifier: Modifier = Modifier) {
                 }
             }
             SkyKind.LLUVIA -> {
-                drawCloud(c.x, c.y - r * 0.2f, r * 0.42f, Color(0xFF8FA9BB))
+                drawCloud(c.x, c.y - r * 0.2f, r * 0.42f, palette.secondary)
                 repeat(3) { i ->
                     val y = c.y + r * (0.15f + ((p + i * 0.33f) % 1f) * 0.55f)
                     drawLine(
-                        Color(0xFF3F86B3),
+                        palette.primary,
                         Offset(c.x - r * 0.4f + i * r * 0.4f, y),
                         Offset(c.x - r * 0.4f + i * r * 0.4f, y + r * 0.2f),
                         strokeWidth = 2.dp.toPx(),
@@ -273,8 +324,7 @@ fun WeatherGlyphAnimated(kind: SkyKind, modifier: Modifier = Modifier) {
                 }
             }
             SkyKind.ARCOIRIS -> {
-                val tones = listOf(Color(0xFFE86A6A), Color(0xFFF3D35B), Color(0xFF6FA8D6))
-                tones.forEachIndexed { i, tone ->
+                palette.rainbow.take(3).forEachIndexed { i, tone ->
                     drawArc(
                         tone.copy(alpha = 0.6f + 0.4f * (0.5f + 0.5f * sin(p * TAU - i))),
                         startAngle = 180f,
@@ -291,7 +341,7 @@ fun WeatherGlyphAnimated(kind: SkyKind, modifier: Modifier = Modifier) {
                 repeat(3) { i ->
                     val angle = a + i * TAU / 3f
                     drawLine(
-                        Color(0xFF5C91B7),
+                        palette.primary,
                         Offset(c.x - cos(angle) * r * 0.55f, c.y - sin(angle) * r * 0.55f),
                         Offset(c.x + cos(angle) * r * 0.55f, c.y + sin(angle) * r * 0.55f),
                         strokeWidth = 2.dp.toPx(),
@@ -302,7 +352,7 @@ fun WeatherGlyphAnimated(kind: SkyKind, modifier: Modifier = Modifier) {
             SkyKind.METEORO -> {
                 val alpha = 0.35f + 0.65f * (0.5f + 0.5f * sin(p * TAU * 2))
                 drawLine(
-                    Color(0xFF4E5C70).copy(alpha = alpha),
+                    palette.primary.copy(alpha = alpha),
                     Offset(c.x - r * 0.5f, c.y - r * 0.5f),
                     Offset(c.x + r * 0.45f, c.y + r * 0.45f),
                     strokeWidth = 3.dp.toPx(),
@@ -311,7 +361,7 @@ fun WeatherGlyphAnimated(kind: SkyKind, modifier: Modifier = Modifier) {
             }
             else -> {
                 drawCircle(
-                    Color(0xFFB9A98C).copy(alpha = 0.5f + 0.4f * (0.5f + 0.5f * sin(p * TAU))),
+                    palette.primary.copy(alpha = 0.5f + 0.4f * (0.5f + 0.5f * sin(p * TAU))),
                     radius = r * 0.22f,
                     center = c,
                 )
@@ -323,6 +373,7 @@ fun WeatherGlyphAnimated(kind: SkyKind, modifier: Modifier = Modifier) {
 /** Reflejo que recorre la barra de franjas sin cambiar su altura. */
 @Composable
 fun WeatherBarShimmer(modifier: Modifier = Modifier) {
+    val dark = LocalAppPalette.current === DarkPalette
     val infinite = rememberInfiniteTransition(label = "weatherShimmer")
     val p by infinite.animateFloat(
         initialValue = 0f,
@@ -335,7 +386,11 @@ fun WeatherBarShimmer(modifier: Modifier = Modifier) {
         val x = p * (size.width + band) - band
         drawRect(
             brush = Brush.horizontalGradient(
-                colors = listOf(Color.Transparent, Color.White.copy(alpha = 0.45f), Color.Transparent),
+                colors = listOf(
+                    Color.Transparent,
+                    Color.White.copy(alpha = if (dark) 0.18f else 0.45f),
+                    Color.Transparent,
+                ),
                 startX = x,
                 endX = x + band,
             ),
