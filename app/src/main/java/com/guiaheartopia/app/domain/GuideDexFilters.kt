@@ -13,6 +13,7 @@ data class DexCategoryFilters(
     val sortByLevel: Boolean = false,
     val chosenLevel: Int = -1,
     val eventFocus: String = "",
+    val onlyPastSeasons: Boolean = false,
 )
 
 @Serializable

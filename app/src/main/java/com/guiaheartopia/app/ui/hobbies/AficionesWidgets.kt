@@ -34,7 +34,6 @@ import com.guiaheartopia.app.ui.components.MarkIconButton
 import com.guiaheartopia.app.ui.components.NoCertificableMarkButton
 import com.guiaheartopia.app.ui.theme.GreenDark
 import com.guiaheartopia.app.ui.theme.GreenSoft
-import com.guiaheartopia.app.ui.theme.HoneySoft
 import com.guiaheartopia.app.ui.theme.Ink
 import com.guiaheartopia.app.ui.theme.Line
 import com.guiaheartopia.app.ui.theme.Muted
@@ -44,8 +43,6 @@ import com.guiaheartopia.app.ui.theme.Paper
 fun AficionesListHeader(
     found: Int,
     total: Int,
-    sortByLevel: Boolean,
-    onSort: () -> Unit,
     onlyConseguidas: Boolean?,
     onConseguidas: (Boolean?) -> Unit,
     onlyCertificadas: Boolean? = null,
@@ -65,19 +62,6 @@ fun AficionesListHeader(
                 .horizontalScroll(scroll),
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
-            FilterChip(
-                selected = sortByLevel,
-                onClick = onSort,
-                label = {
-                    Text(
-                        if (sortByLevel) "Nivel" else "Nombre",
-                        maxLines = 1,
-                        overflow = TextOverflow.Clip,
-                        style = MaterialTheme.typography.labelMedium,
-                    )
-                },
-                colors = FilterChipDefaults.filterChipColors(selectedContainerColor = HoneySoft, selectedLabelColor = Ink),
-            )
             FilterChip(
                 selected = onlyConseguidas == true,
                 onClick = { onConseguidas(if (onlyConseguidas == true) null else true) },

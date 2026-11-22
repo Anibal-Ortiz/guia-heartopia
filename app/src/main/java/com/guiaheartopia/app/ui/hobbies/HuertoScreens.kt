@@ -29,6 +29,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -57,11 +59,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guiaheartopia.app.data.AficionesCatalog
+import com.guiaheartopia.app.data.AndroidContentLibrary
 import com.guiaheartopia.app.domain.ActiveCrop
 import com.guiaheartopia.app.domain.AficionesContent
 import com.guiaheartopia.app.domain.AficionesMarks
+import com.guiaheartopia.app.domain.DexSchedule
 import com.guiaheartopia.app.domain.FlorEntry
 import com.guiaheartopia.app.domain.RecetaEntry
+import com.guiaheartopia.app.domain.ReminderPlan
+import com.guiaheartopia.app.domain.SeasonTags
 import com.guiaheartopia.app.domain.SiembraEntry
 import com.guiaheartopia.app.domain.TextMatch
 import com.guiaheartopia.app.ui.GuideUi
@@ -91,6 +97,7 @@ import com.guiaheartopia.app.ui.theme.Muted
 import com.guiaheartopia.app.ui.theme.Paper
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.ZonedDateTime
 
 private val HuertoTabs = listOf("Siembras", "Flores")
 
@@ -114,6 +121,20 @@ fun HuertoScreen(
     val context = LocalContext.current
     val revision = contentRevision()
     val bundle = remember(revision) { AficionesCatalog.load(context) }
+    val zone = DexSchedule.zoneOf(ui.profile.zoneId)
+    val eventsDoc = remember(revision) {
+        val raw = AndroidContentLibrary(context).effectiveBytes("calendar/eventos.json")?.decodeToString()
+        ReminderPlan.parseEvents(raw)
+    }
+    val activeSeasonKeys = remember(eventsDoc, zone) {
+        SeasonTags.activeKeys(eventsDoc, zone, ZonedDateTime.now(zone))
+    }
+    var showPastSeasons by rememberSaveable { mutableStateOf(false) }
+    val visibleSiembras = remember(bundle.siembras, activeSeasonKeys, showPastSeasons) {
+        bundle.siembras.filter { SeasonTags.isPast(it.evento, activeSeasonKeys) == showPastSeasons }
+    }
+    // Las flores no traen etiqueta de temporada en el catálogo publicado.
+    val visibleFlores = if (showPastSeasons) emptyList() else bundle.flores
     var tab by rememberSaveable { mutableIntStateOf(initialTab) }
     if (!bundle.huertoReady) {
         ProntoScreen("Huerto", "Siembras y flores", onBack)
@@ -130,7 +151,7 @@ fun HuertoScreen(
         tab = 0 // asegurar pestaña Siembras
         scope.launch {
             // El item 0 es el buscador, así que sumamos 1 al índice de la siembra
-            val index = bundle.siembras
+            val index = visibleSiembras
                 .filter { TextMatch.contains(it.nombre, query) }
                 .sortedBy { it.nombre }
                 .indexOfFirst { it.id == siembraId }
@@ -198,10 +219,25 @@ fun HuertoScreen(
                 }
             }
         }
-        PillTabs(HuertoTabs, tab) { tab = it }
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            PillTabs(HuertoTabs, tab, fillWidth = false, modifier = Modifier.weight(1f)) { tab = it }
+            FilterChip(
+                selected = showPastSeasons,
+                onClick = { showPastSeasons = !showPastSeasons },
+                label = { Text("Temporadas pasadas", maxLines = 1) },
+                colors = FilterChipDefaults.filterChipColors(
+                    selectedContainerColor = GreenSoft,
+                    selectedLabelColor = GreenDark,
+                ),
+            )
+        }
         when (tab) {
             0 -> SiembrasTab(
-                siembras = bundle.siembras,
+                siembras = visibleSiembras,
                 found = ui.huertoFound,
                 certified = ui.huertoCertified,
                 activeCrops = ui.activeCrops,
@@ -221,10 +257,11 @@ fun HuertoScreen(
                         Toast.LENGTH_SHORT,
                     ).show()
                 },
+                pastOnly = showPastSeasons,
                 modifier = Modifier.weight(1f),
             )
             else -> FloresTab(
-                flores = bundle.flores,
+                flores = visibleFlores,
                 found = ui.florFound,
                 certified = ui.florCertified,
                 query = query,
@@ -232,6 +269,7 @@ fun HuertoScreen(
                 onOpen = onOpenFlor,
                 onToggleFound = onToggleFlorFound,
                 onToggleCertified = onToggleFlorCertified,
+                pastOnly = showPastSeasons,
                 modifier = Modifier.weight(1f),
             )
         }
@@ -324,6 +362,7 @@ private fun SiembrasTab(
     onToggleCertified: (String, Boolean) -> Unit,
     cropAlarmUnlocked: Boolean,
     onAlarmLocked: () -> Unit,
+    pastOnly: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     val nameSuggestions = remember(siembras) { siembras.map { it.nombre }.distinct().sorted() }
@@ -356,13 +395,17 @@ private fun SiembrasTab(
         if (sorted.isEmpty()) {
             item(key = "vacio") {
                 EmptyStateCard(
-                    title = if (siembras.isEmpty()) "Sin datos todavía" else "Sin coincidencias",
-                    message = if (siembras.isEmpty()) {
-                        "Las siembras aparecerán cuando se publique el catálogo."
-                    } else {
-                        "Ninguna siembra coincide con la búsqueda."
+                    title = when {
+                        pastOnly -> "Sin temporadas pasadas"
+                        siembras.isEmpty() -> "Sin datos todavía"
+                        else -> "Sin coincidencias"
                     },
-                    icon = if (siembras.isEmpty()) "🌱" else "🔍",
+                    message = when {
+                        pastOnly -> "No hay siembras de temporadas ya finalizadas."
+                        siembras.isEmpty() -> "Las siembras aparecerán cuando se publique el catálogo."
+                        else -> "Ninguna siembra coincide con la búsqueda."
+                    },
+                    icon = if (pastOnly) "🗓️" else if (siembras.isEmpty()) "🌱" else "🔍",
                 )
             }
         }
@@ -401,6 +444,7 @@ private fun FloresTab(
     onOpen: (String) -> Unit,
     onToggleFound: (String) -> Unit,
     onToggleCertified: (String, Boolean) -> Unit,
+    pastOnly: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     val nameSuggestions = remember(flores) { flores.map { it.nombre }.distinct().sorted() }
@@ -429,13 +473,17 @@ private fun FloresTab(
         if (sorted.isEmpty()) {
             item(key = "vacio") {
                 EmptyStateCard(
-                    title = if (flores.isEmpty()) "Sin datos todavía" else "Sin coincidencias",
-                    message = if (flores.isEmpty()) {
-                        "Las flores aparecerán cuando se publique el catálogo."
-                    } else {
-                        "Ninguna flor coincide con la búsqueda."
+                    title = when {
+                        pastOnly -> "Sin temporadas pasadas"
+                        flores.isEmpty() -> "Sin datos todavía"
+                        else -> "Sin coincidencias"
                     },
-                    icon = if (flores.isEmpty()) "🌱" else "🔍",
+                    message = when {
+                        pastOnly -> "Las flores no tienen temporada asignada en el catálogo."
+                        flores.isEmpty() -> "Las flores aparecerán cuando se publique el catálogo."
+                        else -> "Ninguna flor coincide con la búsqueda."
+                    },
+                    icon = if (pastOnly) "🗓️" else if (flores.isEmpty()) "🌱" else "🔍",
                 )
             }
         }

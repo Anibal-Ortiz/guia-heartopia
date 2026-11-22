@@ -93,6 +93,7 @@ import com.guiaheartopia.app.domain.DexSchedule
 import com.guiaheartopia.app.domain.GuideLaunch
 import com.guiaheartopia.app.domain.ReminderPlan
 import com.guiaheartopia.app.domain.SkyWeather
+import com.guiaheartopia.app.domain.SeasonTags
 import com.guiaheartopia.app.domain.dexEntryMatchesEvent
 import com.guiaheartopia.app.domain.mergeGuideLaunch
 import com.guiaheartopia.app.domain.TextMatch
@@ -528,6 +529,9 @@ private fun DexTab(
     val activeSeasons = remember(eventsDoc, zone) {
         ReminderPlan.activeSeasons(eventsDoc, zone, java.time.ZonedDateTime.now(zone))
     }
+    val seasonKeys = remember(activeSeasons) {
+        activeSeasons.flatMap { listOf(it.id, it.name) }.map { it.trim().lowercase() }.toSet()
+    }
     val stored = ui.dexFilters[category] ?: DexCategoryFilters()
     val filters = mergeGuideLaunch(stored, guideLaunch)
     // El texto vive en memoria (y en [SearchDrafts] para sobrevivir recreaciones). Así la lista
@@ -602,6 +606,7 @@ private fun DexTab(
                 sortByLevel = false,
                 chosenLevel = -1,
                 eventFocus = "",
+                onlyPastSeasons = false,
             ),
         )
     }
@@ -613,9 +618,10 @@ private fun DexTab(
     val registeredActive = filters.registered != "todos"
     val certifiedActive = filters.certified != "todos"
     val levelActive = filters.chosenLevel >= 0
+    val pastSeasonsActive = filters.onlyPastSeasons
     val activeFilterCount = listOf(
         placeActive, weatherActive, nowActive, sortActive,
-        registeredActive, certifiedActive, levelActive,
+        registeredActive, certifiedActive, levelActive, pastSeasonsActive,
     ).count { it }
 
     fun eventBoost(entry: DexEntry): Boolean =
@@ -635,6 +641,7 @@ private fun DexTab(
         val timeOk = SkyWeather.availableNow(entry.schedule, entry.weather, instant, sky, zone)
         entry.category == category &&
             eventFocusOk(entry) &&
+            (SeasonTags.isPast(entry.event, seasonKeys) == filters.onlyPastSeasons) &&
             (nameQuery.isBlank() || TextMatch.contains(entry.name, nameQuery)) &&
             (placeQuery.isBlank() || entry.location.any { TextMatch.contains(it, placeQuery) }) &&
             (filters.weather == "Todos" || filters.weather in entry.weather) &&
@@ -765,6 +772,13 @@ private fun DexTab(
                         }
                     }
                 }
+                if (pastSeasonsActive) {
+                    item {
+                        RemovableFilterChip("Temporadas pasadas") {
+                            onSaveDexFilters(category, stored.copy(onlyPastSeasons = false))
+                        }
+                    }
+                }
                 if (sortActive) {
                     item {
                         RemovableFilterChip("Orden: nivel") {
@@ -852,6 +866,17 @@ private fun DexTab(
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = GreenSoft,
                                 selectedLabelColor = GreenDark,
+                            ),
+                        )
+                    }
+                    item {
+                        FilterChip(
+                            selected = filters.onlyPastSeasons,
+                            onClick = { onSaveDexFilters(category, stored.copy(onlyPastSeasons = !filters.onlyPastSeasons)) },
+                            label = { Text("Temporadas pasadas") },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = HoneySoft,
+                                selectedLabelColor = Ink,
                             ),
                         )
                     }

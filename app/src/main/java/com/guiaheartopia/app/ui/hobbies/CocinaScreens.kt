@@ -39,16 +39,18 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.data.AficionesCatalog
+import com.guiaheartopia.app.data.AndroidContentLibrary
 import com.guiaheartopia.app.data.CreatureCatalog
 import com.guiaheartopia.app.domain.AficionesContent
 import com.guiaheartopia.app.domain.AficionesMarks
 import com.guiaheartopia.app.domain.CocinaIngredienteLine
 import com.guiaheartopia.app.domain.CocinaIngredienteRef
 import com.guiaheartopia.app.domain.CocinaIngredients
-import com.guiaheartopia.app.domain.CreatureAvailability
+import com.guiaheartopia.app.domain.DexSchedule
 import com.guiaheartopia.app.domain.ImageZoom
-import com.guiaheartopia.app.domain.LevelFilter
 import com.guiaheartopia.app.domain.RecetaEntry
+import com.guiaheartopia.app.domain.ReminderPlan
+import com.guiaheartopia.app.domain.SeasonTags
 import com.guiaheartopia.app.domain.RecetaIngrediente
 import com.guiaheartopia.app.domain.SiembraEntry
 import com.guiaheartopia.app.domain.TextMatch
@@ -64,12 +66,12 @@ import com.guiaheartopia.app.ui.components.PixelCard
 import com.guiaheartopia.app.ui.components.SectionBanner
 import com.guiaheartopia.app.ui.components.rememberAficionesModel
 import com.guiaheartopia.app.ui.contentRevision
-import com.guiaheartopia.app.ui.guide.LevelDropdown
 import com.guiaheartopia.app.ui.theme.GreenDark
 import com.guiaheartopia.app.ui.theme.GreenSoft
 import com.guiaheartopia.app.ui.theme.HoneySoft
 import com.guiaheartopia.app.ui.theme.Ink
 import com.guiaheartopia.app.ui.theme.Muted
+import java.time.ZonedDateTime
 
 private val CocinaTabs = listOf("Platos", "Ingredientes")
 private const val RECETA_DRAFT_KEY = "cocina:recetas"
@@ -90,6 +92,14 @@ fun CocinaScreen(
         ProntoScreen("Cocina", "Recetas", onBack)
         return
     }
+    val zone = DexSchedule.zoneOf(ui.profile.zoneId)
+    val eventsDoc = remember(revision) {
+        val raw = AndroidContentLibrary(context).effectiveBytes("calendar/eventos.json")?.decodeToString()
+        ReminderPlan.parseEvents(raw)
+    }
+    val activeSeasonKeys = remember(eventsDoc, zone) {
+        SeasonTags.activeKeys(eventsDoc, zone, ZonedDateTime.now(zone))
+    }
     var tab by rememberSaveable { mutableIntStateOf(0) }
     var selectedIngredient by rememberSaveable { mutableStateOf<String?>(null) }
     // Estados y borradores independientes: escribir en Platos no afecta a Ingredientes.
@@ -101,17 +111,9 @@ fun CocinaScreen(
     }
     val query = recetaQueryField.text
     val ingQuery = ingQueryField.text
-    var filtro by rememberSaveable { mutableStateOf("Todas") }
-    val filtros = remember(bundle) {
-        val eventos = bundle.recetas.mapNotNull { it.evento }.distinct().sorted()
-        listOf("Todas", "Común", "Evento") + eventos
-    }
-    var sortByLevel by rememberSaveable { mutableStateOf(false) }
     var onlyConseguidas by rememberSaveable { mutableStateOf<Boolean?>(null) }
     var onlyCertificadas by rememberSaveable { mutableStateOf<Boolean?>(null) }
-    val catalogMax = remember(bundle) { LevelFilter.maximum(bundle.recetas.map { it.nivelCocina }) ?: 0 }
-    var chosenLevel by rememberSaveable { mutableIntStateOf(-1) }
-    val levelCap = if (chosenLevel < 0) null else chosenLevel.coerceAtMost(catalogMax)
+    var showPastSeasons by rememberSaveable { mutableStateOf(false) }
     val pecesNombres = remember(revision) {
         CreatureCatalog.load(context)
             .filter { it.category.equals("Peces", ignoreCase = true) }
@@ -129,13 +131,7 @@ fun CocinaScreen(
 
     val filteredRecetas = bundle.recetas.filter { entry ->
         val searchOk = query.isBlank() || TextMatch.contains(entry.nombre, query)
-        val filtroOk = when (filtro) {
-            "Todas" -> true
-            "Común" -> entry.categoria.equals("Común", ignoreCase = true)
-            "Evento" -> entry.categoria.equals("Evento", ignoreCase = true)
-            else -> entry.evento.equals(filtro, ignoreCase = true)
-        }
-        val levelOk = CreatureAvailability.levelAllowed(entry.nivelCocina, levelCap)
+        val seasonOk = SeasonTags.isPast(entry.evento, activeSeasonKeys) == showPastSeasons
         val markOk = when (onlyConseguidas) {
             true -> entry.id in ui.recetaFound
             false -> entry.id !in ui.recetaFound
@@ -146,19 +142,25 @@ fun CocinaScreen(
             false -> entry.id !in ui.recetaCertified
             else -> true
         }
-        searchOk && filtroOk && levelOk && markOk && certOk
+        searchOk && seasonOk && markOk && certOk
     }
-    val sortedRecetas = if (sortByLevel) {
-        filteredRecetas.sortedWith(compareBy({ it.nivelCocina }, { it.nombre }))
-    } else {
-        filteredRecetas.sortedBy { it.nombre }
-    }
+    val sortedRecetas = filteredRecetas.sortedBy { it.nombre }
 
     val selectedIngredientRef = selectedIngredient?.let { key ->
         ingredientCatalog.firstOrNull { it.key == key }
     }
+    val pastIngredientKeys = remember(bundle, activeSeasonKeys) {
+        bundle.recetas
+            .filter { SeasonTags.isPast(it.evento, activeSeasonKeys) }
+            .flatMap { CocinaIngredients.linesForReceta(it, bundle.siembras, bundle.recetas) }
+            .map { it.ref.key }
+            .toSet()
+    }
     val filteredIng = if (selectedIngredientRef == null) {
-        ingredientCatalog.filter { ingQuery.isBlank() || TextMatch.contains(it.displayName, ingQuery) }
+        ingredientCatalog.filter { ref ->
+            (ingQuery.isBlank() || TextMatch.contains(ref.displayName, ingQuery)) &&
+                ((ref.key in pastIngredientKeys) == showPastSeasons)
+        }
     } else {
         emptyList()
     }
@@ -207,29 +209,22 @@ fun CocinaScreen(
                 AficionesListHeader(
                     found = ui.recetaFound.size,
                     total = bundle.recetas.size,
-                    sortByLevel = sortByLevel,
-                    onSort = { sortByLevel = !sortByLevel },
                     onlyConseguidas = onlyConseguidas,
                     onConseguidas = { onlyConseguidas = it },
                     onlyCertificadas = onlyCertificadas,
                     onCertificadas = { onlyCertificadas = it },
                     extraChips = {
-                        filtros.forEach { f ->
-                            FilterChip(
-                                selected = filtro == f,
-                                onClick = { filtro = f },
-                                label = { Text(f, maxLines = 1, overflow = TextOverflow.Clip) },
-                                colors = FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = HoneySoft,
-                                    selectedLabelColor = Ink,
-                                ),
-                            )
-                        }
+                        FilterChip(
+                            selected = showPastSeasons,
+                            onClick = { showPastSeasons = !showPastSeasons },
+                            label = { Text("Temporadas pasadas", maxLines = 1, overflow = TextOverflow.Clip) },
+                            colors = FilterChipDefaults.filterChipColors(
+                                selectedContainerColor = HoneySoft,
+                                selectedLabelColor = Ink,
+                            ),
+                        )
                     },
                 )
-            }
-            item(key = "level") {
-                LevelDropdown(selected = levelCap, maximum = catalogMax, onSelect = { chosenLevel = it ?: -1 })
             }
             item(key = "count") {
                 Text(
@@ -291,6 +286,17 @@ fun CocinaScreen(
                         },
                         placeholder = "Buscar ingrediente...",
                         modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+                item(key = "ing-season") {
+                    FilterChip(
+                        selected = showPastSeasons,
+                        onClick = { showPastSeasons = !showPastSeasons },
+                        label = { Text("Temporadas pasadas", maxLines = 1, overflow = TextOverflow.Clip) },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = HoneySoft,
+                            selectedLabelColor = Ink,
+                        ),
                     )
                 }
                 items(filteredIng, key = { it.key }) { ref ->

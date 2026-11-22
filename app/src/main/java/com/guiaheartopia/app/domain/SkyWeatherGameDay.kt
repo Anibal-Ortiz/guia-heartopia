@@ -111,7 +111,29 @@ object SkyWeatherGameDay {
         }
         return frames
             .filter { it.kind != SkyKind.DESPEJADO }
+            .let(::mergeConsecutiveSameKind)
             .map { ClimateLine(formatSpan(it, localDawnDate), frame = false) }
+    }
+
+    /**
+     * Franjas seguidas con el mismo clima se muestran como una sola línea:
+     * Nieve 08:00–14:00 + Nieve 14:00–20:00 → Nieve 08:00–20:00.
+     * [rangeLabel] se encarga de añadir "del día siguiente" cuando el fin cruza la medianoche.
+     */
+    private fun mergeConsecutiveSameKind(spans: List<GameClimateSpan>): List<GameClimateSpan> {
+        if (spans.size < 2) return spans
+        val merged = ArrayList<GameClimateSpan>()
+        var current = spans.first()
+        for (next in spans.drop(1)) {
+            if (next.kind == current.kind && current.end == next.start) {
+                current = current.copy(end = next.end)
+            } else {
+                merged += current
+                current = next
+            }
+        }
+        merged += current
+        return merged
     }
 
     fun conditionAt(table: SkyTable, instant: Instant, zone: ZoneId): SkySlot? {
