@@ -26,6 +26,6 @@ git -C /ruta/al/repo/guia-heartopia-contenido push origin main
 
 Después del push, verificar que la web muestre «1.1.4 — 23 de noviembre de 2026» y el apartado «Códigos de acceso».
 
-## Estado en este equipo
+## Estado
 
-El repo de contenido se puede clonar, pero el push devuelve `403: Permission to anibalortizdev/guia-heartopia-contenido.git denied`. Las credenciales disponibles pertenecen a `Anibal-Ortiz` y no tienen escritura en esa cuenta. Para publicar hace falta una cuenta con acceso o un token con permiso `repo` sobre ese repo; no guardes tokens dentro de este repositorio.
+Publicada en el repo de contenido con el commit `2bd377a` (`7f6df4e..2bd377a  HEAD -> main`). GitHub Pages puede tardar unos minutos en reflejar el cambio; verifica con un parámetro `?cb=` único sobre la URL pública. No guardes tokens dentro de este repositorio.
