@@ -45,6 +45,7 @@ import com.guiaheartopia.app.domain.ImageZoom
 import com.guiaheartopia.app.ui.theme.Ink
 import com.guiaheartopia.app.ui.theme.Line
 import com.guiaheartopia.app.ui.theme.Paper
+import com.guiaheartopia.app.ui.theme.artworkColorFilter
 
 @Composable
 fun CreatureZoomDialog(
@@ -168,6 +169,7 @@ private fun ZoomableModel(
                 model = ImageRequest.Builder(LocalContext.current).data(model).build(),
                 contentDescription = contentDescription,
                 contentScale = ContentScale.Fit,
+                colorFilter = artworkColorFilter(),
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer {

@@ -31,6 +31,7 @@ import com.guiaheartopia.app.data.AndroidContentStore
 import com.guiaheartopia.app.domain.CreatureImagePaths
 import com.guiaheartopia.app.domain.CreatureMark
 import com.guiaheartopia.app.ui.theme.Line
+import com.guiaheartopia.app.ui.theme.artworkColorFilter
 import java.io.File
 
 /**
@@ -73,6 +74,7 @@ fun CreatureImage(
     val model = rememberCreatureModel(imageUrl, creatureId)
     var failed by remember(model) { mutableStateOf(false) }
     val stain = watercolorFor(category)
+    val artworkFilter = artworkColorFilter()
 
     val clickable = if (onClick == null) {
         Modifier
@@ -89,6 +91,7 @@ fun CreatureImage(
             Image(
                 painter = painterResource(stain),
                 contentDescription = null,
+                colorFilter = artworkFilter,
                 modifier = Modifier
                     .size(size * 1.3f)
                     .graphicsLayer { alpha = 0.85f },
@@ -109,6 +112,7 @@ fun CreatureImage(
                         .build(),
                     contentDescription = if (onClick == null) contentDescription else null,
                     contentScale = ContentScale.Fit,
+                    colorFilter = artworkFilter,
                     onError = { failed = true },
                     modifier = Modifier
                         .fillMaxSize()

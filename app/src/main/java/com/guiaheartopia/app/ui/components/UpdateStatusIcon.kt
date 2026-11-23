@@ -1,46 +1,74 @@
 package com.guiaheartopia.app.ui.components
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.guiaheartopia.app.ui.theme.Green
 import com.guiaheartopia.app.ui.theme.GreenSoft
-import com.guiaheartopia.app.ui.theme.Honey
+import com.guiaheartopia.app.ui.theme.Ink
 import com.guiaheartopia.app.ui.theme.Orange
 import kotlin.math.cos
 import kotlin.math.sin
 
 /** Estados que puede mostrar el hueco del logo en la cabecera. */
-enum class UpdateHeaderState { CHECKING, OK, AVAILABLE, FAILED }
+enum class UpdateHeaderState { CHECKING, OK, FAILED }
 
 /**
  * Ocupa el lugar del logo de la app mientras se comprueba si hay actualización.
  * En fallo muestra un icono de reintentar (el padre se encarga del click).
+ * [percent] solo se usa durante la carga de contenido para mostrar el progreso.
  */
 @Composable
-fun UpdateStatusIcon(state: UpdateHeaderState, modifier: Modifier = Modifier) {
+fun UpdateStatusIcon(
+    state: UpdateHeaderState,
+    modifier: Modifier = Modifier,
+    percent: Int? = null,
+) {
     when (state) {
-        UpdateHeaderState.CHECKING -> CircularProgressIndicator(
-            modifier = modifier.size(30.dp),
-            color = Green,
-            trackColor = GreenSoft,
-            strokeWidth = 2.5.dp,
-        )
+        UpdateHeaderState.CHECKING -> Box(
+            modifier = modifier.size(36.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (percent != null) {
+                CircularProgressIndicator(
+                    progress = { percent.coerceAtLeast(2) / 100f },
+                    modifier = Modifier.size(32.dp),
+                    color = Green,
+                    trackColor = GreenSoft,
+                    strokeWidth = 2.5.dp,
+                )
+                Text(
+                    "$percent%",
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    color = Ink,
+                )
+            } else {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(32.dp),
+                    color = Green,
+                    trackColor = GreenSoft,
+                    strokeWidth = 2.5.dp,
+                )
+            }
+        }
         UpdateHeaderState.OK,
-        UpdateHeaderState.AVAILABLE,
         UpdateHeaderState.FAILED,
         -> {
             val color = when (state) {
                 UpdateHeaderState.OK -> Green
-                UpdateHeaderState.AVAILABLE -> Honey
                 UpdateHeaderState.FAILED -> Orange
             }
             Canvas(modifier.size(36.dp)) {
@@ -67,29 +95,6 @@ fun UpdateStatusIcon(state: UpdateHeaderState, modifier: Modifier = Modifier) {
                             Color.White,
                             Offset(c.x - r * 0.08f, c.y + r * 0.3f),
                             Offset(c.x + r * 0.42f, c.y - r * 0.32f),
-                            stroke,
-                            StrokeCap.Round,
-                        )
-                    }
-                    UpdateHeaderState.AVAILABLE -> {
-                        drawLine(
-                            Color.White,
-                            Offset(c.x, c.y - r * 0.42f),
-                            Offset(c.x, c.y + r * 0.26f),
-                            stroke,
-                            StrokeCap.Round,
-                        )
-                        drawLine(
-                            Color.White,
-                            Offset(c.x - r * 0.24f, c.y + r * 0.02f),
-                            Offset(c.x, c.y + r * 0.28f),
-                            stroke,
-                            StrokeCap.Round,
-                        )
-                        drawLine(
-                            Color.White,
-                            Offset(c.x + r * 0.24f, c.y + r * 0.02f),
-                            Offset(c.x, c.y + r * 0.28f),
                             stroke,
                             StrokeCap.Round,
                         )

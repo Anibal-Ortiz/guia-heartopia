@@ -13,7 +13,6 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -38,7 +37,6 @@ import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -57,7 +55,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.ImageShader
 import androidx.compose.ui.graphics.ShaderBrush
@@ -193,12 +190,32 @@ class MainActivity : ComponentActivity() {
                 enableEdgeToEdge(statusBarStyle = statusStyle, navigationBarStyle = navStyle)
             }
             val lifecycleOwner = LocalLifecycleOwner.current
+            // La cabecera muestra una única secuencia: contenido y Play se combinan
+            // para no encadenar dos checks distintos antes de volver al logo.
+            val contentBusy by ContentSignals.busy().collectAsStateWithLifecycle()
+            val contentProgress by ContentSignals.progress().collectAsStateWithLifecycle()
+            val contentFailed by ContentSignals.failed().collectAsStateWithLifecycle()
+            var contentCheckFinished by remember { mutableStateOf(false) }
+            var contentWasBusy by remember { mutableStateOf(false) }
+            LaunchedEffect(contentBusy) {
+                if (contentBusy) {
+                    contentWasBusy = true
+                    contentCheckFinished = false
+                } else if (contentWasBusy) {
+                    contentWasBusy = false
+                    contentCheckFinished = true
+                }
+            }
             fun checkContentUpdates(force: Boolean = false) {
                 if (ContentSignals.busy().value) return
                 if (!force) {
                     val last = AndroidContentStore.lastAttemptMillis(this@MainActivity)
-                    if (!ContentUpdatePolicy.isDue(last, System.currentTimeMillis())) return
+                    if (!ContentUpdatePolicy.isDue(last, System.currentTimeMillis())) {
+                        contentCheckFinished = true
+                        return
+                    }
                 }
+                contentCheckFinished = false
                 lifecycleScope.launch {
                     ContentSignals.setBusy(true)
                     try {
@@ -232,9 +249,11 @@ class MainActivity : ComponentActivity() {
                     } finally {
                         ContentSignals.setBusy(false)
                         ContentSignals.setProgress(null)
+                        contentCheckFinished = true
                     }
                 }
             }
+            LaunchedEffect(Unit) { checkContentUpdates(force = true) }
             DisposableEffect(lifecycleOwner) {
                 val observer = LifecycleEventObserver { _, event ->
                     if (event == Lifecycle.Event.ON_STOP) {
@@ -287,29 +306,47 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
-            // El check de actualización ocupa el lugar del logo en la cabecera:
-            // comprobando → OK / disponible / fallo (reintentar) → vuelve el logo.
-            var updateStatus by remember { mutableStateOf<UpdateHeaderState?>(UpdateHeaderState.CHECKING) }
+            // La cabecera refleja solo la actualización del repositorio de contenido.
+            // Play se consulta aparte y, si hay versión nueva, se avisa con su diálogo;
+            // un fallo de Play (APK instalado a mano) no pinta el reintentar.
+            var playResult by remember { mutableStateOf<PlayUpdateResult?>(null) }
+            var playAttempt by remember { mutableStateOf(0) }
             fun runUpdateCheck() {
-                updateStatus = UpdateHeaderState.CHECKING
+                playAttempt += 1
+                val attempt = playAttempt
+                playResult = null
                 checkPlayUpdate(this@MainActivity) { result ->
-                    updateStatus = when (result) {
-                        PlayUpdateResult.AVAILABLE -> UpdateHeaderState.AVAILABLE
-                        PlayUpdateResult.UP_TO_DATE -> UpdateHeaderState.OK
-                        PlayUpdateResult.FAILED -> UpdateHeaderState.FAILED
+                    if (attempt == playAttempt) {
+                        playResult = result
                     }
                 }
             }
             LaunchedEffect(Unit) { runUpdateCheck() }
-            LaunchedEffect(updateStatus) {
-                if (updateStatus == UpdateHeaderState.OK) {
-                    delay(2_500)
-                    updateStatus = null
+            val updateChecking = contentBusy || contentProgress != null || !contentCheckFinished
+            val updateFailed = !updateChecking && contentFailed
+            var showUpdateOk by remember { mutableStateOf(false) }
+            LaunchedEffect(updateChecking, updateFailed) {
+                if (!updateChecking && !updateFailed) {
+                    showUpdateOk = true
+                    delay(1_500)
+                    showUpdateOk = false
+                } else {
+                    showUpdateOk = false
                 }
+            }
+            val headerUpdateState = when {
+                updateChecking -> UpdateHeaderState.CHECKING
+                updateFailed -> UpdateHeaderState.FAILED
+                showUpdateOk -> UpdateHeaderState.OK
+                else -> null
             }
             GuiaTheme(darkTheme = darkTheme) {
                 val darkUi = darkTheme
-                val paper = ImageBitmap.imageResource(R.drawable.papel_textura)
+                // Misma textura de papel en ambos temas; la versión oscura conserva el
+                // grano original con el tono dark, en vez de un fondo plano de un color.
+                val paper = ImageBitmap.imageResource(
+                    if (darkUi) R.drawable.papel_textura_dark else R.drawable.papel_textura,
+                )
                 val paperBrush = remember(paper) {
                     ShaderBrush(ImageShader(paper, TileMode.Repeated, TileMode.Repeated))
                 }
@@ -320,7 +357,7 @@ class MainActivity : ComponentActivity() {
                     Modifier
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background)
-                        .then(if (darkUi) Modifier else Modifier.background(paperBrush)),
+                        .background(paperBrush),
                 ) {
                 when {
                     !ui.ready -> Box(Modifier.fillMaxSize())
@@ -346,22 +383,24 @@ class MainActivity : ComponentActivity() {
                         onPrivacy = openPrivacy,
                         onTerms = openTerms,
                         onAdPrivacy = ads::showPrivacyOptions,
-                        onRetryContent = { checkContentUpdates(force = true) },
                         themeMode = themeMode,
                         onThemeMode = { mode ->
                             lifecycleScope.launch { ThemeModeStore.set(this@MainActivity, mode) }
                         },
-                        updateStatus = updateStatus,
-                        onRetryUpdate = { runUpdateCheck() },
+                        updateStatus = headerUpdateState,
+                        updatePercent = contentProgress?.let { contentPercent(it) },
+                        onRetryUpdate = {
+                            checkContentUpdates(force = true)
+                        },
                     )
                 }
 
-                if (updateStatus == UpdateHeaderState.AVAILABLE && ui.ready && ui.profile.onboarded) {
+                if (playResult == PlayUpdateResult.AVAILABLE && ui.ready && ui.profile.onboarded) {
                     UpdateAvailableDialog(
-                        onDismiss = { updateStatus = null },
+                        onDismiss = { playResult = null },
                         onUpdate = {
                             openPlayStore(this@MainActivity)
-                            updateStatus = null
+                            playResult = null
                         },
                     )
                 }
@@ -386,10 +425,10 @@ private fun AppScaffold(
     onPrivacy: () -> Unit,
     onTerms: () -> Unit,
     onAdPrivacy: () -> Unit,
-    onRetryContent: () -> Unit,
     themeMode: ThemeMode,
     onThemeMode: (ThemeMode) -> Unit,
     updateStatus: UpdateHeaderState?,
+    updatePercent: Int?,
     onRetryUpdate: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -419,21 +458,6 @@ private fun AppScaffold(
         onThemeMode(next)
     }
 
-    val contentBusy by ContentSignals.busy().collectAsStateWithLifecycle()
-    val contentProgress by ContentSignals.progress().collectAsStateWithLifecycle()
-    val contentCheckOkTicks by ContentSignals.checkOkTicks().collectAsStateWithLifecycle()
-    val contentFailed by ContentSignals.failed().collectAsStateWithLifecycle()
-    var contentDone by remember { mutableStateOf(false) }
-    LaunchedEffect(contentBusy) {
-        if (contentBusy) contentDone = false
-    }
-    LaunchedEffect(contentCheckOkTicks) {
-        if (contentCheckOkTicks > 0) {
-            contentDone = true
-            delay(1_500)
-            contentDone = false
-        }
-    }
     fun toast(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
     }
@@ -586,34 +610,24 @@ private fun AppScaffold(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
                         Box(Modifier.size(36.dp), contentAlignment = Alignment.Center) {
-                            when {
-                                contentBusy || contentProgress != null || contentDone || contentFailed ->
-                                    ContentSyncIcon(
-                                        busy = contentBusy || contentProgress != null,
-                                        percent = contentPercent(contentProgress),
-                                        done = contentDone,
-                                        failed = contentFailed,
-                                        onRetry = onRetryContent,
-                                    )
-                                updateStatus == null -> WikiFanAppIcon(Modifier.size(36.dp))
-                                else -> {
-                                    val canRetry = updateStatus == UpdateHeaderState.FAILED
-                                    Box(
-                                        modifier = Modifier
-                                            .size(36.dp)
-                                            .clickable(enabled = canRetry) { onRetryUpdate() }
-                                            .semantics {
-                                                contentDescription = when (updateStatus) {
-                                                    UpdateHeaderState.CHECKING -> "Comprobando actualizaciones"
-                                                    UpdateHeaderState.OK -> "Sin actualizaciones pendientes"
-                                                    UpdateHeaderState.AVAILABLE -> "Actualización disponible"
-                                                    UpdateHeaderState.FAILED -> "No se pudo comprobar. Toca para reintentar"
-                                                }
-                                            },
-                                        contentAlignment = Alignment.Center,
-                                    ) {
-                                        UpdateStatusIcon(updateStatus)
-                                    }
+                            if (updateStatus == null) {
+                                WikiFanAppIcon(Modifier.size(36.dp))
+                            } else {
+                                val canRetry = updateStatus == UpdateHeaderState.FAILED
+                                Box(
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                        .clickable(enabled = canRetry) { onRetryUpdate() }
+                                        .semantics {
+                                            contentDescription = when (updateStatus) {
+                                                UpdateHeaderState.CHECKING -> "Comprobando actualizaciones"
+                                                UpdateHeaderState.OK -> "Sin actualizaciones pendientes"
+                                                UpdateHeaderState.FAILED -> "No se pudo comprobar. Toca para reintentar"
+                                            }
+                                        },
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    UpdateStatusIcon(updateStatus, percent = updatePercent)
                                 }
                             }
                         }
@@ -1104,74 +1118,3 @@ private fun contentPercent(progress: ContentDownloadProgress?): Int = when {
     progress.totalFiles > 0 -> progress.downloadedFiles * 100 / progress.totalFiles
     else -> 0
 }.coerceIn(0, 100)
-
-@Composable
-private fun ContentSyncIcon(
-    busy: Boolean,
-    percent: Int,
-    done: Boolean,
-    failed: Boolean,
-    onRetry: () -> Unit,
-) {
-    if (!busy && !done && !failed) return
-    val error = Color(0xFFC0392B)
-    val isError = failed && !busy && !done
-    val color = if (isError) error else Green
-    Box(
-        modifier = Modifier
-            .size(36.dp)
-            .clip(CircleShape)
-            .clickable(enabled = isError) { onRetry() }
-            .semantics {
-                contentDescription = when {
-                    busy -> "Cargando contenido: $percent%"
-                    isError -> "Error al cargar. Toca para reintentar"
-                    else -> "Contenido actualizado"
-                }
-            },
-        contentAlignment = Alignment.Center,
-    ) {
-        CircularProgressIndicator(
-            progress = { when {
-                done -> 1f
-                busy && percent > 0 -> percent / 100f
-                else -> 0.08f
-            } },
-            modifier = Modifier.size(34.dp),
-            color = color,
-            trackColor = color.copy(alpha = 0.22f),
-            strokeWidth = 3.dp,
-        )
-        when {
-            busy -> Text(
-                "$percent%",
-                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                color = Ink,
-            )
-            done -> DoneCheckIcon(color, Modifier.size(18.dp))
-            else -> Text(
-                "↻",
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                color = error,
-            )
-        }
-    }
-}
-
-@Composable
-private fun DoneCheckIcon(tint: Color, modifier: Modifier = Modifier) {
-    Canvas(modifier) {
-        drawLine(
-            color = tint,
-            start = Offset(size.width * 0.2f, size.height * 0.52f),
-            end = Offset(size.width * 0.43f, size.height * 0.74f),
-            strokeWidth = 2.dp.toPx(),
-        )
-        drawLine(
-            color = tint,
-            start = Offset(size.width * 0.43f, size.height * 0.74f),
-            end = Offset(size.width * 0.8f, size.height * 0.26f),
-            strokeWidth = 2.dp.toPx(),
-        )
-    }
-}

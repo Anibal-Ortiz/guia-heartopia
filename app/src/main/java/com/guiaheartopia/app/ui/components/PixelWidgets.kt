@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guiaheartopia.app.ui.theme.CardLine
+import com.guiaheartopia.app.ui.theme.artworkColorFilter
 import com.guiaheartopia.app.ui.theme.Dark
 import com.guiaheartopia.app.ui.theme.DarkCard
 import com.guiaheartopia.app.ui.theme.Green
@@ -250,6 +251,7 @@ fun PillTabs(
                     Image(
                         painter = painterResource(stain),
                         contentDescription = null,
+                        colorFilter = artworkColorFilter(),
                         modifier = Modifier
                             .matchParentSize()
                             .graphicsLayer { alpha = 0.4f },

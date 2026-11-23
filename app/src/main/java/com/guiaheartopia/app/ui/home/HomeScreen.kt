@@ -80,6 +80,7 @@ import com.guiaheartopia.app.ui.components.CozyHobbiesIcon
 import com.guiaheartopia.app.ui.components.CozyHomeIcon
 import com.guiaheartopia.app.ui.components.CozyTreeIcon
 import com.guiaheartopia.app.ui.components.GameTimeCard
+import com.guiaheartopia.app.ui.components.headerForTheme
 import com.guiaheartopia.app.ui.components.NowBadge
 import com.guiaheartopia.app.ui.components.NotebookCard
 import com.guiaheartopia.app.ui.components.PixelButton
@@ -103,7 +104,7 @@ import com.guiaheartopia.app.ui.theme.HoneyTint
 import com.guiaheartopia.app.ui.theme.Ink
 import com.guiaheartopia.app.ui.theme.Line
 import com.guiaheartopia.app.ui.theme.Muted
-import com.guiaheartopia.app.ui.theme.OnImageText
+import com.guiaheartopia.app.ui.theme.OnArtworkText
 import com.guiaheartopia.app.ui.theme.Orange
 import com.guiaheartopia.app.ui.theme.Paper
 import com.guiaheartopia.app.ui.theme.PaperSubtle
@@ -673,14 +674,18 @@ private fun GreetingHeroBanner(
     Box(
         Modifier
             .fillMaxWidth()
-            .height(168.dp)
+            .height(200.dp)
             .clip(RoundedCornerShape(18.dp))
             .background(Cream),
     ) {
         androidx.compose.foundation.Image(
-            painter = androidx.compose.ui.res.painterResource(com.guiaheartopia.app.R.drawable.header_inicio),
+            painter = androidx.compose.ui.res.painterResource(
+                headerForTheme(com.guiaheartopia.app.R.drawable.header_inicio),
+            ),
             contentDescription = null,
-            contentScale = ContentScale.Crop,
+            // FillWidth + anclado abajo: se ve el cuaderno completo sin recortarlo.
+            contentScale = ContentScale.FillWidth,
+            alignment = Alignment.BottomCenter,
             modifier = Modifier.fillMaxSize(),
         )
         Row(
@@ -699,7 +704,7 @@ private fun GreetingHeroBanner(
                 Text(
                     todayLabel,
                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                    color = OnImageText,
+                    color = OnArtworkText,
                 )
             }
             avatar()
@@ -736,7 +741,7 @@ private fun SingleLineShrinkingGreeting(
         Text(
             greeting,
             style = baseStyle.copy(fontSize = fontSize),
-            color = OnImageText,
+            color = OnArtworkText,
             maxLines = 1,
             softWrap = false,
         )

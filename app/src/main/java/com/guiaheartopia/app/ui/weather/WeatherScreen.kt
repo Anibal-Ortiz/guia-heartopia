@@ -142,6 +142,9 @@ fun WeatherScreen(
             image = com.guiaheartopia.app.R.drawable.header_clima,
             title = "Calendario",
             subtitle = "El clima del mes, arriba del detalle",
+            // Misma técnica que las otras cabeceras: se baja la imagen escalada
+            // ×2,6 para que el corte caiga sobre el fondo y no sobre el dibujo.
+            imageOffsetY = 120.dp,
         )
         val zoneLabel = Countries.zoneLabel(zone.id)
         PickerField(

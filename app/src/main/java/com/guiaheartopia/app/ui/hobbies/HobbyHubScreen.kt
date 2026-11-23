@@ -93,5 +93,11 @@ private fun HobbyDoorIcon(route: String, modifier: Modifier = Modifier) {
         "cocina" -> R.drawable.ic_aficion_cocina
         else -> R.drawable.ic_aficion_niveles
     }
-    Image(painter = painterResource(res), contentDescription = null, modifier = modifier)
+    // Sin filtro de oscurecido: son los iconos de la pantalla de aficiones y
+    // deben mantener su brillo original para destacar sobre las tarjetas dark.
+    Image(
+        painter = painterResource(res),
+        contentDescription = null,
+        modifier = modifier,
+    )
 }

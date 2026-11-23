@@ -67,6 +67,7 @@ import com.guiaheartopia.app.data.ContentCheckStore
 import com.guiaheartopia.app.data.ContentSignals
 import com.guiaheartopia.app.domain.ContentDownloadProgress
 import com.guiaheartopia.app.domain.ContentSyncResult
+import com.guiaheartopia.app.domain.checkOk
 import com.guiaheartopia.app.data.VerifiedCatalog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -296,6 +297,19 @@ private fun ContentUpdateCard() {
                 if (report.result == ContentSyncResult.APPLIED) {
                     ContentSignals.note(context)
                 }
+                if (report.result.checkOk) {
+                    ContentSignals.noteCheckOk()
+                }
+                if (report.result == ContentSyncResult.APPLIED ||
+                    report.result == ContentSyncResult.UNCHANGED
+                ) {
+                    ContentSignals.emitSyncResult(report.result)
+                }
+                // Mantiene la cabecera sincronizada: si esta comprobación funciona,
+                // desaparece el reintentar que quedó de un fallo anterior.
+                ContentSignals.setFailed(!report.result.checkOk)
+            } catch (_: Exception) {
+                ContentSignals.setFailed(true)
             } finally {
                 ContentSignals.setBusy(false)
             }

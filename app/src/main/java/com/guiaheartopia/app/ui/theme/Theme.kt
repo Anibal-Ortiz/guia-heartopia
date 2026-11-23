@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -160,8 +161,29 @@ val DarkPalette = AppPalette(
     alertSoft = Color(0xFF4A2020),
 )
 
-/** Texto sobre imágenes claras fijas (header_inicio): no cambia con el tema. */
+/** Texto sobre imágenes claras fijas (header_inicio): no cambia con el tema claro. */
 val OnImageText = Color(0xFF4A3B2A)
+
+/**
+ * Filtros del tema oscuro para el arte pastel. Se usa `lighting` (multiplicar canales,
+ * sumar transparente) en vez de `tint` para no rellenar de color las zonas transparentes
+ * de las acuarelas y los recortes de catálogo: se conserva la forma y el matiz, solo
+ * baja la luminosidad.
+ */
+private val DarkArtworkFilter = ColorFilter.lighting(
+    multiply = Color(0xFF6E645B),
+    add = Color.Transparent,
+)
+
+/** Filtro a aplicar al arte del catálogo; null en el tema claro (arte original intacto). */
+@Composable
+fun artworkColorFilter(): ColorFilter? =
+    if (LocalAppPalette.current === DarkPalette) DarkArtworkFilter else null
+
+/** Texto sobre el arte: oscuro sobre el papel claro, claro cuando el arte se vuelve noche. */
+@get:Composable
+val OnArtworkText: Color
+    get() = if (LocalAppPalette.current === DarkPalette) LocalAppPalette.current.ink else OnImageText
 
 // Alias públicos: mismos nombres de siempre, ahora resueltos desde la paleta activa.
 @get:Composable val Ink: Color get() = LocalAppPalette.current.ink

@@ -39,7 +39,10 @@ import com.guiaheartopia.app.ui.theme.BannerSubtitle
 import com.guiaheartopia.app.ui.theme.CardLine
 import com.guiaheartopia.app.ui.theme.CardPaper
 import com.guiaheartopia.app.ui.theme.Cream
+import com.guiaheartopia.app.ui.theme.DarkPalette
 import com.guiaheartopia.app.ui.theme.Ink
+import com.guiaheartopia.app.ui.theme.LocalAppPalette
+import com.guiaheartopia.app.ui.theme.artworkColorFilter
 
 fun watercolorFor(category: String): Int? = when (category) {
     "Peces" -> R.drawable.acuarela_peces
@@ -81,6 +84,7 @@ fun NotebookCard(
         Image(
             painter = painterResource(washiFor(category)),
             contentDescription = null,
+            colorFilter = artworkColorFilter(),
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .offset(x = (-10).dp, y = 2.dp)
@@ -123,7 +127,7 @@ fun SectionBanner(
         // Sin clip: la imagen puede sobresalir hacia arriba sin recortarse.
         Box(Modifier.matchParentSize()) {
             Image(
-                painter = painterResource(image),
+                painter = painterResource(headerForTheme(image)),
                 contentDescription = null,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -186,11 +190,34 @@ fun SectionBanner(
     }
 }
 
+/**
+ * En modo oscuro las cabeceras usan una versión con el papel recortado (transparente),
+ * para que el dibujo se apoye directamente sobre el fondo oscuro en vez de arrastrar
+ * su rectángulo crema original.
+ */
+@Composable
+fun headerForTheme(light: Int): Int {
+    if (LocalAppPalette.current !== DarkPalette) return light
+    return when (light) {
+        R.drawable.header_inicio -> R.drawable.header_inicio_dark
+        R.drawable.header_aficiones -> R.drawable.header_aficiones_dark
+        R.drawable.header_clima -> R.drawable.header_clima_dark
+        R.drawable.header_guia -> R.drawable.header_guia_dark
+        R.drawable.header_ajustes -> R.drawable.header_ajustes_dark
+        R.drawable.header_cocina -> R.drawable.header_cocina_dark
+        R.drawable.header_codigos -> R.drawable.header_codigos_dark
+        R.drawable.header_huerto -> R.drawable.header_huerto_dark
+        R.drawable.header_niveles -> R.drawable.header_niveles_dark
+        else -> light
+    }
+}
+
 @Composable
 fun TwigDivider(index: Int, modifier: Modifier = Modifier) {
     Image(
         painter = painterResource(if (index % 2 == 0) R.drawable.ramita_1 else R.drawable.ramita_2),
         contentDescription = "Separador",
+        colorFilter = artworkColorFilter(),
         modifier = modifier
             .fillMaxWidth()
             .height(32.dp),

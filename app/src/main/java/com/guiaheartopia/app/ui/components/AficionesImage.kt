@@ -30,6 +30,7 @@ import coil3.request.ImageRequest
 import com.guiaheartopia.app.data.AndroidContentStore
 import com.guiaheartopia.app.domain.AficionesImagePaths
 import com.guiaheartopia.app.ui.theme.Line
+import com.guiaheartopia.app.ui.theme.artworkColorFilter
 @Composable
 fun rememberAficionesModel(imagen: String?): Any? {
     val context = LocalContext.current
@@ -58,6 +59,7 @@ fun AficionesImage(
     val model = rememberAficionesModel(imagen)
     var failed by remember(model) { mutableStateOf(false) }
     val stain = watercolorFor(sectionLabel)
+    val artworkFilter = artworkColorFilter()
     val clickable = if (onClick == null) {
         Modifier
     } else {
@@ -73,6 +75,7 @@ fun AficionesImage(
             Image(
                 painter = painterResource(stain),
                 contentDescription = null,
+                colorFilter = artworkFilter,
                 modifier = Modifier
                     .size(size * 1.3f)
                     .graphicsLayer { alpha = 0.85f },
@@ -91,6 +94,7 @@ fun AficionesImage(
                     model = ImageRequest.Builder(LocalContext.current).data(model).build(),
                     contentDescription = if (onClick == null) contentDescription else null,
                     contentScale = ContentScale.Fit,
+                    colorFilter = artworkFilter,
                     onError = { failed = true },
                     modifier = Modifier.fillMaxSize().clip(shape),
                 )
