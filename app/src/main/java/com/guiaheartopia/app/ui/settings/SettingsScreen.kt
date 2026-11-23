@@ -96,6 +96,7 @@ fun SettingsScreen(
     onImport: (String, (ImportResult) -> Unit) -> Unit,
     scrollToReminders: Boolean = false,
     adFreeUntilMillis: Long = 0L,
+    isPro: Boolean = false,
     onWatchAdFree: () -> Unit = {},
     onRetryAds: () -> Unit = {},
 ) {
@@ -175,10 +176,13 @@ fun SettingsScreen(
                 PixelButton("Reintentar consentimiento de anuncios", onClick = onRetryAds, outlined = true)
             }
         }
-        AdFreeRewardCard(
-            untilMillis = adFreeUntilMillis,
-            onWatchAdFree = onWatchAdFree,
-        )
+        AccessCodeSection()
+        if (!isPro) {
+            AdFreeRewardCard(
+                untilMillis = adFreeUntilMillis,
+                onWatchAdFree = onWatchAdFree,
+            )
+        }
         androidx.compose.foundation.layout.Box(
             Modifier.onGloballyPositioned { remindersY = it.positionInParent().y.toInt() },
         ) {

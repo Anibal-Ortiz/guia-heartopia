@@ -114,6 +114,7 @@ fun HuertoScreen(
     onCancelCrop: (String) -> Unit,
     onPlant: (String, String, Int) -> Unit,
     cropAlarmUnlocked: Boolean = false,
+    proActive: Boolean = false,
     cropAlarmUntilMillis: Long = 0L,
     onWatchAlarmAd: () -> Unit = {},
     initialTab: Int = 0,
@@ -206,10 +207,12 @@ fun HuertoScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                AlarmAdStatusChip(
-                    untilMillis = cropAlarmUntilMillis,
-                    onWatchAlarmAd = onWatchAlarmAd,
-                )
+                if (!proActive) {
+                    AlarmAdStatusChip(
+                        untilMillis = cropAlarmUntilMillis,
+                        onWatchAlarmAd = onWatchAlarmAd,
+                    )
+                }
                 if (ui.activeCrops.isNotEmpty()) {
                     ActiveCropsPanel(
                         crops = ui.activeCrops,

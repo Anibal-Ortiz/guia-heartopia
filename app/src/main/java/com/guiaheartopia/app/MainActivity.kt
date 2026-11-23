@@ -90,6 +90,9 @@ import com.guiaheartopia.app.ads.DiscreteBanner
 import com.guiaheartopia.app.ads.rememberAdsState
 import com.guiaheartopia.app.data.AdRewardStore
 import com.guiaheartopia.app.data.AdRewardState
+import com.guiaheartopia.app.data.LicensePreferences
+import com.guiaheartopia.app.data.LicenseState
+import com.guiaheartopia.app.data.PolarLicenseRepository
 import kotlinx.coroutines.launch
 import com.guiaheartopia.app.data.GuideRepository
 import com.guiaheartopia.app.data.AndroidContentStore
@@ -164,6 +167,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             val vm: GuideViewModel = viewModel(factory = GuideViewModel.factory(repository, this))
             val ui by vm.ui.collectAsStateWithLifecycle()
+            val licensePreferences = remember { LicensePreferences.get(this@MainActivity) }
+            val licenseState by licensePreferences.stateFlow.collectAsStateWithLifecycle(LicenseState())
+            val licenseRepository = remember { PolarLicenseRepository.get(this@MainActivity) }
+            LaunchedEffect(Unit) { licenseRepository.validateLicenseSilently() }
             val themeMode by ThemeModeStore.observe(this@MainActivity)
                 .collectAsStateWithLifecycle(ThemeMode.SYSTEM)
             val systemDark = isSystemInDarkTheme()
@@ -243,7 +250,10 @@ class MainActivity : ComponentActivity() {
                 lifecycleOwner.lifecycle.addObserver(observer)
                 onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
             }
-            val ads = rememberAdsState(this, ui.ready && ui.profile.onboarded)
+            val ads = rememberAdsState(
+                this,
+                ui.ready && ui.profile.onboarded && licenseState.loaded && !licenseState.isPro,
+            )
             val adRewards by AdRewardStore.observe(this).collectAsStateWithLifecycle(AdRewardState())
             // Un solo despertar al vencer el beneficio: mantiene banner y navegación
             // sincronizados sin reevaluar el reloj en toda la pantalla cada 30 s.
@@ -256,8 +266,13 @@ class MainActivity : ComponentActivity() {
                     adFreeClock = System.currentTimeMillis()
                 }
             }
-            val suppressAds = !adRewards.loaded || adRewards.adFreeUntilMillis > adFreeClock
+            val suppressAds = !adRewards.loaded ||
+                adRewards.adFreeUntilMillis > adFreeClock ||
+                licenseState.isPro
             val adFreeActive = adRewards.loaded && adRewards.adFreeUntilMillis > adFreeClock
+            LaunchedEffect(licenseState.isPro) {
+                ads.setPro(licenseState.isPro)
+            }
             LaunchedEffect(suppressAds) {
                 ads.setAdFree(suppressAds)
             }
@@ -323,6 +338,7 @@ class MainActivity : ComponentActivity() {
                         ads = ads,
                         adRewards = adRewards,
                         adFreeActive = adFreeActive,
+                        isPro = licenseState.isPro,
                         suppressAds = suppressAds,
                         adsMode = ads.state.mode,
                         adsStatus = ads.state.status,
@@ -362,6 +378,7 @@ private fun AppScaffold(
     ads: com.guiaheartopia.app.ads.AdsController,
     adRewards: AdRewardState,
     adFreeActive: Boolean,
+    isPro: Boolean,
     suppressAds: Boolean,
     adsMode: com.guiaheartopia.app.ads.AdsMode,
     adsStatus: String,
@@ -463,7 +480,7 @@ private fun AppScaffold(
         }
     }
     val plantIfUnlocked: (String, String, Int) -> Unit = { id, nombre, minutos ->
-        if (adRewards.cropAlarmUnlocked) vm.plantSiembra(id, nombre, minutos)
+        if (adRewards.cropAlarmUnlocked || isPro) vm.plantSiembra(id, nombre, minutos)
     }
     val backStack by nav.currentBackStackEntryAsState()
     val route = backStack?.destination?.route
@@ -660,7 +677,7 @@ private fun AppScaffold(
                     }
                 }
                 AnimatedVisibility(
-                    visible = adRewards.loaded && adFreeBarVisible.value,
+                    visible = adRewards.loaded && adFreeBarVisible.value && !isPro,
                     enter = expandVertically() + fadeIn(),
                     exit = shrinkVertically() + fadeOut(),
                 ) {
@@ -724,7 +741,7 @@ private fun AppScaffold(
                     ui = ui,
                     onOpen = { dest -> nav.navigate(dest) },
                     onDismissReminderPrompt = vm::dismissReminderPrompt,
-                    adFreeActive = adFreeActive,
+                    adFreeActive = adFreeActive || isPro,
                     onWatchAdFree = watchAdFree,
                     onPickAvatar = vm::saveAvatar,
                     onClearAvatar = vm::clearAvatar,
@@ -755,9 +772,10 @@ private fun AppScaffold(
                     onToggleFlorCertified = vm::toggleFlorCertified,
                     onCancelCrop = vm::cancelCrop,
                     onPlant = plantIfUnlocked,
-                    cropAlarmUnlocked = adRewards.cropAlarmUnlocked,
+                    cropAlarmUnlocked = adRewards.cropAlarmUnlocked || isPro,
                     cropAlarmUntilMillis = adRewards.cropAlarmUntilMillis,
                     onWatchAlarmAd = watchAlarmAd,
+                    proActive = isPro,
                 )
             }
             composable("huerto/flores") {
@@ -772,9 +790,10 @@ private fun AppScaffold(
                     onToggleFlorCertified = vm::toggleFlorCertified,
                     onCancelCrop = vm::cancelCrop,
                     onPlant = plantIfUnlocked,
-                    cropAlarmUnlocked = adRewards.cropAlarmUnlocked,
+                    cropAlarmUnlocked = adRewards.cropAlarmUnlocked || isPro,
                     cropAlarmUntilMillis = adRewards.cropAlarmUntilMillis,
                     onWatchAlarmAd = watchAlarmAd,
+                    proActive = isPro,
                     initialTab = 1,
                 )
             }
@@ -907,7 +926,7 @@ private fun AppScaffold(
                         onToggleCertified = {
                             vm.toggleHuertoCertified(siembra.id, com.guiaheartopia.app.domain.AficionesMarks.certifiableSiembra(siembra))
                         },
-                        alarmUnlocked = adRewards.cropAlarmUnlocked,
+                        alarmUnlocked = adRewards.cropAlarmUnlocked || isPro,
                         onWatchAlarmAd = watchAlarmAd,
                         onPlant = { vm.plantSiembra(siembra.id, siembra.nombre, siembra.tiempoCrecimientoMinutos) },
                         onOpenReceta = { nav.navigate("cocina/receta/$it") },
@@ -1028,6 +1047,7 @@ private fun AppScaffold(
                     onReminders = vm::saveReminders,
                     onExport = vm::exportBackup,
                     onImport = vm::importBackup,
+                    isPro = isPro,
                     scrollToReminders = true,
                     adFreeUntilMillis = adRewards.adFreeUntilMillis,
                     onWatchAdFree = watchAdFree,
@@ -1049,6 +1069,7 @@ private fun AppScaffold(
                     onReminders = vm::saveReminders,
                     onExport = vm::exportBackup,
                     onImport = vm::importBackup,
+                    isPro = isPro,
                     adFreeUntilMillis = adRewards.adFreeUntilMillis,
                     onWatchAdFree = watchAdFree,
                     onRetryAds = ads::retryConsent,

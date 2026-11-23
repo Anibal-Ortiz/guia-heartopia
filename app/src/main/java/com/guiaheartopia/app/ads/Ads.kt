@@ -91,9 +91,10 @@ data class AdsUiState(
     val privacyOptionsRequired: Boolean = false,
     val status: String = "",
     val adFreeActive: Boolean = false,
+    val proActive: Boolean = false,
 ) {
     fun canShowBanner(adFree: Boolean): Boolean =
-        !adFree && !adFreeActive && initialized &&
+        !adFree && !adFreeActive && !proActive && initialized &&
             (mode == AdsMode.PERSONALIZED || mode == AdsMode.NON_PERSONALIZED)
 }
 
@@ -212,8 +213,15 @@ class AdsController(
         if (was && !active && state.initialized) fullscreen.preload(state.mode)
     }
 
+    fun setPro(active: Boolean) {
+        if (destroyed || state.proActive == active) return
+        state = state.copy(proActive = active)
+        fullscreen.setPro(active)
+        if (!active) start()
+    }
+
     fun start() {
-        if (started || destroyed) return
+        if (started || destroyed || state.proActive) return
         started = true
         if (!AdConfig.adsEnabled) {
             state = AdsUiState(mode = AdsMode.NOT_CONFIGURED, status = "Anuncios sin configurar.")
@@ -263,6 +271,7 @@ class AdsController(
             status = "No se pudo comprobar el consentimiento. Puedes reintentar.",
             privacyOptionsRequired = privacyRequired(),
             adFreeActive = state.adFreeActive,
+            proActive = state.proActive,
         )
         fullscreen.preload(AdsMode.FAILED)
     }
@@ -274,6 +283,7 @@ class AdsController(
             status = "Sin consentimiento: no se piden anuncios.",
             privacyOptionsRequired = privacyRequired(),
             adFreeActive = state.adFreeActive,
+            proActive = state.proActive,
         )
         fullscreen.preload(AdsMode.NOT_CONSENTED)
     }
@@ -375,6 +385,7 @@ class AdsController(
                             "Anuncios no personalizados."
                         },
                         adFreeActive = state.adFreeActive,
+                        proActive = state.proActive,
                     )
                     fullscreen.setAdFree(state.adFreeActive)
                     fullscreen.preload(mode)

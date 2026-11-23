@@ -39,6 +39,7 @@ class FullscreenAds(activity: Activity) {
     private var rewardedAlarmLoading = false
 
     private var adFree = false
+    private var pro = false
     private var destroyed = false
     private var consentAllowed = false
     private var lastMode: AdsMode = AdsMode.IDLE
@@ -49,6 +50,16 @@ class FullscreenAds(activity: Activity) {
         if (active) {
             interstitial = null
             rewardedCalendar = null
+        }
+    }
+
+    fun setPro(active: Boolean) {
+        if (pro == active) return
+        pro = active
+        if (active) {
+            clearLoadedAds()
+        } else if (consentAllowed) {
+            preload(lastMode)
         }
     }
 
@@ -66,7 +77,7 @@ class FullscreenAds(activity: Activity) {
     }
 
     private fun canLoad(mode: AdsMode): Boolean =
-        !destroyed && consentAllowed && AdConfig.adsEnabled &&
+        !destroyed && !pro && consentAllowed && AdConfig.adsEnabled &&
             (mode == AdsMode.PERSONALIZED || mode == AdsMode.NON_PERSONALIZED)
 
     /**
@@ -76,6 +87,10 @@ class FullscreenAds(activity: Activity) {
      */
     fun preload(mode: AdsMode) {
         lastMode = mode
+        if (pro) {
+            clearLoadedAds()
+            return
+        }
         consentAllowed = AdConfig.adsEnabled &&
             (mode == AdsMode.PERSONALIZED || mode == AdsMode.NON_PERSONALIZED)
         if (!consentAllowed) {
@@ -94,7 +109,7 @@ class FullscreenAds(activity: Activity) {
 
     /** Reintenta en segundo plano la carga del recompensado de «sin anuncios». */
     fun preloadRewardedAdFree() {
-        if (destroyed || !consentAllowed) return
+        if (destroyed || pro || !consentAllowed) return
         loadRewardedAdFree(lastMode)
     }
 
@@ -116,7 +131,7 @@ class FullscreenAds(activity: Activity) {
             onDismiss()
             return
         }
-        if (adFree || this.adFree || !AdConfig.hasInterstitial || !consentAllowed) {
+        if (adFree || this.adFree || pro || !AdConfig.hasInterstitial || !consentAllowed) {
             onDismiss()
             return
         }
@@ -150,7 +165,7 @@ class FullscreenAds(activity: Activity) {
         onReward: () -> Unit,
         onUnavailable: () -> Unit,
     ) {
-        if (destroyed || !consentAllowed) {
+        if (destroyed || pro || !consentAllowed) {
             onUnavailable()
             return
         }
@@ -170,7 +185,7 @@ class FullscreenAds(activity: Activity) {
         onReward: () -> Unit,
         onUnavailable: () -> Unit,
     ) {
-        if (adFree || destroyed || !AdConfig.hasRewardedCalendar || !consentAllowed) {
+        if (adFree || destroyed || pro || !AdConfig.hasRewardedCalendar || !consentAllowed) {
             onUnavailable()
             return
         }
@@ -195,7 +210,7 @@ class FullscreenAds(activity: Activity) {
         onReward: () -> Unit,
         onUnavailable: () -> Unit,
     ) {
-        if (destroyed || !consentAllowed || !AdConfig.hasRewardedAlarm) {
+        if (destroyed || pro || !consentAllowed || !AdConfig.hasRewardedAlarm) {
             onUnavailable()
             return
         }
@@ -213,7 +228,7 @@ class FullscreenAds(activity: Activity) {
 
     /** Reintenta en segundo plano la carga del recompensado de alarmas. */
     fun preloadRewardedAlarm() {
-        if (destroyed || !consentAllowed) return
+        if (destroyed || pro || !consentAllowed) return
         loadRewardedAlarm(lastMode)
     }
 
