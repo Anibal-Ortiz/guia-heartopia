@@ -371,8 +371,15 @@ fun HomeScreen(
         }
 
         PixelCard(container = Paper) {
-            val currentKind = remember(sky, nowInstant, zone) {
-                SkyWeatherGameDay.conditionAt(sky, nowInstant, zone)
+            // Se saca de las mismas franjas del día del servidor que la barra y el texto.
+            // conditionAt() usa la fecha civil del JSON y a medianoche puede adelantarse
+            // al tramo de nieve que todavía continúa hasta las 02:00.
+            val currentKind = remember(sky, climateDay, zone, nowInstant) {
+                SkyWeatherGameDay.frameClimatesForGameDay(sky, climateDay, zone)
+                    .firstOrNull { frame ->
+                        !nowInstant.isBefore(frame.start.toInstant()) &&
+                            nowInstant.isBefore(frame.end.toInstant())
+                    }
                     ?.kind?.climateDisplay() ?: SkyKind.SIN_DATOS
             }
             Box(Modifier.fillMaxWidth()) {
