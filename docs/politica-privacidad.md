@@ -2,7 +2,7 @@
 
 **WikiFan para Heartopia**  
 Etiqueta del launcher: **WikiFan Heartopia**  
-Versión de la política: 1.1.3 — 20 de noviembre de 2026  
+Versión de la política: 1.1.4 — 23 de noviembre de 2026  
 Contacto: anibalortiz.dev@gmail.com  
 Texto público: https://anibalortizdev.github.io/guia-heartopia-contenido/
 
@@ -23,6 +23,7 @@ Es una guía para consultar criaturas, peces, recetas, horarios, clima, aficione
 - **Progreso:** fichas marcadas, colección, anotaciones de criaturas, cultivos y recetas de las aficiones, códigos vistos y filtros de búsqueda.
 - **Recordatorios:** cultivos y franjas horarias marcados y preferencias de avisos. Son notificaciones locales; en Android 13 o superior se pide `POST_NOTIFICATIONS` solo al activarlos.
 - **Anuncios y recompensas:** cuándo termina el periodo sin anuncios obtenido por un vídeo y el desbloqueo del calendario.
+- **Código de acceso:** el código introducido, su identificador de activación y la fecha de la última comprobación se guardan en el almacenamiento interno de la app. Se eliminan al desvincular el dispositivo o al borrar los datos de la app. Tampoco se incluyen en copias de seguridad ni en la transferencia a otro teléfono.
 - **Respaldo:** la exportación genera un archivo JSON con todo lo anterior (perfil, colección, aficiones, ajustes y avatar) en la ubicación que eliges. Importar reemplaza los datos del teléfono previa confirmación. El archivo no se envía a ningún servidor: guárdalo con seguridad.
 
 Borrar los datos de la app o desinstalarla sin respaldo elimina esa información del teléfono.
@@ -37,9 +38,17 @@ Si usas el menú «Comentarios y preguntas», la app envía por HTTPS el texto q
 
 Estos mensajes no se usan para publicidad, no se comparten con otros usuarios y no sirven para seguimiento entre apps. Puedes pedir la rectificación o el borrado de lo que enviaste escribiendo a ese mismo correo.
 
+## Códigos de acceso
+
+Si introduces un código de acceso, la app lo envía por HTTPS a un servicio externo de verificación para comprobarlo y registrar el dispositivo. Junto al código se envían el fabricante y el modelo del teléfono y un identificador de la activación. La dirección IP del dispositivo es visible para ese servicio como parte de la conexión.
+
+Mientras el acceso esté activo, la app consulta ese servicio cada 72 horas con el código y el identificador de la activación para confirmar que sigue vigente. Si usas «Desvincular este dispositivo», se envían esos mismos datos para liberar el registro y se borra la copia local.
+
+Estos datos se usan solo para verificar y gestionar el código de acceso. No se usan para publicidad, no se comparten con otras apps ni se envían a un servidor del desarrollador. No se recogen datos de contacto. Si no quieres enviarlos, no introduzcas un código: la guía sigue funcionando igual y mostrará anuncios según tu consentimiento. Puedes pedir la rectificación o el borrado de lo asociado al código escribiendo a anibalortiz.dev@gmail.com.
+
 ## Permisos
 
-- `INTERNET` y `ACCESS_NETWORK_STATE`: contenido público, anuncios y envío de comentarios.
+- `INTERNET` y `ACCESS_NETWORK_STATE`: contenido público, anuncios, envío de comentarios y verificación de códigos de acceso.
 - `POST_NOTIFICATIONS`: avisos locales, solo si los activas.
 - `RECEIVE_BOOT_COMPLETED` y `WAKE_LOCK`: reprogramar avisos al reiniciar el móvil.
 - `SCHEDULE_EXACT_ALARM`: avisos a la hora exacta (Android 12+).

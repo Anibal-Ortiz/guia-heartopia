@@ -113,14 +113,14 @@ Quedan intervenciones humanas antes de publicar (detalle en `docs/PUBLISHING-CHE
 
 - Publicar el mensaje de privacidad GDPR/regiones reguladas en la consola de AdMob (Privacidad y mensajes), con la política enlazada.
 - Confirmar el nombre de quien responde en la política (el correo ya está actualizado a `anibalortiz.dev@gmail.com`); el dominio ya está publicado.
-- Enviar el formulario de Data Safety de Play con las respuestas preparadas en `docs/play-store/formularios.md`.
+- Enviar el formulario de Data Safety de Play con las respuestas preparadas en `docs/play-store/formularios.md`, incluido el servicio externo de verificación de códigos.
 - Verificar en la ficha de AdMob que el dominio del desarrollador es `anibalortizdev.github.io`, que ya sirve `app-ads.txt` con el publisher real (no se genera un archivo de relleno).
 
 Permisos declarados: `INTERNET`, `ACCESS_NETWORK_STATE`, `AD_ID`, `POST_NOTIFICATIONS`, `RECEIVE_BOOT_COMPLETED`, `WAKE_LOCK` y `SCHEDULE_EXACT_ALARM`. `USE_EXACT_ALARM` se elimina con `tools:node="remove"` y `MobileAdsInitProvider` queda desactivado para que el SDK no se inicialice solo.
 
 ## Copias de seguridad
 
-`android:allowBackup="true"` está acotado por `app/src/main/res/xml/backup_rules.xml` (API < 31) y `app/src/main/res/xml/data_extraction_rules.xml` (API 31+). Se excluyen de la nube y de la transferencia de dispositivo los DataStore de recompensas y perfil (`ad_rewards`, `guia_heartopia`, `content_checks`) y las SharedPreferences `guia-anuncios-nav`, `guia-avisos` y `content-sync`. El receptor de arranque `BootReminderReceiver` exige `android.permission.RECEIVE_BOOT_COMPLETED`.
+`android:allowBackup="true"` está acotado por `app/src/main/res/xml/backup_rules.xml` (API < 31) y `app/src/main/res/xml/data_extraction_rules.xml` (API 31+). Se excluyen de la nube y de la transferencia de dispositivo los DataStore de recompensas, perfil y acceso (`ad_rewards`, `guia_heartopia`, `content_checks`, `license`) y las SharedPreferences `guia-anuncios-nav`, `guia-avisos` y `content-sync`. El receptor de arranque `BootReminderReceiver` exige `android.permission.RECEIVE_BOOT_COMPLETED`.
 
 ## Firma de release
 

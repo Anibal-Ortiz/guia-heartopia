@@ -78,7 +78,7 @@
   <div class="meta">
     <p><strong>WikiFan para Heartopia</strong><br>
     Etiqueta del launcher: <strong>WikiFan Heartopia</strong></p>
-    <p>Versión de la política: <strong>1.1.0</strong> — 18 de noviembre de 2026<br>
+    <p>Versión de la política: <strong>1.1.4</strong> — 23 de noviembre de 2026<br>
     Contacto: <a href="mailto:anibalortiz.dev@gmail.com">anibalortiz.dev@gmail.com</a></p>
   </div>
 
@@ -88,7 +88,7 @@
   <p>La responsabilidad del tratamiento de los datos de esta app es de su desarrollador. Para cualquier consulta, acceso, rectificación o borrado de tus datos: <a href="mailto:anibalortiz.dev@gmail.com">anibalortiz.dev@gmail.com</a>.</p>
 
   <h2>Qué es esta app</h2>
-  <p>Es una guía para consultar criaturas, peces, recetas, horarios, clima, aficiones y anotaciones propias. No controla el juego, no lee su pantalla y no pulsa nada por ti. No hay cuenta de usuario ni servidor propio que reciba tu información personal.</p>
+  <p>Es una guía para consultar criaturas, peces, recetas, horarios, clima, aficiones y anotaciones propias. No controla el juego, no lee su pantalla y no pulsa nada por ti. No hay cuenta de usuario ni servidor propio. Solo si tú decides escribir al desarrollador desde el menú de comentarios, tu mensaje se envía a un servicio de formularios que lo reenvía por correo.</p>
 
   <h2>Datos que se quedan en el dispositivo</h2>
   <ul>
@@ -97,6 +97,7 @@
     <li><strong>Progreso:</strong> fichas marcadas, colección, anotaciones de criaturas, cultivos y recetas de las aficiones, códigos vistos y filtros de búsqueda.</li>
     <li><strong>Recordatorios:</strong> cultivos y franjas horarias marcados y preferencias de avisos. Son notificaciones locales; en Android 13 o superior se pide <code>POST_NOTIFICATIONS</code> solo al activarlos.</li>
     <li><strong>Anuncios y recompensas:</strong> cuándo termina el periodo sin anuncios obtenido por un vídeo y el desbloqueo del calendario.</li>
+    <li><strong>Código de acceso:</strong> el código introducido, su identificador de activación y la fecha de la última comprobación se guardan en el almacenamiento interno de la app. Se eliminan al desvincular el dispositivo o al borrar los datos de la app. Tampoco se incluyen en copias de seguridad ni en la transferencia a otro teléfono.</li>
     <li><strong>Respaldo:</strong> la exportación genera un archivo JSON con todo lo anterior (perfil, colección, aficiones, ajustes y avatar) en la ubicación que eliges. Importar reemplaza los datos del teléfono previa confirmación. El archivo no se envía a ningún servidor: guárdalo con seguridad.</li>
   </ul>
   <p>Borrar los datos de la app o desinstalarla sin respaldo elimina esa información del teléfono.</p>
@@ -104,9 +105,18 @@
   <h2>Contenido público que descarga la app</h2>
   <p>La app puede descargar desde <a href="https://anibalortizdev.github.io/guia-heartopia-contenido/">anibalortizdev.github.io/guia-heartopia-contenido</a> el manifiesto, las fichas, los horarios, el clima y, si se publican, las imágenes. Es una descarga anónima: no envía tu nombre, tu colección ni tu avatar. Los archivos se guardan en caché para no repetir la descarga.</p>
 
+  <h2>Comentarios y preguntas</h2>
+  <p>Si usas el menú «Comentarios y preguntas», la app envía por HTTPS el texto que escribas y, solo si lo indicas, el correo que introduzcas para que el desarrollador pueda responderte. El envío va a un formulario de <strong>Google Forms</strong> alojado en la cuenta del desarrollador; la app no abre el correo ni el navegador y no guarda una copia del mensaje en tu dispositivo ni en un servidor propio. Las respuestas quedan en ese formulario, al que solo tiene acceso el desarrollador.</p>
+  <p>Estos mensajes no se usan para publicidad, no se comparten con otros usuarios y no sirven para seguimiento entre apps. Puedes pedir la rectificación o el borrado de lo que enviaste escribiendo a ese mismo correo.</p>
+
+  <h2>Códigos de acceso</h2>
+  <p>Si introduces un código de acceso, la app lo envía por HTTPS a un servicio externo de verificación para comprobarlo y registrar el dispositivo. Junto al código se envían el fabricante y el modelo del teléfono y un identificador de la activación. La dirección IP del dispositivo es visible para ese servicio como parte de la conexión.</p>
+  <p>Mientras el acceso esté activo, la app consulta ese servicio cada 72 horas con el código y el identificador de la activación para confirmar que sigue vigente. Si usas «Desvincular este dispositivo», se envían esos mismos datos para liberar el registro y se borra la copia local.</p>
+  <p>Estos datos se usan solo para verificar y gestionar el código de acceso. No se usan para publicidad, no se comparten con otras apps ni se envían a un servidor del desarrollador. No se recogen datos de contacto. Si no quieres enviarlos, no introduzcas un código: la guía sigue funcionando igual y mostrará anuncios según tu consentimiento. Puedes pedir la rectificación o el borrado de lo asociado al código escribiendo a <a href="mailto:anibalortiz.dev@gmail.com">anibalortiz.dev@gmail.com</a>.</p>
+
   <h2>Permisos</h2>
   <ul>
-    <li><code>INTERNET</code> y <code>ACCESS_NETWORK_STATE</code>: contenido público y anuncios.</li>
+    <li><code>INTERNET</code> y <code>ACCESS_NETWORK_STATE</code>: contenido público, anuncios, envío de comentarios y verificación de códigos de acceso.</li>
     <li><code>POST_NOTIFICATIONS</code>: avisos locales, solo si los activas.</li>
     <li><code>RECEIVE_BOOT_COMPLETED</code> y <code>WAKE_LOCK</code>: reprogramar avisos al reiniciar el móvil.</li>
     <li><code>SCHEDULE_EXACT_ALARM</code>: avisos a la hora exacta (Android 12+).</li>
@@ -139,6 +149,7 @@
   <footer>
     <p><strong>Responsable</strong><br>
     Correo: <a href="mailto:anibalortiz.dev@gmail.com">anibalortiz.dev@gmail.com</a></p>
+    <p><a href="terminos.html">Términos de uso</a></p>
   </footer>
 </main>
 </body>

@@ -46,7 +46,7 @@ Respuestas orientativas del cuestionario:
 | Contenido generado por el usuario visible para otros | No. Las notas se quedan en el teléfono. No hay chat, perfil público ni servidor de la guía. |
 | Usuarios pueden interactuar entre sí | No |
 | Comparte la ubicación del usuario con otros | No |
-| Compras digitales | No. No hay Play Billing. |
+| Compras digitales | No se realizan dentro de la app. Los códigos de acceso se entregan fuera de ella. |
 | Anuncios | Sí, de Google |
 | Restricción de edad en la propia app | No hay muro de edad. El público declarado es 13+. |
 
@@ -54,7 +54,7 @@ Resultado esperado: PEGI 3 / Everyone o similar por el contenido de la guía, **
 
 ## Seguridad de los datos
 
-¿La app recoge o comparte datos de usuario? **Sí**: por el SDK de anuncios de Google y, de forma voluntaria, cuando el usuario escribe un comentario o pregunta. Los apuntes de la guía no salen del teléfono.
+¿La app recoge o comparte datos de usuario? **Sí**: por el SDK de anuncios de Google, de forma voluntaria cuando el usuario escribe un comentario o pregunta, y cuando el usuario introduce un código de acceso, que se envía a un servicio externo de verificación. Los apuntes de la guía no salen del teléfono.
 
 ### Datos que no salen del teléfono (no los declares como recogidos por el desarrollador)
 
@@ -85,13 +85,24 @@ El menú «Comentarios y preguntas» envía por HTTPS lo que el usuario escribe 
 | Dirección de correo electrónico (solo si el usuario la escribe) | Sí | Sí, con Google Forms (Google) para poder responderle | Comunicación / función de la app | No, opcional |
 | Contenido del mensaje (comentario, pregunta o aclaración que escribe el usuario) | Sí | Sí, con Google Forms (Google) | Atención al usuario / función de la app | No, el usuario decide escribir |
 
+### Datos que envía la app al verificar códigos de acceso (tercero: servicio de verificación)
+
+Cuando el usuario introduce un código, la app envía por HTTPS el código, el fabricante y modelo del dispositivo, un identificador de la activación y el identificador de la organización a un servicio externo de verificación de códigos. Ese servicio ve también la dirección IP de la conexión. La comprobación periódica (cada 72 horas) y la desvinculación usan el código y el identificador de activación. No hay cuenta de usuario y el desarrollador no recibe estos datos en un servidor propio.
+
+| Tipo en el formulario | ¿Se recoge? | ¿Se comparte? | Finalidad | Obligatorio |
+| --- | --- | --- | --- | --- |
+| Identificadores / dato introducido por el usuario (código de acceso) | Sí | Sí, con el servicio de verificación | Función de la app: verificar el código | Sí, para activar el acceso |
+| Información del dispositivo (fabricante y modelo) | Sí | Sí, con el servicio de verificación | Función de la app: asociar el código al dispositivo | Sí, al introducir el código |
+| Identificadores (identificador de activación) | Sí | Sí, con el servicio de verificación | Función de la app: comprobación periódica y desvinculación | Sí, mientras el acceso esté activo |
+| Dirección IP (visible para el proveedor por HTTPS) | Sí | Sí, con el servicio de verificación | Función de la app: establecer la conexión | Sí, al conectar |
+
 No declares: ubicación precisa, contactos, fotos, micrófono, archivos, salud, mensajería entre usuarios, historial web propio, ni datos financieros. Los apuntes y anotaciones de la guía nunca salen del dispositivo.
 
 ### Otras casillas
 
 - ¿Se venden los datos? **No.**
-- ¿El tráfico va cifrado? **Sí** (HTTPS hacia Google: AdMob, Google Forms y el paquete público de contenido).
-- ¿Los usuarios pueden pedir que se borren? **Sí.** Los datos locales se borran al desinstalar. Los datos de anuncios los gestiona Google (https://policies.google.com/privacy); la app no guarda una copia en un servidor propio. Los mensajes enviados se pueden borrar pidéndolo por correo a anibalortiz.dev@gmail.com.
+- ¿El tráfico va cifrado? **Sí** (HTTPS hacia AdMob, Google Forms, el paquete público de contenido y el servicio de verificación de códigos).
+- ¿Los usuarios pueden pedir que se borren? **Sí.** Los datos locales se borran al desinstalar. Los datos de anuncios los gestiona Google (https://policies.google.com/privacy); la app no guarda una copia en un servidor propio. El registro asociado al código se elimina al desvincular el dispositivo; la copia local se borra al desvincular o al borrar los datos de la app. Los mensajes enviados se pueden borrar pidéndolo por correo a anibalortiz.dev@gmail.com.
 - ¿Hay cuenta? **No.** No hace falta un inicio de sesión para borrar datos.
 - Consentimiento en el EEE: formulario UMP antes de pedir anuncios. Si no se puede pedir publicidad, el banner no aparece.
 

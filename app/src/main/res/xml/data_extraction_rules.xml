@@ -4,6 +4,7 @@
         <exclude domain="root" path="files/datastore/ad_rewards.preferences_pb" />
         <exclude domain="root" path="files/datastore/guia_heartopia.preferences_pb" />
         <exclude domain="root" path="files/datastore/content_checks.preferences_pb" />
+        <exclude domain="root" path="files/datastore/license.preferences_pb" />
         <exclude domain="sharedpref" name="guia-anuncios-nav" />
         <exclude domain="sharedpref" name="guia-avisos" />
         <exclude domain="sharedpref" name="content-sync" />
@@ -12,6 +13,7 @@
         <exclude domain="root" path="files/datastore/ad_rewards.preferences_pb" />
         <exclude domain="root" path="files/datastore/guia_heartopia.preferences_pb" />
         <exclude domain="root" path="files/datastore/content_checks.preferences_pb" />
+        <exclude domain="root" path="files/datastore/license.preferences_pb" />
         <exclude domain="sharedpref" name="guia-anuncios-nav" />
         <exclude domain="sharedpref" name="guia-avisos" />
         <exclude domain="sharedpref" name="content-sync" />
