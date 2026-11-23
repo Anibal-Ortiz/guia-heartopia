@@ -51,6 +51,7 @@ data class RemoteEvent(
     val dias: List<String> = emptyList(),
     val horas: List<String> = emptyList(),
     val inicio: String? = null,
+    /** Momento de caducidad: la app oculta el evento cuando `fin` ya pasó. */
     val fin: String? = null,
     val duracionMin: Int? = null,
     val avisoMinAntes: Int? = null,
@@ -136,6 +137,17 @@ object ReminderPlan {
     fun serverToUser(serverLocal: LocalDateTime, source: ZoneId, user: ZoneId): ZonedDateTime =
         serverLocal.atZone(source).withZoneSameInstant(user)
 
+    /**
+     * Un evento está caducado cuando su `fin` (la fecha de fin que publica el repo) es igual
+     * o anterior a `now`. Los eventos sin `fin` son permanentes y no caducan nunca.
+     * El contenido manda las fechas; la app solo las interpreta, así no hay que tocarla
+     * cada vez que se publica un evento.
+     */
+    internal fun isExpired(event: RemoteEvent, source: ZoneId, user: ZoneId, now: ZonedDateTime): Boolean {
+        val end = parseStamp(event.fin, source)?.atZone(source)?.withZoneSameInstant(user) ?: return false
+        return !now.toInstant().isBefore(end.toInstant())
+    }
+
     fun eventNotices(
         document: EventosDocument?,
         prefs: ReminderPrefs,
@@ -151,6 +163,7 @@ object ReminderPlan {
         val out = ArrayList<PlannedNotice>()
         for (event in events) {
             if (event.id.isBlank() || event.nombre.isBlank()) continue
+            if (isExpired(event, source, user, now)) continue
             when (event.tipo) {
                 "aficion" -> if (hobbyEnabled(event.categoria, prefs)) {
                     out += hobbyNotices(event, source, user, now, until)
@@ -167,6 +180,7 @@ object ReminderPlan {
         val source = sourceZone(document) ?: return emptyList()
         return document?.eventos.orEmpty().mapNotNull { event ->
             if (event.tipo != "temporada" || event.nombre.isBlank()) return@mapNotNull null
+            if (isExpired(event, source, user, now)) return@mapNotNull null
             val start = parseStamp(event.inicio, source)?.atZone(source)?.withZoneSameInstant(user)
             val end = parseStamp(event.fin, source)?.atZone(source)?.withZoneSameInstant(user)
             if (start == null) return@mapNotNull null
@@ -191,6 +205,7 @@ object ReminderPlan {
         val active = activeSeasons(document, user, now).associateBy { it.id }
         val rows = events.mapNotNull { event ->
             if (event.nombre.isBlank()) return@mapNotNull null
+            if (isExpired(event, source, user, now)) return@mapNotNull null
             val key = event.id.ifBlank { event.nombre }
             val season = active[key]
             val detail = when {
