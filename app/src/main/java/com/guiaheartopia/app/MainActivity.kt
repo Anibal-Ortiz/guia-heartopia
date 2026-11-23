@@ -568,25 +568,36 @@ private fun AppScaffold(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
-                        if (updateStatus == null) {
-                            WikiFanAppIcon(Modifier.size(36.dp))
-                        } else {
-                            val canRetry = updateStatus == UpdateHeaderState.FAILED
-                            Box(
-                                modifier = Modifier
-                                    .size(36.dp)
-                                    .clickable(enabled = canRetry) { onRetryUpdate() }
-                                    .semantics {
-                                        contentDescription = when (updateStatus) {
-                                            UpdateHeaderState.CHECKING -> "Comprobando actualizaciones"
-                                            UpdateHeaderState.OK -> "Sin actualizaciones pendientes"
-                                            UpdateHeaderState.AVAILABLE -> "Actualización disponible"
-                                            UpdateHeaderState.FAILED -> "No se pudo comprobar. Toca para reintentar"
-                                        }
-                                    },
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                UpdateStatusIcon(updateStatus)
+                        Box(Modifier.size(36.dp), contentAlignment = Alignment.Center) {
+                            when {
+                                contentBusy || contentProgress != null || contentDone || contentFailed ->
+                                    ContentSyncIcon(
+                                        busy = contentBusy || contentProgress != null,
+                                        percent = contentPercent(contentProgress),
+                                        done = contentDone,
+                                        failed = contentFailed,
+                                        onRetry = onRetryContent,
+                                    )
+                                updateStatus == null -> WikiFanAppIcon(Modifier.size(36.dp))
+                                else -> {
+                                    val canRetry = updateStatus == UpdateHeaderState.FAILED
+                                    Box(
+                                        modifier = Modifier
+                                            .size(36.dp)
+                                            .clickable(enabled = canRetry) { onRetryUpdate() }
+                                            .semantics {
+                                                contentDescription = when (updateStatus) {
+                                                    UpdateHeaderState.CHECKING -> "Comprobando actualizaciones"
+                                                    UpdateHeaderState.OK -> "Sin actualizaciones pendientes"
+                                                    UpdateHeaderState.AVAILABLE -> "Actualización disponible"
+                                                    UpdateHeaderState.FAILED -> "No se pudo comprobar. Toca para reintentar"
+                                                }
+                                            },
+                                        contentAlignment = Alignment.Center,
+                                    ) {
+                                        UpdateStatusIcon(updateStatus)
+                                    }
+                                }
                             }
                         }
                         Column {
@@ -602,13 +613,6 @@ private fun AppScaffold(
                                 color = Muted,
                             )
                         }
-                        ContentSyncBadge(
-                            busy = contentBusy || contentProgress != null,
-                            percent = contentPercent(contentProgress),
-                            done = contentDone,
-                            failed = contentFailed,
-                            onRetry = onRetryContent,
-                        )
                     }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -1081,7 +1085,7 @@ private fun contentPercent(progress: ContentDownloadProgress?): Int = when {
 }.coerceIn(0, 100)
 
 @Composable
-private fun ContentSyncBadge(
+private fun ContentSyncIcon(
     busy: Boolean,
     percent: Int,
     done: Boolean,
@@ -1090,63 +1094,45 @@ private fun ContentSyncBadge(
 ) {
     if (!busy && !done && !failed) return
     val error = Color(0xFFC0392B)
-    val errorSoft = Color(0xFFFBE9E7)
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp),
+    val isError = failed && !busy && !done
+    val color = if (isError) error else Green
+    Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(999.dp))
-            .background(if (failed && !busy && !done) errorSoft else GreenSoft)
-            .border(1.dp, if (failed && !busy && !done) error else Green, RoundedCornerShape(999.dp))
-            .padding(horizontal = 6.dp, vertical = 4.dp),
+            .size(36.dp)
+            .clip(CircleShape)
+            .clickable(enabled = isError) { onRetry() }
+            .semantics {
+                contentDescription = when {
+                    busy -> "Cargando contenido: $percent%"
+                    isError -> "Error al cargar. Toca para reintentar"
+                    else -> "Contenido actualizado"
+                }
+            },
+        contentAlignment = Alignment.Center,
     ) {
+        CircularProgressIndicator(
+            progress = { when {
+                done -> 1f
+                busy && percent > 0 -> percent / 100f
+                else -> 0.08f
+            } },
+            modifier = Modifier.size(34.dp),
+            color = color,
+            trackColor = color.copy(alpha = 0.22f),
+            strokeWidth = 3.dp,
+        )
         when {
-            busy -> {
-                if (percent > 0) {
-                    CircularProgressIndicator(
-                        progress = { percent / 100f },
-                        modifier = Modifier.size(16.dp),
-                        color = Green,
-                        trackColor = Green.copy(alpha = 0.25f),
-                        strokeWidth = 2.dp,
-                    )
-                } else {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(16.dp),
-                        color = Green,
-                        strokeWidth = 2.dp,
-                    )
-                }
-                Text(
-                    "$percent%",
-                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                    color = Ink,
-                )
-            }
-            done -> DoneCheckIcon(Green, Modifier.size(16.dp))
-            failed -> {
-                Text(
-                    "✕",
-                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
-                    color = error,
-                )
-                Box(
-                    modifier = Modifier
-                        .size(22.dp)
-                        .clip(CircleShape)
-                        .background(Color.White)
-                        .border(1.dp, error, CircleShape)
-                        .clickable(onClick = onRetry)
-                        .semantics { contentDescription = "Reintentar búsqueda de actualizaciones" },
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        "↻",
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                        color = error,
-                    )
-                }
-            }
+            busy -> Text(
+                "$percent%",
+                style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                color = Ink,
+            )
+            done -> DoneCheckIcon(color, Modifier.size(18.dp))
+            else -> Text(
+                "↻",
+                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                color = error,
+            )
         }
     }
 }

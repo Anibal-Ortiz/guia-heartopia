@@ -393,6 +393,7 @@ fun HomeScreen(
                             ClimateSkyBar(sky, climateDay, zone, Modifier.fillMaxWidth().height(20.dp))
                             WeatherBarShimmer(Modifier.matchParentSize())
                         }
+                        Spacer(Modifier.height(6.dp))
                         com.guiaheartopia.app.ui.weather.ClimateDetailList(climateLines, showFrames = false)
                     }
                 }

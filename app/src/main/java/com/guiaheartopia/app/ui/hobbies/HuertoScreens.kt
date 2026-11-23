@@ -29,8 +29,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -48,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -88,6 +87,7 @@ import com.guiaheartopia.app.ui.contentRevision
 import com.guiaheartopia.app.ui.guide.GuideSearchField
 import com.guiaheartopia.app.ui.theme.AlertRed
 import com.guiaheartopia.app.ui.theme.AlertSoft
+import com.guiaheartopia.app.ui.theme.Green
 import com.guiaheartopia.app.ui.theme.GreenDark
 import com.guiaheartopia.app.ui.theme.GreenSoft
 import com.guiaheartopia.app.ui.theme.GreenTint
@@ -225,15 +225,22 @@ fun HuertoScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             PillTabs(HuertoTabs, tab, fillWidth = false, modifier = Modifier.weight(1f)) { tab = it }
-            FilterChip(
-                selected = showPastSeasons,
-                onClick = { showPastSeasons = !showPastSeasons },
-                label = { Text("Temporadas pasadas", maxLines = 1) },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = GreenSoft,
-                    selectedLabelColor = GreenDark,
-                ),
-            )
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(999.dp))
+                    .background(if (showPastSeasons) Green else Paper)
+                    .border(1.dp, if (showPastSeasons) Green else Line, RoundedCornerShape(999.dp))
+                    .clickable { showPastSeasons = !showPastSeasons }
+                    .semantics { contentDescription = "Filtrar temporadas pasadas" },
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    "Pasadas",
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                    color = if (showPastSeasons) Color.White else Ink,
+                )
+            }
         }
         when (tab) {
             0 -> SiembrasTab(

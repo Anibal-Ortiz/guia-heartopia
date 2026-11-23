@@ -217,7 +217,14 @@ fun CocinaScreen(
                         FilterChip(
                             selected = showPastSeasons,
                             onClick = { showPastSeasons = !showPastSeasons },
-                            label = { Text("Temporadas pasadas", maxLines = 1, overflow = TextOverflow.Clip) },
+                            label = {
+                            Text(
+                                "Temporadas pasadas",
+                                maxLines = 1,
+                                overflow = TextOverflow.Clip,
+                                style = MaterialTheme.typography.labelMedium,
+                            )
+                        },
                             colors = FilterChipDefaults.filterChipColors(
                                 selectedContainerColor = HoneySoft,
                                 selectedLabelColor = Ink,
@@ -292,7 +299,14 @@ fun CocinaScreen(
                     FilterChip(
                         selected = showPastSeasons,
                         onClick = { showPastSeasons = !showPastSeasons },
-                        label = { Text("Temporadas pasadas", maxLines = 1, overflow = TextOverflow.Clip) },
+                        label = {
+                            Text(
+                                "Temporadas pasadas",
+                                maxLines = 1,
+                                overflow = TextOverflow.Clip,
+                                style = MaterialTheme.typography.labelMedium,
+                            )
+                        },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedContainerColor = HoneySoft,
                             selectedLabelColor = Ink,
