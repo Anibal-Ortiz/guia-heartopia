@@ -2,7 +2,7 @@
 
 **WikiFan para Heartopia**  
 Etiqueta del launcher: **WikiFan Heartopia**  
-Versión de la política: 1.1.4 — 23 de noviembre de 2026  
+Versión de la política: 1.1.8 — 23 de noviembre de 2026  
 Contacto: anibalortiz.dev@gmail.com  
 Texto público: https://anibalortizdev.github.io/guia-heartopia-contenido/
 
@@ -30,7 +30,7 @@ Borrar los datos de la app o desinstalarla sin respaldo elimina esa información
 
 ## Contenido público que descarga la app
 
-La app puede descargar desde https://anibalortizdev.github.io/guia-heartopia-contenido/ el manifiesto, las fichas, los horarios, el clima y, si se publican, las imágenes. Es una descarga anónima: no envía tu nombre, tu colección ni tu avatar. Los archivos se guardan en caché para no repetir la descarga.
+La app puede descargar desde https://anibalortizdev.github.io/guia-heartopia-contenido/ el manifiesto, las fichas, los horarios, el clima y, si se publican, las imágenes. También consulta ese mismo sitio para comprobar si hay una versión nueva del contenido. Es una descarga anónima: no envía tu nombre, tu colección ni tu avatar. Los archivos se guardan en caché para no repetir la descarga.
 
 ## Comentarios y preguntas
 
@@ -42,7 +42,7 @@ Estos mensajes no se usan para publicidad, no se comparten con otros usuarios y 
 
 Si introduces un código de acceso, la app lo envía por HTTPS a un servicio externo de verificación para comprobarlo y registrar el dispositivo. Junto al código se envían el fabricante y el modelo del teléfono y un identificador de la activación. La dirección IP del dispositivo es visible para ese servicio como parte de la conexión.
 
-Mientras el acceso esté activo, la app consulta ese servicio cada 72 horas con el código y el identificador de la activación para confirmar que sigue vigente. Si usas «Desvincular este dispositivo», se envían esos mismos datos para liberar el registro y se borra la copia local.
+Mientras el acceso esté activo, la app consulta ese servicio cada 72 horas con el código y el identificador de la activación para confirmar que sigue vigente. Si usas «Desvincular este dispositivo», se envían esos mismos datos para liberar el registro y se borra la copia local. Con el acceso activo, la app no solicita anuncios.
 
 Estos datos se usan solo para verificar y gestionar el código de acceso. No se usan para publicidad, no se comparten con otras apps ni se envían a un servidor del desarrollador. No se recogen datos de contacto. Si no quieres enviarlos, no introduzcas un código: la guía sigue funcionando igual y mostrará anuncios según tu consentimiento. Puedes pedir la rectificación o el borrado de lo asociado al código escribiendo a anibalortiz.dev@gmail.com.
 
