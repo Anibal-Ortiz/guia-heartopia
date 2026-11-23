@@ -38,6 +38,31 @@
 - **Slugs de archivos:** usar siempre `ReminderIds.slug()` para nombrar imágenes de ingredientes. Colapsa `--` en `-` y quita guiones al principio/final: `Dulce (cualquier color)` → `dulce-cualquier-color.webp` (NO `dulce--cualquier-color-.webp`). Un slug mal calculado deja la imagen genérica.
 - Cuando se suban imágenes nuevas, **no tocar `contentVersion`** hasta que se pida explícitamente. Cuando se pida: recalcular hashes desde blobs, subir `contentVersion` y verificar con `?cb=` que Pages devuelve esa versión.
 
+## Generación de imágenes (plantilla obligatoria para TODA la app)
+- Válida para **peces, bichos, aves, comidas, ingredientes, flores** o cualquier otra imagen de la app. Se usa siempre esta misma plantilla para que todas las láminas compartan estilo (acuarela de cuaderno de campo) y el fondo magenta sirva como croma para recortar.
+- Estructura fija del prompt (sustituir solo la lista final):
+  ```
+  Ilustración naturalista, estilo cuaderno de campo / lámina de gastronomía: acuarela suave,
+  contorno fino de tinta sepia, mismo tamaño aparente en los dos ingredientes.
+  Sin inspiración en videojuegos: nada de caras, ojos, personajes, brillos de caricatura,
+  destellos ni texto.
+
+  Composición: DOS casillas iguales, una al lado de la otra (2 columnas × 1 fila), imagen de
+  1024×512 píxeles o mayor, sin líneas de cuadrícula visibles, sin texto, números, etiquetas,
+  marcos ni sombras. Cada ingrediente centrado en su casilla, entero, con margen amplio a los
+  cuatro lados.
+
+  Fondo: TODA la imagen de un solo color plano #FF00FF (magenta chillón), sin degradado ni
+  textura. Nada rosa fuerte ni magenta en los dibujos. Contorno de tinta nítido.
+
+  Lista (en este orden):
+  - Casilla 1 (izquierda): <DESCRIPCIÓN DEL PRIMER ÍTEM>
+  - Casilla 2 (derecha): <DESCRIPCIÓN DEL SEGUNDO ÍTEM>
+  ```
+- La descripción de cada casilla debe ser concreta: forma, color, textura y elementos visibles; aclarar lo que **no** es (p. ej. «no es un espárrago de tierra», «sin plato, sin sombra, sin texto»).
+- Referencia real aprobada: `Hamburguesa de bloques` (izquierda) + `Espárrago de mar / salicornia` (derecha). La hamburguesa es cuadrada, con pan dorado, carne a la parrilla, lechuga verde y queso amarillo; la salicornia es un montoncito de tallos carnosos verde claro, cortos y segmentados, ramificados en horquillas, sin hojas ni flores.
+- Los nombres de archivo de las imágenes generadas se rigen por la regla de slugs de `ReminderIds.slug()` indicada arriba.
+
 ## Compilación y Verificación (Windows)
 - **NO generar APK en local:** el APK/AAB lo produce el workflow de GitHub Actions. En local solo se verifica que el código compile:
   ```powershell
