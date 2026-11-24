@@ -70,7 +70,13 @@ object ReminderScheduler {
             personal
         } else {
             val weather = if (prefs.weatherEnabled) {
-                ReminderPlan.weatherNotices(SkyCatalog.load(app).days.values, zone, now)
+                SkyCatalog.load(app, profile.zoneId).let { sky ->
+                    ReminderPlan.weatherNotices(
+                        (0..7).mapNotNull { sky.on(now.toLocalDate().plusDays(it.toLong())) },
+                        zone,
+                        now,
+                    )
+                }
             } else {
                 emptyList()
             }

@@ -143,7 +143,7 @@ fun HomeScreen(
     val revision = com.guiaheartopia.app.ui.contentRevision()
     val catalog = remember(revision) { com.guiaheartopia.app.data.CreatureCatalog.load(context) }
     val aficiones = remember(revision) { com.guiaheartopia.app.data.AficionesCatalog.load(context) }
-    val sky = remember(revision) { com.guiaheartopia.app.data.SkyCatalog.load(context) }
+    val sky = remember(revision) { com.guiaheartopia.app.data.SkyCatalog.load(context, ui.profile.zoneId) }
     val zone = DexSchedule.zoneOf(ui.profile.zoneId)
     val nowInstant = rememberMinuteTick()
     val available = remember(catalog, sky, zone, nowInstant) {

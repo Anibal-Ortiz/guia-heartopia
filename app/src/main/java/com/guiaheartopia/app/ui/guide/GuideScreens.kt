@@ -516,7 +516,7 @@ private fun DexTab(
     val context = androidx.compose.ui.platform.LocalContext.current
     val revision = com.guiaheartopia.app.ui.contentRevision()
     val all = remember(revision) { com.guiaheartopia.app.data.CreatureCatalog.load(context) }
-    val sky = remember(revision) { SkyCatalog.load(context) }
+    val sky = remember(revision) { SkyCatalog.load(context, ui.profile.zoneId) }
     val zone = DexSchedule.zoneOf(ui.profile.zoneId)
     val instant = rememberMinuteTick()
     val current = DexSchedule.currentWindow(zone, instant)
@@ -1053,7 +1053,7 @@ fun DexDetailScreen(
     val instant = rememberMinuteTick()
     val detailContext = androidx.compose.ui.platform.LocalContext.current
     val revision = com.guiaheartopia.app.ui.contentRevision()
-    val sky = remember(revision) { SkyCatalog.load(detailContext) }
+    val sky = remember(revision) { SkyCatalog.load(detailContext, zone.id) }
     val now = SkyWeather.availableNow(
         entry.schedule,
         entry.weather,

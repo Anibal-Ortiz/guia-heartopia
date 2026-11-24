@@ -207,11 +207,11 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(
-                "Clima de 2026, hora a hora, leído el 10 de noviembre de 2026 en tidebell.com/calendar. " +
-                    "heartopia.lol/en/weather repite las mismas 366 series. heartopia.th.gl/forecast llama a esas horas «hora de servidor» " +
-                    "(América UTC−5, Global UTC+1, SEA UTC+7, TW/HK/MO UTC+8, Asia UTC+9); el 1 de enero de 2026 coincide con Tidebell. " +
-                    "Tidebell no las documenta como UTC: las aplica a la fecha y hora locales. La app las muestra en tu zona IANA. " +
-                    "Solo entra 2026. El sitio dice que el ciclo se repite; eso no se usa para otros años. Son datos de la comunidad, no oficiales.",
+                "Clima: un único ciclo anual de 366 días (incluido el 29 de febrero) publicado en el repositorio de contenido y leído " +
+                    "el 24 de noviembre de 2026 en tidebell.com/calendar; heartopia.lol/es/weather coincide en los 366 días. " +
+                    "Las horas son del servidor América (UTC−5) y la app las convierte a la zona IANA elegida en tu cuenta, " +
+                    "la misma que usa la pantalla principal. El ciclo se repite todos los años. " +
+                    "Sin contenido descargado no se muestra información de clima. Son datos de la comunidad, no oficiales.",
                 style = MaterialTheme.typography.bodyMedium,
             )
             Text(

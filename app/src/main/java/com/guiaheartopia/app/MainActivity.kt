@@ -1017,7 +1017,7 @@ private fun AppScaffold(
                 } else {
                     val zone = com.guiaheartopia.app.domain.DexSchedule.zoneOf(ui.profile.zoneId)
                     val sky = androidx.compose.runtime.remember(revision) {
-                        com.guiaheartopia.app.data.SkyCatalog.load(context)
+                        com.guiaheartopia.app.data.SkyCatalog.load(context, ui.profile.zoneId)
                     }
                     val nextWindow = androidx.compose.runtime.remember(item.id, revision) {
                         com.guiaheartopia.app.domain.CreatureAppearing.nextWindow(

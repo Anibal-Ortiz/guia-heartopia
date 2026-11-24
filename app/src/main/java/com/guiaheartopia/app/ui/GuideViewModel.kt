@@ -509,7 +509,7 @@ class GuideViewModel(
         viewModelScope.launch {
             val profile = repository.snapshots.first().profile
             val zone = DexSchedule.zoneOf(profile.zoneId)
-            val sky = SkyCatalog.load(context)
+            val sky = SkyCatalog.load(context, profile.zoneId)
             val entry = CreatureCatalog.load(context).firstOrNull { it.id == creatureId } ?: return@launch
             val next = CreatureAppearing.nextWindow(entry.schedule, entry.weather, sky, zone) ?: return@launch
             val alarm = CreatureWindowAlarm(
