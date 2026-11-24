@@ -19,6 +19,10 @@ object SeasonTags {
 
     fun isPast(tag: String?, activeKeys: Set<String>): Boolean {
         val value = tag?.trim().orEmpty()
-        return value.isNotEmpty() && value.lowercase() !in activeKeys
+        if (value.isEmpty()) return false
+        // "Atraer Bichos", "Pesca marina", "Nido de las Aves"... son etiquetas de mecánica
+        // del juego base, no temporadas caducadas: deben seguir visibles por defecto.
+        if (TextMatch.fold(value) in CatalogMarks.BaseGameTags) return false
+        return value.lowercase() !in activeKeys
     }
 }

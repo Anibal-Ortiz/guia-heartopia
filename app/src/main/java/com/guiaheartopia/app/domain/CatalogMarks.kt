@@ -10,7 +10,7 @@ object CatalogMarks {
      * de la app las guarda en el campo `event`, pero NO son eventos de duración limitada:
      * esas criaturas sí son certificables. Solo se excluyen los eventos reales.
      */
-    private val BaseGameTags: Set<String> = listOf(
+    val BaseGameTags: Set<String> = listOf(
         "común", "comun", "common", "comum",
         "río", "rio", "river", "lago", "lake", "océano", "oceano", "mar", "sea",
         "cascada", "waterfall", "secreto", "secret",

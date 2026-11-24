@@ -165,20 +165,12 @@ val DarkPalette = AppPalette(
 val OnImageText = Color(0xFF4A3B2A)
 
 /**
- * Filtros del tema oscuro para el arte pastel. Se usa `lighting` (multiplicar canales,
- * sumar transparente) en vez de `tint` para no rellenar de color las zonas transparentes
- * de las acuarelas y los recortes de catálogo: se conserva la forma y el matiz, solo
- * baja la luminosidad.
+ * El arte del catálogo (bichos, aves, peces, siembra, flores, platos e ingredientes)
+ * se muestra siempre con su luminosidad original al 100 %, también en tema oscuro.
+ * Se mantiene la firma para no tocar los componentes que aplican el filtro.
  */
-private val DarkArtworkFilter = ColorFilter.lighting(
-    multiply = Color(0xFF6E645B),
-    add = Color.Transparent,
-)
-
-/** Filtro a aplicar al arte del catálogo; null en el tema claro (arte original intacto). */
 @Composable
-fun artworkColorFilter(): ColorFilter? =
-    if (LocalAppPalette.current === DarkPalette) DarkArtworkFilter else null
+fun artworkColorFilter(): ColorFilter? = null
 
 /** Texto sobre el arte: oscuro sobre el papel claro, claro cuando el arte se vuelve noche. */
 @get:Composable

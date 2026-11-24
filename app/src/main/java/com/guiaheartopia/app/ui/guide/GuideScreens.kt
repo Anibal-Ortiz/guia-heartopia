@@ -639,9 +639,13 @@ private fun DexTab(
 
     val items = all.filter { entry ->
         val timeOk = SkyWeather.availableNow(entry.schedule, entry.weather, instant, sky, zone)
+        val focusMatch = eventFocusOk(entry)
+        // Si venimos de un evento del calendario, sus criaturas deben verse aunque la
+        // etiqueta no pertenezca a una temporada en curso (o aparezca como pasada).
+        val seasonOk = focusMatch || (SeasonTags.isPast(entry.event, seasonKeys) == filters.onlyPastSeasons)
         entry.category == category &&
-            eventFocusOk(entry) &&
-            (SeasonTags.isPast(entry.event, seasonKeys) == filters.onlyPastSeasons) &&
+            focusMatch &&
+            seasonOk &&
             (nameQuery.isBlank() || TextMatch.contains(entry.name, nameQuery)) &&
             (placeQuery.isBlank() || entry.location.any { TextMatch.contains(it, placeQuery) }) &&
             (filters.weather == "Todos" || filters.weather in entry.weather) &&
