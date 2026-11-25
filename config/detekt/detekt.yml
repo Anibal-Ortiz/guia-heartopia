@@ -1,0 +1,48 @@
+naming:
+  FunctionNaming:
+    functionPattern: '[a-zA-Z][a-zA-Z0-9]*'
+  MatchingDeclarationName:
+    active: false
+
+complexity:
+  LongParameterList:
+    active: false
+  # Las pantallas Compose son grandes por naturaleza; no es un defecto.
+  LongMethod:
+    allowedLines: 600
+  TooManyFunctions:
+    active: false
+  CyclomaticComplexMethod:
+    allowedComplexity: 100
+  ComplexCondition:
+    active: false
+  NestedBlockDepth:
+    allowedDepth: 6
+
+exceptions:
+  TooGenericExceptionCaught:
+    active: false
+
+performance:
+  ForEachOnRange:
+    active: false
+
+style:
+  MaxLineLength:
+    active: false
+  NewLineAtEndOfFile:
+    active: false
+  MagicNumber:
+    active: false
+  ReturnCount:
+    active: false
+  LoopWithTooManyJumpStatements:
+    active: false
+  FunctionOnlyReturningConstant:
+    active: false
+  UnusedParameter:
+    active: false
+  UnusedPrivateFunction:
+    active: true
+  UnusedPrivateProperty:
+    active: true

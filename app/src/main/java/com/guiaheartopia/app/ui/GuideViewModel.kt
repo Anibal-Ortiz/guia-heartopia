@@ -277,8 +277,18 @@ class GuideViewModel(
         val context = appContext ?: return
         viewModelScope.launch {
             val encoded = withContext(Dispatchers.IO) {
+                // Primero solo leemos las dimensiones: una foto de 12 Mpx no debe
+                // decodificarse completa solo para recortarla a 512 px.
+                val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
                 context.contentResolver.openInputStream(uri)?.use { input ->
-                    val bitmap = BitmapFactory.decodeStream(input) ?: return@withContext null
+                    BitmapFactory.decodeStream(input, null, bounds)
+                }
+                if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return@withContext null
+                val sample = maxOf(1, (maxOf(bounds.outWidth, bounds.outHeight) + 1023) / 1024)
+                val decodeOptions = BitmapFactory.Options().apply { inSampleSize = sample }
+                context.contentResolver.openInputStream(uri)?.use { input ->
+                    val bitmap = BitmapFactory.decodeStream(input, null, decodeOptions)
+                        ?: return@withContext null
                     val jpeg = AvatarStore.centerCropJpeg(bitmap)
                     bitmap.recycle()
                     AvatarStore.save(context, jpeg)

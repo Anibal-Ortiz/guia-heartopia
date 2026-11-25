@@ -13,11 +13,10 @@ import com.guiaheartopia.app.data.GuideRepository
 import com.guiaheartopia.app.data.SkyCatalog
 import com.guiaheartopia.app.domain.CreatureWindowReminders
 import com.guiaheartopia.app.domain.CropReminders
+import com.guiaheartopia.app.domain.DexSchedule
 import com.guiaheartopia.app.domain.EventosDocument
 import com.guiaheartopia.app.domain.PlayerProfile
 import com.guiaheartopia.app.domain.ReminderPlan
-import com.guiaheartopia.app.domain.ReminderSync
-import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.concurrent.atomic.AtomicLong
 import kotlinx.coroutines.Dispatchers
@@ -60,7 +59,9 @@ object ReminderScheduler {
         val store = app.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         val previous = store.getStringSet(ENQUEUED, emptySet()).orEmpty()
         val posted = store.getStringSet(POSTED, emptySet()).orEmpty()
-        val zone = runCatching { ZoneId.of(profile.zoneId) }.getOrElse { ZoneId.systemDefault() }
+        // Misma resolución que la UI y SkyCatalog: si el id no es válido, todos
+        // caen en la misma zona y el plan no se desalinea del pronóstico mostrado.
+        val zone = DexSchedule.zoneOf(profile.zoneId)
         val now = ZonedDateTime.now(zone)
         val prefs = profile.reminders
         val scheduled = GuideRepository(app).snapshots.first()
@@ -87,7 +88,17 @@ object ReminderScheduler {
         val future = notices.filter { it.fireAt.isAfter(now) }
         val expired = notices.filter { !it.fireAt.isAfter(now) }
         val stillPosted = posted.toMutableSet()
-        expired.forEach { stillPosted += it.id }
+        expired.forEach { notice ->
+            // Un aviso tardío que no está en POSTED nunca se entregó (Doze,
+            // reinicio o alarma inexacta). Marcarlo como publicado sin mostrarlo
+            // es lo que hacía que los avisos de clima desaparecieran sin sonar.
+            if (notice.id !in posted) {
+                runCatching {
+                    ReminderNotifications.show(app, notice.title, notice.body, notice.id)
+                }
+            }
+            stillPosted += notice.id
+        }
 
         // Reprogramar SIEMPRE todas las alarmas futuras. AlarmManager.setExact con el
         // mismo requestCode sobrescribe la alarma previa, así que es idempotente.

@@ -2,7 +2,6 @@ package com.guiaheartopia.app
 
 import com.guiaheartopia.app.data.SkyCatalog
 import com.guiaheartopia.app.data.mergeCreatures
-import com.guiaheartopia.app.data.mergeSkyTables
 import com.guiaheartopia.app.domain.ContentFileEntry
 import com.guiaheartopia.app.domain.ContentLibrary
 import com.guiaheartopia.app.domain.ContentManifest
@@ -148,26 +147,22 @@ class ContentSyncTest {
     }
 
     @Test
-    fun downloadedYearShowsUpBesideTheBaseCalendar() {
-        val year2026 = sky("2026-11-12", "despejado")
-        val year2027 = sky("2027-03-01", "lluvia")
-        val library = memory(mapOf("calendar/clima-2026.json" to year2026), version = 1)
+    fun downloadedAnnualCycleCoversEveryYear() {
+        val base = sky("2026-11-12", "despejado")
+        val cycle = sky("2026-03-01", "lluvia")
+        val library = memory(mapOf("calendar/clima.json" to base), version = 1)
         val remote = remoteFiles(
-            manifest(3, 23, "2027-01-02", mapOf("calendar/clima-2027.json" to year2027)),
-            keep = mapOf("calendar/clima-2027.json" to year2027),
+            manifest(3, 23, "2026-11-24", mapOf("calendar/clima.json" to cycle)),
+            keep = mapOf("calendar/clima.json" to cycle),
         )
         assertEquals(ContentSyncResult.APPLIED, sync(library, remote))
-        val table = mergeSkyTables(
-            listOf(
-                SkyCatalog.fromJson(year2026.decodeToString()),
-                SkyCatalog.fromJson(library.overlayBytes("calendar/clima-2027.json")!!.decodeToString()),
-            ),
+        val table = SkyCatalog.fromJson(
+            library.overlayBytes("calendar/clima.json")!!.decodeToString(),
+            "America/Santiago",
         )
-        assertNotNull(table.on(java.time.LocalDate.of(2026, 11, 12)))
-        assertEquals(
-            com.guiaheartopia.app.domain.SkyKind.LLUVIA,
-            table.on(java.time.LocalDate.of(2027, 3, 1))?.slots?.single()?.kind,
-        )
+        val lluvia = com.guiaheartopia.app.domain.SkyKind.LLUVIA
+        assertEquals(lluvia, table.on(java.time.LocalDate.of(2026, 3, 1))?.slots?.single()?.kind)
+        assertEquals(lluvia, table.on(java.time.LocalDate.of(2027, 3, 1))?.slots?.single()?.kind)
         assertNull(library.overlayBytes("calendar/clima-2026.json"))
     }
 
@@ -177,9 +172,10 @@ class ContentSyncTest {
         val parsed = ContentPackage.parseManifest(File(root, "content/manifest.json").readText())
         assertNotNull(parsed)
         assertTrue(parsed!!.contentVersion >= 1)
-        listOf("catalog/creatures.json", "calendar/clima-2026.json", "codes/codigos.json").forEach { path ->
+        listOf("catalog/creatures.json", "codes/codigos.json").forEach { path ->
             val entry = parsed.files.first { it.path == path }
-            val bytes = File(root, path).readBytes()
+            // El manifest se calcula con LF; en Windows el checkout puede traer CRLF.
+            val bytes = File(root, path).readText().replace("\r\n", "\n").toByteArray()
             assertEquals(bytes.size.toLong(), entry.size)
             assertEquals(ContentPackage.sha256(bytes), entry.sha256)
         }
@@ -191,12 +187,24 @@ class ContentSyncTest {
         val python = pythonCommand()
         org.junit.Assume.assumeTrue("Se requiere Python 3 para validar el paquete publicado", python.isNotEmpty())
         val output = Files.createTempDirectory("contenido-publicado").toFile()
+        val source = Files.createTempDirectory("contenido-origen").toFile()
+        val assets = listOf(File("src/main/assets"), File("app/src/main/assets")).first { it.exists() }
+        listOf("catalog/creatures.json", "codes/codigos.json").forEach { relative ->
+            val dest = File(source, relative)
+            dest.parentFile.mkdirs()
+            File(assets, relative).copyTo(dest, overwrite = true)
+        }
+        val climate = File(source, "calendar/clima.json")
+        climate.parentFile.mkdirs()
+        File("src/test/resources/calendar/clima.json").copyTo(climate, overwrite = true)
         val process = ProcessBuilder(
             python + listOf(
                 File(repo, "tools/publicar_contenido.py").absolutePath,
                 "--inicial",
                 "--fecha",
                 "2026-11-10",
+                "--desde",
+                source.absolutePath,
                 "--salida",
                 output.absolutePath,
             ),
@@ -214,7 +222,7 @@ class ContentSyncTest {
         assertEquals(1, appManifest!!.contentVersion)
         assertEquals(BuildConfig.VERSION_CODE, appManifest.minAppVersionCode)
         assertTrue(appManifest.files.any { it.path == "catalog/creatures.json" })
-        assertTrue(appManifest.files.any { it.path == "calendar/clima-2026.json" })
+        assertTrue(appManifest.files.any { it.path == "calendar/clima.json" })
         assertTrue(appManifest.files.none { it.path.startsWith("catalog/images/") })
 
         val served = LinkedHashMap<String, ByteArray>()
@@ -237,9 +245,13 @@ class ContentSyncTest {
         assertTrue(creatures.size > 100)
         assertTrue(creatures.map { it.id }.distinct().size == creatures.size)
         assertTrue(creatures.all { it.description.isBlank() })
-        val weather = SkyCatalog.fromJson(library.overlayBytes("calendar/clima-2026.json")!!.decodeToString())
+        val weather = SkyCatalog.fromJson(
+            library.overlayBytes("calendar/clima.json")!!.decodeToString(),
+            "America/Santiago",
+        )
         assertNotNull(weather.on(java.time.LocalDate.of(2026, 11, 12)))
         output.deleteRecursively()
+        source.deleteRecursively()
     }
 
     @Test

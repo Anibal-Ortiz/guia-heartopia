@@ -17,6 +17,8 @@ androidxJunit = "1.2.1"
 espresso = "3.6.1"
 work = "2.10.1"
 coil = "3.2.0"
+leakcanary = "2.14"
+detekt = "2.0.0-alpha.6"
 
 [libraries]
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
@@ -45,9 +47,11 @@ espresso-core = { group = "androidx.test.espresso", name = "espresso-core", vers
 work-runtime = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
+leakcanary-android = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakcanary" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }

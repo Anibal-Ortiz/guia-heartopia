@@ -85,7 +85,10 @@ def collect(source: Path, include_images: bool) -> list[tuple[str, bytes]]:
     else:
         raise SystemExit(f"No está el catálogo en {source / 'catalog'}")
 
-    calendar = sorted((source / "calendar").glob("clima-*.json"))
+    # El clima es un único ciclo anual (clima.json). Se mantiene el patrón
+    # antiguo por año para poder regenerar paquetes ya publicados.
+    cycle = source / "calendar" / "clima.json"
+    calendar = [cycle] if cycle.is_file() else sorted((source / "calendar").glob("clima-*.json"))
     if not calendar:
         raise SystemExit(f"No hay clima en {source / 'calendar'}")
 

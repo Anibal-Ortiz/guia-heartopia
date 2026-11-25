@@ -97,9 +97,9 @@ data class ActiveCrop(
 )
 
 object AficionesContent {
-    val siembrasPath = "huerto/siembras.json"
-    val floresPath = "huerto/flores.json"
-    val recetasPath = "cocina/recetas.json"
+    const val siembrasPath = "huerto/siembras.json"
+    const val floresPath = "huerto/flores.json"
+    const val recetasPath = "cocina/recetas.json"
 
     private val json = Json { ignoreUnknownKeys = true }
 

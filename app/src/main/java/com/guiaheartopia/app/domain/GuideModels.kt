@@ -20,9 +20,9 @@ data class PlayerProfile(
 
 object SampleIds {
     /**
-     * Identificador heredado del origen horario. El JSON de clima declara
-     * `serverZone: "reloj-local"`: sus horas son hora civil de la zona elegida
-     * por el jugador ([WeatherSource.zoneFor]), no UTC.
+     * Identificador heredado del origen horario. El clima publica un ciclo
+     * anual con horas del servidor América (UTC−5) que se convierten a la zona
+     * IANA del perfil; este valor se conserva solo por compatibilidad.
      */
     const val WEATHER_ORIGIN = "utc-servidor"
     const val LEGACY_WEATHER_ORIGIN = "origen-ejemplo"

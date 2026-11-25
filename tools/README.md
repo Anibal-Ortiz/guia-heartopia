@@ -13,7 +13,7 @@ La app busca los archivos en una carpeta llamada `content`. Por eso el paquete t
 
 - `manifest.json` es la lista. Dice el número de versión del contenido, la fecha y el nombre de cada archivo con su tamaño y una huella SHA-256.
 - `catalog/creatures.json` son los peces, aves, insectos y el resto de criaturas.
-- `calendar/clima-2026.json` es el clima de 2026. Un año nuevo sería `calendar/clima-2027.json`.
+- `calendar/clima.json` es el ciclo anual de 366 días (incluye el 29 de febrero). Vale para todos los años: no hace falta crear un archivo nuevo cada año.
 - `catalog/images` no va en el paquete normal. Si existiera, serían archivos propios, no dibujos del juego.
 
 ## 1. Crear el repositorio (solo la primera vez)

@@ -63,7 +63,7 @@ object AdConfig {
      * (banner, intersticial y recompensados) lleven `npa=1`.
      * En caliente se puede conmutar con `AdsController.setPersonalizedAds(...)`.
      */
-    val personalizedAds: Boolean = true
+    const val personalizedAds: Boolean = true
     val umpDebugGeography: Int? = if (BuildConfig.DEBUG) geography(BuildConfig.UMP_DEBUG_GEOGRAPHY) else null
     val umpTestDeviceId: String = if (BuildConfig.DEBUG) BuildConfig.UMP_TEST_DEVICE_ID else ""
 

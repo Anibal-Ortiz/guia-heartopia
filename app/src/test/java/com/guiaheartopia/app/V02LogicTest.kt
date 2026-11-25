@@ -41,6 +41,15 @@ class V02LogicTest {
     }
 
     @Test
+    fun backupRejectsOversizedOrLongTextPayloads() {
+        val many = GuideSnapshot(foundIds = List(20_001) { "id-$it" })
+        assertTrue(BackupCodec.import(BackupCodec.export(many)) is ImportResult.Invalid)
+
+        val longText = GuideSnapshot(profile = PlayerProfile(onboarded = true, name = "x".repeat(4_001)))
+        assertTrue(BackupCodec.import(BackupCodec.export(longText)) is ImportResult.Invalid)
+    }
+
+    @Test
     fun reminderUsesTheSelectedZoneAndSkipsToTomorrowAfterTheHour() {
         val santiago = ZoneId.of("America/Santiago")
         val morning = ZonedDateTime.of(2026, 1, 15, 7, 30, 0, 0, santiago)

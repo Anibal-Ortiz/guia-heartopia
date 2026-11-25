@@ -1,14 +1,21 @@
 package com.guiaheartopia.app.ui.weather
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -37,6 +44,37 @@ import kotlin.math.sin
  */
 private const val LOOP_MS = 4200
 private const val TAU = 6.2831853f
+
+/**
+ * Progreso 0..1 que se detiene cuando la app pasa a segundo plano.
+ * `rememberInfiniteTransition` sigue produciendo frames aunque la pantalla no
+ * esté visible; [Animatable] dentro de [LaunchedEffect] se cancela al pausar.
+ */
+@Composable
+private fun rememberWeatherProgress(label: String, durationMs: Int): Float {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    var active by remember { mutableStateOf(true) }
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            active = event == Lifecycle.Event.ON_RESUME
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+    val progress = remember(label) { Animatable(0f) }
+    LaunchedEffect(active, durationMs) {
+        if (active) {
+            progress.animateTo(
+                targetValue = 1f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(durationMs, easing = LinearEasing),
+                    repeatMode = RepeatMode.Restart,
+                ),
+            )
+        }
+    }
+    return progress.value
+}
 
 private fun seed(i: Int): Float {
     val x = sin((i + 1) * 78.233f) * 43758.5453f
@@ -107,13 +145,7 @@ private fun paletteFor(kind: SkyKind, dark: Boolean): WeatherPalette = when (kin
 fun WeatherAmbientBackground(kind: SkyKind, modifier: Modifier = Modifier) {
     val dark = LocalAppPalette.current === DarkPalette
     val palette = paletteFor(kind, dark)
-    val infinite = rememberInfiniteTransition(label = "weatherAmbient")
-    val p by infinite.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(LOOP_MS, easing = LinearEasing), RepeatMode.Restart),
-        label = "ambientProgress",
-    )
+    val p = rememberWeatherProgress("weatherAmbient", LOOP_MS)
     Canvas(modifier) {
         drawRect(palette.base)
         when (kind) {
@@ -284,13 +316,7 @@ private fun DrawScope.drawCalm(p: Float, palette: WeatherPalette) {
 fun WeatherGlyphAnimated(kind: SkyKind, modifier: Modifier = Modifier) {
     val dark = LocalAppPalette.current === DarkPalette
     val palette = paletteFor(kind, dark)
-    val infinite = rememberInfiniteTransition(label = "weatherGlyph")
-    val p by infinite.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(2200, easing = LinearEasing), RepeatMode.Restart),
-        label = "glyphProgress",
-    )
+    val p = rememberWeatherProgress("weatherGlyph", 2200)
     Canvas(modifier) {
         val r = size.minDimension / 2f
         val c = center
@@ -374,13 +400,7 @@ fun WeatherGlyphAnimated(kind: SkyKind, modifier: Modifier = Modifier) {
 @Composable
 fun WeatherBarShimmer(modifier: Modifier = Modifier) {
     val dark = LocalAppPalette.current === DarkPalette
-    val infinite = rememberInfiniteTransition(label = "weatherShimmer")
-    val p by infinite.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(tween(2800, easing = LinearEasing), RepeatMode.Restart),
-        label = "shimmerProgress",
-    )
+    val p = rememberWeatherProgress("weatherShimmer", 2800)
     Canvas(modifier) {
         val band = size.width * 0.35f
         val x = p * (size.width + band) - band

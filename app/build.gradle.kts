@@ -14,10 +14,11 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.detekt)
 }
 
 /** Única fuente de la versión: nombre de archivo, versionName y artefacto de CI se derivan de ella. */
-val appVersion = "1.1.2"
+val appVersion = "1.1.3"
 
 private val ANDROID_NS = "http://schemas.android.com/apk/res/android"
 private val TOOLS_NS = "http://schemas.android.com/tools"
@@ -248,7 +249,7 @@ android {
         applicationId = "com.guiaheartopia.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 54
+        versionCode = 55
         versionName = appVersion
         buildConfigField(
             "String",
@@ -415,6 +416,17 @@ kotlin {
     }
 }
 
+detekt {
+    buildUponDefaultConfig = true
+    config.setFrom(files("$rootDir/config/detekt/detekt.yml"))
+    parallel = true
+}
+
+// Fijamos el objetivo JVM porque el entorno de build usa JDK 25.
+tasks.withType<dev.detekt.gradle.Detekt>().configureEach {
+    jvmTarget = "17"
+}
+
 dependencies {
     val bom = platform(libs.compose.bom)
     implementation(bom)
@@ -442,6 +454,7 @@ dependencies {
 
     debugImplementation(libs.compose.ui.tooling)
     debugImplementation(libs.compose.ui.test.manifest)
+    debugImplementation(libs.leakcanary.android)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.compose.ui.test.junit4)

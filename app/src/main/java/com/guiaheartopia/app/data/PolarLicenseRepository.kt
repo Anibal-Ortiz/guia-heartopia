@@ -23,6 +23,7 @@ private const val ORGANIZATION_ID = "3d34cb7b-7a7e-4e5c-a0ac-7801756f8566"
 private const val CONNECT_TIMEOUT_MS = 20_000
 private const val READ_TIMEOUT_MS = 20_000
 private const val HTTP_UNPROCESSABLE_ENTITY = 422
+private const val MAX_RESPONSE_CHARS = 64 * 1024
 
 internal const val VALIDATION_INTERVAL_MS = 72L * 60 * 60 * 1000
 
@@ -186,12 +187,12 @@ class PolarLicenseRepository private constructor(
                     code == HttpURLConnection.HTTP_NO_CONTENT -> ""
                     code in 200..299 -> connection.inputStream
                         ?.bufferedReader(Charsets.UTF_8)
-                        ?.use { it.readText() }
+                        ?.use(::readBounded)
                         .orEmpty()
 
                     else -> connection.errorStream
                         ?.bufferedReader(Charsets.UTF_8)
-                        ?.use { it.readText() }
+                        ?.use(::readBounded)
                         .orEmpty()
                 }
                 HttpResponse(code, body)
@@ -231,6 +232,21 @@ private fun mentionsActivationLimit(body: String): Boolean {
 
 private fun deviceLabel(): String =
     "${Build.MANUFACTURER} ${Build.MODEL}".trim().ifBlank { "Android" }
+
+/** Nunca lee una respuesta sin límite: evita que un servidor roto agote memoria. */
+private fun readBounded(reader: java.io.Reader): String {
+    val buffer = CharArray(8 * 1024)
+    val out = StringBuilder()
+    var total = 0
+    while (true) {
+        val read = reader.read(buffer)
+        if (read < 0) break
+        total += read
+        if (total > MAX_RESPONSE_CHARS) break
+        out.append(buffer, 0, read)
+    }
+    return out.toString()
+}
 
 private fun parseObject(body: String): JsonObject? =
     runCatching { Json.parseToJsonElement(body) }.getOrNull() as? JsonObject

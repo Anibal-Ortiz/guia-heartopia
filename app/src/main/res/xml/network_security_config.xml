@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Todo el tráfico de la app es HTTPS (contenido, licencias, AdMob).
+         No se confía en CA instaladas por el usuario: evita MITM en redes públicas. -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

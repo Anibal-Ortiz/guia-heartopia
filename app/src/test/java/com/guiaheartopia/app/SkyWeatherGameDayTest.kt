@@ -17,21 +17,18 @@ class SkyWeatherGameDayTest {
 
     @Test
     fun nov12ChileStartsAtDawnAndSplitsInsideEachFrame() {
-        val table = SkyCatalog.fromJson(catalogText())
+        val table = SkyCatalog.fromJson(catalogText(), "America/Santiago")
         val day = LocalDate.of(2026, 11, 12)
         val detail = detailTexts(table, day, santiago)
         val grouped = groupedTexts(table, day, santiago)
         assertEquals(
             listOf(
                 "Amanecer 08:00–14:00",
-                "Despejado 08:00–12:00",
-                "Lluvia 12:00–14:00",
+                "Despejado 08:00–14:00",
                 "Día 14:00–20:00",
-                "Lluvia 14:00–18:00",
-                "Arcoíris 18:00–20:00",
+                "Lluvia 14:00–20:00",
                 "Tarde 20:00–02:00 del día siguiente",
-                "Arcoíris 20:00–00:00 del día siguiente",
-                "Despejado 00:00–02:00 del día siguiente",
+                "Arcoíris 20:00–02:00 del día siguiente",
                 "Noche 02:00–08:00 del día siguiente",
                 "Despejado 02:00–08:00 del día siguiente",
             ),
@@ -54,7 +51,7 @@ class SkyWeatherGameDayTest {
 
     @Test
     fun nov10ChileIsClearAcrossTheFourFrames() {
-        val table = SkyCatalog.fromJson(catalogText())
+        val table = SkyCatalog.fromJson(catalogText(), "America/Santiago")
         assertEquals(
             listOf("Despejado todo el día"),
             detailTexts(table, LocalDate.of(2026, 11, 10), santiago),
@@ -66,7 +63,7 @@ class SkyWeatherGameDayTest {
 
     @Test
     fun beforeDawnChileTodayIsTheServerDayThatStartedYesterday() {
-        val table = SkyCatalog.fromJson(catalogText())
+        val table = SkyCatalog.fromJson(catalogText(), "America/Santiago")
         val marks = listOf(
             ZonedDateTime.of(2026, 11, 12, 0, 30, 0, 0, santiago),
             ZonedDateTime.of(2026, 11, 12, 3, 0, 0, 0, santiago),
@@ -83,7 +80,7 @@ class SkyWeatherGameDayTest {
 
     @Test
     fun chileAnnualOffsetMovesTheServerDayWithoutHardcodingUtcMinus3() {
-        val table = SkyCatalog.fromJson(catalogText())
+        val table = SkyCatalog.fromJson(catalogText(), "America/Santiago")
         val july = groupedTexts(table, LocalDate.of(2026, 7, 15), santiago)
         assertEquals("Amanecer 07:00–13:00", july.first())
         assertEquals(LocalTime.of(7, 0), SkyWeatherGameDay.windowsForLocalDawn(LocalDate.of(2026, 7, 15), santiago).first().start.toLocalTime())
@@ -100,7 +97,7 @@ class SkyWeatherGameDayTest {
 
     @Test
     fun climateClockStaysLocalWhileFramesConvertFromUtc() {
-        val table = SkyCatalog.fromJson(catalogText())
+        val table = SkyCatalog.fromJson(catalogText(), "America/Santiago")
         val detail = detailTexts(table, LocalDate.of(2026, 11, 12), santiago)
         assertTrue(detail.contains("Lluvia 14:00–20:00"))
         val madridDawn = SkyWeatherGameDay.windowsForLocalDawn(LocalDate.of(2026, 11, 12), madrid).first()
@@ -109,15 +106,15 @@ class SkyWeatherGameDayTest {
     }
 
     @Test
-    fun otherYearsStayEmpty() {
-        val table = SkyCatalog.fromJson(catalogText())
-        assertTrue(SkyWeatherGameDay.spansForGameDay(table, LocalDate.of(2025, 11, 12), santiago).isEmpty())
-        assertTrue(SkyWeatherGameDay.spansForGameDay(table, LocalDate.of(2027, 11, 12), santiago).isEmpty())
-        assertTrue(SkyWeatherGameDay.compactLinesForGameDay(table, LocalDate.of(2025, 11, 12), santiago).isEmpty())
+    fun annualCycleRepeatsEveryYear() {
+        val table = SkyCatalog.fromJson(catalogText(), "America/Santiago")
+        assertTrue(SkyWeatherGameDay.spansForGameDay(table, LocalDate.of(2025, 11, 12), santiago).isNotEmpty())
+        assertTrue(SkyWeatherGameDay.spansForGameDay(table, LocalDate.of(2027, 11, 12), santiago).isNotEmpty())
+        assertTrue(SkyWeatherGameDay.compactLinesForGameDay(table, LocalDate.of(2027, 11, 12), santiago).isNotEmpty())
         val raw = catalogText()
         assertTrue(!raw.contains("por_confirmar"))
         assertTrue(!raw.contains("matchingSlots"))
-        assertEquals(365, table.days.size)
+        assertEquals(366, table.cycle?.days?.size)
     }
 
     private fun detailTexts(
@@ -138,8 +135,6 @@ class SkyWeatherGameDayTest {
         label: String,
     ): String = groupedTexts(table, day, santiago).first { it.startsWith(label) }
 
-    private fun catalogText(): String = listOf(
-        File("src/main/assets/calendar/clima-2026.json"),
-        File("app/src/main/assets/calendar/clima-2026.json"),
-    ).first { it.exists() }.readText()
+    private fun catalogText(): String =
+        File("src/test/resources/calendar/clima.json").readText()
 }

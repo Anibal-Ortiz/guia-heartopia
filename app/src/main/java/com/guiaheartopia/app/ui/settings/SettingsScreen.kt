@@ -520,7 +520,7 @@ private fun ReminderBlock(current: ReminderPrefs, onChange: (ReminderPrefs) -> U
     PixelCard(modifier = Modifier.testTag("recordatorios")) {
         Text("Recordatorios", style = MaterialTheme.typography.titleMedium)
         Text(
-            "El clima avisa 30 min antes de una franja que no sea despejado. " +
+            "El clima avisa 30 min antes de lluvia, arcoíris o meteoritos. " +
                 "Pesca, aves e insectos avisan antes de cada hora del archivo de eventos. " +
                 "La temporada avisa al empezar y un día antes de terminar.",
             style = MaterialTheme.typography.bodySmall,
