@@ -53,10 +53,14 @@ private const val TAU = 6.2831853f
 @Composable
 private fun rememberWeatherProgress(label: String, durationMs: Int): Float {
     val lifecycleOwner = LocalLifecycleOwner.current
-    var active by remember { mutableStateOf(true) }
+    // El observador se registra después de ON_RESUME: hay que leer el estado actual,
+    // no esperar al siguiente evento, o la animación no arranca al entrar.
+    var active by remember {
+        mutableStateOf(lifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED))
+    }
     DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            active = event == Lifecycle.Event.ON_RESUME
+        val observer = LifecycleEventObserver { source, _ ->
+            active = source.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
         }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
@@ -64,6 +68,7 @@ private fun rememberWeatherProgress(label: String, durationMs: Int): Float {
     val progress = remember(label) { Animatable(0f) }
     LaunchedEffect(active, durationMs) {
         if (active) {
+            progress.snapTo(0f)
             progress.animateTo(
                 targetValue = 1f,
                 animationSpec = infiniteRepeatable(
