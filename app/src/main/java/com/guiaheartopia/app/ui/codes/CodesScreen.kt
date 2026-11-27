@@ -3,7 +3,7 @@ package com.guiaheartopia.app.ui.codes
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.widget.Toast
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -11,12 +11,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -31,15 +32,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.guiaheartopia.app.data.AndroidContentLibrary
@@ -49,6 +54,7 @@ import com.guiaheartopia.app.ui.components.EmptyStateCard
 import com.guiaheartopia.app.ui.components.PixelButton
 import com.guiaheartopia.app.ui.components.SectionBanner
 import com.guiaheartopia.app.ui.contentRevision
+import com.guiaheartopia.app.ui.hobbies.ConseguidoToggle
 import com.guiaheartopia.app.ui.theme.Ink
 import java.time.LocalDate
 import java.time.ZoneId
@@ -94,7 +100,7 @@ fun CodesScreen(
             .weight(1f)
             .verticalScroll(rememberScrollState())
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text("Vigentes", style = MaterialTheme.typography.titleMedium, color = Ink)
         if (active.isEmpty()) {
@@ -153,7 +159,30 @@ private fun couponBrush(expired: Boolean) = Brush.linearGradient(
     },
 )
 
-/** Cada código se presenta como un cupón dorado con muescas y línea de perforación. */
+/** Billete con los bordes laterales picados (dientes de sierra), como un golden ticket. */
+private val TicketShape = GenericShape { size, _ ->
+    val w = size.width
+    val h = size.height
+    val teeth = 10
+    val step = h / teeth
+    val depth = w * 0.012f
+    moveTo(0f, 0f)
+    lineTo(w, 0f)
+    for (i in 0 until teeth) {
+        val y = step * i
+        lineTo(w - depth, y + step / 2)
+        lineTo(w, y + step)
+    }
+    lineTo(0f, h)
+    for (i in teeth - 1 downTo 0) {
+        val y = step * i
+        lineTo(depth, y + step / 2)
+        lineTo(0f, y)
+    }
+    close()
+}
+
+/** Cada código es un cupón dorado de dos líneas: código/estado y recompensa/acciones. */
 @Composable
 private fun CodeCard(
     code: RedeemCode,
@@ -168,16 +197,18 @@ private fun CodeCard(
         until != null -> "Vence el ${formatDate(until)}"
         else -> null
     }
-    val screenBg = MaterialTheme.colorScheme.background
     val edge = if (expired) CouponExpiredEdge else CouponGoldEdge
-    val shape = RoundedCornerShape(20.dp)
+    val detail = listOfNotNull(
+        code.recompensa.takeIf { it.isNotBlank() },
+        whenLabel,
+    ).joinToString(" · ")
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(shape)
+            .clip(TicketShape)
             .background(couponBrush(expired))
-            .border(2.dp, edge, shape),
+            .border(1.dp, edge, TicketShape),
     ) {
         // Brillo diagonal sutil, efecto lámina dorada, por detrás del contenido.
         Box(
@@ -194,71 +225,60 @@ private fun CodeCard(
                 ),
         )
 
-        Column(Modifier.padding(vertical = 14.dp)) {
-            Column(Modifier.padding(horizontal = 18.dp)) {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Text(
-                        "🎟️  CUPÓN DE RECOMPENSA",
-                        modifier = Modifier.weight(1f),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = CouponInk,
-                    )
-                    CouponStatusChip(
-                        text = when {
-                            expired -> "VENCIDO"
-                            redeemed -> "CANJEADO ✓"
-                            else -> "VIGENTE"
-                        },
-                    )
-                }
-
-                Spacer(Modifier.height(10.dp))
-
+        Column(
+            Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+        ) {
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Text(
                     code.code,
-                    style = MaterialTheme.typography.headlineSmall.copy(
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontFamily = FontFamily.Serif,
                         fontWeight = FontWeight.ExtraBold,
-                        fontSize = 30.sp,
+                        fontSize = 17.sp,
+                        letterSpacing = 0.5.sp,
                         color = CouponInk,
                     ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
-                if (code.recompensa.isNotBlank()) {
-                    Text(code.recompensa, style = MaterialTheme.typography.bodyLarge, color = CouponInk)
-                }
-                whenLabel?.let {
-                    Text(it, style = MaterialTheme.typography.bodySmall, color = CouponInk.copy(alpha = 0.8f))
-                }
-                code.fuente?.takeIf { it.isNotBlank() }?.let {
-                    Text(it, style = MaterialTheme.typography.bodySmall, color = CouponInk.copy(alpha = 0.7f))
-                }
+                CouponStatusChip(
+                    text = when {
+                        expired -> "VENCIDO"
+                        redeemed -> "CANJEADO ✓"
+                        else -> "VIGENTE"
+                    },
+                )
             }
-
-            Spacer(Modifier.height(12.dp))
-            CouponPerforation(screenBg = screenBg, edge = edge)
-            Spacer(Modifier.height(12.dp))
-
-            Column(Modifier.padding(horizontal = 18.dp)) {
-                // Acciones independientes: copiar nunca cambia el estado de canjeo.
-                CouponButton(
-                    text = if (redeemed) "Canjeado ✓ (tocar para desmarcar)" else "Marcar como canjeado",
-                    onClick = { onRedeemed(code.code, !redeemed) },
-                    filled = true,
-                    modifier = Modifier.fillMaxWidth(),
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Text(
+                    detail,
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = CouponInk.copy(alpha = 0.85f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
-                Spacer(Modifier.height(8.dp))
-                CouponButton(
-                    text = "Copiar código",
+                // Mismo botón de "conseguido" que en bichos/peces; copiar es independiente.
+                ConseguidoToggle(
+                    on = redeemed,
+                    onToggle = { onRedeemed(code.code, !redeemed) },
+                    compact = true,
+                )
+                CouponCopyButton(
                     onClick = {
                         val clipboard = context.getSystemService(ClipboardManager::class.java)
                         clipboard.setPrimaryClip(ClipData.newPlainText("código", code.code))
                         Toast.makeText(context, "Código copiado", Toast.LENGTH_SHORT).show()
                     },
-                    filled = false,
-                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
@@ -272,64 +292,33 @@ private fun CouponStatusChip(text: String) {
         Modifier
             .clip(chipShape)
             .background(CouponInk)
-            .padding(horizontal = 10.dp, vertical = 4.dp),
+            .padding(horizontal = 6.dp, vertical = 2.dp),
     ) {
         Text(text, style = MaterialTheme.typography.labelSmall, color = CouponCream)
     }
 }
 
-/** Línea punteada con dos muescas laterales que simulan el desgarro del ticket. */
+/** Botoncito circular para copiar el código, a juego con el billete. */
 @Composable
-private fun CouponPerforation(screenBg: Color, edge: Color) {
-    Canvas(
+private fun CouponCopyButton(onClick: () -> Unit) {
+    Box(
         Modifier
-            .fillMaxWidth()
-            .height(18.dp),
-    ) {
-        val cy = size.height / 2
-        drawLine(
-            color = edge.copy(alpha = 0.75f),
-            start = Offset(0f, cy),
-            end = Offset(size.width, cy),
-            strokeWidth = 1.5.dp.toPx(),
-            pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 10f)),
-        )
-        val r = 10.dp.toPx()
-        listOf(Offset(0f, cy), Offset(size.width, cy)).forEach { center ->
-            drawCircle(color = screenBg, radius = r, center = center)
-            drawCircle(
-                color = edge,
-                radius = r,
-                center = center,
-                style = Stroke(width = 1.dp.toPx()),
-            )
-        }
-    }
-}
-
-@Composable
-private fun CouponButton(
-    text: String,
-    onClick: () -> Unit,
-    filled: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    val buttonShape = RoundedCornerShape(12.dp)
-    Row(
-        modifier = modifier
-            .clip(buttonShape)
-            .background(if (filled) CouponInk else Color.Transparent)
-            .border(1.5.dp, CouponInk, buttonShape)
+            .size(36.dp)
+            .clip(CircleShape)
+            .background(CouponCream.copy(alpha = 0.7f))
+            .border(1.dp, CouponInk, CircleShape)
             .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 11.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
+            .clearAndSetSemantics {
+                role = Role.Button
+                contentDescription = "Copiar código"
+            },
+        contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text,
-            style = MaterialTheme.typography.labelLarge,
-            color = if (filled) CouponCream else CouponInk,
-            textAlign = TextAlign.Center,
+        Image(
+            painter = painterResource(com.guiaheartopia.app.R.drawable.ic_copy),
+            contentDescription = null,
+            modifier = Modifier.size(20.dp),
+            colorFilter = ColorFilter.tint(CouponInk),
         )
     }
 }
