@@ -4,8 +4,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.work.CoroutineWorker
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.guiaheartopia.app.data.AndroidContentLibrary
@@ -18,6 +20,7 @@ import com.guiaheartopia.app.domain.EventosDocument
 import com.guiaheartopia.app.domain.PlayerProfile
 import com.guiaheartopia.app.domain.ReminderPlan
 import java.time.ZonedDateTime
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -28,6 +31,9 @@ import kotlinx.coroutines.withContext
 private const val PREFS = "guia-avisos"
 private const val ENQUEUED = "enqueued"
 private const val POSTED = "posted"
+private const val PERIODIC_WORK = "recordatorios-periodicos"
+/** Ventana en la que un aviso perdido todavía se entrega al sincronizar. */
+private const val LATE_GRACE_MINUTES = 30L
 
 object ReminderScheduler {
     // Coalescing: gana la sincronización más reciente; las intermedias no se ejecutan.
@@ -56,6 +62,9 @@ object ReminderScheduler {
     }
 
     private suspend fun performSync(app: Context, profile: PlayerProfile) {
+        // Re-arma el plan aunque la app no se abra: si el sistema pierde las alarmas
+        // (Doze, reinicio, limpiador de batería), la próxima ejecución las recupera.
+        ensurePeriodicSync(app)
         val store = app.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         val previous = store.getStringSet(ENQUEUED, emptySet()).orEmpty()
         val posted = store.getStringSet(POSTED, emptySet()).orEmpty()
@@ -63,26 +72,30 @@ object ReminderScheduler {
         // caen en la misma zona y el plan no se desalinea del pronóstico mostrado.
         val zone = DexSchedule.zoneOf(profile.zoneId)
         val now = ZonedDateTime.now(zone)
+        // Generar desde un poco antes permite entregar avisos que no sonaron.
+        // Los generadores descartan todo lo anterior a su `now`, así que sin esta
+        // ventana `expired` siempre estaba vacío y el aviso se perdía para siempre.
+        val from = now.minusMinutes(LATE_GRACE_MINUTES)
         val prefs = profile.reminders
         val scheduled = GuideRepository(app).snapshots.first()
-        val personal = CropReminders.notices(scheduled.activeCrops, zone, now) +
-            CreatureWindowReminders.notices(scheduled.creatureWindowAlarms, zone, now)
+        val personal = CropReminders.notices(scheduled.activeCrops, zone, from) +
+            CreatureWindowReminders.notices(scheduled.creatureWindowAlarms, zone, from)
         val notices = if (!prefs.anyAlertOn()) {
             personal
         } else {
             val weather = if (prefs.weatherEnabled) {
                 SkyCatalog.load(app, profile.zoneId).let { sky ->
                     ReminderPlan.weatherNotices(
-                        (0..7).mapNotNull { sky.on(now.toLocalDate().plusDays(it.toLong())) },
+                        (0..7).mapNotNull { sky.on(from.toLocalDate().plusDays(it.toLong())) },
                         zone,
-                        now,
+                        from,
                     )
                 }
             } else {
                 emptyList()
             }
             val raw = AndroidContentLibrary(app).effectiveBytes("calendar/eventos.json")?.decodeToString()
-            val events = ReminderPlan.eventNotices(parseEventsCached(raw), prefs, zone, now)
+            val events = ReminderPlan.eventNotices(parseEventsCached(raw), prefs, zone, from)
             weather + events + personal
         }
         val future = notices.filter { it.fireAt.isAfter(now) }
@@ -124,6 +137,15 @@ object ReminderScheduler {
         }
     }
 
+    private fun ensurePeriodicSync(app: Context) {
+        val request = PeriodicWorkRequestBuilder<ReminderPeriodicSyncWorker>(15, TimeUnit.MINUTES).build()
+        WorkManager.getInstance(app).enqueueUniquePeriodicWork(
+            PERIODIC_WORK,
+            ExistingPeriodicWorkPolicy.KEEP,
+            request,
+        )
+    }
+
     fun markPosted(context: Context, id: String) {
         if (id.isBlank()) return
         val store = context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
@@ -137,6 +159,15 @@ object ReminderScheduler {
 }
 
 class ReminderRescheduleWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
+    override suspend fun doWork(): Result {
+        val profile = GuideRepository(applicationContext).snapshots.first().profile
+        ReminderScheduler.sync(applicationContext, profile)
+        return Result.success()
+    }
+}
+
+/** Vuelve a armar los avisos y entrega los que se quedaron sin sonar. */
+class ReminderPeriodicSyncWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
         val profile = GuideRepository(applicationContext).snapshots.first().profile
         ReminderScheduler.sync(applicationContext, profile)
