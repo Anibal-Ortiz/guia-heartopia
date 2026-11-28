@@ -21,7 +21,9 @@ import java.time.format.DateTimeFormatter
  * fijo y se convierten con [DexSchedule] a la zona del jugador.
  */
 object SkyWeatherGameDay {
-    private val frameOrder = listOf("Dawn", "Day", "Dusk", "Night")
+    // Orden de las cuatro franjas en pantalla: la noche abre el día, luego amanecer,
+    // día y tarde. Los instantes de cada franja no cambian, solo se muestran en este orden.
+    private val frameOrder = listOf("Night", "Dawn", "Day", "Dusk")
     private val clock: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
     data class GameClimateSpan(

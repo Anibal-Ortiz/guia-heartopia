@@ -16,21 +16,21 @@ class SkyWeatherGameDayTest {
     private val madrid = ZoneId.of("Europe/Madrid")
 
     @Test
-    fun nov12ChileStartsAtDawnAndSplitsInsideEachFrame() {
+    fun nov12ChileStartsAtNightAndSplitsInsideEachFrame() {
         val table = SkyCatalog.fromJson(catalogText(), "America/Santiago")
         val day = LocalDate.of(2026, 11, 12)
         val detail = detailTexts(table, day, santiago)
         val grouped = groupedTexts(table, day, santiago)
         assertEquals(
             listOf(
+                "Noche 02:00–08:00 del día siguiente",
+                "Despejado 02:00–08:00 del día siguiente",
                 "Amanecer 08:00–14:00",
                 "Despejado 08:00–14:00",
                 "Día 14:00–20:00",
                 "Lluvia 14:00–20:00",
                 "Tarde 20:00–02:00 del día siguiente",
                 "Arcoíris 20:00–02:00 del día siguiente",
-                "Noche 02:00–08:00 del día siguiente",
-                "Despejado 02:00–08:00 del día siguiente",
             ),
             grouped,
         )
@@ -44,7 +44,7 @@ class SkyWeatherGameDayTest {
         val frames = SkyWeatherGameDay.barFrameSegmentsForGameDay(table, day, santiago)
         assertEquals(4, frames.size)
         assertEquals(
-            listOf("DESPEJADO", "LLUVIA", "ARCOIRIS", "DESPEJADO"),
+            listOf("DESPEJADO", "DESPEJADO", "LLUVIA", "ARCOIRIS"),
             frames.map { it.single().kind.name },
         )
     }
@@ -82,17 +82,23 @@ class SkyWeatherGameDayTest {
     fun chileAnnualOffsetMovesTheServerDayWithoutHardcodingUtcMinus3() {
         val table = SkyCatalog.fromJson(catalogText(), "America/Santiago")
         val july = groupedTexts(table, LocalDate.of(2026, 7, 15), santiago)
-        assertEquals("Amanecer 07:00–13:00", july.first())
-        assertEquals(LocalTime.of(7, 0), SkyWeatherGameDay.windowsForLocalDawn(LocalDate.of(2026, 7, 15), santiago).first().start.toLocalTime())
-        assertEquals(LocalTime.of(8, 0), SkyWeatherGameDay.windowsForLocalDawn(LocalDate.of(2026, 11, 12), santiago).first().start.toLocalTime())
+        assertEquals("Noche 01:00–07:00 del día siguiente", july.first())
+        assertEquals(
+            LocalTime.of(7, 0),
+            SkyWeatherGameDay.windowsForLocalDawn(LocalDate.of(2026, 7, 15), santiago).first { it.slot.key == "Dawn" }.start.toLocalTime(),
+        )
+        assertEquals(
+            LocalTime.of(8, 0),
+            SkyWeatherGameDay.windowsForLocalDawn(LocalDate.of(2026, 11, 12), santiago).first { it.slot.key == "Dawn" }.start.toLocalTime(),
+        )
 
         val beforeChange = SkyWeatherGameDay.windowsForLocalDawn(LocalDate.of(2026, 4, 4), santiago)
         val afterChange = SkyWeatherGameDay.windowsForLocalDawn(LocalDate.of(2026, 4, 5), santiago)
-        assertEquals(LocalTime.of(8, 0), beforeChange.first().start.toLocalTime())
-        assertEquals(LocalTime.of(7, 0), afterChange.first().start.toLocalTime())
+        assertEquals(LocalTime.of(8, 0), beforeChange.first { it.slot.key == "Dawn" }.start.toLocalTime())
+        assertEquals(LocalTime.of(7, 0), afterChange.first { it.slot.key == "Dawn" }.start.toLocalTime())
         assertEquals("Tarde 20:00–01:00 del día siguiente", frameTitle(table, LocalDate.of(2026, 4, 4), "Tarde"))
-        assertEquals("Amanecer 08:00–14:00", groupedTexts(table, LocalDate.of(2026, 9, 6), santiago).first())
-        assertEquals("Amanecer 07:00–13:00", groupedTexts(table, LocalDate.of(2026, 9, 5), santiago).first())
+        assertEquals("Noche 02:00–08:00 del día siguiente", groupedTexts(table, LocalDate.of(2026, 9, 6), santiago).first())
+        assertEquals("Noche 02:00–08:00 del día siguiente", groupedTexts(table, LocalDate.of(2026, 9, 5), santiago).first())
     }
 
     @Test
@@ -100,9 +106,9 @@ class SkyWeatherGameDayTest {
         val table = SkyCatalog.fromJson(catalogText(), "America/Santiago")
         val detail = detailTexts(table, LocalDate.of(2026, 11, 12), santiago)
         assertTrue(detail.contains("Lluvia 14:00–20:00"))
-        val madridDawn = SkyWeatherGameDay.windowsForLocalDawn(LocalDate.of(2026, 11, 12), madrid).first()
+        val madridDawn = SkyWeatherGameDay.windowsForLocalDawn(LocalDate.of(2026, 11, 12), madrid).first { it.slot.key == "Dawn" }
         assertEquals(LocalTime.of(12, 0), madridDawn.start.toLocalTime())
-        assertEquals("Amanecer 12:00–18:00", groupedTexts(table, LocalDate.of(2026, 11, 12), madrid).first())
+        assertEquals("Noche 06:00–12:00 del día siguiente", groupedTexts(table, LocalDate.of(2026, 11, 12), madrid).first())
     }
 
     @Test

@@ -18,7 +18,7 @@ plugins {
 }
 
 /** Única fuente de la versión: nombre de archivo, versionName y artefacto de CI se derivan de ella. */
-val appVersion = "1.1.5"
+val appVersion = "1.1.6"
 
 private val ANDROID_NS = "http://schemas.android.com/apk/res/android"
 private val TOOLS_NS = "http://schemas.android.com/tools"
@@ -249,7 +249,7 @@ android {
         applicationId = "com.guiaheartopia.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 57
+        versionCode = 58
         versionName = appVersion
         buildConfigField(
             "String",
