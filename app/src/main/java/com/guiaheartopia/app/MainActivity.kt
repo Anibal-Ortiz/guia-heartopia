@@ -142,7 +142,7 @@ import com.guiaheartopia.app.ui.theme.Muted
 import com.guiaheartopia.app.ui.theme.Paper
 import com.guiaheartopia.app.ui.theme.PaperSubtle
 import com.guiaheartopia.app.ui.weather.WeatherScreen
-import com.guiaheartopia.app.ui.share.CommunityImageScreen
+import com.guiaheartopia.app.ui.community.CommunityScreen
 import com.guiaheartopia.app.ui.welcome.WelcomeScreen
 
 class MainActivity : ComponentActivity() {
@@ -913,7 +913,7 @@ private fun AppScaffold(
                 )
             }
             composable("comunidad") {
-                CommunityImageScreen(
+                CommunityScreen(
                     countryId = ui.profile.countryId,
                     zoneId = ui.profile.zoneId,
                     regionKey = ui.profile.regionKey,
