@@ -29420,30 +29420,30 @@
         {
           "start": "00:00",
           "end": "01:00",
-          "kind": "nieve",
+          "kind": "lluvia",
           "status": "incluido",
-          "label": "Nieve moderada"
+          "label": "Lluvia moderada"
         },
         {
           "start": "01:00",
           "end": "02:00",
-          "kind": "nieve",
+          "kind": "lluvia",
           "status": "incluido",
-          "label": "Nieve ligera"
+          "label": "Lluvia ligera"
         },
         {
           "start": "02:00",
           "end": "03:00",
-          "kind": "nieve",
+          "kind": "lluvia",
           "status": "incluido",
-          "label": "Nieve moderada"
+          "label": "Lluvia moderada"
         },
         {
           "start": "03:00",
           "end": "06:00",
-          "kind": "nieve",
+          "kind": "lluvia",
           "status": "incluido",
-          "label": "Nieve ligera"
+          "label": "Lluvia ligera"
         },
         {
           "start": "06:00",

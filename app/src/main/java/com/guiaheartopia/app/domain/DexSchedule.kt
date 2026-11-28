@@ -50,7 +50,7 @@ object DexSchedule {
      *
      * Referencia confirmada para Chile a UTC−3 el 2026-11-06 (ejemplo, no se fija UTC−3 todo el año):
      * Noche 02:00–08:00, Amanecer 08:00–14:00, Día 14:00–20:00,
-     * Tarde 20:00–02:00 del día siguiente.
+     * Tarde 20:00–02:00 (cruza la medianoche).
      *
      * Equivalente UTC: Noche 05:00–11:00, Amanecer 11:00–17:00, Día 17:00–23:00, Tarde 23:00–05:00.
      * Pendiente confirmar si el reloj del servidor sigue el cambio de hora de Chile u otro origen.

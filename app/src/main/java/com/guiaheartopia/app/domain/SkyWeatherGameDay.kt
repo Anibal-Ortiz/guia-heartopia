@@ -11,7 +11,8 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
 /**
- * Clima del día del servidor: Amanecer, Día, Tarde y Noche, hasta el amanecer siguiente.
+ * Clima del día del servidor: Noche, Amanecer, Día y Tarde. La noche abre el día
+ * (02:00–08:00 en Chile) y la tarde lo cierra cruzando la medianoche.
  *
  * Los tramos salen de [DexSchedule] en UTC y se convierten con la zona IANA (el desfase
  * de cada límite, horario de verano incluido). No se fija Chile a UTC−3.
@@ -22,7 +23,8 @@ import java.time.format.DateTimeFormatter
  */
 object SkyWeatherGameDay {
     // Orden de las cuatro franjas en pantalla: la noche abre el día, luego amanecer,
-    // día y tarde. Los instantes de cada franja no cambian, solo se muestran en este orden.
+    // día y tarde. Las cuatro comparten la fecha UTC del servidor: la noche es la
+    // madrugada de ese mismo día, no la del día siguiente.
     private val frameOrder = listOf("Night", "Dawn", "Day", "Dusk")
     private val clock: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
@@ -51,20 +53,22 @@ object SkyWeatherGameDay {
         return if (instant.isBefore(opening)) opening else following
     }
 
-    /** Fecha local del amanecer que abre el día del servidor que contiene [instant]. */
+    /**
+     * Fecha local del amanecer del día del servidor que contiene [instant].
+     * La noche de la madrugada ya pertenece a ese mismo día; solo la tarde
+     * (23:00–05:00 UTC) cruza al día siguiente.
+     */
     fun serverDawnLocalDate(instant: Instant, zone: ZoneId): LocalDate {
         val current = DexSchedule.currentWindow(zone, instant)
         val utcStart = current.start.withZoneSameInstant(ZoneOffset.UTC).toLocalDate()
-        val dawnUtc = if (current.slot.key == "Night") utcStart.minusDays(1) else utcStart
-        return DexSchedule.window("Dawn", dawnUtc, zone).start.toLocalDate()
+        return DexSchedule.window("Dawn", utcStart, zone).start.toLocalDate()
     }
 
     fun windowsForLocalDawn(localDawnDate: LocalDate, zone: ZoneId): List<LocalGameWindow> {
         val dawnUtc = dawnUtcDate(localDawnDate, zone)
-        return frameOrder.map { key ->
-            val utcDate = if (key == "Night") dawnUtc.plusDays(1) else dawnUtc
-            DexSchedule.window(key, utcDate, zone)
-        }
+        // Las cuatro franjas del día del servidor comparten la fecha UTC: la noche
+        // que abre el día es la de la madrugada (05:00–11:00 UTC), no la siguiente.
+        return frameOrder.map { key -> DexSchedule.window(key, dawnUtc, zone) }
     }
 
     fun spansForGameDay(table: SkyTable, localDawnDate: LocalDate, zone: ZoneId): List<GameClimateSpan> =
@@ -76,9 +80,9 @@ object SkyWeatherGameDay {
         if (grouped.all { it.second.isEmpty() }) return emptyList()
         val lines = ArrayList<ClimateLine>()
         for ((window, spans) in grouped) {
-            lines += ClimateLine(frameTitle(window, localDawnDate), frame = true)
+            lines += ClimateLine(frameTitle(window), frame = true)
             spans.forEach { span ->
-                lines += ClimateLine(formatSpan(span, localDawnDate), frame = false)
+                lines += ClimateLine(formatSpan(span), frame = false)
             }
         }
         return lines
@@ -114,13 +118,14 @@ object SkyWeatherGameDay {
         return frames
             .filter { it.kind != SkyKind.DESPEJADO }
             .let(::mergeConsecutiveSameKind)
-            .map { ClimateLine(formatSpan(it, localDawnDate), frame = false) }
+            .map { ClimateLine(formatSpan(it), frame = false) }
     }
 
     /**
      * Franjas seguidas con el mismo clima se muestran como una sola línea:
      * Nieve 08:00–14:00 + Nieve 14:00–20:00 → Nieve 08:00–20:00.
-     * [rangeLabel] se encarga de añadir "del día siguiente" cuando el fin cruza la medianoche.
+     * Las cuatro franjas son del mismo día del servidor, así que [rangeLabel] solo
+     * muestra las horas, sin sufijo, aunque la tarde termine después de medianoche.
      */
     private fun mergeConsecutiveSameKind(spans: List<GameClimateSpan>): List<GameClimateSpan> {
         if (spans.size < 2) return spans
@@ -179,8 +184,8 @@ object SkyWeatherGameDay {
             .key
     }
 
-    fun formatSpan(span: GameClimateSpan, focusLocalDate: LocalDate): String =
-        "${span.label()} ${rangeLabel(span.start, span.end, focusLocalDate)}"
+    fun formatSpan(span: GameClimateSpan): String =
+        "${span.label()} ${rangeLabel(span.start, span.end)}"
 
     fun summaryForGameDay(table: SkyTable, localDawnDate: LocalDate, zone: ZoneId): String =
         linesForGameDay(table, localDawnDate, zone)
@@ -220,14 +225,13 @@ object SkyWeatherGameDay {
         return localDawnDate
     }
 
-    private fun frameTitle(window: LocalGameWindow, focusLocalDate: LocalDate): String =
-        "${window.slot.label} ${rangeLabel(window.start, window.end, focusLocalDate)}"
+    private fun frameTitle(window: LocalGameWindow): String =
+        "${window.slot.label} ${rangeLabel(window.start, window.end)}"
 
-    private fun rangeLabel(start: ZonedDateTime, end: ZonedDateTime, focusLocalDate: LocalDate): String {
+    private fun rangeLabel(start: ZonedDateTime, end: ZonedDateTime): String {
         val t1 = start.toLocalTime().format(clock)
         val t2 = end.toLocalTime().format(clock)
-        val nextDay = start.toLocalDate().isAfter(focusLocalDate) || end.toLocalDate().isAfter(focusLocalDate)
-        return if (nextDay) "$t1–$t2 del día siguiente" else "$t1–$t2"
+        return "$t1–$t2"
     }
 
     /**

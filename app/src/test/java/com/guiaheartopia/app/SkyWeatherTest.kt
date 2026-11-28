@@ -50,7 +50,7 @@ class SkyWeatherTest {
     }
 
     @Test
-    fun gameDayRainUsesDawnFrameNotCivilMidnight() {
+    fun gameDayRainStartsInTheNightFrameNotCivilMidnight() {
         val date = LocalDate.of(2026, 11, 7)
         val table = table(
             date,
@@ -65,7 +65,7 @@ class SkyWeatherTest {
             ZoneId.of("America/Santiago"),
         )
         val rain = spans.filter { it.kind == SkyKind.LLUVIA }
-        assertEquals(LocalTime.of(8, 0), rain.first().start.toLocalTime())
+        assertEquals(LocalTime.of(6, 0), rain.first().start.toLocalTime())
         assertEquals(LocalTime.of(18, 0), rain.last().end.toLocalTime())
     }
 
