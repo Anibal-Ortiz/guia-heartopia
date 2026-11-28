@@ -118,6 +118,8 @@ import com.guiaheartopia.app.ui.theme.Yellow
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 private data class DexColumnData(
     val category: String,
@@ -152,6 +154,9 @@ fun HomeScreen(
     val byCategory = remember(catalog) { catalog.groupBy { it.category } }
     val today = remember(zone, nowInstant) { LocalDate.now(zone) }
     val climateDay = remember(nowInstant, zone) { SkyWeatherGameDay.serverDawnLocalDate(nowInstant, zone) }
+    val climateDate = remember(climateDay) {
+        climateDay.format(DateTimeFormatter.ofPattern("d 'de' MMMM", Locale.forLanguageTag("es")))
+    }
     val climateLines = remember(sky, climateDay, zone) {
         SkyWeatherGameDay.compactLinesForGameDay(sky, climateDay, zone)
     }
@@ -391,7 +396,10 @@ fun HomeScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
-                        Text("Clima de hoy", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold))
+                        Column {
+                            Text("Clima de hoy", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.ExtraBold))
+                            Text(climateDate, style = MaterialTheme.typography.bodySmall, color = Muted)
+                        }
                         WeatherGlyphAnimated(currentKind, Modifier.size(30.dp))
                     }
                     if (climateLines.isEmpty()) {
