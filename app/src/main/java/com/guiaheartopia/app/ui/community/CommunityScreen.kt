@@ -342,8 +342,7 @@ enum class WeatherTheme(
         emoji = "🌧️",
         gradient = listOf(Color(0xFF4A6FA5), Color(0xFF7FA6C9), Color(0xFFD6E6F2)),
         accent = Color(0xFF1E4E79),
-        // No se inventa una foto de lluvia: si el usuario no adjunta `lluvia.jpg`, se usa degradado.
-        backgroundRes = null,
+        backgroundRes = R.drawable.lluvia,
     ),
     RAINBOW(
         label = "Arcoíris",
