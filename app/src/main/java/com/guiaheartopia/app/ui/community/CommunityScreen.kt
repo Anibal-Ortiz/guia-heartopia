@@ -135,8 +135,6 @@ fun CommunityScreen(
 
     val plotNumber1 = toPlotNumber(resource.liuliu)
     val plotNumber2 = toPlotNumber(resource.flurita)
-    val plotLabel1 = plotLabel(resource.liuliu, plotNumber1)
-    val plotLabel2 = plotLabel(resource.flurita, plotNumber2)
 
     Scaffold(
         topBar = {
@@ -242,8 +240,8 @@ fun CommunityScreen(
                         dateText = todayFormatted,
                         weather = selectedWeather,
                         spots = listOf(
-                            DailyResourceSpot("Árbol de Liuliu", "🌳", plotNumber1, plotLabel1),
-                            DailyResourceSpot("Cristal de Fluorita", "💎", plotNumber2, plotLabel2),
+                            DailyResourceSpot("Árbol de Liuliu", "🌳", plotNumber1, plotNumberLabel(plotNumber1)),
+                            DailyResourceSpot("Cristal de Fluorita", "💎", plotNumber2, plotNumberLabel(plotNumber2)),
                         ),
                         communityName = communityName,
                     )
@@ -466,7 +464,6 @@ private fun DailyReportCard(
             }
         }
 
-        CardSignatureFooter(accentColor = weather.accent)
         }
     }
 }
@@ -604,35 +601,13 @@ private fun MonthlyCalendarCard(
             }
         }
 
-        CardSignatureFooter(accentColor = accent)
-    }
-}
-
-@Composable
-private fun CardSignatureFooter(accentColor: Color) {
-    Surface(color = Color.White.copy(alpha = 0.88f), shape = RoundedCornerShape(16.dp), border = BorderStroke(1.dp, Color.White)) {
-        Text(
-            text = "WikiFan para Heartopia • Disponible en Google Play",
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp),
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Medium,
-            fontSize = 10.sp,
-            color = accentColor.copy(alpha = 0.85f),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
     }
 }
 
 private fun toPlotNumber(raw: String?): Int = raw?.toIntOrNull()?.coerceIn(1, 12) ?: 1
 
-private fun plotLabel(raw: String?, plotNumber: Int): String = when {
-    raw == null -> ResourceCalendar.label(null)
-    raw.toIntOrNull() != null -> "Parcela ${plotNumber.toString().padStart(2, '0')}"
-    raw == "Bosque" -> ResourceCalendar.label("Bosque")
-    raw == "Ruinas" -> ResourceCalendar.label("Ruinas")
-    else -> raw
-}
+private fun plotNumberLabel(plotNumber: Int): String =
+    plotNumber.coerceIn(1, 12).toString().padStart(2, '0')
 
 private fun CommunityCalendarGridTitle(month: YearMonth): String {
     val formatter = DateTimeFormatter.ofPattern("MMMM yyyy", Locale("es", "ES"))
