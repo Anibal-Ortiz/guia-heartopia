@@ -8,11 +8,13 @@ import org.junit.Test
 
 class AppNavigationTest {
     @Test
-    fun bottomBarHasFourTabsWithoutRoutineOrPixel() {
+    fun bottomBarHasFiveTabsWithComunidadAfterCalendarWithoutRoutineOrPixel() {
         val routes = AppNavigation.BottomNavTabs.map { it.route }
-        assertEquals(listOf("home", "aficiones", "codigos", "calendar"), routes)
+        assertEquals(listOf("home", "aficiones", "codigos", "calendar", "comunidad"), routes)
         assertFalse(routes.any { it == "routine" || it == "pixel" })
-        assertEquals(4, AppNavigation.BottomNavTabs.size)
+        assertEquals(5, AppNavigation.BottomNavTabs.size)
         assertTrue(routes.contains("calendar"))
+        assertTrue(routes.indexOf("comunidad") > routes.indexOf("calendar"))
+        assertEquals("Comunidad", AppNavigation.BottomNavTabs.first { it.route == "comunidad" }.label)
     }
 }

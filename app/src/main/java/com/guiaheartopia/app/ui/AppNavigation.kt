@@ -11,6 +11,7 @@ object AppNavigation {
         NavItem("aficiones", "Aficiones", NavIcon.HOBBIES),
         NavItem("codigos", "Códigos", NavIcon.CODES),
         NavItem("calendar", "Calendario", NavIcon.CALENDAR),
+        NavItem("comunidad", "Comunidad", NavIcon.COMMUNITY),
     )
 
     fun tabForRoute(route: String?): String? = when {
@@ -18,6 +19,7 @@ object AppNavigation {
         route == HOME_ROUTE || route.startsWith("home") -> HOME_ROUTE
         route == "codigos" || route.startsWith("codigos/") -> "codigos"
         route == "calendar" || route.startsWith("calendar") || route == "weather" -> "calendar"
+        route == "comunidad" || route.startsWith("comunidad/") -> "comunidad"
         route == "aficiones" || route.startsWith("guide") || route.startsWith("dex/") ||
             route.startsWith("animal/") || route.startsWith("huerto") ||
             route.startsWith("cocina") || route.startsWith("hobbies") ||

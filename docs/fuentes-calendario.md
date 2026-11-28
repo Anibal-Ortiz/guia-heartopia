@@ -1,17 +1,17 @@
-# Fuentes del calendario de Liuliu, flurita y clima
+# Fuentes del calendario de Liuliu, fluorita y clima
 
 Consulta del 7 de noviembre de 2026. No se inventan horas ni parcelas. Si una fuente no publica el día, el dato se marca como sin datos; no se trata como consenso.
 
 ## Qué se buscó
 
-- Dónde aparecen Liuliu (roble que se mueve; en inglés, Roaming Oak) y la flurita (en inglés, Flawless Fluorite) cada día de noviembre y diciembre de 2026.
+- Dónde aparecen Liuliu (roble que se mueve; en inglés, Roaming Oak) y la fluorita (en inglés, Flawless Fluorite) cada día de noviembre y diciembre de 2026.
 - Si el clima hora a hora de esos meses está publicado en más de un sitio y coincide.
 - Si hay un ciclo que varias fuentes confirmen y sirva para los días que faltan.
 
 ## Fuentes
 
 1. Tidebell, roble y mina de fluorita: https://tidebell.com/oak-and-fluorite
-   Publica el año 2026 entero y dice que ambos se mueven a las 6:00 y repiten un ciclo de 50 días. El roble puede estar en el bosque de pinos espirituales; la flurita, en las ruinas. La flurita no para en la casa 10.
+   Publica el año 2026 entero y dice que ambos se mueven a las 6:00 y repiten un ciclo de 50 días. El roble puede estar en el bosque de pinos espirituales; la fluorita, en las ruinas. La fluorita no para en la casa 10.
 2. Tidebell, clima: https://tidebell.com/calendar
    Describe un calendario fijo de 366 días, en cuatro tramos de seis horas (00–06, 06–12, 12–18, 18–24). El listado hora a hora de noviembre y diciembre no salió en la página leída: el mes se dibuja al elegir el día.
 3. Heartopia en th.gl, pronóstico: https://heartopia.th.gl/forecast
@@ -23,13 +23,13 @@ Consulta del 7 de noviembre de 2026. No se inventan horas ni parcelas. Si una fu
 
 ## Consenso de parcelas
 
-Noviembre de 2026 se toma del ciclo diario de Tidebell, con comprobaciones puntuales de avisos de jugadores. En la app queda como fuente única. El par es Liuliu y luego flurita. El 6 de noviembre es parcela 8 y parcela 8.
+Noviembre de 2026 se toma del ciclo diario de Tidebell, con comprobaciones puntuales de avisos de jugadores. En la app queda como fuente única. El par es Liuliu y luego fluorita. El 6 de noviembre es parcela 8 y parcela 8.
 
 Octubre de 2026, que no se muestra en el calendario de esta versión, coincide en los días comparados (el 1, bosque y parcela 4; el 23, parcela 5 y ruinas). Sirve para ver que el ciclo se sostiene.
 
 ## Patrón
 
-Tidebell describe un ciclo de 50 días para el roble y la flurita. No apareció un ciclo por día de la semana: el que se sostiene es el de 50 días.
+Tidebell describe un ciclo de 50 días para el roble y la fluorita. No apareció un ciclo por día de la semana: el que se sostiene es el de 50 días.
 
 Diciembre de 2026 no está día a día en la fuente consultada. La app lo muestra como **Sin datos** y no rellena las parcelas con estimaciones.
 

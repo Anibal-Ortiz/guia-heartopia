@@ -303,7 +303,7 @@ fun PixelProgress(
     }
 }
 
-enum class NavIcon { HOME, GUIDE, CALENDAR, HOBBIES, CODES }
+enum class NavIcon { HOME, GUIDE, CALENDAR, HOBBIES, CODES, COMMUNITY }
 
 data class NavItem(val route: String, val label: String, val icon: NavIcon)
 
@@ -377,6 +377,8 @@ fun LineNavIcon(icon: NavIcon, tint: Color, filled: Boolean = false) {
         NavIcon.CALENDAR -> com.guiaheartopia.app.R.drawable.ic_nav_calendar
         NavIcon.HOBBIES -> com.guiaheartopia.app.R.drawable.ic_nav_hobbies
         NavIcon.CODES -> com.guiaheartopia.app.R.drawable.ic_nav_codes
+        // No hay PNG propio de comunidad; reutilizamos el icono de calendario.
+        NavIcon.COMMUNITY -> com.guiaheartopia.app.R.drawable.ic_nav_calendar
     }
     androidx.compose.foundation.Image(
         painter = androidx.compose.ui.res.painterResource(res),

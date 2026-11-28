@@ -11,7 +11,7 @@ import java.time.LocalDate
  * El nombre en español de cada comida es una glosa, no un texto oficial del cliente.
  * Los comederos no coinciden entre Polygon, Dexerto, heartopiawiki.com y heartopiawiki.org.
  *
- * flurita / Liuliu en noviembre 2026: Tidebell publica el ciclo diario de 50 días.
+ * fluorita / Liuliu en noviembre 2026: Tidebell publica el ciclo diario de 50 días.
  * Tidebell llama al recurso «Roaming Oak» y «Fluorite Mine». No hay ficha oficial en
  * español que unifique «Liuliu» con el roble, así que el lugar se muestra y el nombre
  * se deja como en la petición.
@@ -29,7 +29,7 @@ object VerifiedCatalog {
 
     val events: List<GameEvent> = emptyList()
 
-    /** Día de noviembre 2026 → parcela o zona del roble (Liuliu) y de la flurita. Fuente única en domain. */
+    /** Día de noviembre 2026 → parcela o zona del roble (Liuliu) y de la fluorita. Fuente única en domain. */
     val novemberSpots: List<Pair<String, String>> get() = ResourceCalendar.novemberSpots
 
     fun novemberSpot(date: LocalDate): Pair<String, String>? {

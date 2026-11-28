@@ -73,7 +73,8 @@ La prueba de UI de bienvenida está en `app/src/androidTest` y requiere disposit
 | Inicio | Pestaña inferior | Saludo, fecha, progreso del día y accesos. |
 | Aficiones | Pestaña inferior | Cocina, jardinería, mascotas y otros, con nivel que anota quien juega. |
 | Códigos | Pestaña inferior | Códigos canjeables y su estado. |
-| Calendario | Pestaña inferior | Mes, país, zona, clima, flurita y Liuliu, detalle del día. |
+| Calendario | Pestaña inferior | Mes, país, zona, clima, fluorita y Liuliu, detalle del día. |
+| Comunidad | Pestaña inferior | Crea imágenes PNG para comunidades: calendario o clima, con ubicaciones de fluorita y Liuliu; compartir con la hoja del sistema. |
 | Guía | Desde Inicio | Catálogo de animales y coleccionables, con búsqueda y filtros. |
 | Ajustes | Barra superior | Perfil, país, zona, anuncios, avisos, privacidad y términos. |
 | Bienvenida | Primer arranque | Nombre, lugar, franja habitual, país y zona; enlaza privacidad y términos. |
@@ -138,10 +139,10 @@ Si no hay secretos de firma, `bundleRelease`/`assembleRelease` **fallan**; solo 
 
 - Nombres, comidas y comederos de animales.
 - Catálogo de coleccionables y códigos.
-- Clima, servidor de origen, lugares y aparición de flurita y Liuliu.
+- Clima, servidor de origen, lugares y aparición de fluorita y Liuliu.
 - Niveles oficiales de aficiones, si el juego los tiene.
 
-El país y la zona se eligen en la bienvenida y en Ajustes; el calendario usa esa misma selección y no pide permiso de ubicación. Las fuentes citadas en el histórico son Tidebell y otras guías de la comunidad; «flurita» y «Liuliu» no se corrigen porque no hay fuente oficial que fije su nombre en español, lugar u horario.
+El país y la zona se eligen en la bienvenida y en Ajustes; el calendario usa esa misma selección y no pide permiso de ubicación. Las fuentes citadas en el histórico son Tidebell y otras guías de la comunidad; el nombre en español es «Fluorita» (no «Flurita»); «Liuliu» se mantiene.
 
 ## Estructura
 

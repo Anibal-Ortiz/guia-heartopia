@@ -13,6 +13,7 @@ object NavigationPolicy {
     private const val AFICIONES_ROUTE = "aficiones"
     private const val CODES_ROUTE = "codigos"
     private const val CALENDAR_ROUTE = "calendar"
+    private const val COMMUNITY_ROUTE = "comunidad"
 
     /**
      * Cada pestaña abre la raíz de su sección descartando el stack anterior: `popUpTo` la
@@ -33,6 +34,7 @@ object NavigationPolicy {
             route == CODES_ROUTE || route.startsWith("$CODES_ROUTE/") -> CODES_ROUTE
             route == CALENDAR_ROUTE || route.startsWith("$CALENDAR_ROUTE/") ||
                 route == "weather" -> CALENDAR_ROUTE
+            route == COMMUNITY_ROUTE || route.startsWith("$COMMUNITY_ROUTE/") -> COMMUNITY_ROUTE
             else -> route
         }
         return TabNavigationPolicy(

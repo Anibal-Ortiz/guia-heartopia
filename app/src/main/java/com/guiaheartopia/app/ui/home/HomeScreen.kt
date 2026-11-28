@@ -601,7 +601,7 @@ fun HomeScreen(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                // Flurita Card
+                // Fluorita Card
                 Column(
                     Modifier
                         .weight(1f)
@@ -612,7 +612,7 @@ fun HomeScreen(
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                         CozyCrystalIcon(tint = GreenDark, size = 18.dp)
-                        Text("Flurita", style = MaterialTheme.typography.titleSmall, color = GreenDark)
+                        Text("Fluorita", style = MaterialTheme.typography.titleSmall, color = GreenDark)
                     }
                     Spacer(Modifier.height(4.dp))
                     Text(

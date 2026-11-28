@@ -142,6 +142,7 @@ import com.guiaheartopia.app.ui.theme.Muted
 import com.guiaheartopia.app.ui.theme.Paper
 import com.guiaheartopia.app.ui.theme.PaperSubtle
 import com.guiaheartopia.app.ui.weather.WeatherScreen
+import com.guiaheartopia.app.ui.share.CommunityImageScreen
 import com.guiaheartopia.app.ui.welcome.WelcomeScreen
 
 class MainActivity : ComponentActivity() {
@@ -909,6 +910,17 @@ private fun AppScaffold(
                         vm.updateRegion(country, zone, regionKey = region)
                     },
                     onOpenEventCreatures = { eventId -> nav.navigate("guide/evento/$eventId") },
+                )
+            }
+            composable("comunidad") {
+                CommunityImageScreen(
+                    countryId = ui.profile.countryId,
+                    zoneId = ui.profile.zoneId,
+                    regionKey = ui.profile.regionKey,
+                    onRegion = { country, zone, region ->
+                        vm.updateRegion(country, zone, regionKey = region)
+                    },
+                    onBack = { nav.popBackStack() },
                 )
             }
             composable("hobbies") {

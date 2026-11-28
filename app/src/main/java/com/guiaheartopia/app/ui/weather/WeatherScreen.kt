@@ -74,7 +74,7 @@ import java.util.Locale
 
 private enum class WeatherFilter(val label: String) {
     ALL("Todo"),
-    FLURITA("flurita"),
+    FLURITA("Fluorita"),
     LIULIU("Liuliu"),
     WEATHER("Con clima"),
 }
@@ -398,7 +398,7 @@ private fun DayDetail(date: LocalDate, zone: ZoneId, sky: com.guiaheartopia.app.
     Text("Hora local de ${Countries.zoneLabel(zone.id)}", style = MaterialTheme.typography.bodySmall)
     PixelCard {
         Text("Liuliu: ${ResourceCalendar.label(data.liuliu)}", color = Green, style = MaterialTheme.typography.titleSmall)
-        Text("flurita: ${ResourceCalendar.label(data.flurita)}", color = Orange, style = MaterialTheme.typography.titleSmall)
+        Text("Fluorita: ${ResourceCalendar.label(data.flurita)}", color = Orange, style = MaterialTheme.typography.titleSmall)
     }
     val lines = SkyWeatherGameDay.compactLinesForGameDay(sky, date, zone)
     PixelCard {
@@ -492,7 +492,7 @@ private fun skyColor(kind: SkyKind): Color = when (kind.climateDisplay()) {
 private fun Legend() {
     FlowRow(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
         Text("Número verde: Liuliu", color = Green, style = MaterialTheme.typography.bodySmall)
-        Text("Número naranja: flurita", color = Orange, style = MaterialTheme.typography.bodySmall)
+        Text("Número naranja: Fluorita", color = Orange, style = MaterialTheme.typography.bodySmall)
         Text("B bosque · R ruinas", style = MaterialTheme.typography.bodySmall)
         Text("Barra: despejado ☀️, lluvia 🌧️, arcoíris 🌈, nieve ❄️ o meteoritos ☄️", style = MaterialTheme.typography.bodySmall)
         Text("Fondo verde: día elegido", style = MaterialTheme.typography.bodySmall)

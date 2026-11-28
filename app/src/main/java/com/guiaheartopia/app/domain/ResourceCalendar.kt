@@ -8,7 +8,7 @@ enum class DayCertainty(val label: String) {
 }
 
 /**
- * Parcela o zona de Liuliu y de la flurita.
+ * Parcela o zona de Liuliu y de la fluorita.
  * [liuliu] y [flurita] usan el número de parcela, "Bosque" o "Ruinas".
  * El clima hora a hora no entra: no hay dos fuentes con la misma hora.
  */
