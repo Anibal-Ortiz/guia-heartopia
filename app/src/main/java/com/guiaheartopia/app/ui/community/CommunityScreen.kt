@@ -8,7 +8,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -24,7 +23,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -36,7 +34,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -56,6 +53,7 @@ import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -112,11 +110,6 @@ fun CommunityScreen(
         mutableStateOf((savedCommunityName ?: CommunityNameStore.load(context)).take(CommunityNameStore.MAX_NAME_LENGTH))
     }
 
-    var selectedWeatherName by rememberSaveable(safeZone) {
-        mutableStateOf(weatherThemeFromSky(sky, selectedDay(), zone).name)
-    }
-    val selectedWeather = WeatherTheme.valueOf(selectedWeatherName)
-
     var monthToken by rememberSaveable { mutableStateOf(YearMonth.now(zone).toString()) }
     var selectedToken by rememberSaveable { mutableStateOf<String?>(null) }
 
@@ -131,16 +124,19 @@ fun CommunityScreen(
     }
 
     val resource = remember(selected) { ResourceCalendar.on(selected) }
-    var plot1 by remember(selected) { mutableIntStateOf(toPlotNumber(resource.liuliu)) }
-    var plot2 by remember(selected) { mutableIntStateOf(toPlotNumber(resource.flurita)) }
+    val selectedWeather = remember(selected, safeZone, sky, zone) {
+        weatherThemeFromSky(sky, selected, zone)
+    }
 
     val generatedMonthlySpecialDays = remember(month, safeZone, sky, today) {
         buildMonthlySpecialDays(month, zone, sky)
     }
     val specialDays = monthlySpecialDays ?: generatedMonthlySpecialDays
 
-    val plotLabel1 = plotLabel(resource.liuliu, plot1)
-    val plotLabel2 = plotLabel(resource.flurita, plot2)
+    val plotNumber1 = toPlotNumber(resource.liuliu)
+    val plotNumber2 = toPlotNumber(resource.flurita)
+    val plotLabel1 = plotLabel(resource.liuliu, plotNumber1)
+    val plotLabel2 = plotLabel(resource.flurita, plotNumber2)
 
     Scaffold(
         topBar = {
@@ -212,32 +208,6 @@ fun CommunityScreen(
 
             if (selectedMode == CommunityCardMode.DAILY) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    WeatherTheme.entries.forEach { weather ->
-                        FilterChip(
-                            selected = selectedWeather == weather,
-                            onClick = { selectedWeatherName = weather.name },
-                            label = { Text("${weather.emoji} ${weather.label}") },
-                            modifier = Modifier.weight(1f),
-                        )
-                    }
-                }
-
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    PlotStepper(
-                        label = "Árbol de Liuliu",
-                        value = plot1,
-                        onValueChange = { plot1 = it },
-                        modifier = Modifier.weight(1f),
-                    )
-                    PlotStepper(
-                        label = "Cristal Fluorita",
-                        value = plot2,
-                        onValueChange = { plot2 = it },
-                        modifier = Modifier.weight(1f),
-                    )
-                }
-
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     TextButton(onClick = { selectedToken = selected.minusDays(1).toString() }) { Text("Día anterior") }
                     TextButton(onClick = { selectedToken = selected.plusDays(1).toString() }) { Text("Día siguiente") }
                     TextButton(onClick = { selectedToken = today.toString(); monthToken = YearMonth.from(today).toString() }) { Text("Volver a hoy") }
@@ -272,8 +242,8 @@ fun CommunityScreen(
                         dateText = todayFormatted,
                         weather = selectedWeather,
                         spots = listOf(
-                            DailyResourceSpot("Árbol de Liuliu", "🌳", plot1, plotLabel1),
-                            DailyResourceSpot("Cristal de Fluorita", "💎", plot2, plotLabel2),
+                            DailyResourceSpot("Árbol de Liuliu", "🌳", plotNumber1, plotLabel1),
+                            DailyResourceSpot("Cristal de Fluorita", "💎", plotNumber2, plotLabel2),
                         ),
                         communityName = communityName,
                     )
@@ -374,39 +344,28 @@ data class DailyResourceSpot(
     val plotLabel: String,
 )
 
+@OptIn(ExperimentalTextApi::class)
 @Composable
-private fun PlotStepper(
-    label: String,
-    value: Int,
-    onValueChange: (Int) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Surface(modifier = modifier, shape = RoundedCornerShape(14.dp), tonalElevation = 2.dp) {
-        Column(
-            modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(label, style = MaterialTheme.typography.labelMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                TextButton(
-                    onClick = { onValueChange(if (value <= 1) 12 else value - 1) },
-                    contentPadding = PaddingValues(0.dp),
-                    modifier = Modifier.size(32.dp),
-                ) { Text("-", fontWeight = FontWeight.Bold) }
-
-                Text(
-                    text = value.toString().padStart(2, '0'),
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-
-                TextButton(
-                    onClick = { onValueChange(if (value >= 12) 1 else value + 1) },
-                    contentPadding = PaddingValues(0.dp),
-                    modifier = Modifier.size(32.dp),
-                ) { Text("+", fontWeight = FontWeight.Bold) }
-            }
-        }
+private fun CommunityNamePlate(name: String, accent: Color) {
+    if (name.isBlank()) return
+    Surface(
+        color = Color.White.copy(alpha = 0.84f),
+        shape = RoundedCornerShape(18.dp),
+        border = BorderStroke(1.5.dp, Color.White),
+    ) {
+        Text(
+            text = name,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp),
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.headlineMedium.copy(
+                brush = Brush.horizontalGradient(
+                    listOf(accent, Color(0xFFF72585), Color(0xFFFFD166), accent),
+                ),
+                fontWeight = FontWeight.Black,
+            ),
+        )
     }
 }
 
@@ -463,6 +422,8 @@ private fun DailyReportCard(
             }
         }
 
+        CommunityNamePlate(name = communityName, accent = weather.accent)
+
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             spots.forEach { spot ->
                 Surface(
@@ -505,7 +466,7 @@ private fun DailyReportCard(
             }
         }
 
-        CardSignatureFooter(communityName = communityName, accentColor = weather.accent)
+        CardSignatureFooter(accentColor = weather.accent)
         }
     }
 }
@@ -584,6 +545,8 @@ private fun MonthlyCalendarCard(
             }
         }
 
+        CommunityNamePlate(name = communityName, accent = accent)
+
         Surface(color = Color.White.copy(alpha = 0.92f), shape = RoundedCornerShape(18.dp)) {
             Column(modifier = Modifier.fillMaxWidth().padding(10.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Row(modifier = Modifier.fillMaxWidth()) {
@@ -641,42 +604,25 @@ private fun MonthlyCalendarCard(
             }
         }
 
-        CardSignatureFooter(communityName = communityName, accentColor = accent)
+        CardSignatureFooter(accentColor = accent)
     }
 }
 
 @Composable
-private fun CardSignatureFooter(communityName: String, accentColor: Color) {
+private fun CardSignatureFooter(accentColor: Color) {
     Surface(color = Color.White.copy(alpha = 0.88f), shape = RoundedCornerShape(16.dp), border = BorderStroke(1.dp, Color.White)) {
-        Row(
+        Text(
+            text = "WikiFan para Heartopia • Disponible en Google Play",
             modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = communityName.ifBlank { "Tu comunidad" },
-                modifier = Modifier.weight(1f),
-                fontWeight = FontWeight.Bold,
-                fontSize = 13.sp,
-                color = Color(0xFF1F2937),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Spacer(Modifier.width(8.dp))
-            Text(
-                text = "WikiFan para Heartopia • Disponible en Google Play",
-                modifier = Modifier.weight(1f),
-                textAlign = TextAlign.End,
-                fontWeight = FontWeight.Medium,
-                fontSize = 9.sp,
-                color = accentColor.copy(alpha = 0.85f),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Medium,
+            fontSize = 10.sp,
+            color = accentColor.copy(alpha = 0.85f),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
-
-private fun selectedDay(): LocalDate = LocalDate.now()
 
 private fun toPlotNumber(raw: String?): Int = raw?.toIntOrNull()?.coerceIn(1, 12) ?: 1
 
