@@ -198,9 +198,10 @@ fun CommunityImageScreen(
         PixelButton(
             text = "Compartir imagen",
             onClick = {
-                val bmp = rendered ?: return@onClick
-                val filename = CommunityImageFilename.forCard(card)
-                scope.launch { CommunityImageSharer.share(context, bmp, filename) }
+                rendered?.let { bmp ->
+                    val filename = CommunityImageFilename.forCard(card)
+                    scope.launch { CommunityImageSharer.share(context, bmp, filename) }
+                }
             },
             modifier = Modifier.fillMaxWidth(),
             enabled = rendered != null,
