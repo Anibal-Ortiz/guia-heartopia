@@ -2,6 +2,7 @@ package com.guiaheartopia.app.ui.community
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -53,12 +54,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.guiaheartopia.app.R
 import com.guiaheartopia.app.data.SkyCatalog
 import com.guiaheartopia.app.domain.Countries
 import com.guiaheartopia.app.domain.DexSchedule
@@ -324,24 +328,43 @@ enum class WeatherTheme(
     val emoji: String,
     val gradient: List<Color>,
     val accent: Color,
+    val backgroundRes: Int?,
 ) {
     SUNNY(
         label = "Soleado",
         emoji = "☀️",
         gradient = listOf(Color(0xFF6EC6FF), Color(0xFFA8E6CF), Color(0xFFFFF3B0)),
         accent = Color(0xFF2E7D32),
+        backgroundRes = R.drawable.despejado,
     ),
     RAINY(
         label = "Lluvia",
         emoji = "🌧️",
         gradient = listOf(Color(0xFF4A6FA5), Color(0xFF7FA6C9), Color(0xFFD6E6F2)),
         accent = Color(0xFF1E4E79),
+        // No se inventa una foto de lluvia: si el usuario no adjunta `lluvia.jpg`, se usa degradado.
+        backgroundRes = null,
     ),
     RAINBOW(
         label = "Arcoíris",
         emoji = "🌈",
         gradient = listOf(Color(0xFFFF9A9E), Color(0xFFFAD0C4), Color(0xFFA1C4FD)),
         accent = Color(0xFF6A3093),
+        backgroundRes = R.drawable.arcoiris,
+    ),
+    SNOW(
+        label = "Nieve",
+        emoji = "❄️",
+        gradient = listOf(Color(0xFFE7F2FA), Color(0xFFFFFFFF), Color(0xFFD6E6F2)),
+        accent = Color(0xFF3F6F8F),
+        backgroundRes = R.drawable.nieve,
+    ),
+    METEOR(
+        label = "Meteoritos",
+        emoji = "☄️",
+        gradient = listOf(Color(0xFF2C3A4A), Color(0xFF1E293B), Color(0xFF0F172A)),
+        accent = Color(0xFFFAD0C4),
+        backgroundRes = R.drawable.meteoritos,
     ),
 }
 
@@ -395,13 +418,22 @@ private fun DailyReportCard(
     spots: List<DailyResourceSpot>,
     communityName: String,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Brush.verticalGradient(weather.gradient))
-            .padding(20.dp),
-        verticalArrangement = Arrangement.SpaceBetween,
-    ) {
+    Box(modifier = Modifier.fillMaxSize().background(Brush.verticalGradient(weather.gradient))) {
+        val backgroundRes = weather.backgroundRes
+        if (backgroundRes != null) {
+            Image(
+                painter = painterResource(id = backgroundRes),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop,
+            )
+            // Oscurece solo lo necesario para mantener legibles tarjetas y textos.
+            Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.22f)))
+        }
+        Column(
+            modifier = Modifier.fillMaxSize().padding(20.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+        ) {
         Surface(
             color = Color.White.copy(alpha = 0.88f),
             shape = RoundedCornerShape(20.dp),
@@ -475,6 +507,7 @@ private fun DailyReportCard(
         }
 
         CardSignatureFooter(communityName = communityName, accentColor = weather.accent)
+        }
     }
 }
 
@@ -667,6 +700,8 @@ private fun weatherThemeFromSky(sky: com.guiaheartopia.app.data.SkyTable, date: 
     return when (kind) {
         SkyKind.LLUVIA -> WeatherTheme.RAINY
         SkyKind.ARCOIRIS -> WeatherTheme.RAINBOW
+        SkyKind.NIEVE -> WeatherTheme.SNOW
+        SkyKind.METEORO -> WeatherTheme.METEOR
         else -> WeatherTheme.SUNNY
     }
 }
